@@ -1,7 +1,7 @@
 {
   "id": "component-integration-spike_20260919",
   "type": "chore",
-  "status": "new",
+  "status": "in_progress",
   "created_at": "2026-09-19",
   "updated_at": "2026-09-19",
   "description": "Example-level integration spike to resolve component selection friction"

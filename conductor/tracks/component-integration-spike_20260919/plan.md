@@ -2,7 +2,7 @@
 
 ## Phase 1 — 依赖与不确定性
 
-- [ ] Task: 建立独立 example 工程，安装并锁定候选依赖，记录版本与 peer/engine 问题。
+- [~] Task: 建立独立 example 工程，安装并锁定候选依赖，记录版本与 peer/engine 问题。
 - [ ] Task: 检查安装后的真实 API，记录优先验证的集成边界。
 - [ ] Task: Phase Verification & Checkpoint：验证导入与工具链，保存命令结果。
 
