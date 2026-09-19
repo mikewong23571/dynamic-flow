@@ -270,7 +270,7 @@ export default function Workspace() {
                           }
                         >
                           <option value="function">普通处理</option>
-                          <option value="agent">AI 处理</option>
+                          <option value="agent">Agent</option>
                           <option value="branch">条件分流</option>
                         </select>
                         <Button onClick={addNode}>

@@ -149,7 +149,24 @@ for (const [width, height] of [
     await expect(
       page.getByRole('heading', { name: work.goal, exact: true }),
     ).toBeVisible();
-    await expect(page.locator('.material-row')).toHaveCount(3);
+    await page.getByRole('button', { name: '输入材料', exact: true }).click();
+    const materialDialog = page.getByRole('dialog', { name: '输入材料' });
+    await expect(materialDialog.locator('.material-row')).toHaveCount(3);
+    await materialDialog
+      .getByRole('button', { name: '清空', exact: true })
+      .click();
+    await expect(
+      materialDialog.getByRole('checkbox', { checked: true }),
+    ).toHaveCount(0);
+    await materialDialog
+      .getByRole('button', { name: '全选', exact: true })
+      .click();
+    await expect(
+      materialDialog.getByRole('checkbox', { checked: true }),
+    ).toHaveCount(3);
+    await materialDialog
+      .getByRole('button', { name: '完成选择', exact: true })
+      .click();
     await page.locator('.react-flow__node[data-id="prepare"]').click();
     await page
       .getByLabel('步骤名称', { exact: true })

@@ -41,3 +41,5 @@
 客户端不会将流式快照覆盖未保存草稿；未提交定义、对话和样本上下文按工作保存在浏览器。服务端版本变化时保留本地内容并显示冲突，显式保存通过 expectedDraftId 校验。图布局与定义分离，默认可读缩放；外部更新保留当前视口。模型配置中 API key 只在密码框内短暂输入，不放本地存储、列表或响应展示。
 
 产品级验证与边界见 [本轮验收证据](../../conductor/tracks/full-application_20260920/evidence.md)。
+
+最新视觉方向与证据见 [Geist 暗色工作区 track](../../conductor/tracks/geist-workspace_20260920/evidence.md)。默认暗色，语义颜色集中在 styles.css；Sidebar 负责紧凑工作导航，MaterialsDialog 负责材料全文和选择；WorkflowCanvas 只展示节点摘要，任务全文由 NodeInspector 编辑。旧浅色/紫色截图不作为新页面模板。

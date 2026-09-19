@@ -43,9 +43,9 @@
   color: var(--muted);
 }
 .library-tabs button[aria-selected='true'] {
-  color: var(--accent);
+  color: var(--ink);
   background: var(--paper);
-  box-shadow: 0 1px 4px #2928470c;
+  box-shadow: none;
   font-weight: 600;
 }
 .library-search {
@@ -73,17 +73,17 @@
   display: flex;
   gap: 18px;
   align-items: flex-start;
-  padding: 23px 0;
+  padding: 16px 0;
   border-top: 1px solid var(--line);
 }
 .library-work-icon {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   flex: none;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--surface);
+  color: var(--ink);
   border-radius: var(--radius);
 }
 .library-work-content {
@@ -102,7 +102,7 @@
 }
 .library-work-title h2 {
   overflow-wrap: anywhere;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.5;
 }
 .library-work-title > svg {
@@ -110,7 +110,7 @@
   color: var(--muted);
 }
 .library-work-title:hover {
-  color: var(--accent);
+  color: var(--ink);
 }
 .library-work-goal {
   color: var(--muted);
@@ -127,7 +127,7 @@
   display: block;
   font-size: 11px;
   color: var(--muted);
-  margin-top: 9px;
+  margin-top: 6px;
 }
 .library-item-actions {
   display: flex;
@@ -168,7 +168,7 @@
   gap: 12px;
   padding: 12px 34px;
   color: var(--danger);
-  background: #fff5f5;
+  background: var(--danger-soft);
 }
 .library-rename {
   display: flex;

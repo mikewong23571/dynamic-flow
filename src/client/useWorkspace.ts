@@ -462,7 +462,7 @@ export function useWorkspace() {
       kind: addKind,
       label:
         addKind === 'agent'
-          ? '新的 AI 步骤'
+          ? '新的 Agent 步骤'
           : addKind === 'branch'
             ? '条件分流'
             : '整理数据',

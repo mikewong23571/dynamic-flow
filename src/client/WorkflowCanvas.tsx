@@ -13,7 +13,15 @@ import {
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Boxes, GitBranch, Sparkles, FileText } from 'lucide-react';
+import {
+  Boxes,
+  GitBranch,
+  Bot,
+  FileText,
+  Check,
+  LoaderCircle,
+  AlertCircle,
+} from 'lucide-react';
 import type { Definition, FlowNode, Run, ViewState } from '../shared/records';
 import {
   inputPorts,
@@ -36,75 +44,96 @@ function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
   const Icon = !node
     ? FileText
     : node.kind === 'agent'
-      ? Sparkles
+      ? Bot
       : node.kind === 'branch'
         ? GitBranch
         : Boxes;
   const inputs = node ? inputPorts(node) : [];
   const outputs = node ? outputPorts(node) : data.ports || [];
+  const state = data.status;
   return (
     <div
-      className={`workflow-node ${selected ? 'selected' : ''} ${data.status || ''}`}
+      className={`workflow-node ${selected ? 'selected' : ''} ${state || ''}`}
     >
-      <div className="node-top">
+      <div className="node-heading">
         <span className={`node-icon ${node?.kind || 'material'}`}>
-          <Icon size={18} />
+          <Icon size={20} />
         </span>
-        <span className="node-kind">
-          {!node
-            ? '原始材料'
-            : node.kind === 'agent'
-              ? 'AI 处理'
-              : node.kind === 'branch'
-                ? '条件分流'
-                : '普通处理'}
-          {data.final ? ' · 最终产物' : ''}
-        </span>
-      </div>
-      <strong>{data.label}</strong>
-      <p>
-        {node?.kind === 'branch'
-          ? `${node.condition?.field || '整个输入值'} · ${node.condition?.operator || '条件'}`
-          : node?.task ||
-            (!node
-              ? '本轮选择的输入'
-              : node?.functionName === 'merge'
-                ? '合并两路输入'
-                : '传递与整理数据')}
-      </p>
-      <div className="node-footer">
-        <span>
-          {node
-            ? node.mode === 'each'
-              ? '逐条处理'
-              : '汇总处理'
-            : `${data.ports?.map(portLabel).join(' / ')}`}
-        </span>
-        <span>
-          {data.progress || statusNames[data.status || ''] || '待运行'}
-        </span>
-      </div>
-      <div className="port-labels">
-        {inputs.map((port, i) => (
-          <span
-            key={port}
-            className="port-label input"
-            style={{ top: 45 + i * 29 }}
-          >
-            <Handle type="target" position={Position.Left} id={port} />
-            {portLabel(port)}
+        <div className="node-identity">
+          <span className="node-kind">
+            {!node
+              ? '输入'
+              : node.kind === 'agent'
+                ? 'Agent'
+                : node.kind === 'branch'
+                  ? '条件分流'
+                  : '数据处理'}
           </span>
-        ))}
-        {outputs.map((port, i) => (
+          <strong title={data.label}>{data.label}</strong>
+        </div>
+      </div>
+      {node?.kind === 'branch' && (
+        <p
+          className="node-condition"
+          title={`${node.condition?.field || '整个输入'} ${node.condition?.operator || ''} ${String(node.condition?.value ?? '')}`}
+        >
+          {node.condition?.field || '整个输入'} ·{' '}
+          {node.condition?.operator === 'contains'
+            ? '包含'
+            : node.condition?.operator === 'equals'
+              ? '等于'
+              : '存在'}{' '}
+          {String(node.condition?.value ?? '')}
+        </p>
+      )}
+      <div className="node-summary">
+        <span>
+          {node ? (node.mode === 'each' ? '逐条处理' : '汇总处理') : '原始材料'}
+          {data.final && <span className="node-final">最终产物</span>}
+        </span>
+        {node && (
           <span
-            key={port}
-            className="port-label output"
-            style={{ top: 45 + i * 29 }}
+            className={`node-status ${state || ''}`}
+            title={statusNames[state || ''] || '待运行'}
           >
-            {portLabel(port)}
-            <Handle type="source" position={Position.Right} id={port} />
+            {state === 'completed' ? (
+              <Check size={12} />
+            ) : state === 'running' ? (
+              <LoaderCircle size={12} className="spin" />
+            ) : state === 'failed' || state === 'blocked' ? (
+              <AlertCircle size={12} />
+            ) : null}
+            {data.progress || statusNames[state || ''] || '待运行'}
           </span>
-        ))}
+        )}
+      </div>
+      <div className="node-ports">
+        <div className="port-column">
+          {inputs.map((port) => (
+            <div key={port} className="node-port input">
+              <Handle
+                type="target"
+                position={Position.Left}
+                id={port}
+                aria-label={`输入 ${portLabel(port)}`}
+              />
+              <span>{portLabel(port)}</span>
+            </div>
+          ))}
+        </div>
+        <div className="port-column">
+          {outputs.map((port) => (
+            <div key={port} className="node-port output">
+              <span>{portLabel(port)}</span>
+              <Handle
+                type="source"
+                position={Position.Right}
+                id={port}
+                aria-label={`输出 ${portLabel(port)}`}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -201,6 +230,7 @@ export function WorkflowCanvas({
   return (
     <div className="canvas">
       <ReactFlow
+        colorMode="dark"
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -226,7 +256,7 @@ export function WorkflowCanvas({
         minZoom={0.2}
         maxZoom={1.5}
       >
-        <Background gap={24} size={1} color="#d9dbe4" />
+        <Background gap={24} size={1} color="#282828" />
         <Controls showInteractive={false} />
       </ReactFlow>
     </div>

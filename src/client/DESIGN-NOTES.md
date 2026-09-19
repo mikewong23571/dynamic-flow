@@ -9,9 +9,20 @@
 - [Primer Button](https://primer.style/product/components/button/)：核对主次操作与状态语义。主要动作使用实色按钮，次要动作描边，低频轻操作无底；禁用、停止处理中、失败有文本表达。采用 Radix Dialog 处理焦点、标题、关闭与模态背景；统一基础控件。
 - [assistant-ui ExternalStoreRuntime](https://www.assistant-ui.com/docs/runtimes/custom/external-store)：实际使用外部保存的消息和状态接入会话组件，模型调用由后端完成。无文字的运行态显示生成/修改进行中，工具与错误来自快照。
 
-## 最终方向
+## 当前方向：Geist 暗色（2026-09-20 用户反馈后）
 
-深墨导航、浅色画布、白色内容，紫色用于主要动作和候选。材料正文 13px、节点任务 13px、具名端口 12px、节点标题 16px；新画布默认 100% 缩放和折行节点布局，避免为容纳全图将正文压缩到无法阅读。用户保存的坐标与缩放优先，流式定义不重置视口。
+前一版浅色画布、紫色强调及文字密集节点已被用户否定；下方早期截图仅保留历史验证价值，不代表当前视觉规范。
+
+实看 [Geist 颜色](https://vercel.com/geist/colors) 的 Dark 实例并阅读 [按钮规范](https://vercel.com/geist/button)。沿用现有 React Flow、Radix、assistant-ui，调整其呈现，不引入另一套组件库。
+
+- **重复**：中性暗色背景、6px 控件圆角、1px 边框、32px 常用按钮；表单继承 Geist/系统字体。状态颜色集中在 styles.css 语义变量。
+- **对齐**：节点统一 240px 宽、标题预留两行，类型/标题/摘要/端口位置一致；具名端口沿底部左右列排布，协议 ID 不变。
+- **对比**：名称是主要信息，类型与处理方式退后；白色主操作，蓝色选中与焦点，绿/红/黄表达完成/失败/提醒。颜色辅以图标或文字。
+- **亲密**：图标、类型和名称组成身份区；方式与进度组成状态行；连接点与端口标签相邻。Agent 任务全文放在配置面板，分支仍保留条件摘要。
+
+侧栏展示所有工作、最近五项工作及当前工作资源，材料不再作为侧栏截断文本列表。MaterialsDialog 提供全文、多选、全选/清空和新增入口；工作库承载搜索、分页、重命名、归档。选中材料复用原状态与持久化逻辑。
+
+本次 [验收与截图](../../conductor/tracks/geist-workspace_20260920/evidence.md) 覆盖 1440/1024、真实历史 Agent 内容和函数流程浏览器回归；设计实现已交付，用户审美接受仍由用户判断。
 
 Workspace 负责组合；useWorkspace 维护 HTTP/SSE 与编辑上下文；Sidebar、WorkspaceDialogs、WorkflowCanvas、NodeInspector、Assistant、Results、Comparison 分别对应可见职责。未提交节点定义、对话输入和节点样本选择保存于当前浏览器的工作上下文；正式做法、材料、结果由服务端持久化。
 

@@ -73,9 +73,11 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
     await expect(
       page.getByRole('button', { name: '运行流程', exact: true }),
     ).toBeDisabled();
+    await page.getByRole('button', { name: '输入材料', exact: true }).click();
     await expect(page.locator('.material-row')).toContainText(
       '仅用于同工作重开回归的一条材料',
     );
+    await page.getByRole('button', { name: '完成选择', exact: true }).click();
     await expect(page.locator('.welcome')).toHaveCount(0);
     // The same recent-work item is also a valid re-entry point.
     await page

@@ -103,7 +103,7 @@ export function ModelSettingsDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="模型设置"
-      description="用于生成做法和执行 AI 步骤。保存后用于新的请求。"
+      description="用于生成做法和执行 Agent 步骤。保存后用于新的请求。"
     >
       <form
         onSubmit={(event) => {

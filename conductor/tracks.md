@@ -1,6 +1,6 @@
 # Tracks Registry
 
-- [~] **Track: Geist 暗色工作区与节点层级**
+- [x] **Track: Geist 暗色工作区与节点层级**
   *Link: [geist-workspace_20260920](./tracks/geist-workspace_20260920/index.md)*
 
 - [x] **Track: 整个应用原型实现**
