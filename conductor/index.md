@@ -18,6 +18,8 @@
 
 ## Component Decisions
 
+- [用户故事伪代码 Spike：目录、模块与验收推演](../spike/README.md)
+
 - [当前关键组件与待验证项](./component-options.md)
 - [历史组件接入 Spike 结果](./tracks/component-integration-spike_20260919/results.md)
 - [Tracks Registry](./tracks.md)
