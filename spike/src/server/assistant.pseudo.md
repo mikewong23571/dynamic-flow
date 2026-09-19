@@ -11,20 +11,28 @@ loadModelConfig():
 
 requestEdit(workId, selectedNodeId?, message, selectedSamples):
   保存本轮请求消息与 ID；固定 expectedDraftId、目标、材料、节点与样本值
+  本轮在 Pi AgentSession 注册应用工具 update_flow 与 inspect_result
+  inspect_result(runId, resultId) 直接从 files.openWork 取输入/输出/错误
+  session.subscribe 将文本/工具事件附上 workId、requestId 转给 server 入口
   Pi 接收对话历史与本次固定上下文，复用 SDK 工具循环
-  提供 proposeFlow 工具：
+  提供 update_flow 工具：
     检查返回结构、支持节点和请求修改范围
     单节点请求不得擅自修改无关节点；越界则反馈原因，请明确更大范围
     newDraft = flow.saveDraft(workId, expectedDraftId, proposedDefinition)
     保存成功后将本轮 expectedDraftId 更新到 newDraft.id
-    返回真实保存结果与节点/参数/连线差异
+    保存通知使 server 入口发送含新 definition 的快照，前端立即更新画布
+    返回真实保存结果与节点/参数/连线差异；工具完成消息不是画布数据源
   如果用户手改造成起点不匹配：保留提案文字，说明过期；不覆盖、不自动合并
   工具失败/未调用时，不呈现“已修改”的成功状态
   流式消息按本轮 ID 追加；最终消息与变更结果保存到 Work
   页面随后改选节点，不影响该请求的固定目标
 
-executeNode(task, expectedOutput, inputs, stopSignal):
+executeNode(task, expectedOutput, inputs, context, stopSignal, onActivity):
+  context 固定 workId/runId/definitionId/nodeId/instanceId，由 runs 提供
   使用同一组模型配置创建节点执行会话
+  session.subscribe 将文字/工具开始、进度、结果附上 context 和 toolCallId
+  onActivity 交给 runs 更新所属实例活动/记录并向前端推送
+  当前节点的工具按任务需要提供；不自动注册作者用的 update_flow
   把任务、真实输入和预期输出交给 Pi
   stopSignal 触发时调用 SDK 的中止能力
   返回实际输出与工具记录，检查必需字段
@@ -32,3 +40,5 @@ executeNode(task, expectedOutput, inputs, stopSignal):
 ```
 
 配置来自仓库根现有 `.env.local`；不复制、不读取到本设计文档。三种协议分别验证流式文本、工具结果、取消和错误。具体 SDK 参数及服务兼容程度待真实接入验证，本伪代码不声明端点已经接通。密钥不写入工作文件或浏览器状态。
+
+完整依赖与前端同步见 [Pi → Canvas 链路](../../pi-canvas-dependencies.md)。事件关联与业务工具仍为伪代码，SDK 调用形状以实际接入为准。

@@ -7,9 +7,10 @@
 ## 阅读顺序
 
 1. 本页：整个项目的目录、模块职责、非功能要求和实现顺序。
-2. [接口约定](./interfaces.md)：各功能怎样衔接；[数据形状](./src/shared/records.pseudo.md) 只保留衔接所需字段。
-3. 各目录 README 与 `.pseudo.md`：该处要做什么、不要做什么、如何验收。
-4. [测试用例](./tests/cases.md)、[八条路线推演](./tests/walkthroughs.md)、[迭代记录](./iterations.md)：检查遗漏并记录修正。
+2. [Pi、工具调用与模块依赖](./pi-canvas-dependencies.md)：后端 Agent 与画布的实际连接方式、每个模块的内部/外部依赖。
+3. [接口约定](./interfaces.md)：各功能怎样衔接；[数据形状](./src/shared/records.pseudo.md) 只保留衔接所需字段。
+4. 各目录 README 与 `.pseudo.md`：该处要做什么、不要做什么、如何验收。
+5. [测试用例](./tests/cases.md)、[八条路线推演](./tests/walkthroughs.md)、[迭代记录](./iterations.md)：检查遗漏并记录修正。
 
 ## 整个项目的目录框架
 
@@ -19,6 +20,7 @@
 spike/
   README.md                    全局设计、职责、非功能要求、待办
   interfaces.md                函数级输入输出与调用关系
+  pi-canvas-dependencies.md     Pi 角色、工具到画布、内部和外部依赖
   iterations.md                伪代码推演发现的问题及修订
   src/
     README.md                  如何把此骨架变成应用
@@ -41,7 +43,7 @@ spike/
   tests/
     README.md                  如何测试和怎样记录验收
     fixtures.md                材料与可控异常
-    cases.md                   28 个 Given/When/Then 场景
+    cases.md                   31 个 Given/When/Then 场景
     walkthroughs.md            19 个故事到 T1–T8 的闭环推演
 ```
 
@@ -88,4 +90,4 @@ shared 只是一张数据字段清单，不是额外服务。后端是一个进�
 
 ## 本轮结论的边界
 
-已形成可讨论的目录框架、功能/非功能设计、函数接口、测试设计及修订后的闭环推演。文档结构和覆盖检查可以实际运行；28 个业务场景目前只是设计推演，真实模型、运行时、文件故障和浏览器体验都仍待实现验证。不存在“伪代码测试全绿，所以产品已通过”的结论。
+已形成可讨论的目录框架、功能/非功能设计、函数接口、测试设计及修订后的闭环推演。文档结构和覆盖检查可以实际运行；31 个业务场景目前只是设计推演，真实模型、运行时、文件故障和浏览器体验都仍待实现验证。不存在“伪代码测试全绿，所以产品已通过”的结论。

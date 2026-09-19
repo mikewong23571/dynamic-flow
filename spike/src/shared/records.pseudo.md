@@ -32,7 +32,8 @@ Run = {
 }
 NodeResult = {
   id, runId, definitionId, nodeId, instanceId,
-  input: Inputs, outputs: Inputs, status, error?
+  input: Inputs, outputs: Inputs, status, error?,
+  toolActivities: [{ toolCallId, toolName, args, status, result?, error? }]
 }
 // 逐项输出保留 sampleId；汇总输出记录全部来源材料与结果。
 // 失败/取消不是成功的空输出。旧结果不能被新运行改写。
@@ -48,3 +49,5 @@ Comparison = {
 状态约定：Run 使用 queued / running / stopping / completed / failed / cancelled / interrupted；节点还可为 blocked。Comparison 的 completed 只代表两侧已结束，需另看每侧成败与基于当前草稿计算的 stale。
 
 这些结构只是首版直接需要的记录；非功能性布局不进定义。输入选择按稳定材料次序冻结，展示排序不是执行输入变化。运行结果保存 input 的值而非仅保存可变化的材料引用。
+
+消息转发按作者 requestId 或节点 runId/nodeId/instanceId 分组。工具结果与工作快照是不同消息：前者显示活动，后者携带实际定义更新画布；不把 toolCallId 当作跨会话唯一身份。

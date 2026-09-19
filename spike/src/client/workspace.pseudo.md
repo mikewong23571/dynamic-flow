@@ -7,6 +7,10 @@ Workspace:
   本地：workId、selectedNodeId、selectedRunId、每节点样本选择、表单未保存输入
   业务：后端的完整工作状态；SSE 建连/重连首先给最新状态
   主区画布，按任务展开节点配置、样本结果、对话或比较
+  收到已保存 definition 时统一重映射 React Flow nodes/edges 与 Inspector
+  保留已有节点位置、视口；新节点放可见空位，删除所选节点则清理选择
+  编辑用草稿图，查看某次运行用该 run.definitionId 的图，不错挂旧事件
+  文字/工具消息只更新 Chat 或所属节点实例活动，不从自然语言重建图
   连接断开显示重连状态；POST 回执不覆盖 SSE 最新状态
 
 创建工作:
@@ -44,3 +48,5 @@ Workspace:
 ```
 
 未来可拆成 `Workspace / WorkflowCanvas / NodeInspector / Results / Assistant / Comparison` 六个直接组合的 React 组件；先共享同一工作状态，不建立页面 DSL、全局命令总线或动态插件面板。React Flow 处理画布，assistant-ui 处理对话，shadcn/ui 统一控件；旧 Spike 的外观不作为视觉模板。
+
+工具到画布的两条路径与事件身份见 [依赖与同步说明](../../pi-canvas-dependencies.md)。

@@ -28,7 +28,12 @@ execute(runId):
 
 callNode(node, inputs, stopSignal):
   调用前检查 stopSignal
-  agent -> assistant.executeNode(task, expectedOutput, inputs, stopSignal)
+  先保存 status=running 的实例记录及固定输入，再开始调用
+  工具活动与最终输出更新这条实例记录，不另外造重复结果
+  agent -> assistant.executeNode(task, expectedOutput, inputs,
+    固定的 work/run/definition/node/instance 身份, stopSignal, onActivity)
+  onActivity：更新本运行实例的工具活动；过程流式推送，工具结果/结束状态保存
+  节点外观按活动更新，不新增流程节点；迟到活动不能改写终态
   select-fields -> 取配置字段；缺必需字段报错；保留来源
   merge -> 合并两端口集合，保留来源
   调用后再次检查 stopSignal；已停止则忽略迟到输出

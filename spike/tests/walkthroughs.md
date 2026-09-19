@@ -8,14 +8,14 @@
 | --- | --- | --- | --- |
 | A1 | T1 | P01 | work、workspace |
 | A2 | T1 | P02、P24 | assistant、flow、workspace |
-| B1 | T1 | P03 | workspace、records、runs |
+| B1 | T1 | P03、P31 | workspace、records、runs |
 | B2 | T2 | P04、P06、P17 | flow、runs、workspace |
-| B3 | T3、T4 | P12、P13、P26 | assistant、flow、workspace |
+| B3 | T3、T4 | P12、P13、P26、P29 | assistant、flow、workspace |
 | B4 | T2 | P05、P26 | flow、assistant、workspace |
-| C1 | T1、T4 | P07、P23、P28 | runs、files、workspace |
+| C1 | T1、T4 | P07、P23、P28、P30 | runs、files、workspace |
 | C2 | T6 | P08、P24、P27 | runs、assistant、trials |
 | C3 | T6 | P09 | runs、workspace |
-| D1 | T1 | P10 | work、runs、workspace |
+| D1 | T1 | P10、P30 | work、runs、workspace |
 | D2 | T1 | P11 | work、workspace |
 | E1 | T3 | P13、P18 | flow、assistant、workspace |
 | E2 | T3 | P14、P28 | trials、runs、workspace |
@@ -24,14 +24,14 @@
 | F1 | T5 | P18 | flow、workspace |
 | F2 | T5 | P18、P19 | work、runs、workspace |
 | F3 | T7 | P20 | work、runs |
-| F4 | T7 | P21、P22、P23 | files、workspace |
+| F4 | T7 | P21、P22、P23、P31 | files、workspace |
 
 T8 与 P25 横跨全部故事的可理解性和体验；没有把它伪装成另一条已经通过的功能测试。
 
 ## T1：目标 → 做法 → 报告
 
 1. Workspace 保留输入；createWork 检查目标和三条已确认材料，保存 W1。缺项时没有丢输入的路径。
-2. requestEdit 取 W1 的真实材料与目标，请 Pi 生成；proposeFlow 调用 saveDraft，得到 d1；未保存成功就不显示修改完成。
+2. requestEdit 取 W1 的真实材料与目标，请 Pi 生成；update_flow 调用 saveDraft，得到 d1；未保存成功就不显示修改完成。
 3. 后端推送 W1，画布和配置同时看到 d1。节点名称/输入/输出来自定义，不是另写一份静态图。
 4. 用户明确选择 d1 和 F01/F02/F03；start 保存输入快照，后台逐项分类后汇总，结果记录到 r1。
 5. report 读取 r1 的声明输出；用户能查看来源并复制正文。尚未完成/失败时不返回完整成功标签。
@@ -51,7 +51,7 @@ T8 与 P25 横跨全部故事的可理解性和体验；没有把它伪装成另
 ## T3：对话修改与同输入试验
 
 1. 采用 d1 后，从 F01 的结果选中 classify；发送修改时固定 target=classify、expectedDraftId=d1、样本上下文。
-2. 模型工具只修改请求范围，saveDraft 产生 d2，adoptedId 仍是 d1；配置面板同步显示实际改动。
+2. Pi 执行 update_flow 工具只修改请求范围，saveDraft 产生 d2，adoptedId 仍是 d1；保存通知由 server 入口转为含定义的快照，画布和配置立即更新，不等待最后文字回复（P29）。
 3. 选择 F01/F03，compare 固定两版与相同输入内容，先运行 d1 再运行 d2；F02 不进入任何一侧的输入。
 4. 逐项结果按 sampleId 对齐；输入契约不兼容时提前提示，不自动运行不同材料来假装可比较。
 5. 用户查看 F01 是否修复、F03 是否被误伤。基线失败也如实展示，允许看候选；停止整个比较则不会启动下一侧。
@@ -66,7 +66,7 @@ T8 与 P25 横跨全部故事的可理解性和体验；没有把它伪装成另
 4. 比较固定候选 d2，但用户保存 d3；readComparison 发现 candidateId != draftId，显示过期。
 5. 旧运行迟到的 completed 只改变运行状态，不能改变上述版本比较；仅布局或列表排序变化不使比较过期。
 
-推演结论：需要的只是版本起点比对与冻结输入，不需要协作冲突合并。剩余实证：异步真实交错时保存和 UI 状态仍一致。
+推演结论：需要的只是版本起点比对与冻结输入，不需要协作冲突合并。节点执行中的工具活动还需带服务端固定的 run/node/instance 身份；旧运行在旧版图查看，不串到候选（P30）。剩余实证：异步真实交错时保存和 UI 状态仍一致。
 
 ## T5：采用做法与保留结果
 
@@ -91,7 +91,7 @@ T8 与 P25 横跨全部故事的可理解性和体验；没有把它伪装成另
 
 1. addMaterials 追加 F04；用户选择采用版 d2 与 F04，start 只冻结这一条；旧输入/报告不被改写。
 2. files.change 成功后 UI 才显示已保存；新定义先写完，工作索引后更新。索引写失败时仍能打开旧工作。
-3. 页面刷新只是 read/subscribe，仍存活的后端运行继续；SSE 重连收到最新完整状态，无须回放漏掉的事件。
+3. 页面刷新只是 read/subscribe，仍存活的后端运行继续；SSE 重连收到包含定义内容的最新完整状态，无须回放漏掉的事件；工具结果先到时不能代替快照（P31）。
 4. 后端重启时，已无本地句柄的 queued/running/stopping Run 与 Comparison 改为 interrupted；完成结果仍可查看，不自动续跑。
 5. 保存的定义、候选、采用版、视图、结果、消息和比较关系恢复，能继续明确发起下一次操作。
 

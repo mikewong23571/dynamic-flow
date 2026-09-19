@@ -23,7 +23,7 @@
 | client → work.continueWithResults | workId、definitionId、目标节点、所选结果 ID、确认 | 确认前给输入预览与冲突；确认后新 runId |
 | client → work.report | workId、runId、outputName | 正文、来源、范围、完整性 |
 | client → files.subscribeWork | workId | SSE 首次/重连完整状态，随后推送已保存状态 |
-| runs → assistant.executeNode | 任务、预期输出、Inputs、停止信号 | 实际输出、工具记录；取消/错误独立返回 |
+| runs → assistant.executeNode | 任务、预期输出、Inputs、固定运行/节点/实例身份、停止信号、活动回调 | 实际输出、工具记录；取消/错误独立返回 |
 | flow / work / runs / trials / assistant → files.change | workId、一个具体的小修改 | 按顺序持久化成功后的状态；失败不推进成功状态 |
 
 `flow.checkDefinition / validateForRun`、`files.writeNewDefinition / openWork / onServerStart` 与 `runs.startComparisonSide` 为内部函数，见各文件。没有单独的“试验 runtime”，没有“读取最新结果自动续做”的接口。
@@ -51,3 +51,5 @@ flowchart TD
 ```
 
 requestEdit 与 executeNode 同处一个模型调用文件，但节点执行不会反过来自动编辑正在运行的图。这个区分只是两个实际函数，不是两套 Agent 框架。
+
+完整的 [Pi 角色、tool call → Canvas 链路及内部/外部依赖](./pi-canvas-dependencies.md) 是本表的补充。工具使用 SDK 的 customTools 接入，业务更新通过同一 saveDraft，不增加通用工具平台。
