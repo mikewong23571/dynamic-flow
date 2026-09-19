@@ -43,3 +43,9 @@
 产品级验证与边界见 [本轮验收证据](../../conductor/tracks/full-application_20260920/evidence.md)。
 
 最新视觉方向与证据见 [Geist 暗色工作区 track](../../conductor/tracks/geist-workspace_20260920/evidence.md)。默认暗色，语义颜色集中在 styles.css；Sidebar 负责紧凑工作导航，MaterialsDialog 负责材料全文和选择；WorkflowCanvas 只展示节点摘要，任务全文由 NodeInspector 编辑。旧浅色/紫色截图不作为新页面模板。
+
+## 持续工作项交接
+
+`WorkItems` / `WorkItemDetail` / `WorkItemDialogs` 承载 H1–H11 的管理入口、业务进展、条件依据和生命周期操作，HTTP 交接见 [本轮 handoff](../../conductor/tracks/workitem-lifecycle_20260920/handoff.md)。Work 仍为方法空间，WorkItem 有独立材料和稳定业务身份，Run 是固定输入/版本的具体执行。不要把运行完成映射为业务结项，或用心跳更新时间替代最近业务进展。
+
+管理页轮询只读 `/api/items`；用户更新均通过 actions，出错保留输入。等待、事件、停止、恢复、方法切换的约束以服务端为准，前端禁用仅用于动作提示。运行链接须同时保持 workId/runId，避免同名方法或历史方法切换到错误执行记录。

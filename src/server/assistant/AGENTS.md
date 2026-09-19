@@ -40,9 +40,15 @@ Pi 如何根据当前工作生成/修改真实流程，并完成 Agent 节点任
 - `createAssistant(files, flow, options)` 导出 `requestEdit/stopEdit/executeNode/configuration/saveConfiguration`。模型业务错误保留在消息/节点结果；绝不回退 fixture。`openai-chat-completions` 是用户协议名，映射 SDK `openai-completions`。
 - 作者请求复制发送时节点/样本/版本；工具修改保存后广播 files 通知，自己的后续保存使用新版本，外部并发修改导致拒绝并保留提案。目标节点之外的结构变化需要全流程请求。
 - 真实端点拒绝最初 TypeBox Tuple/Record schema（HTTP 400/1210）；改用等价定长数组/additionalProperties 后真实作者通过。Definition 的后端结构校验没有放宽。首次作者遗漏 schemaVersion，Pi 工具错误反馈后真实修正；精确过程与限制见证据。
-- 作者工具未保存或仅原样保存均不计为实际变更。输出只做已声明 JSON Schema 子集、明确材料编号及逐字引文的机械核查，不把此项宣称为完整语义事实审查。
+- 作者工具未保存或仅原样保存均不计为实际变更。输出复用 flow/schema.ts 的 Ajv draft-07 校验，并做明确材料编号及逐字引文的机械核查，不把此项宣称为完整语义事实审查。
 - 浏览器反例表明作者的临时无效定义会污染首份比较基线：作者 update_flow 必须在 saveDraft 前 validateForRun；手工 flow.saveDraft 仍允许不完整编辑。嵌套 evidence 字符串与 quote 都必须核对继承的材料编号及原文，不能借用其它样本的真实引文。
 - G1 设置接口：createAssistant options.settingsPath 指定服务器配置文件；configuration 返回非密钥配置与协议限制，saveConfiguration 原子保存且空 apiKey 沿用已有。没有已保存设置时 .env 回退，禁止修改用户 .env。请求内固定配置。Anthropic 预算语义与 Chat effort 必须区分，不能把保存成功当成任何模型都支持全部参数。
 - G2 作者工具可选 title 只在最新 work.titleEdited 不为 true 时写入，不覆盖手工命名。
 
 产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
+
+## 持续工作项交接
+
+NodeExecution.workItem 提供固定业务编号、目标与 data；materials 使用同一运行冻结的工作项材料，禁止混入方法样本。operation 优先于旧 mode。作者工具可生成 wait/milestone 和输入输出 schema；schema 使用统一 Ajv 校验，未知关键字明确拒绝。作者不直接结项，模型输出不自动等于业务事实。
+
+验证：tests/assistant.test.ts 覆盖工作项目标/材料进入 Pi 边界及共享 union/const schema；真实模型生命周期与证据见 [持续工作项验收](../../../conductor/tracks/workitem-lifecycle_20260920/evidence.md)。

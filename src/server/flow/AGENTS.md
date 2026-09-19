@@ -48,3 +48,11 @@
 域内证据：`pnpm exec tsx --test tests/state.test.ts` 验证冲突、起点、保存不完整配置、局部问题、环、显式汇合和布局不改版本。状态为 **模块实现完成，产品联测待验收**；连线实际输入、Pi 改图和浏览器操作交由相邻模块与根验收。
 
 产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
+
+## 生命周期与类型组合（2026-09-20）
+
+新增 wait(input → output/event)、milestone(input → output)。wait 要求事件名与原因，可设正数 timeoutSeconds；milestone 要求 stage/summary，不自动结项。operation map/flatMap/aggregate 描述调用组合，concurrency 限 1–8；控制节点仅允许 aggregate。Ajv 检查 schema 可编译，runtime 校验实际输入输出。静态连线只拒绝显然不相容的基础类型，不能视为完整 JSON Schema 子类型证明；复杂约束和引用仍由实际运行校验。历史定义缺省 operation 时通过 each/all 兼容，旧函数透传行为保留。
+
+Schema 当前使用 Ajv 的 JSON Schema draft-07，允许基础类型 union；未知 keyword（包括拼写错误）和未安装的 format 明确报错，不静默忽略。未承诺 draft-2020-12 或自定义词汇支持。
+
+控制节点 wait / milestone / branch 的 expectedOutput 统一约束整批透传值数组（分支在分流前校验）；连线上的各个值仍为数组元素 T，静态检查取 items 推断，不能把 T[] 当作每项 T。wait 的 event 端口独立，不使用透传输出的 schema。

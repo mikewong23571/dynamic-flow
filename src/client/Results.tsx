@@ -163,6 +163,50 @@ export function Results({
       </div>
       {run.error && <p className="inline-error">{run.error}</p>}
       <div className="scroll results-body">
+        {run.workItem && (
+          <div className="run-business-context">
+            <strong>
+              {run.workItem.key} · {run.workItem.title}
+            </strong>
+            <span>
+              工作项输入修订 {run.workItem.revision} ·{' '}
+              {run.effectMode === 'commit' ? '正式推进' : '试运行'}
+            </span>
+          </div>
+        )}
+        {!!run.waits?.length && (
+          <details className="details" open={run.status === 'waiting'}>
+            <summary>等待与触发记录</summary>
+            {run.waits.map((wait) => (
+              <div className="run-wait-record" key={wait.nodeId}>
+                <strong>{wait.reason}</strong>
+                <p>
+                  {wait.event} ·{' '}
+                  {wait.status === 'pending'
+                    ? '等待中'
+                    : wait.releasedBy === 'timer'
+                      ? '到期已继续'
+                      : '事件已继续'}
+                  {wait.dueAt
+                    ? ` · 到期 ${new Date(wait.dueAt).toLocaleString()}`
+                    : ''}
+                </p>
+              </div>
+            ))}
+            {run.signals?.map((signal) => (
+              <div className="run-wait-record" key={signal.id}>
+                <strong>{signal.name}</strong>
+                <p>
+                  接收于 {new Date(signal.receivedAt).toLocaleString()} ·{' '}
+                  {signal.id}
+                </p>
+                {signal.payload !== undefined && (
+                  <Value value={signal.payload} />
+                )}
+              </div>
+            ))}
+          </details>
+        )}
         {Object.entries(run.nodeStates).map(([id, state]) => (
           <div className="step-progress" key={id}>
             <span>{def?.nodes.find((n) => n.id === id)?.label || id}</span>

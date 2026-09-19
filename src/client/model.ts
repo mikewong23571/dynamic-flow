@@ -16,9 +16,10 @@ export const statusNames: Record<string, string> = {
   cancelled: '已停止',
   interrupted: '已中断',
   blocked: '依赖失败',
+  waiting: '等待事件',
 };
 export const active = (status?: string) =>
-  ['queued', 'running', 'stopping'].includes(status || '');
+  ['queued', 'running', 'stopping', 'waiting'].includes(status || '');
 export const short = (id?: string) => (id ? id.slice(0, 8) : '尚未生成');
 export const splitMaterials = (text: string) =>
   text
@@ -78,7 +79,11 @@ export function inputPorts(node: FlowNode) {
   return node.functionName === 'merge' ? ['left', 'right'] : ['input'];
 }
 export function outputPorts(node: FlowNode) {
-  return node.kind === 'branch' ? ['matched', 'unmatched'] : ['output'];
+  return node.kind === 'branch'
+    ? ['matched', 'unmatched']
+    : node.kind === 'wait'
+      ? ['output', 'event']
+      : ['output'];
 }
 export function removeNode(definition: Definition, nodeId: string): Definition {
   return {
@@ -136,6 +141,7 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
 
 export const portLabel = (port: string) =>
   ({
+    event: '触发事件',
     input: '输入',
     output: '输出',
     matched: '符合条件',

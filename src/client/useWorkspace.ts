@@ -465,13 +465,24 @@ export function useWorkspace() {
           ? '新的 Agent 步骤'
           : addKind === 'branch'
             ? '条件分流'
-            : '整理数据',
+            : addKind === 'wait'
+              ? '等待外部事件'
+              : addKind === 'milestone'
+                ? '记录业务进展'
+                : '整理数据',
       mode: 'each',
       ...(addKind === 'agent'
         ? { task: '' }
         : addKind === 'function'
           ? { functionName: 'identity' as const }
-          : { condition: { field: '', operator: 'equals' as const } }),
+          : addKind === 'wait'
+            ? {
+                mode: 'all' as const,
+                wait: { event: 'update', reason: '等待补充信息' },
+              }
+            : addKind === 'milestone'
+              ? { mode: 'all' as const, milestone: { stage: '', summary: '' } }
+              : { condition: { field: '', operator: 'equals' as const } }),
     };
     editDefinition({ ...definition, nodes: [...definition.nodes, node] });
     setSelectedNode(node.id);

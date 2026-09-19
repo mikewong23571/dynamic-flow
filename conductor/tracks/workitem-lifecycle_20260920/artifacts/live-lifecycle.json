@@ -1,0 +1,989 @@
+{
+  "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+  "itemId": "082741c5-6672-49b2-a142-a37f6fd6ab54",
+  "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+  "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+  "firstStatus": "waiting",
+  "waitingItem": {
+    "id": "082741c5-6672-49b2-a142-a37f6fd6ab54",
+    "key": "CVE-DEMO-2026-001",
+    "title": "示例组件 · 修复跟进",
+    "goal": "确认示例组件影响范围，等待模拟厂商公告并形成有依据的处置建议。",
+    "workflowId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+    "data": {
+      "asset": "DemoLib 1.0",
+      "scenario": "synthetic acceptance"
+    },
+    "revision": 2,
+    "materials": [
+      {
+        "id": "M01",
+        "text": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。"
+      }
+    ],
+    "criteria": [
+      {
+        "id": "dd3ee561-1185-4d63-8289-d827274e93f9",
+        "text": "影响判断有材料依据",
+        "met": false,
+        "evidence": ""
+      },
+      {
+        "id": "e6761145-4499-468a-9eff-f14da77f9126",
+        "text": "处置建议与模拟公告一致",
+        "met": false,
+        "evidence": ""
+      }
+    ],
+    "status": "open",
+    "stage": "等待厂商公告",
+    "summary": "调查摘要已形成，修复状态仍需公告与复核证据。",
+    "runs": [
+      {
+        "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f"
+      }
+    ],
+    "history": [
+      {
+        "id": "1487f9a9-3d54-4f7d-8508-fc9fb62645f4",
+        "at": "2026-09-19T19:53:12.123Z",
+        "kind": "created",
+        "summary": "登记工作项：示例组件 · 修复跟进"
+      },
+      {
+        "id": "9ea578e8-bcd3-41a4-8ecb-016a567bc17e",
+        "at": "2026-09-19T19:53:42.948Z",
+        "kind": "run",
+        "summary": "发起正式推进",
+        "source": {
+          "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+          "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+          "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f"
+        }
+      },
+      {
+        "id": "f6146b2b-ce6e-4286-9540-10d08be03d36:record_investigation",
+        "at": "2026-09-19T19:53:58.271Z",
+        "kind": "milestone",
+        "summary": "调查摘要已形成，修复状态仍需公告与复核证据。",
+        "source": {
+          "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+          "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+          "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+          "nodeId": "record_investigation",
+          "resultIds": [
+            "0f76b1ba-a6bb-4eed-9b83-708d985a10f4"
+          ]
+        },
+        "materialIds": [
+          "M01"
+        ]
+      }
+    ],
+    "createdAt": "2026-09-19T19:53:12.123Z",
+    "updatedAt": "2026-09-19T19:53:58.271Z",
+    "progressAt": "2026-09-19T19:53:58.271Z",
+    "effectiveStatus": "waiting",
+    "execution": {
+      "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+      "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+      "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+      "status": "waiting",
+      "waits": [
+        {
+          "nodeId": "vendor_wait",
+          "event": "vendor.announcement",
+          "reason": "等待修复公告以复核处置建议",
+          "status": "pending",
+          "dueAt": "2026-10-19T19:53:58.274Z"
+        }
+      ],
+      "inputRevision": 0
+    }
+  },
+  "beforeRestart": {
+    "id": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+    "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+    "scope": "full",
+    "inputs": {
+      "materials": [
+        {
+          "sampleId": "M01",
+          "value": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。",
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "workItem": {
+      "id": "082741c5-6672-49b2-a142-a37f6fd6ab54",
+      "key": "CVE-DEMO-2026-001",
+      "title": "示例组件 · 修复跟进",
+      "goal": "确认示例组件影响范围，等待模拟厂商公告并形成有依据的处置建议。",
+      "revision": 0,
+      "data": {
+        "asset": "DemoLib 1.0",
+        "scenario": "synthetic acceptance"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。"
+        }
+      ]
+    },
+    "effectMode": "commit",
+    "status": "waiting",
+    "stopRequested": false,
+    "nodeStates": {
+      "investigate": "completed",
+      "record_investigation": "completed",
+      "vendor_wait": "waiting",
+      "merge_notice": "queued",
+      "verify": "queued",
+      "record_review": "queued"
+    },
+    "nodeTotals": {
+      "investigate": 1,
+      "record_investigation": 1
+    },
+    "results": [
+      {
+        "id": "0f76b1ba-a6bb-4eed-9b83-708d985a10f4",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "investigate",
+        "instanceId": "investigate:all:0",
+        "input": {
+          "input": [
+            {
+              "sampleId": "M01",
+              "value": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "0f76b1ba-a6bb-4eed-9b83-708d985a10f4"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [
+          {
+            "id": "f6146b2b-ce6e-4286-9540-10d08be03d36:investigate:all:0:call_1cf597ebc7844968a91036f4",
+            "toolCallId": "call_1cf597ebc7844968a91036f4",
+            "toolName": "inspect_material",
+            "status": "completed",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\"id\":\"M01\",\"text\":\"合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。\"}"
+                }
+              ],
+              "details": {
+                "id": "M01",
+                "text": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。"
+              }
+            }
+          }
+        ],
+        "startedAt": "2026-09-19T19:53:42.949Z",
+        "finishedAt": "2026-09-19T19:53:58.267Z"
+      },
+      {
+        "id": "3ba66cfa-eb97-4c9b-8827-756dc87770bb",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "record_investigation",
+        "instanceId": "record_investigation:all:0",
+        "input": {
+          "input": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "0f76b1ba-a6bb-4eed-9b83-708d985a10f4"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "3ba66cfa-eb97-4c9b-8827-756dc87770bb"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T19:53:58.270Z",
+        "finishedAt": "2026-09-19T19:53:58.272Z"
+      }
+    ],
+    "waits": [
+      {
+        "nodeId": "vendor_wait",
+        "event": "vendor.announcement",
+        "reason": "等待修复公告以复核处置建议",
+        "status": "pending",
+        "dueAt": "2026-10-19T19:53:58.274Z"
+      }
+    ],
+    "signals": [],
+    "startedAt": "2026-09-19T19:53:42.948Z"
+  },
+  "afterRestart": {
+    "id": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+    "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+    "scope": "full",
+    "inputs": {
+      "materials": [
+        {
+          "sampleId": "M01",
+          "value": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。",
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "workItem": {
+      "id": "082741c5-6672-49b2-a142-a37f6fd6ab54",
+      "key": "CVE-DEMO-2026-001",
+      "title": "示例组件 · 修复跟进",
+      "goal": "确认示例组件影响范围，等待模拟厂商公告并形成有依据的处置建议。",
+      "revision": 0,
+      "data": {
+        "asset": "DemoLib 1.0",
+        "scenario": "synthetic acceptance"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。"
+        }
+      ]
+    },
+    "effectMode": "commit",
+    "status": "waiting",
+    "stopRequested": false,
+    "nodeStates": {
+      "investigate": "completed",
+      "record_investigation": "completed",
+      "vendor_wait": "waiting",
+      "merge_notice": "queued",
+      "verify": "queued",
+      "record_review": "queued"
+    },
+    "nodeTotals": {
+      "investigate": 1,
+      "record_investigation": 1
+    },
+    "results": [
+      {
+        "id": "0f76b1ba-a6bb-4eed-9b83-708d985a10f4",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "investigate",
+        "instanceId": "investigate:all:0",
+        "input": {
+          "input": [
+            {
+              "sampleId": "M01",
+              "value": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "0f76b1ba-a6bb-4eed-9b83-708d985a10f4"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [
+          {
+            "id": "f6146b2b-ce6e-4286-9540-10d08be03d36:investigate:all:0:call_1cf597ebc7844968a91036f4",
+            "toolCallId": "call_1cf597ebc7844968a91036f4",
+            "toolName": "inspect_material",
+            "status": "completed",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\"id\":\"M01\",\"text\":\"合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。\"}"
+                }
+              ],
+              "details": {
+                "id": "M01",
+                "text": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。"
+              }
+            }
+          }
+        ],
+        "startedAt": "2026-09-19T19:53:42.949Z",
+        "finishedAt": "2026-09-19T19:53:58.267Z"
+      },
+      {
+        "id": "3ba66cfa-eb97-4c9b-8827-756dc87770bb",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "record_investigation",
+        "instanceId": "record_investigation:all:0",
+        "input": {
+          "input": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "0f76b1ba-a6bb-4eed-9b83-708d985a10f4"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "3ba66cfa-eb97-4c9b-8827-756dc87770bb"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T19:53:58.270Z",
+        "finishedAt": "2026-09-19T19:53:58.272Z"
+      }
+    ],
+    "waits": [
+      {
+        "nodeId": "vendor_wait",
+        "event": "vendor.announcement",
+        "reason": "等待修复公告以复核处置建议",
+        "status": "pending",
+        "dueAt": "2026-10-19T19:53:58.274Z"
+      }
+    ],
+    "signals": [],
+    "startedAt": "2026-09-19T19:53:42.948Z"
+  },
+  "afterSignal": {
+    "id": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+    "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+    "scope": "full",
+    "inputs": {
+      "materials": [
+        {
+          "sampleId": "M01",
+          "value": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。",
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "workItem": {
+      "id": "082741c5-6672-49b2-a142-a37f6fd6ab54",
+      "key": "CVE-DEMO-2026-001",
+      "title": "示例组件 · 修复跟进",
+      "goal": "确认示例组件影响范围，等待模拟厂商公告并形成有依据的处置建议。",
+      "revision": 0,
+      "data": {
+        "asset": "DemoLib 1.0",
+        "scenario": "synthetic acceptance"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。"
+        }
+      ]
+    },
+    "effectMode": "commit",
+    "status": "completed",
+    "stopRequested": false,
+    "nodeStates": {
+      "investigate": "completed",
+      "record_investigation": "completed",
+      "vendor_wait": "completed",
+      "merge_notice": "completed",
+      "verify": "completed",
+      "record_review": "completed"
+    },
+    "nodeTotals": {
+      "investigate": 1,
+      "record_investigation": 1,
+      "vendor_wait": 1,
+      "merge_notice": 1,
+      "verify": 1,
+      "record_review": 1
+    },
+    "results": [
+      {
+        "id": "0f76b1ba-a6bb-4eed-9b83-708d985a10f4",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "investigate",
+        "instanceId": "investigate:all:0",
+        "input": {
+          "input": [
+            {
+              "sampleId": "M01",
+              "value": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "0f76b1ba-a6bb-4eed-9b83-708d985a10f4"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [
+          {
+            "id": "f6146b2b-ce6e-4286-9540-10d08be03d36:investigate:all:0:call_1cf597ebc7844968a91036f4",
+            "toolCallId": "call_1cf597ebc7844968a91036f4",
+            "toolName": "inspect_material",
+            "status": "completed",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\"id\":\"M01\",\"text\":\"合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。\"}"
+                }
+              ],
+              "details": {
+                "id": "M01",
+                "text": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。"
+              }
+            }
+          }
+        ],
+        "startedAt": "2026-09-19T19:53:42.949Z",
+        "finishedAt": "2026-09-19T19:53:58.267Z"
+      },
+      {
+        "id": "3ba66cfa-eb97-4c9b-8827-756dc87770bb",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "record_investigation",
+        "instanceId": "record_investigation:all:0",
+        "input": {
+          "input": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "0f76b1ba-a6bb-4eed-9b83-708d985a10f4"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "3ba66cfa-eb97-4c9b-8827-756dc87770bb"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T19:53:58.270Z",
+        "finishedAt": "2026-09-19T19:53:58.272Z"
+      },
+      {
+        "id": "6ce8162e-5ec2-40b6-98b5-68deb648bfb1",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "vendor_wait",
+        "instanceId": "vendor_wait:all:0",
+        "input": {
+          "input": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "3ba66cfa-eb97-4c9b-8827-756dc87770bb"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "6ce8162e-5ec2-40b6-98b5-68deb648bfb1"
+              ]
+            }
+          ],
+          "event": [
+            {
+              "value": {
+                "type": "event",
+                "id": "696abb5b-a083-4681-bd0a-c8ffbce0e4b2",
+                "name": "vendor.announcement",
+                "payload": {
+                  "source": "合成验收模拟公告",
+                  "notice": "DemoLib 1.1 已发布修复说明；本例未执行真实漏洞复测。"
+                },
+                "receivedAt": "2026-09-19T19:55:37.105Z"
+              },
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "6ce8162e-5ec2-40b6-98b5-68deb648bfb1"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T19:55:37.108Z",
+        "finishedAt": "2026-09-19T19:55:37.109Z"
+      },
+      {
+        "id": "72a9c33e-599e-4146-b291-6542fc3d838f",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "merge_notice",
+        "instanceId": "merge_notice:all:0",
+        "input": {
+          "left": [
+            {
+              "value": "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "6ce8162e-5ec2-40b6-98b5-68deb648bfb1"
+              ]
+            }
+          ],
+          "right": [
+            {
+              "value": {
+                "type": "event",
+                "id": "696abb5b-a083-4681-bd0a-c8ffbce0e4b2",
+                "name": "vendor.announcement",
+                "payload": {
+                  "source": "合成验收模拟公告",
+                  "notice": "DemoLib 1.1 已发布修复说明；本例未执行真实漏洞复测。"
+                },
+                "receivedAt": "2026-09-19T19:55:37.105Z"
+              },
+              "sampleId": "M01",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "6ce8162e-5ec2-40b6-98b5-68deb648bfb1"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": [
+                "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+                {
+                  "type": "event",
+                  "id": "696abb5b-a083-4681-bd0a-c8ffbce0e4b2",
+                  "name": "vendor.announcement",
+                  "payload": {
+                    "source": "合成验收模拟公告",
+                    "notice": "DemoLib 1.1 已发布修复说明；本例未执行真实漏洞复测。"
+                  },
+                  "receivedAt": "2026-09-19T19:55:37.105Z"
+                }
+              ],
+              "sampleId": "72a9c33e-599e-4146-b291-6542fc3d838f",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "72a9c33e-599e-4146-b291-6542fc3d838f"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T19:55:37.111Z",
+        "finishedAt": "2026-09-19T19:55:37.111Z"
+      },
+      {
+        "id": "759ae9b5-bac5-42d8-92f3-174bbc37e589",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "verify",
+        "instanceId": "verify:all:0",
+        "input": {
+          "input": [
+            {
+              "value": [
+                "示例组件 DemoLib 1.0 已确认存在于测试资产清单中 [M01]。漏洞可利用性尚未验证，模拟厂商公告尚未发布，影响范围暂不能最终确认，处置建议暂缓，需继续等待公告后再作有依据的结论 [M01]。",
+                {
+                  "type": "event",
+                  "id": "696abb5b-a083-4681-bd0a-c8ffbce0e4b2",
+                  "name": "vendor.announcement",
+                  "payload": {
+                    "source": "合成验收模拟公告",
+                    "notice": "DemoLib 1.1 已发布修复说明；本例未执行真实漏洞复测。"
+                  },
+                  "receivedAt": "2026-09-19T19:55:37.105Z"
+                }
+              ],
+              "sampleId": "72a9c33e-599e-4146-b291-6542fc3d838f",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "72a9c33e-599e-4146-b291-6542fc3d838f"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "复核结论：DemoLib 1.0 已确认存在于测试资产清单，但漏洞可利用性尚未经真实验证 [M01]。所获厂商公告为合成验收模拟公告（称 DemoLib 1.1 已发布修复说明），并非实际验证，本例未执行任何真实漏洞复测。影响范围与处置建议仅基于模拟信息，结项仍需人工确认。",
+              "sampleId": "72a9c33e-599e-4146-b291-6542fc3d838f",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "759ae9b5-bac5-42d8-92f3-174bbc37e589"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [
+          {
+            "id": "f6146b2b-ce6e-4286-9540-10d08be03d36:verify:all:0:call_2d39799b91e749ceb7620e82",
+            "toolCallId": "call_2d39799b91e749ceb7620e82",
+            "toolName": "inspect_material",
+            "status": "completed",
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\"id\":\"M01\",\"text\":\"合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。\"}"
+                }
+              ],
+              "details": {
+                "id": "M01",
+                "text": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。"
+              }
+            }
+          }
+        ],
+        "startedAt": "2026-09-19T19:55:37.113Z",
+        "finishedAt": "2026-09-19T19:56:09.575Z"
+      },
+      {
+        "id": "786c735d-51da-4391-8e48-49377f91be75",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+        "nodeId": "record_review",
+        "instanceId": "record_review:all:0",
+        "input": {
+          "input": [
+            {
+              "value": "复核结论：DemoLib 1.0 已确认存在于测试资产清单，但漏洞可利用性尚未经真实验证 [M01]。所获厂商公告为合成验收模拟公告（称 DemoLib 1.1 已发布修复说明），并非实际验证，本例未执行任何真实漏洞复测。影响范围与处置建议仅基于模拟信息，结项仍需人工确认。",
+              "sampleId": "72a9c33e-599e-4146-b291-6542fc3d838f",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "759ae9b5-bac5-42d8-92f3-174bbc37e589"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "复核结论：DemoLib 1.0 已确认存在于测试资产清单，但漏洞可利用性尚未经真实验证 [M01]。所获厂商公告为合成验收模拟公告（称 DemoLib 1.1 已发布修复说明），并非实际验证，本例未执行任何真实漏洞复测。影响范围与处置建议仅基于模拟信息，结项仍需人工确认。",
+              "sampleId": "72a9c33e-599e-4146-b291-6542fc3d838f",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "786c735d-51da-4391-8e48-49377f91be75"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T19:56:09.578Z",
+        "finishedAt": "2026-09-19T19:56:09.579Z"
+      }
+    ],
+    "waits": [
+      {
+        "nodeId": "vendor_wait",
+        "event": "vendor.announcement",
+        "reason": "等待修复公告以复核处置建议",
+        "status": "released",
+        "dueAt": "2026-10-19T19:53:58.274Z",
+        "releasedBy": "event",
+        "signalId": "696abb5b-a083-4681-bd0a-c8ffbce0e4b2"
+      }
+    ],
+    "signals": [
+      {
+        "id": "696abb5b-a083-4681-bd0a-c8ffbce0e4b2",
+        "name": "vendor.announcement",
+        "payload": {
+          "source": "合成验收模拟公告",
+          "notice": "DemoLib 1.1 已发布修复说明；本例未执行真实漏洞复测。"
+        },
+        "receivedAt": "2026-09-19T19:55:37.105Z"
+      }
+    ],
+    "startedAt": "2026-09-19T19:53:42.948Z",
+    "finishedAt": "2026-09-19T19:56:09.581Z"
+  },
+  "completedItem": {
+    "id": "082741c5-6672-49b2-a142-a37f6fd6ab54",
+    "key": "CVE-DEMO-2026-001",
+    "title": "示例组件 · 修复跟进",
+    "goal": "确认示例组件影响范围，等待模拟厂商公告并形成有依据的处置建议。",
+    "workflowId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+    "data": {
+      "asset": "DemoLib 1.0",
+      "scenario": "synthetic acceptance"
+    },
+    "revision": 5,
+    "materials": [
+      {
+        "id": "M01",
+        "text": "合成验收材料：示例组件 DemoLib 1.0 在测试资产清单中存在。尚未验证漏洞可利用性；需等待模拟厂商公告。"
+      }
+    ],
+    "criteria": [
+      {
+        "id": "dd3ee561-1185-4d63-8289-d827274e93f9",
+        "text": "影响判断有材料依据",
+        "met": true,
+        "evidence": "合成验收：M01 与调查结果一致，已明确资产存在且真实可利用性未知；不将模拟结论当成真实漏洞验证。"
+      },
+      {
+        "id": "e6761145-4499-468a-9eff-f14da77f9126",
+        "text": "处置建议与模拟公告一致",
+        "met": true,
+        "evidence": "合成验收：事件 vendor.announcement 与复核产物一致，明确 DemoLib 1.1 修复说明为模拟信息，未宣称真实复测。"
+      }
+    ],
+    "status": "completed",
+    "stage": "已结项",
+    "summary": "所有完成条件已确认并记录依据。",
+    "runs": [
+      {
+        "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+        "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+        "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f"
+      }
+    ],
+    "history": [
+      {
+        "id": "1487f9a9-3d54-4f7d-8508-fc9fb62645f4",
+        "at": "2026-09-19T19:53:12.123Z",
+        "kind": "created",
+        "summary": "登记工作项：示例组件 · 修复跟进"
+      },
+      {
+        "id": "9ea578e8-bcd3-41a4-8ecb-016a567bc17e",
+        "at": "2026-09-19T19:53:42.948Z",
+        "kind": "run",
+        "summary": "发起正式推进",
+        "source": {
+          "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+          "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+          "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f"
+        }
+      },
+      {
+        "id": "f6146b2b-ce6e-4286-9540-10d08be03d36:record_investigation",
+        "at": "2026-09-19T19:53:58.271Z",
+        "kind": "milestone",
+        "summary": "调查摘要已形成，修复状态仍需公告与复核证据。",
+        "source": {
+          "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+          "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+          "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+          "nodeId": "record_investigation",
+          "resultIds": [
+            "0f76b1ba-a6bb-4eed-9b83-708d985a10f4"
+          ]
+        },
+        "materialIds": [
+          "M01"
+        ]
+      },
+      {
+        "id": "f6146b2b-ce6e-4286-9540-10d08be03d36:record_review",
+        "at": "2026-09-19T19:56:09.579Z",
+        "kind": "milestone",
+        "summary": "复核产物已生成，请核对完成条件与依据。",
+        "source": {
+          "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+          "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+          "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+          "nodeId": "record_review",
+          "resultIds": [
+            "759ae9b5-bac5-42d8-92f3-174bbc37e589"
+          ]
+        },
+        "materialIds": [
+          "M01"
+        ]
+      },
+      {
+        "id": "c788f34e-b398-432f-8b51-df3c0cac2834",
+        "at": "2026-09-19T19:59:34.287Z",
+        "kind": "criteria",
+        "summary": "确认完成条件 2 / 2",
+        "criteria": [
+          {
+            "id": "dd3ee561-1185-4d63-8289-d827274e93f9",
+            "text": "影响判断有材料依据",
+            "met": true,
+            "evidence": "合成验收：M01 与调查结果一致，已明确资产存在且真实可利用性未知；不将模拟结论当成真实漏洞验证。"
+          },
+          {
+            "id": "e6761145-4499-468a-9eff-f14da77f9126",
+            "text": "处置建议与模拟公告一致",
+            "met": true,
+            "evidence": "合成验收：事件 vendor.announcement 与复核产物一致，明确 DemoLib 1.1 修复说明为模拟信息，未宣称真实复测。"
+          }
+        ]
+      },
+      {
+        "id": "49d08eb8-6b9f-490b-b513-8aca1b5003a9",
+        "at": "2026-09-19T19:59:38.198Z",
+        "kind": "completed",
+        "summary": "所有完成条件已确认并记录依据。",
+        "criteria": [
+          {
+            "id": "dd3ee561-1185-4d63-8289-d827274e93f9",
+            "text": "影响判断有材料依据",
+            "met": true,
+            "evidence": "合成验收：M01 与调查结果一致，已明确资产存在且真实可利用性未知；不将模拟结论当成真实漏洞验证。"
+          },
+          {
+            "id": "e6761145-4499-468a-9eff-f14da77f9126",
+            "text": "处置建议与模拟公告一致",
+            "met": true,
+            "evidence": "合成验收：事件 vendor.announcement 与复核产物一致，明确 DemoLib 1.1 修复说明为模拟信息，未宣称真实复测。"
+          }
+        ]
+      }
+    ],
+    "createdAt": "2026-09-19T19:53:12.123Z",
+    "updatedAt": "2026-09-19T19:59:38.198Z",
+    "progressAt": "2026-09-19T19:59:38.198Z",
+    "effectiveStatus": "completed",
+    "execution": {
+      "workId": "5de5a686-c2d6-47cb-b912-fae584eead4b",
+      "runId": "f6146b2b-ce6e-4286-9540-10d08be03d36",
+      "definitionId": "65ed38fa-af1e-4936-b93e-abede0ee442f",
+      "status": "completed",
+      "waits": [],
+      "inputRevision": 0
+    }
+  },
+  "model": {
+    "protocol": "anthropic-messages",
+    "model": "glm-5.3-flash",
+    "reasoningEffort": "max"
+  }
+}

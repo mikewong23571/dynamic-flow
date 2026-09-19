@@ -7,13 +7,19 @@ export type Status =
   | 'completed'
   | 'failed'
   | 'cancelled'
-  | 'interrupted';
+  | 'interrupted'
+  | 'waiting';
 export interface FlowNode {
   id: string;
   label: string;
-  kind: 'agent' | 'function' | 'branch';
+  kind: 'agent' | 'function' | 'branch' | 'wait' | 'milestone';
   mode: 'each' | 'all';
   task?: string;
+  operation?: 'map' | 'flatMap' | 'aggregate';
+  concurrency?: number;
+  inputSchema?: Json;
+  wait?: { event: string; reason: string; timeoutSeconds?: number };
+  milestone?: { stage: string; summary: string };
   expectedOutput?: Json;
   functionName?: 'identity' | 'select-fields' | 'merge';
   params?: { fields?: string[] };
@@ -74,6 +80,10 @@ export interface Run {
   status: Status;
   stopRequested: boolean;
   comparisonId?: string;
+  workItem?: WorkItemInput;
+  effectMode?: 'commit' | 'preview';
+  waits?: RunWait[];
+  signals?: RunSignal[];
   nodeStates: Record<string, Status | 'blocked'>;
   nodeTotals?: Record<string, number>;
   results: NodeResult[];
@@ -169,6 +179,8 @@ export interface WorkPage {
   pageSize: number;
 }
 export interface StartRun {
+  workItem?: WorkItemInput;
+  effectMode?: 'commit' | 'preview';
   definitionId: string;
   scope: Run['scope'];
   inputs: Inputs;
@@ -181,6 +193,7 @@ export interface EditRequest {
   sampleIds?: string[];
 }
 export interface NodeExecution {
+  workItem?: WorkItemInput;
   workId: string;
   runId: string;
   definitionId: string;
@@ -190,4 +203,92 @@ export interface NodeExecution {
   materials: Work['materials'];
   signal: AbortSignal;
   onActivity: (activity: Activity) => Promise<void>;
+}
+
+// A business item outlives any method workspace or individual execution.
+export interface CompletionCriterion {
+  id: string;
+  text: string;
+  met: boolean;
+  evidence: string;
+}
+export interface WorkItemInput {
+  id: string;
+  key: string;
+  title: string;
+  goal: string;
+  revision: number;
+  data: Record<string, Json>;
+  materials: { id: string; text: string }[];
+}
+export interface ItemRunRef {
+  workId: string;
+  runId: string;
+  definitionId: string;
+}
+export interface ItemHistory {
+  id: string;
+  at: string;
+  kind:
+    | 'created'
+    | 'evidence'
+    | 'milestone'
+    | 'criteria'
+    | 'completed'
+    | 'reopened'
+    | 'method'
+    | 'run';
+  summary: string;
+  source?: ItemRunRef & { nodeId?: string; resultIds?: string[] };
+  materialIds?: string[];
+  criteria?: CompletionCriterion[];
+}
+export interface WorkItem extends WorkItemInput {
+  workflowId: string;
+  status: 'open' | 'completed';
+  stage: string;
+  summary: string;
+  criteria: CompletionCriterion[];
+  runs: ItemRunRef[];
+  history: ItemHistory[];
+  createdAt: string;
+  updatedAt: string;
+  progressAt: string;
+}
+export interface RunWait {
+  nodeId: string;
+  event: string;
+  reason: string;
+  dueAt?: string;
+  status: 'pending' | 'released';
+  releasedBy?: 'event' | 'timer';
+  signalId?: string;
+}
+export interface RunSignal {
+  id: string;
+  name: string;
+  payload?: Json;
+  receivedAt: string;
+}
+export interface WorkItemView extends WorkItem {
+  effectiveStatus: 'open' | 'running' | 'waiting' | 'attention' | 'completed';
+  execution?: ItemRunRef & {
+    status: Status;
+    waits: RunWait[];
+    error?: string;
+    inputRevision?: number;
+  };
+}
+export interface WorkItemPage {
+  items: WorkItemView[];
+  total: number;
+}
+export interface CreateWorkItem {
+  key: string;
+  title: string;
+  goal: string;
+  workflowId: string;
+  criteria: string[];
+  materials: string[];
+  data?: Record<string, Json>;
 }

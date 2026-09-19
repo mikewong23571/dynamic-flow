@@ -146,7 +146,7 @@ export function createFiles(root: string): FileStore {
             run.status = 'interrupted';
             run.finishedAt = now;
             run.error =
-              '服务重启，运行已中断；可检查已完成结果并选择输入重试。';
+              '服务重启，活跃调用结果未确定；检查已完成结果后，可显式继续未完成步骤。';
             for (const [id, status] of Object.entries(run.nodeStates))
               if (active.has(status)) run.nodeStates[id] = 'interrupted';
             for (const result of run.results) {

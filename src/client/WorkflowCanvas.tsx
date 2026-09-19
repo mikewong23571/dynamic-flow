@@ -21,6 +21,8 @@ import {
   Check,
   LoaderCircle,
   AlertCircle,
+  Clock3,
+  Flag,
 } from 'lucide-react';
 import type { Definition, FlowNode, Run, ViewState } from '../shared/records';
 import {
@@ -47,7 +49,11 @@ function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
       ? Bot
       : node.kind === 'branch'
         ? GitBranch
-        : Boxes;
+        : node.kind === 'wait'
+          ? Clock3
+          : node.kind === 'milestone'
+            ? Flag
+            : Boxes;
   const inputs = node ? inputPorts(node) : [];
   const outputs = node ? outputPorts(node) : data.ports || [];
   const state = data.status;
@@ -67,7 +73,11 @@ function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
                 ? 'Agent'
                 : node.kind === 'branch'
                   ? '条件分流'
-                  : '数据处理'}
+                  : node.kind === 'wait'
+                    ? '持久等待'
+                    : node.kind === 'milestone'
+                      ? '业务里程碑'
+                      : '数据处理'}
           </span>
           <strong title={data.label}>{data.label}</strong>
         </div>
@@ -88,7 +98,17 @@ function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
       )}
       <div className="node-summary">
         <span>
-          {node ? (node.mode === 'each' ? '逐条处理' : '汇总处理') : '原始材料'}
+          {node
+            ? node.kind === 'wait'
+              ? node.wait?.event || '等待事件'
+              : node.kind === 'milestone'
+                ? node.milestone?.stage || '记录进展'
+                : node.operation === 'flatMap'
+                  ? 'FlatMap · 展开'
+                  : node.mode === 'each'
+                    ? `Map · 并发 ${node.concurrency || 1}`
+                    : '整批汇总'
+            : '原始材料'}
           {data.final && <span className="node-final">最终产物</span>}
         </span>
         {node && (
@@ -103,7 +123,9 @@ function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
             ) : state === 'failed' || state === 'blocked' ? (
               <AlertCircle size={12} />
             ) : null}
-            {data.progress || statusNames[state || ''] || '待运行'}
+            {state === 'waiting'
+              ? '等待事件'
+              : data.progress || statusNames[state || ''] || '待运行'}
           </span>
         )}
       </div>

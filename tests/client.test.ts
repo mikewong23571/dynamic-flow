@@ -147,3 +147,33 @@ test('合并试验显式提供两端口并保留空分支，端口显示不改�
   assert.equal(portLabel('matched'), '符合条件');
   assert.equal(portLabel('customer-data'), 'customer-data');
 });
+
+test('等待端口同时保留输入透传和事件，删除时不留下事件引用', async () => {
+  const { outputPorts, active, statusNames } =
+    await import('../src/client/model');
+  const wait = {
+    id: 'waiting',
+    label: '等待公告',
+    kind: 'wait' as const,
+    mode: 'all' as const,
+    wait: { event: 'announcement', reason: '等待公告' },
+  };
+  assert.deepEqual(outputPorts(wait), ['output', 'event']);
+  assert.equal(portLabel('event'), '触发事件');
+  assert.equal(active('waiting'), true);
+  assert.equal(statusNames.waiting, '等待事件');
+  const definition: Definition = {
+    schemaVersion: 1,
+    inputs: ['input'],
+    nodes: [wait],
+    edges: [{ from: ['$input', 'input'], to: ['waiting', 'input'] }],
+    outputs: { event: ['waiting', 'event'], original: ['waiting', 'output'] },
+  };
+  assert.deepEqual(removeNode(definition, 'waiting'), {
+    schemaVersion: 1,
+    inputs: ['input'],
+    nodes: [],
+    edges: [],
+    outputs: {},
+  });
+});

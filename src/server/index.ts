@@ -9,6 +9,7 @@ import { createFlow } from './flow/index.ts';
 import { createWorkService } from './work/index.ts';
 import { createAssistant } from './assistant/index.ts';
 import { createRuns } from './runs/index.ts';
+import { createWorkItems } from './work-items/index.ts';
 import { createTrials } from './trials/index.ts';
 import type {
   Definition,
@@ -19,6 +20,8 @@ import type {
   Run,
   ViewState,
   ModelSettings,
+  CreateWorkItem,
+  CompletionCriterion,
 } from '../shared/records.ts';
 export async function createApplication(
   options: {
@@ -34,8 +37,13 @@ export async function createApplication(
     assistant = createAssistant(files, flow, {
       settingsPath: resolve(dataRoot, 'model-settings.json'),
     });
-  const runs = createRuns(files, options.executeNode ?? assistant.executeNode),
+  const items = createWorkItems(dataRoot, files);
+  const runs = createRuns(files, options.executeNode ?? assistant.executeNode, {
+      onMilestone: items.milestone,
+    }),
     trials = createTrials(files, runs);
+  await items.reconcile();
+  await runs.recover();
   const app = new Hono();
   app.onError((error, c) => {
     const issues = 'issues' in error ? error.issues : undefined;
@@ -47,6 +55,96 @@ export async function createApplication(
       await assistant.saveConfiguration(await c.req.json<ModelSettings>()),
     ),
   );
+  app.get('/api/items', async (c) =>
+    c.json(
+      await items.list({
+        query: c.req.query('query'),
+        status: c.req.query('status'),
+      }),
+    ),
+  );
+  app.get('/api/items/:id', async (c) =>
+    c.json(await items.get(c.req.param('id'))),
+  );
+  app.post('/api/items', async (c) =>
+    c.json(await items.create(await c.req.json<CreateWorkItem>()), 201),
+  );
+  app.post('/api/items/:id/actions', async (c) => {
+    const id = c.req.param('id'),
+      body = await c.req.json<Record<string, unknown>>();
+    switch (body.action) {
+      case 'addEvidence':
+        return c.json(await items.addEvidence(id, body.materials as string[]));
+      case 'criteria':
+        return c.json(
+          await items.criteria(id, body.criteria as CompletionCriterion[]),
+        );
+      case 'complete':
+        return c.json(await items.complete(id));
+      case 'reopen':
+        return c.json(await items.reopen(id, body.reason as string));
+      case 'method':
+        return c.json(await items.method(id, body.workflowId as string));
+      case 'run':
+        return c.json(
+          await items.launch(id, async (input, workId) => {
+            const method = await files.read(workId);
+            const definitionId =
+              (body.definitionId as string | undefined) ??
+              method.adoptedId ??
+              method.draftId;
+            if (!definitionId || !method.definitionIds.includes(definitionId))
+              throw Error('请选择该处理方法中已保存的版本。');
+            const definition = await files.readDefinition(workId, definitionId);
+            if (definition.inputs.length !== 1)
+              throw Error(
+                '工作项运行需要一个明确的材料输入端口，请在流程中合并输入入口。',
+              );
+            const inputs: Inputs = {
+              [definition.inputs[0]]: input.materials.map((m) => ({
+                sampleId: m.id,
+                value: m.text,
+                materialIds: [m.id],
+                sourceResultIds: [],
+              })),
+            };
+            const runId = await runs.start(workId, {
+              definitionId,
+              scope: 'full',
+              inputs,
+              workItem: input,
+              effectMode: 'commit',
+            });
+            return { workId, runId, definitionId };
+          }),
+        );
+      case 'signal':
+        return c.json(
+          await items.signal(
+            id,
+            {
+              id: body.id as string,
+              name: body.name as string,
+              payload: body.payload as Json | undefined,
+            },
+            runs.signal,
+          ),
+        );
+      case 'resume':
+      case 'stop': {
+        const item = await items.get(id),
+          current = item.execution;
+        if (!current) throw Error('工作项尚未发起运行。');
+        if (body.action === 'resume')
+          await runs.resume(current.workId, current.runId);
+        if (body.action === 'stop')
+          await runs.stop(current.workId, current.runId);
+        return c.json(await items.get(id));
+      }
+      default:
+        throw Error('未知工作项操作。');
+    }
+  });
   app.get('/api/works', async (c) =>
     c.json(
       await work.listWorks({
@@ -220,7 +318,7 @@ export async function createApplication(
   });
   app.use('/*', serveStatic({ root: './dist' }));
   app.get('*', serveStatic({ path: './dist/index.html' }));
-  return { app, files, flow, work, assistant, runs, trials };
+  return { app, files, flow, work, assistant, runs, trials, items };
 }
 if (
   process.argv[1] &&

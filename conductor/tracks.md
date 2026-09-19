@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [x] **Track: 业务工作项生命周期**
+  *Link: [workitem-lifecycle_20260920](./tracks/workitem-lifecycle_20260920/index.md)*
+
 - [x] **Track: Geist 暗色工作区与节点层级**
   *Link: [geist-workspace_20260920](./tracks/geist-workspace_20260920/index.md)*
 

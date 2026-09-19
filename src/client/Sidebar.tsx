@@ -6,6 +6,7 @@ import {
   Settings2,
   Files,
   ChevronRight,
+  ListChecks,
 } from 'lucide-react';
 import { Button } from './components/ui';
 import { MaterialsDialog } from './MaterialsDialog';
@@ -13,7 +14,17 @@ import { reasoningLabels } from './ModelSettingsDialog';
 import { workTitle } from './model';
 import type { WorkspaceController } from './useWorkspace';
 
-export function Sidebar({ controller }: { controller: WorkspaceController }) {
+export function Sidebar({
+  controller,
+  itemsOpen,
+  onItems,
+  onMethods,
+}: {
+  controller: WorkspaceController;
+  itemsOpen: boolean;
+  onItems: () => void;
+  onMethods: () => void;
+}) {
   const [materialsOpen, setMaterialsOpen] = useState(false);
   const {
     libraryOpen,
@@ -41,8 +52,18 @@ export function Sidebar({ controller }: { controller: WorkspaceController }) {
         </div>
         <div className="sidebar-nav">
           <button
-            className={`library-link ${libraryOpen ? 'selected' : ''}`}
-            onClick={() => setLibraryOpen(true)}
+            className={`library-link ${itemsOpen ? 'selected' : ''}`}
+            onClick={onItems}
+          >
+            <ListChecks size={16} />
+            工作项
+          </button>
+          <button
+            className={`library-link ${libraryOpen && !itemsOpen ? 'selected' : ''}`}
+            onClick={() => {
+              onMethods();
+              setLibraryOpen(true);
+            }}
           >
             <Library size={16} />
             所有工作
@@ -50,6 +71,7 @@ export function Sidebar({ controller }: { controller: WorkspaceController }) {
           <Button
             className="new-work"
             onClick={() => {
+              onMethods();
               setError('');
               setCreateOpen(true);
             }}
@@ -58,17 +80,22 @@ export function Sidebar({ controller }: { controller: WorkspaceController }) {
             新建工作
           </Button>
         </div>
-        <div className="sidebar-label">最近工作</div>
+        <div className="sidebar-label">处理方法 · 最近工作</div>
         <nav className="work-list" aria-label="最近工作">
           {works.slice(0, 5).map((item) => (
             <button
               key={item.id}
               title={workTitle(item)}
               aria-current={
-                item.id === workId && !libraryOpen ? 'page' : undefined
+                item.id === workId && !libraryOpen && !itemsOpen
+                  ? 'page'
+                  : undefined
               }
-              className={`work-item ${item.id === workId && !libraryOpen ? 'selected' : ''}`}
-              onClick={() => openWork(item.id)}
+              className={`work-item ${item.id === workId && !libraryOpen && !itemsOpen ? 'selected' : ''}`}
+              onClick={() => {
+                onMethods();
+                openWork(item.id);
+              }}
             >
               <span className="work-indicator" />
               <span>{workTitle(item)}</span>
@@ -76,7 +103,7 @@ export function Sidebar({ controller }: { controller: WorkspaceController }) {
           ))}
           {works.length === 0 && <p className="sidebar-empty">暂无工作</p>}
         </nav>
-        {work && !libraryOpen && (
+        {work && !libraryOpen && !itemsOpen && (
           <div className="work-resources">
             <div className="sidebar-label">当前工作</div>
             <button

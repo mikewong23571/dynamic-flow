@@ -1,3 +1,4 @@
+import { validateValue } from '../flow/schema.ts';
 import type { Json, Work } from '../../shared/records.ts';
 
 function object(value: Json): value is Record<string, Json> {
@@ -5,44 +6,7 @@ function object(value: Json): value is Record<string, Json> {
 }
 
 export function validateOutput(value: Json, schema: Json, path = '结果'): void {
-  if (!object(schema))
-    throw new Error(`${path}的输出结构需要是 JSON Schema 对象。`);
-  if (
-    Array.isArray(schema.enum) &&
-    !schema.enum.some((item) => JSON.stringify(item) === JSON.stringify(value))
-  )
-    throw new Error(`${path}不属于允许的值。`);
-  if (schema.type) {
-    const valid =
-      schema.type === 'object'
-        ? object(value)
-        : schema.type === 'array'
-          ? Array.isArray(value)
-          : schema.type === 'null'
-            ? value === null
-            : schema.type === 'integer'
-              ? typeof value === 'number' && Number.isInteger(value)
-              : typeof value === schema.type;
-    if (!valid) throw new Error(`${path}需要 ${schema.type} 类型。`);
-  }
-  if (object(value)) {
-    for (const key of Array.isArray(schema.required) ? schema.required : [])
-      if (typeof key === 'string' && !(key in value))
-        throw new Error(`${path}缺少必填字段 ${key}。`);
-    if (object(schema.properties ?? null))
-      for (const [key, child] of Object.entries(
-        schema.properties as Record<string, Json>,
-      ))
-        if (key in value) validateOutput(value[key], child, `${path}.${key}`);
-  }
-  if (Array.isArray(value)) {
-    if (typeof schema.minItems === 'number' && value.length < schema.minItems)
-      throw new Error(`${path}至少需要 ${schema.minItems} 项。`);
-    if (schema.items)
-      value.forEach((child, index) =>
-        validateOutput(child, schema.items!, `${path}[${index}]`),
-      );
-  }
+  validateValue(schema, value, path);
 }
 
 /** Check explicit material references and verbatim evidence against this execution's inputs. */

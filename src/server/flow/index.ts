@@ -1,3 +1,4 @@
+import { schemaIssue, incompatibleTypes } from './schema.ts';
 import type {
   Definition,
   FlowNode,
@@ -35,7 +36,9 @@ function assertShape(value: unknown): asserts value is Definition {
       !object(node) ||
       typeof node.id !== 'string' ||
       typeof node.label !== 'string' ||
-      !['agent', 'function', 'branch'].includes(node.kind as string) ||
+      !['agent', 'function', 'branch', 'wait', 'milestone'].includes(
+        node.kind as string,
+      ) ||
       !['each', 'all'].includes(node.mode as string)
     )
       throw new Error('节点结构无效：需要 id、label、支持的 kind 和 mode。');
@@ -76,7 +79,11 @@ export function inputPorts(node: FlowNode): string[] {
     : ['input'];
 }
 export function outputPorts(node: FlowNode): string[] {
-  return node.kind === 'branch' ? ['matched', 'unmatched'] : ['output'];
+  return node.kind === 'branch'
+    ? ['matched', 'unmatched']
+    : node.kind === 'wait'
+      ? ['output', 'event']
+      : ['output'];
 }
 export function checkDefinition(definition: Definition): Issue[] {
   try {
@@ -104,6 +111,55 @@ export function checkDefinition(definition: Definition): Issue[] {
       add('节点 ID 不能为空、重复或使用保留名称 $input。', 'id');
     nodes.set(node.id, node);
     if (!node.label.trim()) add('请填写节点名称。', 'label');
+    if (
+      node.operation !== undefined &&
+      !['map', 'flatMap', 'aggregate'].includes(node.operation)
+    )
+      add('请选择 map、flatMap 或 aggregate。', 'operation');
+    if (
+      node.concurrency !== undefined &&
+      (!Number.isInteger(node.concurrency) ||
+        node.concurrency < 1 ||
+        node.concurrency > 8)
+    )
+      add('并发数应为 1–8 的整数。', 'concurrency');
+    for (const key of ['inputSchema', 'expectedOutput'] as const) {
+      if (node[key] !== undefined) {
+        const error = schemaIssue(node[key]!);
+        if (error) add(`Schema 无效：${error}`, key);
+      }
+    }
+    if (
+      ['wait', 'milestone', 'branch'].includes(node.kind) &&
+      node.operation &&
+      node.operation !== 'aggregate'
+    )
+      add('控制节点只支持 aggregate。', 'operation');
+    if (node.kind === 'wait') {
+      if (
+        !node.wait ||
+        typeof node.wait.event !== 'string' ||
+        !node.wait.event.trim() ||
+        typeof node.wait.reason !== 'string' ||
+        !node.wait.reason.trim()
+      )
+        add('等待需要事件名称和原因。', 'wait');
+      if (
+        node.wait?.timeoutSeconds !== undefined &&
+        (!Number.isFinite(node.wait.timeoutSeconds) ||
+          node.wait.timeoutSeconds <= 0)
+      )
+        add('等待期限必须大于零。', 'wait.timeoutSeconds');
+    }
+    if (
+      node.kind === 'milestone' &&
+      (!node.milestone ||
+        typeof node.milestone.stage !== 'string' ||
+        !node.milestone.stage.trim() ||
+        typeof node.milestone.summary !== 'string' ||
+        !node.milestone.summary.trim())
+    )
+      add('里程碑需要阶段和进展摘要。', 'milestone');
     if (node.kind === 'agent' && !node.task?.trim())
       add('请填写节点任务，再运行此步骤。', 'task');
     if (node.kind === 'function') {
@@ -122,7 +178,11 @@ export function checkDefinition(definition: Definition): Issue[] {
           node.params.fields.some((f) => !f.trim()))
       )
         add('请选择至少一个需要保留的字段。', 'params.fields');
-      if (node.functionName === 'merge' && node.mode !== 'all')
+      if (
+        node.functionName === 'merge' &&
+        (node.mode !== 'all' ||
+          (node.operation !== undefined && node.operation !== 'aggregate'))
+      )
         add('汇合节点必须使用集合模式 all。', 'mode');
     }
     if (node.kind === 'branch') {
@@ -167,6 +227,41 @@ export function checkDefinition(definition: Definition): Issue[] {
         nodeId: edge.to[0],
         message: '连接目标节点或输入端口不匹配；请连接有效输入。',
       });
+    const source = nodes.get(edge.from[0]);
+    if (
+      source &&
+      target &&
+      edge.from[1] === 'output' &&
+      source.expectedOutput !== undefined &&
+      target.inputSchema !== undefined
+    ) {
+      const sourceOperation =
+        source.operation ?? (source.mode === 'each' ? 'map' : 'aggregate');
+      const targetOperation = ['wait', 'milestone', 'branch'].includes(
+        target.kind,
+      )
+        ? 'aggregate'
+        : (target.operation ?? (target.mode === 'each' ? 'map' : 'aggregate'));
+      let schema = source.expectedOutput;
+      if (
+        (sourceOperation === 'flatMap' ||
+          ['wait', 'milestone', 'branch'].includes(source.kind)) &&
+        schema &&
+        typeof schema === 'object' &&
+        !Array.isArray(schema)
+      )
+        schema = schema.items ?? true;
+      const received =
+        targetOperation === 'aggregate'
+          ? { type: 'array', items: schema }
+          : schema;
+      if (incompatibleTypes(received, target.inputSchema))
+        issues.push({
+          edgeIndex,
+          nodeId: target.id,
+          message: '上游输出与下游输入 schema 类型不相容。',
+        });
+    }
     const key = JSON.stringify(edge.to);
     if (incoming.has(key))
       issues.push({

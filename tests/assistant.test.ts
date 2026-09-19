@@ -296,11 +296,11 @@ test('required fields, nested schemas, enum and raw evidence are enforced', () =
   assert.throws(() => parseOutput('{"category":"问题"}', schema), /evidence/);
   assert.throws(
     () => parseOutput('{"category":"需求","evidence":[]}', schema),
-    /允许的值/,
+    /allowed values/,
   );
   assert.throws(
     () => parseOutput('{"category":"问题","evidence":[]}', schema),
-    /至少/,
+    /fewer than 1/,
   );
   assert.throws(() => parseOutput('fake', schema), /JSON/);
   const output = parseOutput(
@@ -783,5 +783,72 @@ test('real SDK maps recommended Chat settings and distinct Anthropic budgets int
     assert.equal(payload.thinking.budget_tokens, 8192);
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
+  }
+});
+
+test('item goal and frozen evidence reach the real Pi boundary; shared schema supports union constraints', async () => {
+  let seen: Record<string, any> | undefined;
+  const f = await fixture(async (session) => {
+    seen = JSON.parse(session.prompt);
+    return '{"summary":"工作项材料","verified":false}';
+  });
+  try {
+    const item = {
+      id: 'business-item',
+      key: 'CASE-001',
+      title: '独立事项',
+      goal: '确认事项的处置依据',
+      revision: 3,
+      data: { asset: 'demo' },
+      materials: [{ id: 'M01', text: '工作项材料，与方法样本不同' }],
+    };
+    const output = await f.assistant.executeNode({
+      workId: f.work.id,
+      runId: 'item-run',
+      definitionId: f.id,
+      node: {
+        ...definition.nodes[0],
+        mode: 'all',
+        operation: 'map',
+        expectedOutput: {
+          type: 'object',
+          required: ['summary', 'verified'],
+          properties: {
+            summary: { type: ['string', 'null'] },
+            verified: { const: false },
+          },
+          additionalProperties: false,
+        },
+      },
+      workItem: item,
+      instanceId: 'item-instance',
+      inputs: {
+        input: [
+          {
+            sampleId: 'M01',
+            value: item.materials[0].text,
+            materialIds: ['M01'],
+            sourceResultIds: [],
+          },
+        ],
+      },
+      materials: item.materials,
+      signal: new AbortController().signal,
+      onActivity: async () => {},
+    });
+    assert.deepEqual(output, { summary: '工作项材料', verified: false });
+    assert.equal(seen!.operation, 'map');
+    assert.equal(seen!.workItem.goal, item.goal);
+    assert.deepEqual(seen!.materials, item.materials);
+    assert.throws(
+      () =>
+        parseOutput('{"verified":true}', {
+          type: 'object',
+          properties: { verified: { const: false } },
+        }),
+      /schema/,
+    );
+  } finally {
+    await f.clean();
   }
 });

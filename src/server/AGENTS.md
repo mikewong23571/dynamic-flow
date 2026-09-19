@@ -4,7 +4,7 @@
 
 ## 职责与目标
 
-本目录 index.ts 承担 Hono HTTP/SSE、具体函数接线与启动恢复。六个功能目录分别实现其子问题，直接调用，不增加 controller/service/repository 套层。
+本目录 index.ts 承担 Hono HTTP/SSE、具体函数接线与启动恢复。各功能目录分别实现其子问题，直接调用，不增加 controller/service/repository 套层。
 
 内部依赖：work → files；flow → files；runs → flow 校验/files；模型执行由入口传入 assistant.executeNode；assistant → flow/files；trials → runs/files；files 不反向依赖业务。该关系是当前避免循环的组织方式，不是永不可改的分层规则。
 
@@ -29,3 +29,5 @@
 单进程、小规模工作状态；SSE 保存通知合并 50ms，15s 心跳，按 revision 接受完整快照；已测断连重连与真实工具保存。大数据量性能尚未做压力测试。不为了原图成立而把断线、乱序或 SDK 不兼容隐藏到假的成功事件中。先复现最小问题，再修改必要交接。
 
 产品级验证与边界见 [本轮验收证据](../../conductor/tracks/full-application_20260920/evidence.md)。
+
+持续工作项：work-items → files，并由入口把 items.milestone 传给 runs。启动顺序为 files.onServerStart → items.reconcile（补齐运行与业务关联）→ runs.recover（恢复等待）。/api/items 独立暴露业务查询与操作；signal 通过 items.signal 对整项跨方法运行历史去重。详情轮询为只读，不推进运行。最新证据见 [生命周期 track](../../conductor/tracks/workitem-lifecycle_20260920/evidence.md)。

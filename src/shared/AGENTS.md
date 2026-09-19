@@ -32,3 +32,7 @@ Node/端口、逐项/汇总来源和活动字段在真实执行、比较、HTTP/
 具体约定：InputItem 保存 sampleId、value、materialIds 和 sourceResultIds；NodeResult 绑定运行、版本、节点及实例；nodeTotals 是已知批次数。工作标题/归档与 ModelSettings/ModelConfiguration 支持 G1/G2；对外配置只返回 apiKeyConfigured，不返回 apiKey。测试见 tests/ 下模块及 integration。
 
 产品级验证与边界见 [本轮验收证据](../../conductor/tracks/full-application_20260920/evidence.md)。
+
+## 持续工作项记录
+
+Work 保留方法与样本；WorkItem 是独立业务编号、目标、材料、完成条件和业务历史。ItemRunRef 同时带 workId/runId/definitionId，支持换方法保留历史。Run.workItem 为冻结输入，不跟随工作项后续补证据。RunWait/RunSignal 描述等待与去重消息；effectMode=preview 不提交业务里程碑。运行完成与 WorkItem.completed 分离；完成条件依据与结项时快照存入 ItemHistory.criteria，重开清除 met 但保留旧依据。具体字段与接口见 [生命周期交接](../../conductor/tracks/workitem-lifecycle_20260920/handoff.md)。

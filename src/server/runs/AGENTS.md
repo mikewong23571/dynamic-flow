@@ -41,3 +41,15 @@
 `createRuns(files, executeNode)` 直接组合文件与 Pi 节点函数，提供 start/stop/retry/wait；reserve/release 仅用于同工作比较链占用，不是通用队列。tests/runs.test.ts 验证失败保留与单项重试、停止迟到响应、空分支与汇合、固定版本/输入及工具身份。HTTP 接线见 server/index.ts，真实模型和浏览器验收单列，测试替身不代表模型质量。
 
 产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
+
+## 持久业务推进（2026-09-20，新基线）
+
+H3–H8 取代上文“始终顺序/重启只能另起重试”的限制。Run 保存 workItem 输入快照、effectMode、waits、signals 和实例结果。`createRuns(files, executeNode, hooks)` 新增 `onMilestone(workId,run,node,inputs)`；仅工作项 full/commit 调用。回调按 runId+nodeId 去重；未接线时正式里程碑明确失败。普通预览、节点试运行、比较不提交业务进展；预览等待透传并在 event 端口标记 preview。
+
+`signal(workId,runId,{id,name,payload?})` 只释放匹配待定等待；相同事件重复无效果、冲突 ID 报错。event 端口包含事件名称、payload、接收时间，超时标记 timer。`recover()` 在 files.onServerStart 后恢复等待和到期任务；`resume()` 显式继续 interrupted。成功实例从检查点恢复，不再请求外部模型。不确定调用可能再次执行，不承诺外部副作用恰好一次。`close()` 取消本进程计时与调度，保留持久状态。
+
+独立就绪节点最多 4 个并行，逐项 concurrency 默认 1、允许 1–8；输出按输入顺序组合。operation map 保留返回数组为一个值，flatMap 明确展开一层，aggregate 全量调用一次；旧 function 未设 operation 的定义维持历史逐输入透传语义。inputSchema/expectedOutput 是单次调用契约，经 Ajv 实际校验；失败实例不出结果，依赖它的汇总阻断。执行上下文使用 workItem 快照材料，普通方法运行继续兼容 Work 材料。
+
+域内证据：tests/lifecycle-runtime.test.ts 覆盖真实文件重开、受控时钟离线跨45天与45天长等待分段计时、显式恢复不重跑成功调用、迟到事件、预览、并发顺序/来源、schema 错误。模型为测试替身；真实 HTTP/进程/浏览器由 track 验收补充。
+
+局部 retry 显式继承旧 Run.workItem 冻结快照，并强制 preview。所选结果续做/比较在未显式传入 workItem 时，由每个 sourceResultIds 的原 Run 解析快照：必须同工作项同 revision；与另一工作项、另一修订或无结果来源的方法材料混合时拒绝。未知结果引用也明确报错。不能仅凭 M01 编号从方法示例中猜材料；推导来的上下文不授予业务提交，仍为 preview。

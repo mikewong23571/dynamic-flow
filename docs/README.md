@@ -1,7 +1,7 @@
 # 设计文档
 
 1. [用户故事与原型验收](./user-stories.md)：按六类用户目标组织的讨论稿，含故事验收条件和八条验收路线。
-2. [当前产品与技术设计](./design.md)：v3 简化版，画布编辑 + JS 语义子集 IR + runtime。
+2. [当前产品与技术设计](./design.md)：v4 持续工作项，画布编辑 + JS 语义子集 IR + 持久等待。
 3. [原始设计归档](./archive/README.md)：v2 原文与字节校验，保留历史，不作为当前开发要求。
 4. [项目上下文](../conductor/index.md)：产品摘要、交互指南、技术状态和 tracks。
 5. [组件接入实验](../conductor/tracks/component-integration-spike_20260919/results.md)：历史技术证据；画布/源码相关推荐已被当前设计调整，实验视觉已被否定。
@@ -13,3 +13,5 @@
 [模块与验收地图](./implementation-map.md)：正式 src 骨架、各模块 AGENTS、用例责任、跨模块验收与设计假设修订方式。
 
 [术语与编号](./glossary.md)：文档缩写、用户故事/测试场景编号与基本工程说明。
+
+[持续工作项故事](workitem-stories.md)：独立业务身份、等待与恢复、方法演进及依据结项，按 H1–H11 和 L1–L5 验收。

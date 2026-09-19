@@ -44,3 +44,15 @@ Workspace 负责组合；useWorkspace 维护 HTTP/SSE 与编辑上下文；Sideb
 - [模型设置 1440](evidence/model-settings-1440.png) / [模型设置 1024](evidence/model-settings-1024.png)。`node src/client/evidence/model-settings-check.mjs` 是表单**响应替身**检查，验证字段提交、空密钥省略、密码清空与不回显、提示、窄屏与无 pageerror；真实配置持久化/协议调用由根验收。
 - 工作列表由状态开发者提供 `WorkLibrary`；工作台集成“所有工作”、最近工作标题、分页组件入口及列表修改后刷新侧栏。列表独立证据由其开发者记录。
 - 真实报告发现 Markdown 表格不可读后，Results 与 Assistant 共同接入 GFM；表格在自身容器横向滚动，不使整个页面溢出。
+
+## 持续工作项（2026-09-20）
+
+本轮以 [H1–H11 生命周期故事](../../docs/workitem-stories.md) 扩充，不将旧运行完成解释为业务结项。参考 [Geist Table](https://vercel.com/geist/table) 的可比较列、独立空状态与窄列日期，以及 [Geist Badge](https://vercel.com/geist/badge) 的短状态标签；查看已有 Geist 暗色画布截图后沿用同一色彩、按钮和边框。
+
+- `WorkItems` 是独立管理入口，业务阶段/摘要、等待与执行、最近业务进展各自成列；搜索与业务状态过滤来自 HTTP。窄屏将最近进展时间靠近标题，避免隐藏业务信息。
+- `WorkItemDetail` 将目标、进展、条件依据、材料、历史组织在主栏；方法、当前执行、固定版本和跨方法运行记录放辅助栏。完成条件在本地编辑，轮询不覆盖未保存内容；更新失败保留表单。等待展示事件与截止，不展示虚假百分比。
+- `WorkItemDialogs` 复用 Radix 模态；创建不复制方法样例材料，工作项自己的材料随运行冻结。详情中的运行链接携带方法 ID 和运行 ID，在该方法快照就绪后选择对应运行。
+- `NodeInspector` 支持 Map / FlatMap / Aggregate、并发、单次输入/输出 schema，以及等待/里程碑的明确配置；`WorkflowCanvas` 只呈现运算摘要、事件名称/阶段，详细任务留在 Inspector。
+- `Results` 可查看工作项固定输入修订、等待释放方式、接收事件 ID / 时间 / payload。运行成功与工作项结项分别呈现。
+
+域内 `tests/client.test.ts` 7 项通过，`pnpm typecheck:app` 通过。新增真实 HTTP 浏览器路线由整体 track 记录；该记录不将类型检查当作持久恢复或用户视觉验收。

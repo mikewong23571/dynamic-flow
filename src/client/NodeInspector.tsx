@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Trash2, ArrowRight } from 'lucide-react';
-import type { Definition, FlowNode, Issue } from '../shared/records';
+import type { Definition, FlowNode, Issue, Json } from '../shared/records';
 import { inputPorts, outputPorts, removeNode, portLabel } from './model';
 import { Button, Empty } from './components/ui';
 export function NodeInspector({
@@ -17,7 +17,6 @@ export function NodeInspector({
   onChat: () => void;
 }) {
   const node = definition.nodes.find((n) => n.id === nodeId);
-  const [schemaError, setSchemaError] = useState('');
   if (!node)
     return (
       <Empty title="选择一个步骤">
@@ -55,17 +54,130 @@ export function NodeInspector({
           onChange={(e) => update({ label: e.target.value })}
         />
       </label>
-      <label className="field">
-        处理方式
-        <select
-          value={node.mode}
-          disabled={node.kind === 'branch'}
-          onChange={(e) => update({ mode: e.target.value as FlowNode['mode'] })}
-        >
-          <option value="each">逐条处理</option>
-          <option value="all">汇总处理</option>
-        </select>
-      </label>
+      {(node.kind === 'agent' || node.kind === 'function') && (
+        <>
+          <label className="field">
+            处理方式
+            <select
+              value={
+                node.operation || (node.mode === 'all' ? 'aggregate' : 'map')
+              }
+              onChange={(e) =>
+                update({
+                  operation: e.target.value as FlowNode['operation'],
+                  mode: e.target.value === 'aggregate' ? 'all' : 'each',
+                })
+              }
+            >
+              <option value="map">Map · 逐项处理</option>
+              <option value="flatMap">FlatMap · 逐项展开</option>
+              <option value="aggregate">Aggregate · 整批汇总</option>
+            </select>
+          </label>
+          {(node.operation || node.mode) !== 'aggregate' &&
+            node.mode !== 'all' && (
+              <label className="field">
+                并发数
+                <input
+                  type="number"
+                  min={1}
+                  max={8}
+                  value={node.concurrency || 1}
+                  onChange={(e) =>
+                    update({ concurrency: Number(e.target.value) })
+                  }
+                />
+              </label>
+            )}
+        </>
+      )}
+      {node.kind === 'wait' && (
+        <>
+          <label className="field">
+            等待事件名称
+            <input
+              value={node.wait?.event || ''}
+              onChange={(e) =>
+                update({
+                  wait: {
+                    event: e.target.value,
+                    reason: node.wait?.reason || '',
+                    timeoutSeconds: node.wait?.timeoutSeconds,
+                  },
+                })
+              }
+            />
+          </label>
+          <label className="field">
+            等待原因
+            <textarea
+              rows={3}
+              value={node.wait?.reason || ''}
+              onChange={(e) =>
+                update({
+                  wait: {
+                    event: node.wait?.event || '',
+                    reason: e.target.value,
+                    timeoutSeconds: node.wait?.timeoutSeconds,
+                  },
+                })
+              }
+            />
+          </label>
+          <label className="field">
+            到期时间（秒，可选）
+            <input
+              type="number"
+              min={1}
+              value={node.wait?.timeoutSeconds ?? ''}
+              onChange={(e) =>
+                update({
+                  wait: {
+                    event: node.wait?.event || '',
+                    reason: node.wait?.reason || '',
+                    ...(e.target.value
+                      ? { timeoutSeconds: Number(e.target.value) }
+                      : {}),
+                  },
+                })
+              }
+            />
+          </label>
+        </>
+      )}
+      {node.kind === 'milestone' && (
+        <>
+          <label className="field">
+            业务阶段
+            <input
+              value={node.milestone?.stage || ''}
+              onChange={(e) =>
+                update({
+                  milestone: {
+                    stage: e.target.value,
+                    summary: node.milestone?.summary || '',
+                  },
+                })
+              }
+            />
+          </label>
+          <label className="field">
+            进展摘要
+            <textarea
+              rows={4}
+              value={node.milestone?.summary || ''}
+              onChange={(e) =>
+                update({
+                  milestone: {
+                    stage: node.milestone?.stage || '',
+                    summary: e.target.value,
+                  },
+                })
+              }
+            />
+          </label>
+        </>
+      )}
       {node.kind === 'agent' && (
         <>
           <label className="field">
@@ -76,34 +188,6 @@ export function NodeInspector({
               onChange={(e) => update({ task: e.target.value })}
             />
           </label>
-          <details className="details">
-            <summary>结果结构（可选）</summary>
-            <label className="field">
-              JSON Schema
-              <textarea
-                key={node.id}
-                rows={5}
-                defaultValue={
-                  node.expectedOutput
-                    ? JSON.stringify(node.expectedOutput, null, 2)
-                    : ''
-                }
-                onBlur={(e) => {
-                  try {
-                    update({
-                      expectedOutput: e.target.value
-                        ? JSON.parse(e.target.value)
-                        : undefined,
-                    });
-                    setSchemaError('');
-                  } catch {
-                    setSchemaError('结构格式不正确，请检查 JSON。');
-                  }
-                }}
-              />
-            </label>
-            {schemaError && <p className="error-text">{schemaError}</p>}
-          </details>
         </>
       )}
       {node.kind === 'function' && (
@@ -116,7 +200,7 @@ export function NodeInspector({
                 update({
                   functionName: e.target.value as FlowNode['functionName'],
                   ...(e.target.value === 'merge'
-                    ? { mode: 'all' as const }
+                    ? { mode: 'all' as const, operation: 'aggregate' as const }
                     : {}),
                 })
               }
@@ -201,6 +285,22 @@ export function NodeInspector({
           )}
         </>
       )}
+      <details className="details">
+        <summary>输入与输出 Schema</summary>
+        <p className="muted">
+          描述单次调用的值；Map 保留数组，FlatMap 展开一层。
+        </p>
+        <SchemaField
+          label="输入 Schema"
+          value={node.inputSchema}
+          onSave={(value) => update({ inputSchema: value })}
+        />
+        <SchemaField
+          label="输出 Schema"
+          value={node.expectedOutput}
+          onSave={(value) => update({ expectedOutput: value })}
+        />
+      </details>
       <div className="section-heading">
         <h3>数据连接</h3>
       </div>
@@ -333,5 +433,47 @@ function ConnectionForm({
         连接到此步骤
       </Button>
     </div>
+  );
+}
+
+function SchemaField({
+  label,
+  value,
+  onSave,
+}: {
+  label: string;
+  value?: Json;
+  onSave: (value: Json | undefined) => void;
+}) {
+  const serialized = value === undefined ? '' : JSON.stringify(value, null, 2);
+  const [text, setText] = useState(serialized);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    setText(serialized);
+    setError('');
+  }, [serialized]);
+  return (
+    <label className="field">
+      {label}
+      <textarea
+        rows={5}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onBlur={() => {
+          try {
+            const parsed = text.trim() ? JSON.parse(text) : undefined;
+            onSave(parsed);
+            setError('');
+          } catch {
+            setError('请输入有效的 JSON；尚未保存此结构。');
+          }
+        }}
+      />
+      {error && (
+        <span role="alert" className="error-text">
+          {error}
+        </span>
+      )}
+    </label>
   );
 }

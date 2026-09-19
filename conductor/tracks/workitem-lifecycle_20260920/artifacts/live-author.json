@@ -1,0 +1,236 @@
+{
+  "workId": "06e05c1e-689f-42c6-b136-5e1430472f21",
+  "message": {
+    "id": "bcf32236-b504-41c8-88ee-ea9186e22158",
+    "role": "assistant",
+    "text": "已保存最小流程：材料入口依次经过「分析材料」（aggregate、字符串输出）→「记录调查里程碑」（明确不结项）→「等待厂商公告」（真实持久等待 vendor.announcement）→「公告原样收尾」（identity 原样传递），最终输出仅为收尾透传结果，不含自动结项声明。下一步可对单材料试运行分析节点，或以正式工作项运行以启用持久等待。",
+    "requestId": "5e3fe2f4-baf6-43ff-bccb-f1a95843fc61",
+    "sampleIds": [],
+    "status": "completed",
+    "activities": [
+      {
+        "id": "2f92cc41-e8da-4551-be39-5edc40117b48",
+        "toolCallId": "call_28e77e05066642b987d4554d",
+        "toolName": "update_flow",
+        "status": "completed",
+        "args": {
+          "definition": {
+            "edges": [
+              {
+                "from": [
+                  "$input",
+                  "material"
+                ],
+                "to": [
+                  "analyze-material",
+                  "input"
+                ]
+              },
+              {
+                "from": [
+                  "analyze-material",
+                  "output"
+                ],
+                "to": [
+                  "record-milestone",
+                  "input"
+                ]
+              },
+              {
+                "from": [
+                  "record-milestone",
+                  "output"
+                ],
+                "to": [
+                  "wait-vendor",
+                  "input"
+                ]
+              },
+              {
+                "from": [
+                  "wait-vendor",
+                  "event"
+                ],
+                "to": [
+                  "passthrough-finish",
+                  "input"
+                ]
+              }
+            ],
+            "inputs": [
+              "material"
+            ],
+            "nodes": [
+              {
+                "expectedOutput": {
+                  "type": "string"
+                },
+                "id": "analyze-material",
+                "inputSchema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "kind": "agent",
+                "label": "分析材料",
+                "mode": "all",
+                "operation": "aggregate",
+                "task": "对输入的全部材料做一次聚合调查分析：保留原始编号（如 M01），逐条概述关键事实（如 DemoLib 已在资产清单、正等待厂商公告），并列出待验证事项，输出简明中文分析正文。"
+              },
+              {
+                "id": "record-milestone",
+                "kind": "milestone",
+                "label": "记录调查里程碑",
+                "milestone": {
+                  "stage": "调查启动",
+                  "summary": "已完成材料初析并登记待验证事项；调查尚未结项，需在收到并核验厂商公告后另行确认完成。"
+                },
+                "mode": "all"
+              },
+              {
+                "id": "wait-vendor",
+                "kind": "wait",
+                "label": "等待厂商公告",
+                "mode": "all",
+                "wait": {
+                  "event": "vendor.announcement",
+                  "reason": "需等待外部厂商发布 DemoLib 相关公告后才能继续调查",
+                  "timeoutSeconds": 604800
+                }
+              },
+              {
+                "functionName": "identity",
+                "id": "passthrough-finish",
+                "kind": "function",
+                "label": "公告原样收尾",
+                "mode": "all"
+              }
+            ],
+            "outputs": {
+              "report": [
+                "passthrough-finish",
+                "output"
+              ]
+            },
+            "schemaVersion": 1
+          },
+          "title": "合成示例调查流程"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"saved\":true,\"changed\":true,\"definitionId\":\"e4f1d830-2d53-4be7-97d1-a4849d75e307\",\"issues\":[]}"
+            }
+          ],
+          "details": {
+            "definitionId": "e4f1d830-2d53-4be7-97d1-a4849d75e307"
+          }
+        }
+      }
+    ],
+    "definitionId": "e4f1d830-2d53-4be7-97d1-a4849d75e307"
+  },
+  "definition": {
+    "edges": [
+      {
+        "from": [
+          "$input",
+          "material"
+        ],
+        "to": [
+          "analyze-material",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "analyze-material",
+          "output"
+        ],
+        "to": [
+          "record-milestone",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "record-milestone",
+          "output"
+        ],
+        "to": [
+          "wait-vendor",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "wait-vendor",
+          "event"
+        ],
+        "to": [
+          "passthrough-finish",
+          "input"
+        ]
+      }
+    ],
+    "inputs": [
+      "material"
+    ],
+    "nodes": [
+      {
+        "expectedOutput": {
+          "type": "string"
+        },
+        "id": "analyze-material",
+        "inputSchema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "kind": "agent",
+        "label": "分析材料",
+        "mode": "all",
+        "operation": "aggregate",
+        "task": "对输入的全部材料做一次聚合调查分析：保留原始编号（如 M01），逐条概述关键事实（如 DemoLib 已在资产清单、正等待厂商公告），并列出待验证事项，输出简明中文分析正文。"
+      },
+      {
+        "id": "record-milestone",
+        "kind": "milestone",
+        "label": "记录调查里程碑",
+        "milestone": {
+          "stage": "调查启动",
+          "summary": "已完成材料初析并登记待验证事项；调查尚未结项，需在收到并核验厂商公告后另行确认完成。"
+        },
+        "mode": "all"
+      },
+      {
+        "id": "wait-vendor",
+        "kind": "wait",
+        "label": "等待厂商公告",
+        "mode": "all",
+        "wait": {
+          "event": "vendor.announcement",
+          "reason": "需等待外部厂商发布 DemoLib 相关公告后才能继续调查",
+          "timeoutSeconds": 604800
+        }
+      },
+      {
+        "functionName": "identity",
+        "id": "passthrough-finish",
+        "kind": "function",
+        "label": "公告原样收尾",
+        "mode": "all"
+      }
+    ],
+    "outputs": {
+      "report": [
+        "passthrough-finish",
+        "output"
+      ]
+    },
+    "schemaVersion": 1
+  }
+}

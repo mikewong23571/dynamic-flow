@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Plus,
   Workflow,
@@ -15,7 +16,7 @@ import {
   Save,
   Code,
 } from 'lucide-react';
-import type { FlowNode } from '../shared/records';
+import type { FlowNode, ItemRunRef } from '../shared/records';
 import { active, inputPorts, short, workTitle } from './model';
 import { Badge, Button, Empty } from './components/ui';
 import { WorkflowCanvas } from './WorkflowCanvas';
@@ -29,7 +30,10 @@ import { WorkspaceDialogs } from './WorkspaceDialogs';
 import { Sidebar } from './Sidebar';
 import { ModelSettingsDialog } from './ModelSettingsDialog';
 import WorkLibrary from './WorkLibrary';
+import { WorkItems } from './WorkItems';
 export default function Workspace() {
+  const [itemsOpen, setItemsOpen] = useState(false);
+  const [pendingRun, setPendingRun] = useState<ItemRunRef>();
   const controller = useWorkspace();
   const {
     refreshWorks,
@@ -93,11 +97,36 @@ export default function Workspace() {
     beginFrom,
     addNode,
   } = controller;
+  useEffect(() => {
+    if (pendingRun && work?.id === pendingRun.workId && snapshot) {
+      setSelectedRun(pendingRun.runId);
+      setTab('results');
+      setPanel(null);
+      setPendingRun(undefined);
+    }
+  }, [pendingRun, work?.id, snapshot]);
   return (
     <div className="app-shell">
-      <Sidebar controller={controller} />
+      <Sidebar
+        controller={controller}
+        itemsOpen={itemsOpen}
+        onItems={() => setItemsOpen(true)}
+        onMethods={() => setItemsOpen(false)}
+      />
       <main className="workspace">
-        {libraryOpen ? (
+        {itemsOpen ? (
+          <WorkItems
+            onMethod={(id) => {
+              setItemsOpen(false);
+              openWork(id);
+            }}
+            onRun={(ref) => {
+              setItemsOpen(false);
+              openWork(ref.workId);
+              setPendingRun(ref);
+            }}
+          />
+        ) : libraryOpen ? (
           <WorkLibrary
             onOpen={openWork}
             onCreate={() => setCreateOpen(true)}
@@ -272,6 +301,8 @@ export default function Workspace() {
                           <option value="function">普通处理</option>
                           <option value="agent">Agent</option>
                           <option value="branch">条件分流</option>
+                          <option value="wait">等待事件</option>
+                          <option value="milestone">业务里程碑</option>
                         </select>
                         <Button onClick={addNode}>
                           <Plus size={15} />

@@ -44,3 +44,7 @@
 状态为 **模块实现完成，产品联测待验收**。HTTP/SSE、Pi 取消和前端重连由入口联测，不能以本域测试代替。文件容量和多进程同时写仍未测试；当前约定仅单进程。
 
 产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
+
+## 持久等待恢复（2026-09-20）
+
+waiting 不属于 onServerStart 的中断集合；其截止时间、事件及已完成结果完整保留，由 runs.recover 恢复调度。running/queued 的不确定执行仍标 interrupted，runs.resume 仅补未完成实例；已完成实例不可抹除。文件层不调用模型、不触发业务更新、不自行运行定时任务。
