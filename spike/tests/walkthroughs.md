@@ -15,9 +15,9 @@
 | C1 | T1、T4 | P07、P23、P28、P30 | runs、files、workspace |
 | C2 | T6 | P08、P24、P27 | runs、assistant、trials |
 | C3 | T6 | P09 | runs、workspace |
-| D1 | T1 | P10、P30 | work、runs、workspace |
+| D1 | T1 | P10、P30、P32 | work、runs、workspace |
 | D2 | T1 | P11 | work、workspace |
-| E1 | T3 | P13、P18 | flow、assistant、workspace |
+| E1 | T3 | P13、P18、P32 | flow、assistant、workspace |
 | E2 | T3 | P14、P28 | trials、runs、workspace |
 | E3 | T3 | P15、P27 | trials、runs、workspace |
 | E4 | T4 | P16、P17 | trials、flow、workspace |
@@ -50,7 +50,7 @@ T8 与 P25 横跨全部故事的可理解性和体验；没有把它伪装成另
 
 ## T3：对话修改与同输入试验
 
-1. 采用 d1 后，从 F01 的结果选中 classify；发送修改时固定 target=classify、expectedDraftId=d1、样本上下文。
+1. 采用 d1 后，从 F01 的结果选中 classify；明确选定改进起点再固定 target、expectedDraftId 和样本上下文。若问题来自 d1、采用已为 d2、另有草稿 d3，先选择起点并明确处理已有草稿，不能直接猜测修改哪版（P32）。继续 d3 保留原起点；从 d1 改成新候选后，默认基线仍为 d1，不自动取采用版 d2。
 2. Pi 执行 update_flow 工具只修改请求范围，saveDraft 产生 d2，adoptedId 仍是 d1；保存通知由 server 入口转为含定义的快照，画布和配置立即更新，不等待最后文字回复（P29）。
 3. 选择 F01/F03，compare 固定两版与相同输入内容，先运行 d1 再运行 d2；F02 不进入任何一侧的输入。
 4. 逐项结果按 sampleId 对齐；输入契约不兼容时提前提示，不自动运行不同材料来假装可比较。

@@ -4,7 +4,9 @@
 
 ```text
 compare(workId, baselineId, candidateId, nodeId, selectedInputs):
-  基线通常取 adoptedId；尚未采用时由用户指定已有定义
+  基线默认取当前候选的 draftBaseId；候选取 draftId
+  若用户显式另选比较基线，则使用该明确选择；不自动替换为 adoptedId
+  没有候选起点时，先让用户选择起点，再发起比较
   候选来自当前草稿；同一节点 ID 必须存在于两边
   检查两边输入端口、each/all 模式与输入要求能使用同一组输入
   不兼容则要求明确重选/调整；不猜字段映射，不比较删除前后的不同节点

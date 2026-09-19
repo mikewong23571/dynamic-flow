@@ -1,7 +1,7 @@
 # 测试目录：先推演，再验收真实实现
 
 - [fixtures.md](./fixtures.md)：输入和可控模型行为。
-- [cases.md](./cases.md)：31 个可判定成败的场景，包含正常、失败、取消、过期和恢复。
+- [cases.md](./cases.md)：32 个可判定成败的场景，包含正常、失败、取消、过期和恢复。
 - [walkthroughs.md](./walkthroughs.md)：19 个故事如何通过具体模块和接口闭环，对应 T1–T8。
 - [迭代记录](../iterations.md)：初稿断点和实际文档修订。
 

@@ -18,17 +18,23 @@
 
 ## 接口与依赖
 
-暂定 saveDraft(workId, expectedDraftId, definition)、saveLayout、checkDefinition、validateForRun、adopt、discardDraft。校验返回节点/连接/字段与处理说明。
+暂定 beginCandidate（明确改进起点与已有草稿处理）、saveDraft(workId, expectedDraftId, definition)、saveLayout、checkDefinition、validateForRun、adopt、discardDraft。校验返回节点/连接/字段与处理说明。
 
 仅直接依赖 files，校验和差异用普通函数；不引入 Babel/recast。参考 [伪代码](../../../spike/src/server/flow.pseudo.md)。确切类型在真实调用中校准。
 
 ## 验收计划
 
-- [ ] P04/P05：改变连线确实改变运行输入；无效端口/环能定位并修复。
-- [ ] P13/P17：旧 expectedDraftId 不覆盖新草稿；移动位置不创建新语义版本。
-- [ ] P18/P26：采用与保留独立；坏提案不能冒充已保存。
-- [ ] P29：与 assistant/files/server/client 联测工具实改画布，不能只证明 saveDraft 被调用。
+下文编号只是查阅索引：P 表示具体测试场景，T 表示完整用户验收路线；含义见 [术语与编号](../../../docs/glossary.md)。
+
+- [ ] 改变连线确实改变运行输入；无效端口/环能定位并修复（场景 P04/P05）。
+- [ ] 旧 expectedDraftId 不覆盖新草稿；移动位置不创建新语义版本（场景 P13/P17）。
+- [ ] 采用与保留独立；坏提案不能冒充已保存（场景 P18/P26）。
+- [ ] 与 assistant/files/server/client 联测工具实改画布，不能只证明 saveDraft 被调用（场景 P29）。
+
+- [ ] 历史问题明确选择候选起点，不静默丢弃已有草稿；起点可在重开后识别（场景 P32）。
 
 ## 假设与未知
 
 固定节点/端口与有限条件尚未充分验证。真实条件、合并或输入结构无法表达时，先用最小反例修订定义，不能靠 UI 假连线维持原设计。本清单不穷尽未知。
+
+从历史结果开始改进时，必须明确所选版本；已有不同草稿不能被默默替换。具体 d1/d2/d3 场景与起点字段见对应伪代码。

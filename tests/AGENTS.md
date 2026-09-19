@@ -4,7 +4,7 @@
 
 ## 职责与目标
 
-用测试反馈校准方案，而非证明事先选定的架构永远正确。模块验收计划见 [模块与验收地图](../docs/implementation-map.md)，用例内容来自 [P01–P31](../spike/tests/cases.md)，用户路线来自 [T1–T8](../docs/user-stories.md)。
+用测试反馈校准方案，而非证明事先选定的架构永远正确。模块验收计划见 [模块与验收地图](../docs/implementation-map.md)，用例内容来自 [P01–P32](../spike/tests/cases.md)，用户路线来自 [T1–T8](../docs/user-stories.md)。
 
 ## 非目标
 

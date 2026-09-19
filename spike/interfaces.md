@@ -9,6 +9,7 @@
 | client → work.createWork | 目标、确认拆分后的文本 | workId；失败保留表单 |
 | client → work.addMaterials | workId、新文本 | 新材料 ID；旧材料不改 |
 | client → work.readWork | workId | 保存状态与相关定义、运行、结果、比较 |
+| client → flow.beginCandidate | workId、用户选定 baseDefinitionId、expectedDraftId、是否确认替换已有草稿 | 明确候选及比较起点；有冲突时说明而不覆盖 |
 | client / assistant → flow.saveDraft | workId、expectedDraftId、完整下一版定义 | 新 draftId、节点变化、局部配置问题；冲突不覆盖 |
 | client → flow.saveLayout | workId、坐标、缩放 | 已保存视图；定义 ID 不变 |
 | client → assistant.requestEdit | workId、选中节点或全流程范围、消息、样本 | 请求/消息 ID；流式回复；工具实际保存结果 |

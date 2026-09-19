@@ -17,7 +17,7 @@
 | 分栏 | react-resizable-panels 4.12.4，按需使用 | 拖动与窗口缩放已测，不做自由停靠 |
 | 材料/结果 | TanStack Table 9.2.4 按多列需求使用；react-markdown 报告 | 选择/排序/筛选和渲染已测 |
 | 状态 | React state 起步；IR 与运行数据明确区分 | 小型示例已测，暂无全局 store 平台需求 |
-| 持久化 | 本地定义/元数据/结果文件 + 追加事件记录 | 设计选择，尚未实现；SQLite 延后 |
+| 持久化 | 每工作 work.json（含结果/事件）+ 不可变 JS 定义文件 | 设计选择，尚未实现；SQLite 延后 |
 
 IR 中 agent/function/branch 与逐项模式的确切字段，在下一个最小 runtime 实验中固化。普通处理复用已有 JS 函数；不要把所有控制逻辑变成 Agent 循环，也不要用硬编码业务分类替代 Agent 节点职责。
 

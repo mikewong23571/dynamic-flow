@@ -29,3 +29,5 @@
 ## Tracks
 
 - [Tracks Directory](./tracks/)
+
+[术语与编号](../docs/glossary.md)：文档缩写、用户故事/测试场景编号与基本工程说明。
