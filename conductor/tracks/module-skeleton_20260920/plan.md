@@ -2,7 +2,7 @@
 
 ## Phase 1 — 子问题与模块责任
 
-- [ ] Task: 建立模块 AGENTS、目录与最小源码入口。
+- [~] Task: 建立模块 AGENTS、目录与最小源码入口。
 - [ ] Task: 建立模块验收和跨模块闭环对应，记录假设与调整方式。
 - [ ] Task: Phase Verification & Checkpoint：检查用户故事覆盖和边界可修订性。
 
