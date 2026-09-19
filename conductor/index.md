@@ -2,6 +2,8 @@
 
 ## Definition
 
+- [用户故事与原型验收（讨论稿）](../docs/user-stories.md)
+
 - [当前产品与技术设计](../docs/design.md)
 - [设计文档与原稿归档](../docs/README.md)
 
