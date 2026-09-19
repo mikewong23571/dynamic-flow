@@ -134,8 +134,10 @@ shared 的验收嵌入 P07/P14/P16/P19/P21/P30/P31 的真实读写；类型相�
 
 ## 6. 当前实施与后续验证
 
-Work 保留方法工作区，WorkItem 新增持续业务身份，Run 保存固定输入、等待、事件与实例检查点。wait/milestone、map/flatMap/aggregate、有限并发与 Ajv 校验已有实现；完整端口类型推导、独立 filter、严格 reduce 未实现。任意调用栈恢复和生产级调度不在范围。
+Work 保留方法工作区，WorkItem 新增持续业务身份，Run 保存固定输入、等待、事件与实例检查点。wait/milestone、map/flatMap/aggregate、有限并发与 Ajv 校验已有实现；纯表达式提供 filter 与有初值的顺序 reduce、模式匹配和解构；完整端口类型推导与图级独立 filter 未实现。任意调用栈恢复和生产级调度不在范围。
 
 当前按 L1–L5 核对生命周期真实接线，再回归方法编辑与 T1–T8。域内替身、真实文件/HTTP、受控时间、真实进程重启、真实模型、浏览器分别提供证据，不能互相替代。
 
 `pnpm dev`、`pnpm build`、`pnpm test` 与 `pnpm test:browser` 面向正式应用，历史实验改由 `pnpm spike:*` 运行。类型、模块测试、真实模型调用、浏览器操作和用户视觉判断分别报告；不因为脚本已切换或源码已实现就宣称整体验收完成。
+
+本轮 [管理页与函数式 IR](../conductor/tracks/functional-ir-management_20260920/index.md)：flow 负责表达式完整形状/作用域校验，runs 执行纯变换并保留 schema/来源边界，assistant 通过相同校验保存，client 提供结构化配置与紧凑摘要。共享类型位于 src/shared/expressions.ts，无新运行服务。

@@ -1,4 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;450;500;550;600;650;700&display=swap');
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@source "./";
+@custom-variant dark (&:is(.dark *));
+@theme inline {
+  --color-background: var(--canvas);
+  --color-foreground: var(--ink);
+  --color-card: var(--paper);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--paper);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--ink);
+  --color-primary-foreground: var(--canvas);
+  --color-secondary: var(--surface);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--surface);
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--hover);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: var(--danger);
+  --color-border: var(--line);
+  --color-input: var(--line);
+  --color-ring: var(--accent);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
 :root {
   font-family:
     'Geist',
@@ -40,10 +68,10 @@
 body {
   margin: 0;
 }
-button,
-input,
-textarea,
-select {
+:where(button:not([data-slot])),
+:where(input:not([data-slot])),
+:where(textarea:not([data-slot])),
+:where(select:not([data-slot])) {
   font-family: inherit;
   font-size: 13px;
   color: var(--ink);
@@ -61,10 +89,10 @@ button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
-button,
-input,
-textarea,
-select {
+:where(button:not([data-slot])),
+:where(input:not([data-slot])),
+:where(textarea:not([data-slot])),
+:where(select:not([data-slot])) {
   outline-color: var(--accent);
 }
 button:focus-visible,
@@ -72,7 +100,7 @@ a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
-button {
+:where(button:not([data-slot])) {
   color: inherit;
 }
 h1,
@@ -92,9 +120,9 @@ h3 {
 h4 {
   font-size: 13px;
 }
-input,
-textarea,
-select {
+:where(input:not([data-slot])),
+:where(textarea:not([data-slot])),
+:where(select:not([data-slot])) {
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--line);
@@ -103,11 +131,11 @@ select {
   min-width: 0;
   line-height: 1.5;
 }
-textarea {
+:where(textarea:not([data-slot])) {
   resize: vertical;
   width: 100%;
 }
-select {
+:where(select:not([data-slot])) {
   padding: 7px 28px 7px 9px;
   max-width: 100%;
 }
@@ -121,45 +149,6 @@ input[type='checkbox'] {
 small {
   font-size: 11px;
   color: var(--muted);
-}
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 7px 12px;
-  min-height: 32px;
-  line-height: 1.2;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
-  background: var(--paper);
-  transition:
-    background 0.12s,
-    border-color 0.12s;
-}
-.button:hover:not(:disabled) {
-  background: var(--hover);
-  border-color: var(--line-hover);
-}
-.button.primary {
-  color: var(--canvas);
-  background: var(--ink);
-  border-color: var(--ink);
-  box-shadow: none;
-}
-.button.primary:hover:not(:disabled) {
-  background: #d4d4d4;
-  border-color: #d4d4d4;
-}
-.button.ghost {
-  background: transparent;
-  border-color: transparent;
-}
-.button.danger {
-  color: var(--danger);
 }
 .full-width {
   width: 100%;
@@ -1143,44 +1132,25 @@ small {
   font-size: 12px;
   line-height: 1.7;
 }
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: #0009;
-  z-index: 50;
-  backdrop-filter: blur(4px);
-}
 .modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   width: min(640px, 92vw);
+  max-width: min(640px, 92vw);
   max-height: 88vh;
   overflow: auto;
+  display: block;
   padding: 27px 30px;
   background: var(--paper);
-  border: 1px solid var(--line-hover);
-  border-radius: 12px;
+  border-color: var(--line-hover);
+  border-radius: 10px;
   box-shadow: var(--shadow);
-  z-index: 51;
 }
-.modal > header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.modal > header h2 {
-  font-size: 21px;
-  font-weight: 550;
-  letter-spacing: -0.035em;
-}
-.modal > header .button {
-  padding: 6px;
-}
-.modal > p {
+.modal [data-slot='dialog-header'] {
+  padding-right: 24px;
   margin-bottom: 20px;
+}
+.modal [data-slot='dialog-title'] {
+  font-size: 20px;
+  font-weight: 550;
 }
 .modal .field {
   margin-top: 18px;
@@ -2079,15 +2049,6 @@ small {
 .model-settings .modal-actions {
   margin-top: 20px;
 }
-.modal > header {
-  position: sticky;
-  top: -27px;
-  z-index: 2;
-  background: var(--paper);
-  margin: -27px -30px 16px;
-  padding: 23px 30px 13px;
-  border-bottom: 1px solid var(--line);
-}
 .model-settings .field {
   margin-top: 0;
   margin-bottom: 16px;
@@ -2128,4 +2089,37 @@ textarea:focus-visible,
 select:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* Keep reset local to the migrated primitives; utilities supply component styling. */
+@layer base {
+  [data-slot] {
+    border: 0 solid var(--line);
+  }
+  button[data-slot],
+  input[data-slot],
+  textarea[data-slot],
+  select[data-slot] {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    margin: 0;
+  }
+  [data-slot='pagination-content'] {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  [data-slot='table'] {
+    border-collapse: collapse;
+  }
+}
+[data-slot='dialog-overlay'] {
+  z-index: 100;
+}
+[data-slot='dialog-content'] {
+  z-index: 101;
+}
+[data-slot='dropdown-menu-content'] {
+  z-index: 110;
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import type {
   ItemRunRef,
   WorkItemPage,
@@ -8,7 +8,26 @@ import type {
   WorkSummary,
 } from '../shared/records';
 import { api } from './model';
-import { Badge, Button, Empty } from './components/ui';
+import { Badge, Empty } from './components/ui';
+import { Button } from './components/ui/button';
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from './components/ui/native-select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './components/ui/table';
+import {
+  PageHeader,
+  ListToolbar,
+  ListPagination,
+  ListLoading,
+} from './components/Management';
 import { CreateItemDialog } from './WorkItemDialogs';
 import { WorkItemDetail } from './WorkItemDetail';
 import './WorkItems.css';
@@ -37,6 +56,9 @@ export function WorkItems({
   onMethod: (id: string) => void;
 }) {
   const [query, setQuery] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [status, setStatus] = useState('');
   const [data, setData] = useState<WorkItemPage>();
   const [itemId, setItemId] = useState<string>();
@@ -46,6 +68,8 @@ export function WorkItems({
   const [error, setError] = useState('');
   useEffect(() => {
     let live = true;
+    let first = true;
+    let timer: ReturnType<typeof setTimeout>;
     async function refresh() {
       try {
         const [next, selected] = await Promise.all([
@@ -57,19 +81,32 @@ export function WorkItems({
             : Promise.resolve(undefined),
         ]);
         if (live) {
-          setData(next);
+          const replace = first;
+          first = false;
+          setData((previous) => {
+            if (replace || !previous) return next;
+            const byId = new Map(next.items.map((row) => [row.id, row]));
+            // Refresh values in place; append newly observed items without moving the row being read.
+            const existing = previous.items.flatMap((row) => {
+              const updated = byId.get(row.id);
+              byId.delete(row.id);
+              return updated ? [updated] : [];
+            });
+            return { ...next, items: [...existing, ...byId.values()] };
+          });
           setItem(selected);
           setError('');
         }
       } catch (reason) {
         if (live) setError(String(reason));
+      } finally {
+        if (live) timer = setTimeout(() => void refresh(), 2000);
       }
     }
     void refresh();
-    const timer = setInterval(() => void refresh(), 2000);
     return () => {
       live = false;
-      clearInterval(timer);
+      clearTimeout(timer);
     };
   }, [query, status, itemId]);
   useEffect(() => {
@@ -81,8 +118,12 @@ export function WorkItems({
     setItem(next);
     setItemId(next.id);
   }
+  const currentPage = Math.min(
+    page,
+    Math.max(1, Math.ceil((data?.total ?? 0) / pageSize)),
+  );
   return (
-    <section className="items-page" aria-label="工作项管理">
+    <section className="management-page items-page" aria-label="工作项管理">
       {error && (
         <div role="alert" className="error-banner">
           {error}
@@ -106,128 +147,156 @@ export function WorkItems({
         )
       ) : (
         <>
-          <header className="items-heading">
-            <div>
-              <span className="eyebrow">业务进展</span>
-              <h1>工作项</h1>
-            </div>
-            <Button variant="primary" onClick={() => setCreating(true)}>
-              <Plus size={15} />
+          <PageHeader title="工作项" count={data?.total}>
+            <Button size="sm" onClick={() => setCreating(true)}>
+              <Plus />
               新建工作项
             </Button>
-          </header>
-          <div className="items-filters">
-            <label className="items-search">
-              <Search size={16} />
-              <input
-                aria-label="搜索工作项"
-                placeholder="搜索编号、标题或目标"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </label>
-            <select
+          </PageHeader>
+          <ListToolbar
+            label="搜索工作项"
+            placeholder="搜索编号、标题或目标"
+            value={searchText}
+            onChange={setSearchText}
+            onSearch={() => {
+              setQuery(searchText.trim());
+              setPage(1);
+            }}
+          >
+            <NativeSelect
+              size="sm"
               aria-label="工作项状态"
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(event) => {
+                setStatus(event.target.value);
+                setPage(1);
+              }}
             >
-              <option value="">全部状态</option>
+              <NativeSelectOption value="">全部状态</NativeSelectOption>
               {Object.entries(itemStatusNames).map(([key, name]) => (
-                <option key={key} value={key}>
+                <NativeSelectOption key={key} value={key}>
                   {name}
-                </option>
+                </NativeSelectOption>
               ))}
-            </select>
-            <span className="muted">{data?.total ?? 0} 项</span>
-          </div>
+            </NativeSelect>
+          </ListToolbar>
           {!data ? (
-            <Empty title="正在载入" />
+            <ListLoading />
           ) : !data.items.length ? (
             <Empty
               title={query || status ? '没有符合条件的工作项' : '还没有工作项'}
             >
-              <Button onClick={() => setCreating(true)}>
-                登记一件需要持续推进的工作
-              </Button>
+              {!query && !status && (
+                <Button variant="outline" onClick={() => setCreating(true)}>
+                  新建工作项
+                </Button>
+              )}
             </Empty>
           ) : (
-            <div className="items-table-wrap">
-              <table className="items-table">
-                <thead>
-                  <tr>
-                    <th>工作项</th>
-                    <th>业务进展</th>
-                    <th>执行 / 等待</th>
-                    <th>最近进展</th>
-                    <th>
-                      <span className="sr-only">打开</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.items.map((row) => {
-                    const wait = row.execution?.waits.find(
-                      (w) => w.status === 'pending',
-                    );
-                    return (
-                      <tr key={row.id}>
-                        <td>
-                          <button
-                            className="item-title-button"
-                            onClick={() => select(row)}
-                          >
-                            <small>{row.key}</small>
-                            <strong>{row.title}</strong>
-                            <small className="item-narrow-date">
-                              进展 {itemTime(row.progressAt)}
-                            </small>
-                          </button>
-                        </td>
-                        <td>
-                          <Badge status={row.effectiveStatus}>
-                            {itemStatusNames[row.effectiveStatus]}
-                          </Badge>
-                          <strong className="item-stage">
-                            {row.stage || '尚未开始'}
-                          </strong>
-                          <p className="item-cell-summary">
-                            {row.summary || '尚无业务进展'}
-                          </p>
-                        </td>
-                        <td>
-                          <span>
-                            {wait?.reason ||
-                              (row.execution
-                                ? executionName(row.execution.status)
-                                : '未运行')}
-                          </span>
-                          {wait && (
-                            <small className="item-next">
-                              {wait.dueAt
-                                ? `到期 ${itemTime(wait.dueAt)}`
-                                : `等待事件 ${wait.event}`}
-                            </small>
-                          )}
-                        </td>
-                        <td className="item-date">
-                          {itemTime(row.progressAt)}
-                        </td>
-                        <td>
-                          <Button
-                            variant="ghost"
-                            aria-label={`打开工作项 ${row.key}`}
-                            onClick={() => select(row)}
-                          >
-                            <ArrowRight size={16} />
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div className="management-table-wrap">
+              <Table className="management-table items-table">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>名称 / 编号</TableHead>
+                    <TableHead>业务进展</TableHead>
+                    <TableHead>执行 / 等待</TableHead>
+                    <TableHead>最近进展</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.items
+                    .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+                    .map((row) => {
+                      const wait = row.execution?.waits.find(
+                        (value) => value.status === 'pending',
+                      );
+                      const stage =
+                        row.stage &&
+                        row.stage !== itemStatusNames[row.effectiveStatus]
+                          ? row.stage
+                          : undefined;
+                      const summary =
+                        row.effectiveStatus !== 'completed'
+                          ? row.summary
+                          : undefined;
+                      const attention =
+                        row.execution &&
+                        ['failed', 'interrupted'].includes(
+                          row.execution.status,
+                        );
+                      return (
+                        <TableRow key={row.id} data-item-id={row.id}>
+                          <TableCell>
+                            <button
+                              className="management-title-button"
+                              onClick={() => select(row)}
+                              title={row.title}
+                              aria-label={`打开工作项 ${row.key}`}
+                            >
+                              <strong>{row.title}</strong>
+                              <span className="management-secondary">
+                                {row.key}
+                              </span>
+                            </button>
+                          </TableCell>
+                          <TableCell>
+                            <div className="item-progress-line">
+                              <Badge status={row.effectiveStatus}>
+                                {itemStatusNames[row.effectiveStatus]}
+                              </Badge>
+                              {stage && (
+                                <span className="item-stage" title={stage}>
+                                  {stage}
+                                </span>
+                              )}
+                            </div>
+                            {summary && (
+                              <p
+                                className="management-secondary item-summary"
+                                title={summary}
+                              >
+                                {summary}
+                              </p>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={`item-execution ${attention ? 'attention' : ''}`}
+                              title={wait?.reason}
+                            >
+                              {wait?.reason ||
+                                (row.execution
+                                  ? executionName(row.execution.status)
+                                  : '尚未执行')}
+                            </span>
+                            {wait && (
+                              <span className="management-secondary">
+                                {wait.dueAt
+                                  ? `到期 ${itemTime(wait.dueAt)}`
+                                  : `事件 ${wait.event}`}
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell className="management-date">
+                            {itemTime(row.progressAt)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
             </div>
           )}
+          <ListPagination
+            page={currentPage}
+            pageSize={pageSize}
+            total={data?.total ?? 0}
+            onPage={setPage}
+            onPageSize={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+          />
         </>
       )}
       <CreateItemDialog

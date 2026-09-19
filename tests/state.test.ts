@@ -521,3 +521,22 @@ test('短标题初值、旧工作回退与列表边界清楚', async (t) => {
   await assert.rejects(service.listWorks({ page: 0 }), /分页/);
   await assert.rejects(service.listWorks({ pageSize: 0 }), /分页/);
 });
+
+test('流水线摘要来自当前草稿和采用版本，不将未归档当作正在执行', async (t) => {
+  const { files, flow, service, work } = await setup(t);
+  const summary = async () => (await service.listWorks()).works[0];
+  assert.equal((await summary()).definitionState, 'empty');
+  assert.equal((await summary()).nodeCount, 0);
+  const first = await flow.saveDraft(work.id, undefined, definition());
+  assert.equal((await summary()).definitionState, 'draft');
+  assert.equal((await summary()).nodeCount, 2);
+  await flow.adopt(work.id, first);
+  assert.equal((await summary()).definitionState, 'adopted');
+  const revised = definition();
+  revised.nodes[0].task = '修改分类要求';
+  await flow.saveDraft(work.id, first, revised);
+  assert.equal((await summary()).definitionState, 'changed');
+  await flow.discardDraft(work.id);
+  assert.equal((await summary()).definitionState, 'adopted');
+  assert.equal((await files.read(work.id)).adoptedId, first);
+});

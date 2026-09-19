@@ -55,3 +55,7 @@
 G2正式接线域内回归已通过：`pnpm test:browser` 三项通过，其中列表用真实 HTTP 创建 12 项独立工作，浏览器验证搜索分页、重命名同步侧栏、归档恢复和重开。截图与可恢复 fixture ID 见 tests/browser/evidence/README.md。函数工作台两尺寸回归也通过；真实模型和完整用户路线仍由根任务验收。
 
 产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
+
+## 流水线管理摘要
+
+WorkSummary 增加 definitionState（empty/draft/adopted/changed）及 nodeCount，由真实 draftId/adoptedId 和当前定义读取产生；列表不再把未归档称为进行中。只读取当页定义计算节点数，不为了列表存第二份状态或节点计数。tests/state.test.ts 覆盖无定义→草稿→采用→候选变化→放弃的状态切换。

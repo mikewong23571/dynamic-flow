@@ -1,0 +1,98 @@
+.expression-block {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin-block: 8px;
+  background: transparent;
+}
+.expression-block > summary,
+.expression-case > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 9px;
+  font-size: 12px;
+}
+.expression-block > summary::before,
+.expression-case > summary::before {
+  content: '›';
+  color: var(--muted);
+}
+.expression-block[open] > summary::before,
+.expression-case[open] > summary::before {
+  transform: rotate(90deg);
+}
+.expression-block > summary > span {
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.expression-block > summary > small {
+  color: var(--muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.expression-body {
+  padding: 0 8px 8px;
+  min-width: 0;
+}
+.expression-body .expression-body {
+  padding-inline: 6px;
+}
+.expression-field {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  margin-block: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.expression-field > [data-slot='native-select-wrapper'] {
+  width: 100%;
+}
+.expression-field input,
+.expression-field select,
+.expression-field textarea {
+  color: var(--ink);
+  width: 100%;
+  font-size: 12px;
+  min-width: 0;
+}
+.expression-entry {
+  border-top: 1px solid var(--line);
+  padding-top: 6px;
+  margin-top: 8px;
+  min-width: 0;
+}
+.expression-entry-header {
+  display: flex;
+  align-items: end;
+  gap: 5px;
+}
+.expression-entry-header .expression-field {
+  flex: 1;
+}
+.expression-entry-header button {
+  margin-bottom: 8px;
+}
+.expression-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: end;
+}
+.expression-body button {
+  max-width: 100%;
+  white-space: normal;
+  font-size: 11px;
+}
+.expression-hint {
+  margin: 6px 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.expression-case {
+  padding-bottom: 6px;
+}

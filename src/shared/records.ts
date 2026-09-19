@@ -1,3 +1,5 @@
+import type { Expression } from './expressions.js';
+
 export type Json =
   null | boolean | number | string | Json[] | { [key: string]: Json };
 export type Status =
@@ -21,7 +23,8 @@ export interface FlowNode {
   wait?: { event: string; reason: string; timeoutSeconds?: number };
   milestone?: { stage: string; summary: string };
   expectedOutput?: Json;
-  functionName?: 'identity' | 'select-fields' | 'merge';
+  functionName?: 'identity' | 'select-fields' | 'merge' | 'expression';
+  expression?: Expression;
   params?: { fields?: string[] };
   condition?: {
     field: string;
@@ -171,6 +174,8 @@ export interface WorkSummary {
   goal: string;
   updatedAt: string;
   archivedAt?: string;
+  definitionState?: 'empty' | 'draft' | 'adopted' | 'changed';
+  nodeCount?: number;
 }
 export interface WorkPage {
   works: WorkSummary[];

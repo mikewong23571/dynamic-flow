@@ -14,7 +14,7 @@
 
 ## 非目标
 
-不分析任意 JS、反编译画布，不做表达式编译器、通用 patch DSL 或自动冲突合并，不执行模型。
+不分析任意 JS、反编译画布，不做任意代码编译器、通用 patch DSL 或自动冲突合并，不执行模型。
 
 ## 接口与依赖
 
@@ -56,3 +56,14 @@
 Schema 当前使用 Ajv 的 JSON Schema draft-07，允许基础类型 union；未知 keyword（包括拼写错误）和未安装的 format 明确报错，不静默忽略。未承诺 draft-2020-12 或自定义词汇支持。
 
 控制节点 wait / milestone / branch 的 expectedOutput 统一约束整批透传值数组（分支在分流前校验）；连线上的各个值仍为数组元素 T，静态检查取 items 推断，不能把 T[] 当作每项 T。wait 的 event 端口独立，不使用透传输出的 schema。
+
+
+## 纯函数 IR（2026-09-20）
+
+`expressions.ts` 提供 `checkExpression(unknown): {field,message}[]` 和 `evaluateExpression(Expression, Json): Json`。共享序列化类型见 `src/shared/expressions.ts`，具体合同见本轮 `functional-ir-management_20260920/spec.md`。functionName=expression 必须显式指定 operation；草稿可保存未完成表达式，运行与 Assistant update_flow 必须通过同一校验，问题字段以 expression 开始并由 checkDefinition 加 nodeId。
+
+支持 pipe、集合 map/filter/flatMap、有初值的顺序 reduce、let 解构和有序 match/guard/otherwise。模式使用 wildcard/bind/literal/type/object/array；对象子集、数组精确或前缀/rest，模式内重复变量及 reduce 累加器冲突明确拒绝。变量为词法作用域，可遮蔽外层；input 是实际节点参数，pipe 每步 value 是前一步值。字段路径仅访问自身 JSON 属性，缺失与 null 区分。纯函数严格参数个数和类型，无隐式转换；equal 按结构比较，忽略对象字段顺序；and/or 和其它 call 一样先求值所有参数，不承诺短路。
+
+实现边界是最多 2000 个语法/字面值条目、64 层嵌套、每次 100000 次表达式求值；错误明确提示缩小表达式/输入。此为原型可解释执行的边界，不是通用语言或隔离平台。结果无输入别名，无任意 JS、闭包、递归或模型调用。
+
+域内证据 `tests/functional-ir.test.ts` 覆盖组合语义、空集合、守卫、解构、词法作用域、错误路径、纯运算、真实文件保存重开、schema 拒绝和下游阻断。作者接线另见 `tests/functional-author.test.ts`；真实模型、结构化画布编辑和视觉验收由本轮 track 汇总，不能由求值器测试替代。

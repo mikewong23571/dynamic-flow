@@ -5,16 +5,16 @@
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "examples/component-spike/src/style.css",
+    "css": "src/client/styles.css",
     "baseColor": "neutral",
     "cssVariables": true
   },
   "aliases": {
-    "components": "@/components",
-    "ui": "@/components/ui",
-    "utils": "@/lib/utils",
-    "lib": "@/lib",
-    "hooks": "@/hooks"
+    "components": "@/client/components",
+    "ui": "@/client/components/ui",
+    "utils": "@/client/lib/utils",
+    "lib": "@/client/lib",
+    "hooks": "@/client/hooks"
   },
   "iconLibrary": "lucide"
 }

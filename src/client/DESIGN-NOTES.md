@@ -56,3 +56,7 @@ Workspace 负责组合；useWorkspace 维护 HTTP/SSE 与编辑上下文；Sideb
 - `Results` 可查看工作项固定输入修订、等待释放方式、接收事件 ID / 时间 / payload。运行成功与工作项结项分别呈现。
 
 域内 `tests/client.test.ts` 7 项通过，`pnpm typecheck:app` 通过。新增真实 HTTP 浏览器路线由整体 track 记录；该记录不将类型检查当作持久恢复或用户视觉验收。
+
+## 管理页整改（2026-09-20）
+
+正式入口修正为 shadcn/Radix + Tailwind4，components.json不再指向旧Spike。管理对象统一为工作项/流水线；列表以标题为主，编号/节点数为辅，业务状态与阶段同组，错误执行突出，修改时间成列，次要操作进入菜单。工作项分页与稳定轮询、流水线键盘Tabs共用实际控件。审计和本轮截图见 [track](../../conductor/tracks/functional-ir-management_20260920/evidence.md)。旧段落描述此前实施过程，“所有工作”命名与旧手写基础控件已被本轮替代。

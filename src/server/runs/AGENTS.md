@@ -53,3 +53,12 @@ H3–H8 取代上文“始终顺序/重启只能另起重试”的限制。Run �
 域内证据：tests/lifecycle-runtime.test.ts 覆盖真实文件重开、受控时钟离线跨45天与45天长等待分段计时、显式恢复不重跑成功调用、迟到事件、预览、并发顺序/来源、schema 错误。模型为测试替身；真实 HTTP/进程/浏览器由 track 验收补充。
 
 局部 retry 显式继承旧 Run.workItem 冻结快照，并强制 preview。所选结果续做/比较在未显式传入 workItem 时，由每个 sourceResultIds 的原 Run 解析快照：必须同工作项同 revision；与另一工作项、另一修订或无结果来源的方法材料混合时拒绝。未知结果引用也明确报错。不能仅凭 M01 编号从方法示例中猜材料；推导来的上下文不授予业务提交，仍为 preview。
+
+
+## 函数式节点接线（2026-09-20）
+
+functionName=expression 只走显式 operation 调用路径，不能落入旧函数透传分支。map/flatMap 的 input 变量为单个输入值，aggregate 为按输入顺序组合的整批数组；表达式内部 flatMap 只改变值数组，节点 operation=flatMap 才展开为多个端口项。执行前后继续用 inputSchema/expectedOutput 校验；表达式错误、解构失败、未穷尽 match、除零或 schema 失败记录到实例，且不向下游传播失败输出。
+
+原有 InputItem 包装保留顺序与来源：map 来源是对应输入，aggregate 来源是参与本次调用的全部输入，flatMap 每个子项继承该调用的来源。表达式内部 filter 不声称更精细的逐字段来源推导。旧 identity/select-fields/merge 未指定 operation 时继续保持历史行为。
+
+`tests/functional-ir.test.ts` 通过真实文件保存、重开、执行验证表达式的 aggregate/map/flatMap、来源与顺序、草稿拒跑、schema 阻断及旧定义兼容；`tests/runs.test.ts` 与 `tests/lifecycle-runtime.test.ts` 为原有调度和生命周期回归。

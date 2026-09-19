@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [x] **Track: 管理页与函数式 IR**
+  *Link: [functional-ir-management_20260920](./tracks/functional-ir-management_20260920/index.md)*
+
 - [x] **Track: 业务工作项生命周期**
   *Link: [workitem-lifecycle_20260920](./tracks/workitem-lifecycle_20260920/index.md)*
 

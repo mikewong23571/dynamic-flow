@@ -94,7 +94,7 @@ export function CreateItemDialog({
             onChange={(e) => setForm({ ...form, workflowId: e.target.value })}
           >
             {!methods.length && (
-              <option value="">请先在“所有工作”中创建处理方法</option>
+              <option value="">请先在“流水线”中创建处理方法</option>
             )}
             {methods.map((method) => (
               <option key={method.id} value={method.id}>

@@ -3,6 +3,8 @@ import { Trash2, ArrowRight } from 'lucide-react';
 import type { Definition, FlowNode, Issue, Json } from '../shared/records';
 import { inputPorts, outputPorts, removeNode, portLabel } from './model';
 import { Button, Empty } from './components/ui';
+import { ExpressionEditor } from './ExpressionEditor';
+import { variable } from './expression-model';
 export function NodeInspector({
   definition,
   nodeId,
@@ -199,6 +201,16 @@ export function NodeInspector({
               onChange={(e) =>
                 update({
                   functionName: e.target.value as FlowNode['functionName'],
+                  ...(e.target.value === 'expression'
+                    ? {
+                        expression: node.expression || variable(),
+                        operation:
+                          node.operation ||
+                          (node.mode === 'all'
+                            ? ('aggregate' as const)
+                            : ('map' as const)),
+                      }
+                    : {}),
                   ...(e.target.value === 'merge'
                     ? { mode: 'all' as const, operation: 'aggregate' as const }
                     : {}),
@@ -206,10 +218,18 @@ export function NodeInspector({
               }
             >
               <option value="identity">原样传递</option>
+              <option value="expression">数据变换</option>
               <option value="select-fields">提取字段</option>
               <option value="merge">合并两路输入</option>
             </select>
           </label>
+          {node.functionName === 'expression' && (
+            <ExpressionEditor
+              key={node.id}
+              value={node.expression || variable()}
+              onChange={(expression) => update({ expression })}
+            />
+          )}
           {node.functionName === 'select-fields' && (
             <label className="field">
               字段（逗号分隔）

@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./examples/component-spike/src/*"]
+    }
+  },
+  "include": ["examples/component-spike"]
+}

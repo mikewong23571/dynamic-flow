@@ -227,6 +227,7 @@ for (const [width, height] of [
         .getByRole('button', { name: '工作项', exact: true })
         .click();
       await page.getByRole('textbox', { name: '搜索工作项' }).fill(item.key);
+      await page.getByRole('button', { name: '搜索', exact: true }).click();
       await page
         .getByRole('combobox', { name: '工作项状态' })
         .selectOption('open');

@@ -177,3 +177,47 @@ test('等待端口同时保留输入透传和事件，删除时不留下事件�
     outputs: {},
   });
 });
+
+test('数据变换默认值与画布摘要区分节点调用和数组组合', async () => {
+  const {
+    newExpression,
+    newPattern,
+    expressionSummary,
+    renameField,
+    nextField,
+  } = await import('../src/client/expression-model');
+  assert.deepEqual(newExpression('variable'), {
+    kind: 'variable',
+    name: 'input',
+  });
+  assert.equal(
+    expressionSummary({
+      kind: 'pipe',
+      input: newExpression('variable'),
+      steps: [
+        newExpression('filter'),
+        newExpression('map'),
+        newExpression('reduce'),
+      ],
+    }),
+    '筛选 → 逐项映射 → 顺序归约',
+  );
+  assert.equal(
+    expressionSummary({
+      kind: 'pipe',
+      input: newExpression('variable'),
+      steps: [],
+    }),
+    '原样传递',
+  );
+  assert.deepEqual(newPattern('array'), {
+    kind: 'array',
+    items: [{ kind: 'bind', name: 'item' }],
+    rest: 'rest',
+  });
+  assert.deepEqual(renameField({ a: 1, b: 2 }, 'a', 'label'), {
+    label: 1,
+    b: 2,
+  });
+  assert.equal(nextField({ field1: 0, field3: 0 }), 'field2');
+});

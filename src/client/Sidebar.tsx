@@ -66,7 +66,7 @@ export function Sidebar({
             }}
           >
             <Library size={16} />
-            所有工作
+            流水线
           </button>
           <Button
             className="new-work"
@@ -77,11 +77,11 @@ export function Sidebar({
             }}
           >
             <Plus size={16} />
-            新建工作
+            新建流水线
           </Button>
         </div>
-        <div className="sidebar-label">处理方法 · 最近工作</div>
-        <nav className="work-list" aria-label="最近工作">
+        <div className="sidebar-label">最近流水线</div>
+        <nav className="work-list" aria-label="最近流水线">
           {works.slice(0, 5).map((item) => (
             <button
               key={item.id}
@@ -101,7 +101,7 @@ export function Sidebar({
               <span>{workTitle(item)}</span>
             </button>
           ))}
-          {works.length === 0 && <p className="sidebar-empty">暂无工作</p>}
+          {works.length === 0 && <p className="sidebar-empty">暂无流水线</p>}
         </nav>
         {work && !libraryOpen && !itemsOpen && (
           <div className="work-resources">

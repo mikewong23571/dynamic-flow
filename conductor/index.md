@@ -29,6 +29,9 @@
 
 ## Tracks
 
+- [管理页与函数式 IR](./tracks/functional-ir-management_20260920/index.md)
+- [纯表达式语义](../docs/functional-ir.md)
+
 - [Tracks Directory](./tracks/)
 
 [术语与编号](../docs/glossary.md)：文档缩写、用户故事/测试场景编号与基本工程说明。

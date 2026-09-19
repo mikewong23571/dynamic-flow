@@ -111,15 +111,33 @@ export function createWorkService(files: FileStore) {
         Math.max(1, Math.ceil(works.length / pageSize)),
       );
       return {
-        works: works
-          .slice((page - 1) * pageSize, page * pageSize)
-          .map((work) => ({
-            id: work.id,
-            title: work.title || fallbackTitle(work.goal),
-            goal: work.goal,
-            updatedAt: work.updatedAt,
-            archivedAt: work.archivedAt,
-          })),
+        works: await Promise.all(
+          works
+            .slice((page - 1) * pageSize, page * pageSize)
+            .map(async (work) => ({
+              id: work.id,
+              title: work.title || fallbackTitle(work.goal),
+              goal: work.goal,
+              updatedAt: work.updatedAt,
+              archivedAt: work.archivedAt,
+              definitionState: !work.adoptedId
+                ? work.draftId
+                  ? ('draft' as const)
+                  : ('empty' as const)
+                : work.draftId && work.draftId !== work.adoptedId
+                  ? ('changed' as const)
+                  : ('adopted' as const),
+              nodeCount:
+                work.draftId || work.adoptedId
+                  ? (
+                      await files.readDefinition(
+                        work.id,
+                        (work.draftId ?? work.adoptedId)!,
+                      )
+                    ).nodes.length
+                  : 0,
+            })),
+        ),
         total: works.length,
         page,
         pageSize,

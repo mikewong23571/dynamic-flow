@@ -46,18 +46,22 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
     await expect(
       page.getByRole('button', { name: '保存修改', exact: true }),
     ).toBeVisible();
-    await page.getByRole('button', { name: '所有工作', exact: true }).click();
-    const library = page.getByRole('region', { name: '工作列表', exact: true });
+    await page.getByRole('button', { name: '流水线', exact: true }).click();
+    const library = page.getByRole('region', {
+      name: '流水线管理',
+      exact: true,
+    });
     await library.getByRole('textbox', { name: '搜索标题或目标' }).fill(goal);
     await library.getByRole('button', { name: '搜索', exact: true }).click();
     await expect(library.locator('.library-item')).toHaveCount(1);
-    await library.getByRole('button', { name: /^重命名 / }).click();
+    await library.getByRole('button', { name: /^更多操作 / }).click();
+    await page.getByRole('menuitem', { name: '重命名', exact: true }).click();
     const dialog = page.getByRole('dialog', {
-      name: '重命名工作',
+      name: '重命名流水线',
       exact: true,
     });
     const title = `已重命名 ${Date.now().toString(36)}`;
-    await dialog.getByRole('textbox', { name: '工作标题' }).fill(title);
+    await dialog.getByRole('textbox', { name: '流水线标题' }).fill(title);
     await dialog.getByRole('button', { name: '保存标题', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await library.getByRole('button', { name: title, exact: true }).click();
@@ -110,12 +114,13 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
       page.getByRole('button', { name: '放弃修改', exact: true }),
     ).toHaveCount(0);
     // Archiving the currently loaded work must also remove it from recent work.
-    await page.getByRole('button', { name: '所有工作', exact: true }).click();
+    await page.getByRole('button', { name: '流水线', exact: true }).click();
     await library.getByRole('textbox', { name: '搜索标题或目标' }).fill(goal);
     await library.getByRole('button', { name: '搜索', exact: true }).click();
     await library
-      .getByRole('button', { name: `归档 ${title}`, exact: true })
+      .getByRole('button', { name: `更多操作 ${title}`, exact: true })
       .click();
+    await page.getByRole('menuitem', { name: '归档', exact: true }).click();
     await expect(
       page
         .locator('.work-list')
@@ -123,8 +128,9 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
     ).toHaveCount(0);
     await library.getByRole('tab', { name: '已归档', exact: true }).click();
     await library
-      .getByRole('button', { name: `恢复 ${title}`, exact: true })
+      .getByRole('button', { name: `更多操作 ${title}`, exact: true })
       .click();
+    await page.getByRole('menuitem', { name: '恢复', exact: true }).click();
     await expect(
       page
         .locator('.work-list')

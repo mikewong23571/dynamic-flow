@@ -7,7 +7,7 @@
     "dev": "concurrently -k -n api,web \"pnpm dev:api\" \"pnpm dev:web\"",
     "dev:api": "tsx watch src/server/index.ts",
     "dev:web": "vite --config vite.config.ts",
-    "typecheck": "tsc --noEmit && pnpm typecheck:app",
+    "typecheck": "tsc --project tsconfig.spike.json --noEmit && pnpm typecheck:app",
     "build": "vite build",
     "test": "tsx --test tests/*.test.ts",
     "test:browser": "playwright test --config playwright.config.ts",

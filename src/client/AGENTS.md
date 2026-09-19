@@ -49,3 +49,13 @@
 `WorkItems` / `WorkItemDetail` / `WorkItemDialogs` 承载 H1–H11 的管理入口、业务进展、条件依据和生命周期操作，HTTP 交接见 [本轮 handoff](../../conductor/tracks/workitem-lifecycle_20260920/handoff.md)。Work 仍为方法空间，WorkItem 有独立材料和稳定业务身份，Run 是固定输入/版本的具体执行。不要把运行完成映射为业务结项，或用心跳更新时间替代最近业务进展。
 
 管理页轮询只读 `/api/items`；用户更新均通过 actions，出错保留输入。等待、事件、停止、恢复、方法切换的约束以服务端为准，前端禁用仅用于动作提示。运行链接须同时保持 workId/runId，避免同名方法或历史方法切换到错误执行记录。
+
+## 管理页与控件交接
+
+正式 shadcn/Radix 控件在 `components/ui/`，接入与主题约定见该目录 README；`components/ui.tsx` 为既有业务调用提供薄兼容层。新增控件优先复用这里的 primitives，不继续给全局原生元素叠样式。
+
+用户可见入口统一为“工作项 / 流水线”。流水线归档标签为“未归档 / 已归档”，不把未归档叫进行中；定义状态、节点数来自服务端 summary。两页共享 Management 页头、搜索提交、分页和 Table，业务字段与动作留在各自页面。工作项每次轮询更新已有行，不因服务端进展排序变化自动移动阅读中的行；新行追加，显式搜索/筛选重新取得顺序。当前为客户端分页（不宣称服务端规模优化）。
+
+## 纯表达式编辑交接
+
+NodeInspector 的数据变换使用 ExpressionEditor、PatternEditor 和 ExpressionFields：常用和嵌套语义均通过控件编辑；对象/数组常量也可选择JSON输入，但不是构造对象/数组的必经入口。expression-model只提供显示名、默认对象和纯编辑辅助函数，不复制服务端求值器。操作与语义见 [纯函数 IR](../../docs/functional-ir.md)。

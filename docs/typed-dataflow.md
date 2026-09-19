@@ -22,12 +22,14 @@ WorkItem 保有持续业务身份；Run 固定方法与工作项输入快照。�
 | map       | T → R              | 对每项调用；返回数组仍是一项数组值         | 已实现                                   |
 | flatMap   | T → R[]            | 每项返回数组，明确展开一层；来源继承原输入 | 已实现                                   |
 | aggregate | T[] → R            | 收齐本次上游输入后调用一次，输出一项 R     | 已实现                                   |
-| filter    | T → boolean        | 保留满足谓词的 T                           | 尚无独立运算；现有 Branch 是字段条件路由 |
-| reduce    | (A, T) → A，含初值 | 累积归约；并行组合还需结合律等约束         | 未实现                                   |
+| filter    | T → boolean        | 保留满足谓词的 T                           | expression 集合组合子；不是节点 operation |
+| reduce    | (A, T) → A，含初值 | 顺序左折叠；空数组返回初值                 | expression 集合组合子；不自动并行化 |
 
 `operation` 为明确组合语义；缺省 each/all 继续适配旧定义。旧普通 Function 未设 operation 时保留已有透传/合并方式；新定义需显式选择运算，不能把兼容行为描述为新的统一类型系统。
 
 LLM 整批报告是 aggregate，不保证结合律或确定性，不能自动改为并行 reduce。merge 连接既有两路输入，不等于按键 join 或归约。map/flatMap 空集合不调用处理器；aggregate 接收空数组，是否允许由输入 schema 和处理器约定。独立就绪节点最多并行 4 个，逐项并发可配 1–8，最终按输入顺序归集；失败保留其它成功实例但阻止依赖完整结果的下游。
+
+expression 的 pipe、map/filter/flatMap/reduce 和 match/let 详见 [纯函数 IR](functional-ir.md)。图级 operation 与内部值组合的边界不同：表达式返回数组仍是一个值，只有节点 flatMap 向端口展开。
 
 ## 三、Schema 的实现边界
 
@@ -51,7 +53,7 @@ Milestone 配置 stage/summary，在 workItem + full + commit 时通过回调提
 
 运行器域内测试覆盖 map 数组保留与 flatMap 展开、并发上限/顺序/来源、输入输出 schema 失败、部分失败阻断汇总、真实文件等待重开、受控时钟跨 45 天及定时器分段、停止后的迟到事件、预览无业务提交，以及恢复不重复成功调用。这些替身/文件测试不代表真实模型质量或完整产品通过。
 
-[H5/H6/H7/H8 与 L2–L4](workitem-stories.md) 将上述语义接入工作项、HTTP、前端和真实进程重启。验收状态见 track。没有覆盖的严格 reduce/filter、完整端口推导、任意调用栈恢复和生产级调度不能由现有测试推定成立。
+[H5/H6/H7/H8 与 L2–L4](workitem-stories.md) 将上述语义接入工作项、HTTP、前端和真实进程重启。验收状态见 track。新增的纯表达式 reduce/filter 与匹配解构由 [本轮 track](../conductor/tracks/functional-ir-management_20260920/evidence.md) 验收；完整端口推导、任意调用栈恢复和生产级调度仍未实现。
 
 ## 参考
 

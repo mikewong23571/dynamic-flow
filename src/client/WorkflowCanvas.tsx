@@ -13,6 +13,7 @@ import {
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { expressionSummary } from './expression-model';
 import {
   Boxes,
   GitBranch,
@@ -94,6 +95,14 @@ function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
               ? '等于'
               : '存在'}{' '}
           {String(node.condition?.value ?? '')}
+        </p>
+      )}
+      {node?.functionName === 'expression' && (
+        <p
+          className="node-condition"
+          title={expressionSummary(node.expression)}
+        >
+          {expressionSummary(node.expression)}
         </p>
       )}
       <div className="node-summary">

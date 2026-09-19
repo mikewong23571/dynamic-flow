@@ -20,6 +20,7 @@ import { loadConfig, safeError, type ModelConfig } from './config.ts';
 import { runPiSession, throwIfAborted, type SessionRunner } from './pi.ts';
 import { parseOutput, validateEvidence } from './validation.ts';
 import { createModelSettings } from './settings.ts';
+import { expressionGuide } from './expression-guide.ts';
 
 export { loadConfig } from './config.ts';
 export { runPiSession } from './pi.ts';
@@ -65,7 +66,35 @@ const definitionSchema = Type.Object({
           Type.Literal('identity'),
           Type.Literal('select-fields'),
           Type.Literal('merge'),
+          Type.Literal('expression'),
         ]),
+      ),
+      expression: Type.Optional(
+        Type.Object(
+          {
+            kind: Type.Union(
+              [
+                'literal',
+                'variable',
+                'object',
+                'array',
+                'call',
+                'pipe',
+                'map',
+                'flatMap',
+                'filter',
+                'reduce',
+                'let',
+                'match',
+              ].map((kind) => Type.Literal(kind)),
+            ),
+          },
+          {
+            additionalProperties: true,
+            description:
+              '纯表达式树；各 kind 的字段、变量作用域与模式形状见系统说明。完整树在保存前校验。',
+          },
+        ),
       ),
       params: Type.Optional(
         Type.Object({ fields: Type.Optional(Type.Array(Type.String())) }),
@@ -103,7 +132,8 @@ const definitionSchema = Type.Object({
 const authorInstructions = `你是工作流作者。初次生成流程时请在 update_flow 的 title 字段给出简短中文工作标题（建议 4–12 字），概括本次真实目标，不写 UUID。根据本次目标与材料创建或修改实际可执行的工作流，使用中文回答。
 必须调用 update_flow 保存实际定义才算完成编辑，不得只说已修改。工具失败要说明原因，不得声称已保存。不满足可运行条件的提案会被工具拒绝且不会写入草稿；收到校验错误应修正后再次保存，无法修正时说明未完成事项。
 工作流形状由工具 schema 定义，完整定义必须显式包含 schemaVersion:1。保持任务与输出结构简洁，只包含完成目标需要的字段，不为每个字段重复编写 description。面向用户的最终报告节点输出 Markdown 正文，expectedOutput 使用 {"type":"string"}，不为报告建立庞大的嵌套 JSON 结构。普通节点输入端口 input、输出 output；branch 输入 input、输出 matched/unmatched；functionName=merge 的 function 节点输入 left/right、输出 output。不存在 $output 虚拟节点，不要向它连线；最终输出只能声明在 outputs 映射中，例如 outputs:{report:["实际节点id","output"]}。外部输入用 ['$input', '<inputs中的名字>']。edges 决定顺序；不允许回连。
-operation 明确计算组合：map 对每条输入调用一次，返回一个值（数组也保留为一个值）；flatMap 对每条输入调用一次并将返回数组展开一层；aggregate 一次处理集合。为兼容旧定义，map/flatMap 同时设 mode:each，aggregate 设 mode:all；concurrency 可设 1–8，默认1。inputSchema/expectedOutput 分别定义单次调用输入/输出，aggregate 输入为数组；多端口 aggregate 的 schema 输入按端口顺序拼接为值数组；merge 保留 left/right 端口来源。函数只允许 identity/select-fields/merge。节点 id 稳定保留，label 写用户能理解的业务名称。
+operation 明确计算组合：map 对每条输入调用一次，返回一个值（数组也保留为一个值）；flatMap 对每条输入调用一次并将返回数组展开一层；aggregate 一次处理集合。为兼容旧定义，map/flatMap 同时设 mode:each，aggregate 设 mode:all；concurrency 可设 1–8，默认1。inputSchema/expectedOutput 分别定义单次调用输入/输出，aggregate 输入为数组；多端口 aggregate 的 schema 输入按端口顺序拼接为值数组；merge 保留 left/right 端口来源。函数允许 identity/select-fields/merge/expression。节点 id 稳定保留，label 写用户能理解的业务名称。
+${expressionGuide}
 持续业务流程可以添加 kind:milestone, mode:all, milestone:{stage,summary}，输入 input、输出 output，透传输入并记录明确的阶段事实，不能在未验证时声称业务完成。kind:wait, mode:all, wait:{event,reason,timeoutSeconds?} 持久等待指定外部事件或超时，输入 input、输出 output（原输入）/event（消息或到期信号）。等待适用于正式工作项运行；普通试运行跳过持久等待且不提交业务里程碑。业务完成由工作项完成条件显式确认，不能用最后节点成功代替。
 根据目标生成必要步骤，不照搬无关示例。逐条分析与总体产物用清楚分工的节点。明确引用要求应写入相关 task；结构化结果用 expectedOutput JSON Schema，支持 type/object/properties/required/enum/items/minItems；保留原始材料编号。依据可用 evidence:[{materialId,quote}]，quote 必须是原文逐字片段。
 若有选定节点，本轮仅修改它的任务/参数/名称/输出结构；其它节点、连接、输入输出保持不变。整个流程修改需要用户从全流程上下文发起。

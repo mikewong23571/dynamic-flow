@@ -1,6 +1,6 @@
 # 技术栈与决策状态
 
-当前架构依据：[设计 v4](../docs/design.md)。正式应用位于 src/，版本以 package.json / pnpm-lock.yaml 为准。安装列表同时保留历史实验依赖，不能把包存在等同于正式产品已采用。
+当前架构依据：[设计 v5](../docs/design.md)。正式应用位于 src/，版本以 package.json / pnpm-lock.yaml 为准。安装列表同时保留历史实验依赖，不能把包存在等同于正式产品已采用。
 
 ## 正式实现
 
@@ -11,7 +11,7 @@
 | 数据契约   | Ajv 8 编译 inputSchema / expectedOutput，普通函数和 Agent 调用前后校验                                     | 只拒绝可确定的顶层连接类型冲突，完整类型推导未实现                     |
 | 主画布     | React Flow 12.11.6；稳定 nodeId、具名端口、连线和配置回写 IR                                               | 布局与执行语义分离；保留保存视口；实际操作证据分开记录                 |
 | 前端       | React 19.3.0、Vite 8.3.0、TypeScript 7.0.2                                                                 | 正式入口 main.tsx/Workspace.tsx                                        |
-| 基础控件   | 统一 Button/字段语义、Radix Dialog、Lucide、集中 CSS 变量；Vite 接 Tailwind                                | Geist 暗色及一致层级；不沿用被否定的 Spike 视觉                        |
+| 基础控件   | 正式 shadcn/ui 源码 + Radix、CVA/cn、Lucide、Tailwind 4；配置指向 src                                | Geist 暗色及一致层级；不沿用被否定的 Spike 视觉                        |
 | 对话       | assistant-ui 0.15.21，ExternalStoreRuntime/Thread/Composer                                                 | 固定请求上下文、流式消息、紧凑工具记录、保存反馈与重试                 |
 | Agent      | Pi SDK 0.85.1；作者与执行会话分开                                                                          | 真实调用和 fixture 分别记录；工具实际保存流程与检查结果                |
 | 模型设置   | 环境初值 + data/model-settings.json；三种协议映射和参数验证                                                | 前端设置对话框已接入；保存不代表端点已通过验证                         |
@@ -22,7 +22,7 @@
 | 状态       | React state/useWorkspace；服务端快照与未提交编辑分开                                                       | 浏览器保存本地编辑/样本上下文，正式业务状态以服务端文件为准            |
 | 持久化     | 方法 work.json + 不可变 JS 定义 + work-items/<id>.json                                                     | 等待与到期自动恢复；不确定调用显式继续，成功实例不重跑；单进程本地文件 |
 
-IR 字段已落在 [shared/records.ts](../src/shared/records.ts)，模块接口见 [实施交接](./tracks/workitem-lifecycle_20260920/handoff.md)。普通处理提供原样传递、字段选择与合并；模型节点仍由 Pi 执行，不用硬编码业务分类替代。
+IR 字段已落在 [shared/records.ts](../src/shared/records.ts)，模块接口见 [实施交接](./tracks/workitem-lifecycle_20260920/handoff.md)。普通处理提供原样传递、字段选择、合并及有限纯表达式（组合/匹配/解构），见 [语义合同](../docs/functional-ir.md)；模型节点仍由 Pi 执行，不用硬编码业务分类替代。
 
 ## 不进入当前产品主路径
 
@@ -31,7 +31,7 @@ IR 字段已落在 [shared/records.ts](../src/shared/records.ts)，模块接口�
 - Babel、recast、通用 TypeScript AST 索引：不再是待选项；IR 已直接提供结构与节点身份。
 - Pierre Diffs、CodeMirror、多套源码编辑器：不继续为已删除的核心需求做选型。
 - 生产级分布式调度、任意调用栈恢复、隐式结果缓存、通用事件回放、额外 Agent loop、monorepo 多包：不预建。
-- 严格 reduce、独立 filter、全图端口类型推导：尚未实现；当前 aggregate 不是并行归约。
+- 图级独立 filter、并行 reduce、全图端口类型推导尚未实现；expression 提供纯集合 filter 与有初值的顺序 reduce。
 - JSON viewer 仅在真实结果结构需要时采用，不作为默认节点详情。
 
 ## 实现与验收分开
@@ -58,3 +58,5 @@ IR 字段已落在 [shared/records.ts](../src/shared/records.ts)，模块接口�
 pnpm 10.32.1；Pi 包要求 Node >=22.19，当前开发环境使用 Node 24.14.0。测试复用 node:test + tsx、Playwright Chromium，格式化使用 Prettier。启动与模型配置见 [根 README](../README.md)。
 
 TanStack Table、react-resizable-panels、Monaco、Arborist 等仍在安装清单中，其中未进入当前正式客户端的依赖不视为已采用。原型不为安全、权限、隔离或生产治理扩展工具链。
+
+本轮管理页与表达式验收见 [functional-ir-management](./tracks/functional-ir-management_20260920/evidence.md)。shadcn 是维护在仓库的组件源码，不是另外安装一个运行时框架；管理列表使用其 Table，当前无需再加 TanStack 表格状态层。

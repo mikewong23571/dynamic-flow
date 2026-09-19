@@ -52,3 +52,9 @@ Pi 如何根据当前工作生成/修改真实流程，并完成 Agent 节点任
 NodeExecution.workItem 提供固定业务编号、目标与 data；materials 使用同一运行冻结的工作项材料，禁止混入方法样本。operation 优先于旧 mode。作者工具可生成 wait/milestone 和输入输出 schema；schema 使用统一 Ajv 校验，未知关键字明确拒绝。作者不直接结项，模型输出不自动等于业务事实。
 
 验证：tests/assistant.test.ts 覆盖工作项目标/材料进入 Pi 边界及共享 union/const schema；真实模型生命周期与证据见 [持续工作项验收](../../../conductor/tracks/workitem-lifecycle_20260920/evidence.md)。
+
+## 纯函数作者交接
+
+update_flow 接受 functionName=expression 与纯表达式树；根传输 schema 要求支持的 kind，完整递归形状、变量作用域和模式约束由 flow.checkDefinition 在保存前验证，避免兼容端点因递归 $ref schema 拒绝工具。expression-guide.ts 描述精确字段和实例，不新增模型/工具循环。坏表达式不会进入已保存草稿，修正后通过原有版本冲突机制保存。
+
+本轮 tests/functional-author.test.ts 为 Pi 边界替身，实际模型记录另见 functional-ir-management track 的 artifacts/live-author.json；不可互换两类证据。

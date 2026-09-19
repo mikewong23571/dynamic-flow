@@ -1,3 +1,4 @@
+import { checkExpression } from './expressions.ts';
 import { schemaIssue, incompatibleTypes } from './schema.ts';
 import type {
   Definition,
@@ -164,14 +165,23 @@ export function checkDefinition(definition: Definition): Issue[] {
       add('请填写节点任务，再运行此步骤。', 'task');
     if (node.kind === 'function') {
       if (
-        !['identity', 'select-fields', 'merge'].includes(
+        !['identity', 'select-fields', 'merge', 'expression'].includes(
           node.functionName ?? '',
         )
       )
         add(
-          '请选择已有处理函数：identity、select-fields 或 merge。',
+          '请选择已有处理函数：identity、select-fields、merge 或 expression。',
           'functionName',
         );
+      if (node.functionName === 'expression') {
+        if (!node.operation)
+          add(
+            '表达式节点需要显式选择 map、flatMap 或 aggregate。',
+            'operation',
+          );
+        for (const issue of checkExpression(node.expression))
+          add(issue.message, issue.field);
+      }
       if (
         node.functionName === 'select-fields' &&
         (!node.params?.fields?.length ||

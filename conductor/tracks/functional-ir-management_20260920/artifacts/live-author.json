@@ -1,0 +1,689 @@
+{
+  "model": {
+    "model": "glm-5.3-flash",
+    "protocol": "anthropic-messages",
+    "reasoningEffort": "max"
+  },
+  "workId": "883825d9-54fb-4c58-adee-7fdb46779a0e",
+  "prompt": "创建一条纯函数流水线，名字“风险评分 · 组合示例”。外部输入 findings 是多项JSON对象，每项有 severity(high/low/unknown) 和 score数字。第一个节点逐项使用 expression match：对象模式 severity=high 时把 score 解构绑定为 points 并返回 points，其它情况 otherwise 返回0。第二个节点 aggregate，使用 expression pipe，先filter只保留大于0的数字，然后map乘以2，最后reduce初值0按顺序add求和。请两个节点都明确 inputSchema/expectedOutput。只创建这两个 functionName:expression 节点，不用Agent，不编造运行结果；input端口，outputs total指向第二个节点output。保存真实定义。",
+  "message": {
+    "id": "276bd370-2259-4fd0-8ef0-d0faad2c0b20",
+    "role": "assistant",
+    "text": "已保存“风险评分 · 组合示例”：第一个节点逐项用 match 匹配 severity=high 并解构 score 返回、否则得 0，第二个节点用 pipe 做 filter>0 → map×2 → reduce 顺序求和，两节点均声明了输入/输出 Schema，total 输出指向求和节点。按示例 high=3、low=1、high=4 可得 3→6、4→8、合计 14；下一步可直接运行或调整输入验证该结果。",
+    "requestId": "7c8bf3e5-a369-4407-a525-5ac61d26b2d4",
+    "sampleIds": [],
+    "status": "completed",
+    "activities": [
+      {
+        "id": "8acd012f-f07a-4ea1-b3bd-9a0ba1d178aa",
+        "toolCallId": "call_e6ff10e38019436fb58a1183",
+        "toolName": "update_flow",
+        "status": "completed",
+        "args": {
+          "definition": {
+            "edges": [
+              {
+                "from": [
+                  "$input",
+                  "findings"
+                ],
+                "to": [
+                  "extract-points",
+                  "input"
+                ]
+              },
+              {
+                "from": [
+                  "extract-points",
+                  "output"
+                ],
+                "to": [
+                  "total-score",
+                  "input"
+                ]
+              }
+            ],
+            "inputs": [
+              "findings"
+            ],
+            "nodes": [
+              {
+                "expectedOutput": {
+                  "type": "number"
+                },
+                "expression": {
+                  "cases": [
+                    {
+                      "pattern": {
+                        "fields": {
+                          "score": {
+                            "kind": "bind",
+                            "name": "points"
+                          },
+                          "severity": {
+                            "kind": "literal",
+                            "value": "high"
+                          }
+                        },
+                        "kind": "object"
+                      },
+                      "then": {
+                        "kind": "variable",
+                        "name": "points"
+                      }
+                    }
+                  ],
+                  "kind": "match",
+                  "otherwise": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "value": {
+                    "kind": "variable",
+                    "name": "input"
+                  }
+                },
+                "functionName": "expression",
+                "id": "extract-points",
+                "inputSchema": {
+                  "properties": {
+                    "score": {
+                      "type": "number"
+                    },
+                    "severity": {
+                      "enum": [
+                        "high",
+                        "low",
+                        "unknown"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "severity",
+                    "score"
+                  ],
+                  "type": "object"
+                },
+                "kind": "function",
+                "label": "提取高分项得分",
+                "mode": "each",
+                "operation": "map"
+              },
+              {
+                "expectedOutput": {
+                  "type": "number"
+                },
+                "expression": {
+                  "input": {
+                    "kind": "variable",
+                    "name": "input"
+                  },
+                  "kind": "pipe",
+                  "steps": [
+                    {
+                      "binding": {
+                        "kind": "bind",
+                        "name": "n"
+                      },
+                      "input": {
+                        "kind": "variable",
+                        "name": "value"
+                      },
+                      "kind": "filter",
+                      "predicate": {
+                        "args": [
+                          {
+                            "kind": "variable",
+                            "name": "n"
+                          },
+                          {
+                            "kind": "literal",
+                            "value": 0
+                          }
+                        ],
+                        "function": "greaterThan",
+                        "kind": "call"
+                      }
+                    },
+                    {
+                      "binding": {
+                        "kind": "bind",
+                        "name": "n"
+                      },
+                      "body": {
+                        "args": [
+                          {
+                            "kind": "variable",
+                            "name": "n"
+                          },
+                          {
+                            "kind": "literal",
+                            "value": 2
+                          }
+                        ],
+                        "function": "multiply",
+                        "kind": "call"
+                      },
+                      "input": {
+                        "kind": "variable",
+                        "name": "value"
+                      },
+                      "kind": "map"
+                    },
+                    {
+                      "accumulator": "sum",
+                      "binding": {
+                        "kind": "bind",
+                        "name": "n"
+                      },
+                      "body": {
+                        "args": [
+                          {
+                            "kind": "variable",
+                            "name": "sum"
+                          },
+                          {
+                            "kind": "variable",
+                            "name": "n"
+                          }
+                        ],
+                        "function": "add",
+                        "kind": "call"
+                      },
+                      "initial": {
+                        "kind": "literal",
+                        "value": 0
+                      },
+                      "input": {
+                        "kind": "variable",
+                        "name": "value"
+                      },
+                      "kind": "reduce"
+                    }
+                  ]
+                },
+                "functionName": "expression",
+                "id": "total-score",
+                "inputSchema": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "kind": "function",
+                "label": "筛选翻倍并顺序求和",
+                "mode": "all",
+                "operation": "aggregate"
+              }
+            ],
+            "outputs": {
+              "total": [
+                "total-score",
+                "output"
+              ]
+            },
+            "schemaVersion": 1
+          },
+          "title": "风险评分 · 组合示例"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"saved\":true,\"changed\":true,\"definitionId\":\"9c77d30d-e605-479d-b59c-e34a8359bda8\",\"issues\":[]}"
+            }
+          ],
+          "details": {
+            "definitionId": "9c77d30d-e605-479d-b59c-e34a8359bda8"
+          }
+        }
+      }
+    ],
+    "definitionId": "9c77d30d-e605-479d-b59c-e34a8359bda8"
+  },
+  "definition": {
+    "edges": [
+      {
+        "from": [
+          "$input",
+          "findings"
+        ],
+        "to": [
+          "extract-points",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "extract-points",
+          "output"
+        ],
+        "to": [
+          "total-score",
+          "input"
+        ]
+      }
+    ],
+    "inputs": [
+      "findings"
+    ],
+    "nodes": [
+      {
+        "expectedOutput": {
+          "type": "number"
+        },
+        "expression": {
+          "cases": [
+            {
+              "pattern": {
+                "fields": {
+                  "score": {
+                    "kind": "bind",
+                    "name": "points"
+                  },
+                  "severity": {
+                    "kind": "literal",
+                    "value": "high"
+                  }
+                },
+                "kind": "object"
+              },
+              "then": {
+                "kind": "variable",
+                "name": "points"
+              }
+            }
+          ],
+          "kind": "match",
+          "otherwise": {
+            "kind": "literal",
+            "value": 0
+          },
+          "value": {
+            "kind": "variable",
+            "name": "input"
+          }
+        },
+        "functionName": "expression",
+        "id": "extract-points",
+        "inputSchema": {
+          "properties": {
+            "score": {
+              "type": "number"
+            },
+            "severity": {
+              "enum": [
+                "high",
+                "low",
+                "unknown"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "severity",
+            "score"
+          ],
+          "type": "object"
+        },
+        "kind": "function",
+        "label": "提取高分项得分",
+        "mode": "each",
+        "operation": "map"
+      },
+      {
+        "expectedOutput": {
+          "type": "number"
+        },
+        "expression": {
+          "input": {
+            "kind": "variable",
+            "name": "input"
+          },
+          "kind": "pipe",
+          "steps": [
+            {
+              "binding": {
+                "kind": "bind",
+                "name": "n"
+              },
+              "input": {
+                "kind": "variable",
+                "name": "value"
+              },
+              "kind": "filter",
+              "predicate": {
+                "args": [
+                  {
+                    "kind": "variable",
+                    "name": "n"
+                  },
+                  {
+                    "kind": "literal",
+                    "value": 0
+                  }
+                ],
+                "function": "greaterThan",
+                "kind": "call"
+              }
+            },
+            {
+              "binding": {
+                "kind": "bind",
+                "name": "n"
+              },
+              "body": {
+                "args": [
+                  {
+                    "kind": "variable",
+                    "name": "n"
+                  },
+                  {
+                    "kind": "literal",
+                    "value": 2
+                  }
+                ],
+                "function": "multiply",
+                "kind": "call"
+              },
+              "input": {
+                "kind": "variable",
+                "name": "value"
+              },
+              "kind": "map"
+            },
+            {
+              "accumulator": "sum",
+              "binding": {
+                "kind": "bind",
+                "name": "n"
+              },
+              "body": {
+                "args": [
+                  {
+                    "kind": "variable",
+                    "name": "sum"
+                  },
+                  {
+                    "kind": "variable",
+                    "name": "n"
+                  }
+                ],
+                "function": "add",
+                "kind": "call"
+              },
+              "initial": {
+                "kind": "literal",
+                "value": 0
+              },
+              "input": {
+                "kind": "variable",
+                "name": "value"
+              },
+              "kind": "reduce"
+            }
+          ]
+        },
+        "functionName": "expression",
+        "id": "total-score",
+        "inputSchema": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "kind": "function",
+        "label": "筛选翻倍并顺序求和",
+        "mode": "all",
+        "operation": "aggregate"
+      }
+    ],
+    "outputs": {
+      "total": [
+        "total-score",
+        "output"
+      ]
+    },
+    "schemaVersion": 1
+  },
+  "issues": [],
+  "run": {
+    "id": "e2fd0327-36a4-43df-a50b-44e3e3da1b79",
+    "definitionId": "9c77d30d-e605-479d-b59c-e34a8359bda8",
+    "scope": "full",
+    "inputs": {
+      "findings": [
+        {
+          "sampleId": "case-0",
+          "value": {
+            "severity": "high",
+            "score": 3
+          },
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        },
+        {
+          "sampleId": "case-1",
+          "value": {
+            "severity": "low",
+            "score": 1
+          },
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        },
+        {
+          "sampleId": "case-2",
+          "value": {
+            "severity": "high",
+            "score": 4
+          },
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "effectMode": "preview",
+    "status": "completed",
+    "stopRequested": false,
+    "nodeStates": {
+      "extract-points": "completed",
+      "total-score": "completed"
+    },
+    "nodeTotals": {
+      "extract-points": 3,
+      "total-score": 1
+    },
+    "results": [
+      {
+        "id": "e72c76ff-5d80-4553-9493-fba759f8e440",
+        "runId": "e2fd0327-36a4-43df-a50b-44e3e3da1b79",
+        "definitionId": "9c77d30d-e605-479d-b59c-e34a8359bda8",
+        "nodeId": "extract-points",
+        "instanceId": "extract-points:case-0:0",
+        "input": {
+          "input": [
+            {
+              "sampleId": "case-0",
+              "value": {
+                "severity": "high",
+                "score": 3
+              },
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": 3,
+              "sampleId": "case-0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "e72c76ff-5d80-4553-9493-fba759f8e440"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:34:28.616Z",
+        "finishedAt": "2026-09-19T20:34:28.617Z"
+      },
+      {
+        "id": "38982805-9c35-44e6-9a50-87a16fb0a08f",
+        "runId": "e2fd0327-36a4-43df-a50b-44e3e3da1b79",
+        "definitionId": "9c77d30d-e605-479d-b59c-e34a8359bda8",
+        "nodeId": "extract-points",
+        "instanceId": "extract-points:case-1:1",
+        "input": {
+          "input": [
+            {
+              "sampleId": "case-1",
+              "value": {
+                "severity": "low",
+                "score": 1
+              },
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": 0,
+              "sampleId": "case-1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "38982805-9c35-44e6-9a50-87a16fb0a08f"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:34:28.617Z",
+        "finishedAt": "2026-09-19T20:34:28.618Z"
+      },
+      {
+        "id": "f0e79a3c-7d14-4f6a-8eb8-f50b35e83989",
+        "runId": "e2fd0327-36a4-43df-a50b-44e3e3da1b79",
+        "definitionId": "9c77d30d-e605-479d-b59c-e34a8359bda8",
+        "nodeId": "extract-points",
+        "instanceId": "extract-points:case-2:2",
+        "input": {
+          "input": [
+            {
+              "sampleId": "case-2",
+              "value": {
+                "severity": "high",
+                "score": 4
+              },
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": 4,
+              "sampleId": "case-2",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "f0e79a3c-7d14-4f6a-8eb8-f50b35e83989"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:34:28.618Z",
+        "finishedAt": "2026-09-19T20:34:28.619Z"
+      },
+      {
+        "id": "05875a5b-52dc-4990-a7c5-d7025e92452e",
+        "runId": "e2fd0327-36a4-43df-a50b-44e3e3da1b79",
+        "definitionId": "9c77d30d-e605-479d-b59c-e34a8359bda8",
+        "nodeId": "total-score",
+        "instanceId": "total-score:all:0",
+        "input": {
+          "input": [
+            {
+              "value": 3,
+              "sampleId": "case-0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "e72c76ff-5d80-4553-9493-fba759f8e440"
+              ]
+            },
+            {
+              "value": 0,
+              "sampleId": "case-1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "38982805-9c35-44e6-9a50-87a16fb0a08f"
+              ]
+            },
+            {
+              "value": 4,
+              "sampleId": "case-2",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "f0e79a3c-7d14-4f6a-8eb8-f50b35e83989"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": 14,
+              "sampleId": "05875a5b-52dc-4990-a7c5-d7025e92452e",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "05875a5b-52dc-4990-a7c5-d7025e92452e"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:34:28.621Z",
+        "finishedAt": "2026-09-19T20:34:28.622Z"
+      }
+    ],
+    "waits": [],
+    "signals": [],
+    "startedAt": "2026-09-19T20:34:28.611Z",
+    "finishedAt": "2026-09-19T20:34:28.623Z"
+  }
+}

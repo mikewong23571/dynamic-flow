@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { FileStore } from '../files/index.ts';
 import { validateValue } from '../flow/schema.ts';
+import { evaluateExpression } from '../flow/expressions.ts';
 import { validateForRun } from '../flow/index.ts';
 import type {
   Definition,
@@ -499,7 +500,11 @@ export function createRuns(
                 ),
               ];
             }
-          } else if (node.kind === 'function' && !node.operation) {
+          } else if (
+            node.kind === 'function' &&
+            !node.operation &&
+            node.functionName !== 'expression'
+          ) {
             // Legacy collection functions preserve their established one-result-per-input behavior.
             produced = {
               output: source.map((i) => {
@@ -523,14 +528,16 @@ export function createRuns(
                 ? source.map((i) => i.value)
                 : source[0].value;
               value =
-                node.functionName === 'select-fields'
-                  ? Object.fromEntries(
-                      (node.params?.fields ?? []).map((key) => [
-                        key,
-                        field(argument, key) ?? null,
-                      ]),
-                    )
-                  : argument;
+                node.functionName === 'expression'
+                  ? evaluateExpression(node.expression!, argument)
+                  : node.functionName === 'select-fields'
+                    ? Object.fromEntries(
+                        (node.params?.fields ?? []).map((key) => [
+                          key,
+                          field(argument, key) ?? null,
+                        ]),
+                      )
+                    : argument;
             } else {
               const work = await files.read(workId);
               value = await executeNode({

@@ -36,3 +36,7 @@ Node/端口、逐项/汇总来源和活动字段在真实执行、比较、HTTP/
 ## 持续工作项记录
 
 Work 保留方法与样本；WorkItem 是独立业务编号、目标、材料、完成条件和业务历史。ItemRunRef 同时带 workId/runId/definitionId，支持换方法保留历史。Run.workItem 为冻结输入，不跟随工作项后续补证据。RunWait/RunSignal 描述等待与去重消息；effectMode=preview 不提交业务里程碑。运行完成与 WorkItem.completed 分离；完成条件依据与结项时快照存入 ItemHistory.criteria，重开清除 met 但保留旧依据。具体字段与接口见 [生命周期交接](../../conductor/tracks/workitem-lifecycle_20260920/handoff.md)。
+
+## 纯表达式记录
+
+expressions.ts 仅定义 Expression / Pattern / PureFunction 可序列化联合类型；通过 FlowNode.expression 引用，不能携带函数、闭包或运行时实例。结构化编辑、作者工具、flow校验、runs求值共同遵循 [纯函数语义](../../docs/functional-ir.md)。WorkSummary 的 definitionState/nodeCount 为当页真实定义的派生摘要，不是独立可写状态。
