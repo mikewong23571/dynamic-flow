@@ -2,6 +2,8 @@
 
 ## Definition
 
+- [模块与验收地图 / 源码 AGENTS](../docs/implementation-map.md)
+
 - [用户故事与原型验收（讨论稿）](../docs/user-stories.md)
 
 - [当前产品与技术设计](../docs/design.md)

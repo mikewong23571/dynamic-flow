@@ -6,3 +6,6 @@ dist/
 .env.*
 test-results/
 playwright-report/
+
+/data/*
+!/data/AGENTS.md

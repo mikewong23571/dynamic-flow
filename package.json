@@ -7,13 +7,16 @@
     "dev": "concurrently -k -n api,web \"pnpm dev:api\" \"pnpm dev:web\"",
     "dev:api": "tsx examples/component-spike/server.ts",
     "dev:web": "vite --config examples/component-spike/vite.config.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && pnpm typecheck:app",
     "build": "vite build --config examples/component-spike/vite.config.ts",
     "test": "tsx --test examples/component-spike/*.test.ts",
     "test:browser": "playwright test --config examples/component-spike/playwright.config.ts",
     "preview": "vite preview --config examples/component-spike/vite.config.ts --host 127.0.0.1 --port 4319",
     "format": "prettier --write \"examples/component-spike/**/*.{ts,tsx,css,html}\" package.json tsconfig.json components.json",
-    "format:check": "prettier --check \"examples/component-spike/**/*.{ts,tsx,css,html}\" package.json tsconfig.json components.json"
+    "format:check": "prettier --check \"examples/component-spike/**/*.{ts,tsx,css,html}\" package.json tsconfig.json components.json",
+    "typecheck:app": "tsc --project tsconfig.app.json --noEmit",
+    "format:app": "prettier --write \"src/**/*.{ts,tsx}\" tsconfig.app.json",
+    "format:check:app": "prettier --check \"src/**/*.{ts,tsx}\" tsconfig.app.json"
   },
   "dependencies": {
     "@assistant-ui/react": "0.15.21",
