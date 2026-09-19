@@ -16,6 +16,8 @@
 
 用户已授权并完成组件接入 Spike，随后将产品收敛为画布编辑 + JS 子集 IR + 薄 runtime，见 [当前设计](../docs/design.md)。该执行与编辑闭环尚未实现；旧示例仅用于历史接入证据，正式实现仍须单独建 track，不因为实验安装了某库就自动采用。
 
+正式 src 模块骨架与就近 AGENTS 已创建，见 [模块与验收地图](../docs/implementation-map.md)。骨架 track 完成不等于业务实现完成；实际模块任务以用户故事与跨模块联测推进。
+
 ## 每项任务
 
 1. 读取 docs/design.md、产品指南、技术栈和当前 track；明确可观察的用户结果。docs/archive/ 仅为不可改写的历史原稿。
@@ -68,6 +70,8 @@ conductor/code_styleguides/ 下的 general、typescript、html-css 原样复制�
 ## 开发命令
 
 从仓库根运行：`pnpm install --frozen-lockfile`、`pnpm dev`、`pnpm test`、`pnpm typecheck`、`pnpm build`、`pnpm format:check`、`pnpm test:browser`。首次浏览器检查先运行 `pnpm exec playwright install chromium`。
+
+新源码骨架检查使用 `pnpm typecheck:app`、`pnpm format:check:app`；`pnpm typecheck` 覆盖旧实验及新源码。当前 dev/build/test 仍只针对旧实验。
 
 示例服务为 4317/4318；复跑说明和能力边界见 `examples/component-spike/README.md`。检查命令均为单次执行。
 

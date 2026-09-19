@@ -38,6 +38,8 @@ IR 中 agent/function/branch 与逐项模式的确切字段，在下一个最小
 
 ## 工具与命令
 
+正式源码骨架位于 src，模块约定见 [实现地图](../docs/implementation-map.md)。只有空模块入口，业务未实现；未引入新依赖。`pnpm typecheck:app` / `pnpm format:check:app` 检查该骨架，`pnpm typecheck` 同时检查旧实验与新源码。dev/build/test 仍针对旧组件实验。
+
 pnpm 10.32.1；Node 实测 24.14.0，Pi 包要求 >=22.19；node:test + tsx、Playwright Chromium、Prettier。命令见 [workflow.md](./workflow.md) 与 [实验 README](../examples/component-spike/README.md)。
 
 不为安全、权限、隔离或生产治理扩展原型工具链。当前架构仍需实测，不把设计决定写成实现完成。
