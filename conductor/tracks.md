@@ -1,7 +1,8 @@
 # Tracks Registry
 
-当前没有实现 track。
+选型实验与正式产品实现分别追踪。
 
-已完成项目上下文初始化。下一步按用户要求讨论 [关键组件选型](./component-options.md)，确定后再创建首个原型实现 track。
+---
 
-选型候选不代表已经批准或开始实施的任务。
+- [ ] **Track: 组件接入摩擦 Spike**
+  *Link: [component-integration-spike_20260919](./tracks/component-integration-spike_20260919/index.md)*

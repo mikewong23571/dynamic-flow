@@ -1,6 +1,6 @@
 # 关键组件选型准备
 
-状态：全部待讨论，未安装候选依赖。本文用于初始化后的选型，不是已经批准的实施计划。
+状态：组件选型讨论中，未安装候选依赖。用户已表达对 assistant-ui 的偏好，Chat 将其列为首选；其余方案仍待决定。本文不是已经批准的实施计划。
 
 分析基于设计稿与官方资料。能力说明属于文档核对；成本、适配性与优先建议属于本项目的工程判断，尚未通过集成原型验证。
 
@@ -25,7 +25,7 @@
 
 用户需要在工作地图、主要内容、Inspector 和改法区域之间切换，并保留当前对象上下文。
 
-候选：CSS Grid/Flex 固定或折叠布局；[react-resizable-panels](https://github.com/bvaughn/react-resizable-panels) 可调整分栏。后者提供布局机制，不提供完整业务工作台。
+候选：CSS Grid/Flex 固定或折叠布局；[react-resizable-panels](https://github.com/bvaughn/react-resizable-panels) 可调整分栏。若采用 shadcn/ui，可复用其 [Resizable](https://ui.shadcn.com/docs/components/resizable) 封装，不需另写拖拽分栏机制。
 
 初步倾向：如果可调宽度能明显帮助阅读长结果和源码，复用分栏组件；否则先用固定分栏与折叠。两者均不需要自由拖拽停靠系统。
 
@@ -37,7 +37,7 @@
 
 用户需要了解阶段、动态展开的位置和真实进展，并从阶段进入某次调用。导航目录和空间关系图承担不同职责。
 
-候选：基础组件组成的阶段目录与实例列表；[React Flow](https://reactflow.dev/learn/customization/custom-nodes) 的自定义节点图；两者按视图配合。
+候选：基础组件组成的阶段目录与实例列表；[React Arborist](https://github.com/jameskerr/react-arborist) 现成树控件，支持展开、键盘导航和自定义呈现；[React Flow](https://reactflow.dev/learn/customization/custom-nodes) 的自定义节点图。树和关系图可按视图配合，不必全部安装。
 
 初步倾向：先评估目录与运行状态能否满足理解；若并行分支和依赖关系确实需要空间展示，则引入 React Flow。图的节点与状态来自程序索引和事件，不另建可独立编辑的执行定义。
 
@@ -61,7 +61,7 @@
 
 用户和 Agent 需要查看具体做法、定位对应函数、编辑候选代码、查看差异与错误。
 
-候选：[Monaco Editor](https://github.com/microsoft/monaco-editor)；[CodeMirror](https://github.com/codemirror/dev) 及其所需扩展。具体差异编辑 API 在选型时核对。
+候选：[Monaco Editor](https://github.com/microsoft/monaco-editor)；[CodeMirror](https://github.com/codemirror/dev) 及其所需扩展。若重点是审阅 Agent 改动，也可比较 [Pierre Diffs](https://diffs.com/docs) 的嵌入式差异呈现；其编辑能力标为 Beta，不能直接视为完整 TypeScript IDE。优先用一个组件覆盖编辑与差异，避免重复引入。
 
 初步倾向：优先验证原稿 Monaco 方案能否直接满足源码定位和代码差异；如果嵌入成本或界面负担不适合原型，再比较 CodeMirror。暂不自研代码编辑器或语义 Diff。
 
@@ -75,7 +75,7 @@
 
 用户需要围绕一次调用查看输入、结果、公开执行记录及源码，选择重试或修改做法。
 
-候选：所选 UI 体系的 Tabs、列表、Disclosure 等组成业务组件；通用 JSON／Markdown 呈现作为局部插件。独立遥测平台不作为默认产品界面。
+候选：所选 UI 体系的 Tabs、列表、Disclosure 等组成业务组件；[react-markdown](https://github.com/remarkjs/react-markdown) 呈现报告；[@uiw/react-json-view](https://github.com/uiwjs/react-json-view) 呈现可折叠结构化数据。若现有 Chat 渲染能力已满足需要，则复用，不重复增加渲染器。独立遥测平台不作为默认产品界面。
 
 初步倾向：直接组合现成控件，自研对象关联。文本、结构化结果、文件各用合适呈现，默认先展示结果而非一屏 JSON。
 
@@ -101,7 +101,18 @@
 
 候选：简单输入区 + 修改记录 + 候选摘要；[assistant-ui](https://www.assistant-ui.com/docs) 等现成对话组件，接入产品事件与 Pi 适配层。
 
-初步倾向：先明确是否需要多轮聊天、工具状态、附件和消息编辑。如果仅需提交局部改法和查看进度，简单组合可能更直接；如果对话交互占重要地位，比较成熟组件能节省多少代码。
+当前首选：assistant-ui。用户明确表示它是较好的 Chat 选型；基于现有消息、流式交互与工具呈现能力，优先复用，不另建完整聊天组件。尚未安装或验证 Pi 集成，其余关键组件也未因此自动确定。
+
+官方能力与集成建议：
+
+- [项目说明](https://github.com/assistant-ui/assistant-ui)：提供可组合聊天 primitives 和可复制到项目的 shadcn/ui 风格组件，支持自有后端。
+- [ExternalStoreRuntime](https://www.assistant-ui.com/docs/runtimes/custom/external-store)：适合应用已有消息与事件状态时，通过消息映射和回调接入；无需仅为此引入 Redux 或 Zustand。
+- [LocalRuntime](https://www.assistant-ui.com/docs/runtimes/custom/local-runtime)：若暂时没有消息 store，可用自定义适配器先完成请求与流式结果。
+- [Tool UI](https://www.assistant-ui.com/docs/tools/tool-ui)：把后端工具调用呈现为自定义 React 内容，可承载候选方法摘要和进入试验的动作。
+
+建议集成路径：Pi Author Session → Workbench 后端事件 → 消息适配层 → assistant-ui。现有材料、选择范围、MethodVersion、Spike 和 Artifact 仍由 Workbench 管理，聊天控件不成为第二份业务事实源。
+
+需要自研的衔接：提交时固定选中范围；映射消息／工具／中止状态；候选版本关联源码；“试运行”“采用方法”“保留结果”调用业务 API。这里是方案推断，不表示已有可直接使用的 Pi 官方连接器。仅为使用该 UI，无需切换到 Next.js 或增加另一套 Agent loop。
 
 选型样例：选中 #8 的 readOne，提交“保留原话并说明失败步骤”，能看到请求针对的范围、正在修改的状态、候选版本，以及“先试”入口。
 

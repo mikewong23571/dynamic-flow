@@ -16,6 +16,12 @@ Conductor 文档初始化；尚未创建应用代码、依赖清单或安装组�
 | 实时更新 | HTTP 操作 + SSE | 原设计方向，未实现 |
 | 方法程序 | 普通 TypeScript + 少量 Runtime API | 产品方向，具体 API 待实现时收敛 |
 
+## 当前选型倾向
+
+Chat 首选 **assistant-ui**：用户已表达偏好，优先复用其聊天组件及自定义后端接入能力。Pi 仍承担 Agent 执行，Workbench 负责业务状态；接入方式需在实际集成时验证。尚未安装依赖，首选不代表集成验收通过，也不自动确定其余组件。
+
+资料：[assistant-ui](https://github.com/assistant-ui/assistant-ui)、[ExternalStoreRuntime](https://www.assistant-ui.com/docs/runtimes/custom/external-store)。
+
 ## 待决策
 
 | 决策域 | 需要确定的内容 |
