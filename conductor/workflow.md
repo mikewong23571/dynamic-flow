@@ -1,6 +1,6 @@
 # Project Workflow
 
-本文件从 Conductor 默认 workflow 模板复制后，按用户明确的原型范围与“先初始化、后选型”顺序精简。当前只初始化文档，不代表应用已经实现。
+本文件从 Conductor 默认 workflow 模板复制后，按用户明确的原型范围与“先初始化、后选型”顺序精简。当前已有组件接入 example，不代表正式应用已经实现。
 
 ## 工作原则
 
@@ -14,7 +14,7 @@
 
 ## 当前阶段
 
-关键组件仍是候选。先完成 component-options.md 的选型讨论，再创建初始实现 track。不得因为设计稿列了某个库就提前安装，也不先生成大规模 monorepo 骨架。
+用户已授权并完成组件接入 Spike。依赖与示例用于选型，正式实现仍须单独建 track；不因为实验安装了某库就自动采用，也不生成大规模 monorepo 骨架。
 
 ## 每项任务
 
@@ -67,9 +67,9 @@ conductor/code_styleguides/ 下的 general、typescript、html-css 原样复制�
 
 ## 开发命令
 
-尚未创建依赖清单，因此目前没有可执行的安装、启动、测试或构建脚本。
+从仓库根运行：`pnpm install --frozen-lockfile`、`pnpm dev`、`pnpm test`、`pnpm typecheck`、`pnpm build`、`pnpm format:check`、`pnpm test:browser`。首次浏览器检查先运行 `pnpm exec playwright install chromium`。
 
-首个实现 track 必须在实际搭建后补充：依赖安装、启动应用、运行相关测试、类型检查与构建的真实命令，并亲自验证。偏好单次执行模式，避免检查命令进入无限 watch。
+示例服务为 4317/4318；复跑说明和能力边界见 `examples/component-spike/README.md`。检查命令均为单次执行。
 
 ## 提交与文档
 

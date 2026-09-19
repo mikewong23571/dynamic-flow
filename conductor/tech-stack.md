@@ -2,56 +2,47 @@
 
 ## 当前状态
 
-Conductor 文档初始化；尚未创建应用代码、依赖清单或安装组件。用户要求先初始化并分析关键组件，在初始化之后共同确定选型。
+Conductor 已初始化，组件接入 Spike 已落地：一个独立 example、锁定依赖、真实 Pi SDK fixture、浏览器证据。实验安装不自动代表所有库进入正式产品。
 
-“设计稿基线”是已有文档的技术方向，不代表本轮安装、验证或最终确认。下面的建议也不构成选型决定。
+详细结论：[组件 Spike 结果](./tracks/component-integration-spike_20260919/results.md)。
 
-## 设计稿基线
+## 基于实测的建议
 
-| 层 | 基线方向 | 当前状态 |
+| 领域 | 建议 | 状态与边界 |
 | --- | --- | --- |
-| 前端 | React、TypeScript、Vite | 原设计方向，未安装 |
-| 后端 | Node.js、TypeScript、Hono | 原设计方向，未安装 |
-| Agent Harness | Pi SDK，薄适配层接入 | 原设计明确，尚未做 SDK 实验 |
-| 实时更新 | HTTP 操作 + SSE | 原设计方向，未实现 |
-| 方法程序 | 普通 TypeScript + 少量 Runtime API | 产品方向，具体 API 待实现时收敛 |
+| 前端 | React 19.3.0 + Vite 8.3.0 + TypeScript 7.0.2 | 已运行；TS7 配置已修正 |
+| 基础 UI | shadcn/ui + Radix + Tailwind + Lucide | 三个控件经官方 CLI 生成；统一视觉需要业务设计 |
+| Chat | assistant-ui 0.15.21，ExternalStoreRuntime | 用户首选；真实 Pi 工具、流式、取消已验证 |
+| Agent | Pi SDK 0.85.1 | 真实 AgentSession + faux provider 已验证；真实模型和跨轮恢复未验证 |
+| 后端与传输 | Node + Hono + POST/SSE | 已运行；原型无需第二套 Agent loop 或 WebSocket |
+| 分栏 | react-resizable-panels 4.12.4 | 拖动与缩放通过；采用 v4 API |
+| 样本表格 | TanStack Table 9.2.4 | 排序、多选、筛选后稳定身份通过；锁定 v9 示例 |
+| 源码与 Diff | Monaco 0.56.0 + 编辑器 React wrapper 4.7.0 | 可用；Diff 需要薄生命周期适配，体积成本明显 |
+| Inspector | shadcn 组合 + react-markdown；JSON viewer 可选 | 不引入独立遥测平台；JSON viewer 安装版本为 alpha |
+| Work Map | 树/目录优先；Arborist 按层级需要采用 | 树与图都已试接；React Flow 暂缓进入默认产品依赖 |
+| Spike 工作区 | 复用控件，自研版本/样本/产物规则 | 本例仅内存比较与采用状态，未执行 Method |
+| 页面状态 | React state | 本例足够；没有引入 Zustand/Redux/TanStack Query |
 
-## 当前选型倾向
+这些是选型建议，正式产品最终取舍留给用户讨论。不要将 example 中为了比较而同时安装的树与图等组件照单复制。
 
-Chat 首选 **assistant-ui**：用户已表达偏好，优先复用其聊天组件及自定义后端接入能力。Pi 仍承担 Agent 执行，Workbench 负责业务状态；接入方式需在实际集成时验证。尚未安装依赖，首选不代表集成验收通过，也不自动确定其余组件。
+## 仍待验证的关键决定
 
-资料：[assistant-ui](https://github.com/assistant-ui/assistant-ui)、[ExternalStoreRuntime](https://www.assistant-ui.com/docs/runtimes/custom/external-store)。
+- Method 局部执行、取消与源码位置/版本绑定。
+- TypeScript Compiler API 与 Babel 的实际索引成本；本轮没有做 AST 实验。
+- 真实 Pi 作者会话的跨轮上下文、修改代码与恢复。
+- Method、Run、Spike、Artifact 的持久化与续做：文件/JSONL 或 SQLite 元数据 + 文件仍待比较。
+- 首个场景真正需要哪些文件解析与呈现能力，不笼统添加 PDF/CSV 全套能力。
 
-## 待决策
+## 工程工具
 
-| 决策域 | 需要确定的内容 |
-| --- | --- |
-| 基础 UI | shadcn/ui 或 Primer 等；样式与图标体系一起确定 |
-| 工作区、地图、样本、编辑器、Inspector、Spike、修改面板 | 见组件分析中的 K1–K7 |
-| 程序索引 | TypeScript Compiler API 或原稿 Babel 方案；限制为明确入口及源码定位 |
-| 运行机制 | 薄 Runtime 的最小职责；是否有必须依赖持久执行框架的真实需求 |
-| 持久化 | 文件 + JSONL，或 SQLite 元数据 + 文件；以总实现成本选择 |
-| 前端状态 | 服务端数据与临时 UI 状态分别如何管理；不默认同时添加多个 store |
-| 材料与结果呈现 | 首个场景需要的 CSV、PDF、Markdown、结构化结果支持范围及现成解析组件 |
-| 工程工具 | 包管理器、测试与检查工具、具体版本，随首个实现 track 落定 |
+pnpm 10.32.1；Node 实测 24.14.0，Pi 要求 >=22.19；node:test + tsx、Playwright Chromium、Prettier。具体版本见 package.json/pnpm-lock.yaml 和 example 的 evidence/versions.json。
 
-完整分析与官方来源：[关键组件选型准备](./component-options.md)。
+命令见 [工作流程](./workflow.md) 与 [Example README](../examples/component-spike/README.md)。
 
 ## 实现约束
 
-- 先复用已有组件与 SDK，自研代码聚焦产品语义及必要衔接。
-- 不重建 Agent loop、模型客户端、编辑器或通用布局引擎。
-- 通用库解决通用机制；Spike、产物采用及续做规则由业务代码负责。
-- 不因文档中提到某库就安装；采用前记录具体需要、收益和代价。
-- 无需求不拆多包，不引入分布式基础设施。
-- 不把安全、权限、隔离纳入原型选型理由或交付要求。
-
-## 决策记录规则
-
-选型讨论后，在此更新选中的方案、理由、适用范围及替换条件；同时更新组件分析的状态。候选分析和 API 文档核对不等于集成实验通过。
-
-## 本次初始化
-
-根据用户“先初始化，之后确定组件选型”的指示，直接整理项目上下文，跳过重复的逐项初始化访谈；关键组件决策保持待定。
-
-开发流程从 Conductor 模板按原型目标精简，见 [workflow.md](./workflow.md)。采用模板中已有的 general、typescript、html-css 风格指南，未安装附加技能。
+- 复用通用机制，自研代码集中于产品语义、状态映射和必要衔接。
+- 不重建 Agent loop、模型客户端、编辑器、Diff 算法或布局引擎。
+- 不因一个技术实验成功就引入通用平台或所有候选组件。
+- 无需求不拆多包；安全、权限、隔离、生产治理不属于本原型选型范围。
+- 原设计 v2 是背景，后续用户要求和当前原型约定优先。

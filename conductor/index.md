@@ -14,6 +14,7 @@
 ## Component Decisions
 
 - [关键组件选型准备](./component-options.md)
+- [组件接入 Spike 结果](./tracks/component-integration-spike_20260919/results.md)
 - [Tracks Registry](./tracks.md)
 
 ## Tracks
