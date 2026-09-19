@@ -1,184 +1,47 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ReactFlow,
-  useUpdateNodeInternals,
+  ReactFlowProvider,
   Background,
   Controls,
-  Handle,
-  Position,
+  Panel,
   applyNodeChanges,
-  type Node,
-  type NodeProps,
-  type Connection,
-  type Viewport,
   MarkerType,
+  type Node,
+  type Connection,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { expressionSummary } from './expression-model';
-import { collectionSummary } from './collection-model';
-import {
-  Boxes,
-  GitBranch,
-  Bot,
-  FileText,
-  Check,
-  LoaderCircle,
-  AlertCircle,
-  Clock3,
-  Flag,
-} from 'lucide-react';
-import type { Definition, FlowNode, Run, ViewState } from '../shared/records';
-import {
-  inputPorts,
-  outputPorts,
-  statusNames,
-  portLabel,
-  nodeTotal,
-} from './model';
+import { LayoutGrid, Focus, ListTree, LoaderCircle } from 'lucide-react';
+import type { Definition, Run, ViewState } from '../shared/records';
+import { WorkflowNode, type CanvasData } from './WorkflowNode';
+import { WorkflowEdge } from './WorkflowEdge';
+import { focusedEdges, canvasFitOptions, type PortFocus } from './canvas-view';
+import { useCanvasLayout } from './useCanvasLayout';
+import { inputPorts, outputPorts, nodeTotal, portLabel } from './model';
+import { Button } from './components/ui';
+import './WorkflowCanvas.css';
 
-type CanvasData = {
-  label: string;
-  node?: FlowNode;
-  ports?: string[];
-  status?: string;
-  progress?: string;
-  final?: boolean;
+type CanvasNode = Node<CanvasData>;
+type Props = {
+  definition: Definition;
+  view: ViewState;
+  selected?: string;
+  onSelect: (id?: string) => void;
+  onChange: (definition: Definition) => void;
+  onLayout: (view: ViewState) => void;
+  run?: Run;
+  disabled?: boolean;
 };
-function WorkflowNode({ id, data, selected }: NodeProps<Node<CanvasData>>) {
-  const { node } = data;
-  const Icon = !node
-    ? FileText
-    : node.kind === 'agent'
-      ? Bot
-      : node.kind === 'branch'
-        ? GitBranch
-        : node.kind === 'wait'
-          ? Clock3
-          : node.kind === 'milestone'
-            ? Flag
-            : Boxes;
-  const inputs = node ? inputPorts(node) : [];
-  const outputs = node ? outputPorts(node) : data.ports || [];
-  const state = data.status;
-  const updateNodeInternals = useUpdateNodeInternals();
-  const portIdentity = JSON.stringify([inputs, outputs]);
-  useEffect(() => {
-    updateNodeInternals(id);
-  }, [id, portIdentity, updateNodeInternals]);
+const nodeTypes = { workflow: WorkflowNode };
+const edgeTypes = { routed: WorkflowEdge };
+export function WorkflowCanvas(props: Props) {
   return (
-    <div
-      className={`workflow-node ${selected ? 'selected' : ''} ${state || ''}`}
-    >
-      <div className="node-heading">
-        <span className={`node-icon ${node?.kind || 'material'}`}>
-          <Icon size={20} />
-        </span>
-        <div className="node-identity">
-          <span className="node-kind">
-            {!node
-              ? '输入'
-              : node.kind === 'agent'
-                ? 'Agent'
-                : node.kind === 'branch'
-                  ? '条件分流'
-                  : node.kind === 'wait'
-                    ? '持久等待'
-                    : node.kind === 'milestone'
-                      ? '业务里程碑'
-                      : '数据处理'}
-          </span>
-          <strong title={data.label}>{data.label}</strong>
-        </div>
-      </div>
-      {node?.kind === 'branch' && (
-        <p
-          className="node-condition"
-          title={`${node.condition?.field || '整个输入'} ${node.condition?.operator || ''} ${String(node.condition?.value ?? '')}`}
-        >
-          {node.condition?.field || '整个输入'} ·{' '}
-          {node.condition?.operator === 'contains'
-            ? '包含'
-            : node.condition?.operator === 'equals'
-              ? '等于'
-              : '存在'}{' '}
-          {String(node.condition?.value ?? '')}
-        </p>
-      )}
-      {node?.functionName === 'expression' && (
-        <p
-          className="node-condition"
-          title={expressionSummary(node.expression)}
-        >
-          {expressionSummary(node.expression)}
-        </p>
-      )}
-      <div className="node-summary">
-        <span>
-          {node
-            ? collectionSummary(node) ||
-              (node.kind === 'wait'
-                ? node.wait?.event || '等待事件'
-                : node.kind === 'milestone'
-                  ? node.milestone?.stage || '记录进展'
-                  : node.operation === 'flatMap'
-                    ? 'FlatMap · 展开'
-                    : node.mode === 'each'
-                      ? `Map · 并发 ${node.concurrency || 1}`
-                      : '整批汇总')
-            : '原始材料'}
-          {data.final && <span className="node-final">最终产物</span>}
-        </span>
-        {node && (
-          <span
-            className={`node-status ${state || ''}`}
-            title={statusNames[state || ''] || '待运行'}
-          >
-            {state === 'completed' ? (
-              <Check size={12} />
-            ) : state === 'running' ? (
-              <LoaderCircle size={12} className="spin" />
-            ) : state === 'failed' || state === 'blocked' ? (
-              <AlertCircle size={12} />
-            ) : null}
-            {state === 'waiting'
-              ? '等待事件'
-              : data.progress || statusNames[state || ''] || '待运行'}
-          </span>
-        )}
-      </div>
-      <div className="node-ports">
-        <div className="port-column">
-          {inputs.map((port) => (
-            <div key={port} className="node-port input">
-              <Handle
-                type="target"
-                position={Position.Left}
-                id={port}
-                aria-label={`输入 ${portLabel(port)}`}
-              />
-              <span title={portLabel(port)}>{portLabel(port)}</span>
-            </div>
-          ))}
-        </div>
-        <div className="port-column">
-          {outputs.map((port) => (
-            <div key={port} className="node-port output">
-              <span title={portLabel(port)}>{portLabel(port)}</span>
-              <Handle
-                type="source"
-                position={Position.Right}
-                id={port}
-                aria-label={`输出 ${portLabel(port)}`}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    <ReactFlowProvider>
+      <Canvas {...props} />
+    </ReactFlowProvider>
   );
 }
-const nodeTypes = { workflow: WorkflowNode };
-export function WorkflowCanvas({
+function Canvas({
   definition,
   view,
   selected,
@@ -187,23 +50,41 @@ export function WorkflowCanvas({
   onLayout,
   run,
   disabled,
-}: {
-  definition: Definition;
-  view: ViewState;
-  selected?: string;
-  onSelect: (id: string) => void;
-  onChange: (d: Definition) => void;
-  onLayout: (view: ViewState) => void;
-  run?: Run;
-  disabled?: boolean;
-}) {
-  const makeNodes = (): Node<CanvasData>[] => [
+}: Props) {
+  const [portFocus, setPortFocus] = useState<PortFocus>();
+  const [edgeFocus, setEdgeFocus] = useState<string>();
+  const [focus, setFocus] = useState(true);
+  const focusGraphKey = JSON.stringify({
+    edges: definition.edges,
+    ports: definition.nodes.map((node) => [
+      node.id,
+      inputPorts(node),
+      outputPorts(node),
+    ]),
+    inputs: definition.inputs,
+  });
+  useEffect(() => {
+    setPortFocus(undefined);
+    setEdgeFocus(undefined);
+  }, [focusGraphKey]);
+  const hoverPort = useCallback(
+    (port?: PortFocus) =>
+      setPortFocus((current) =>
+        JSON.stringify(current) === JSON.stringify(port) ? current : port,
+      ),
+    [],
+  );
+  const makeNodes = (): CanvasNode[] => [
     {
       id: '$input',
       deletable: false,
       type: 'workflow',
       position: view.positions.$input || { x: 35, y: 35 },
-      data: { label: '工作材料', ports: definition.inputs },
+      data: {
+        label: '工作材料',
+        ports: definition.inputs,
+        onPortFocus: hoverPort,
+      },
     },
     ...definition.nodes.map((node, index) => ({
       id: node.id,
@@ -217,6 +98,7 @@ export function WorkflowCanvas({
       data: {
         label: node.label,
         node,
+        onPortFocus: hoverPort,
         status: run?.nodeStates[node.id],
         final: Object.values(definition.outputs).some((v) => v[0] === node.id),
         progress: run?.results.some((r) => r.nodeId === node.id)
@@ -227,13 +109,24 @@ export function WorkflowCanvas({
   ];
   const [nodes, setNodes] = useState(makeNodes);
   useEffect(() => {
-    setNodes((prev) =>
-      makeNodes().map((n) => ({
-        ...n,
-        position: prev.find((p) => p.id === n.id)?.position || n.position,
-      })),
+    setNodes((previous) =>
+      makeNodes().map((node) => {
+        const old = previous.find((p) => p.id === node.id);
+        return { ...old, ...node, position: old?.position || node.position };
+      }),
     );
-  }, [definition, selected, run]);
+  }, [definition, selected, run, hoverPort]);
+  const {
+    initialized,
+    showPorts,
+    busy,
+    layoutError,
+    validRoutes,
+    arrange,
+    saveLayout,
+    manualMove,
+    togglePorts,
+  } = useCanvasLayout({ definition, view, nodes, setNodes, onLayout });
   function connect(c: Connection) {
     if (!c.source || !c.target || !c.sourceHandle || !c.targetHandle) return;
     onChange({
@@ -244,6 +137,23 @@ export function WorkflowCanvas({
       ],
     });
   }
+  const active = Boolean(portFocus || edgeFocus || (focus && selected));
+  const highlighted = edgeFocus
+    ? new Set([edgeFocus])
+    : focusedEdges(definition, focus ? selected : undefined, portFocus);
+  const related = new Set<string>([portFocus?.nodeId || selected || '']);
+  definition.edges.forEach((edge, i) => {
+    if (highlighted.has(`edge-${i}`)) {
+      related.add(edge.from[0]);
+      related.add(edge.to[0]);
+    }
+  });
+  const label = (id: string) =>
+    id === '$input'
+      ? '工作材料'
+      : definition.nodes.find((n) => n.id === id)?.label || id;
+  const description = (e: Definition['edges'][number]) =>
+    `${label(e.from[0])} · ${portLabel(e.from[1])} → ${label(e.to[0])} · ${portLabel(e.to[1])}`;
   const edges = definition.edges.map((e, i) => ({
     id: `edge-${i}`,
     source: e.from[0],
@@ -256,28 +166,45 @@ export function WorkflowCanvas({
         : e.from[1] === 'unmatched'
           ? '其他材料'
           : undefined,
-    type: 'smoothstep',
+    type: 'routed',
+    data: { points: validRoutes?.[`edge-${i}`], description: description(e) },
+    className: active
+      ? highlighted.has(`edge-${i}`)
+        ? 'connection-focus'
+        : 'connection-dim'
+      : '',
+    zIndex: active && highlighted.has(`edge-${i}`) ? 10 : 0,
     markerEnd: { type: MarkerType.ArrowClosed },
     animated: run?.nodeStates[e.to[0]] === 'running',
   }));
-  function saveLayout(viewport?: Viewport) {
-    onLayout({
-      positions: Object.fromEntries(nodes.map((n) => [n.id, n.position])),
-      viewport: viewport || view.viewport,
-    });
-  }
+  const focusedDescriptions = definition.edges
+    .filter((_, i) => highlighted.has(`edge-${i}`))
+    .map(description);
   return (
-    <div className="canvas">
-      <ReactFlow
+    <div
+      className={`canvas ${showPorts ? 'canvas--ports' : 'canvas--overview'}`}
+    >
+      <ReactFlow<CanvasNode>
         colorMode="dark"
-        nodes={nodes}
+        nodes={nodes.map((n) => ({
+          ...n,
+          className: active && !related.has(n.id) ? 'connection-dim' : '',
+        }))}
         edges={edges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onNodesChange={(changes) =>
           setNodes((ns) => applyNodeChanges(changes, ns))
         }
         onNodeClick={(_, n) => n.id !== '$input' && onSelect(n.id)}
+        onPaneClick={() => {
+          onSelect(undefined);
+          setPortFocus(undefined);
+          setEdgeFocus(undefined);
+        }}
         onConnect={connect}
+        onEdgeMouseEnter={(_, e) => setEdgeFocus(e.id)}
+        onEdgeMouseLeave={() => setEdgeFocus(undefined)}
         onEdgesDelete={(deleted) =>
           onChange({
             ...definition,
@@ -286,7 +213,11 @@ export function WorkflowCanvas({
             ),
           })
         }
+        onNodeDragStart={manualMove}
         onNodeDragStop={() => saveLayout()}
+        onMoveStart={(event) => {
+          if (event) manualMove();
+        }}
         onMoveEnd={(_, viewport) => saveLayout(viewport)}
         nodesConnectable={!disabled}
         deleteKeyCode={['Backspace', 'Delete']}
@@ -296,7 +227,66 @@ export function WorkflowCanvas({
         maxZoom={1.5}
       >
         <Background gap={24} size={1} color="#282828" />
-        <Controls showInteractive={false} />
+        <Controls showInteractive={false} fitViewOptions={canvasFitOptions} />
+        <Panel position="top-right">
+          <div className="canvas-actions">
+            <Button
+              variant="ghost"
+              aria-label="整理布局"
+              title="按依赖整理布局"
+              disabled={!initialized || busy}
+              onClick={() => void arrange()}
+            >
+              {busy ? (
+                <LoaderCircle size={14} className="spin" />
+              ) : (
+                <LayoutGrid size={14} />
+              )}
+              <span>{busy ? '整理中' : '整理布局'}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              aria-label="聚焦连接"
+              title="选中节点时突出相关连接"
+              aria-pressed={focus}
+              onClick={() => setFocus(!focus)}
+            >
+              <Focus size={14} />
+              <span>聚焦连接</span>
+            </Button>
+            <Button
+              variant="ghost"
+              aria-label="显示端口"
+              title="始终显示端口名称"
+              aria-pressed={showPorts}
+              onClick={togglePorts}
+            >
+              <ListTree size={14} />
+              <span>显示端口</span>
+            </Button>
+          </div>
+        </Panel>
+        {layoutError && (
+          <Panel position="bottom-center">
+            <div role="alert" className="canvas-layout-error">
+              {layoutError}
+            </div>
+          </Panel>
+        )}
+        {!layoutError &&
+          (portFocus || edgeFocus) &&
+          focusedDescriptions.length > 0 && (
+            <Panel position="bottom-center">
+              <div role="status" className="canvas-connection-info">
+                {focusedDescriptions.slice(0, 3).map((text) => (
+                  <div key={text}>{text}</div>
+                ))}
+                {focusedDescriptions.length > 3 && (
+                  <div>共 {focusedDescriptions.length} 条连接</div>
+                )}
+              </div>
+            </Panel>
+          )}
       </ReactFlow>
     </div>
   );

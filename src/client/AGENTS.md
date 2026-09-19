@@ -65,3 +65,9 @@ NodeInspector 的数据变换使用 ExpressionEditor、PatternEditor 和 Express
 CollectionEditor / collection-model 负责merge/collect动态端口及join模式、路径、重复策略，复用shared/node-ports和正式控件；变更端口后更新React Flow internals。改名/删除同步目标连线及具名Schema顶层properties/required，collect输出Schema同样处理；不自动改写任意嵌套Schema或下游表达式。局部试验选择实际端口，集合函数固定整批。tests/multi-input-client.test.ts 与 tests/browser/multi-input.spec.ts 覆盖交接。
 
 Geist Variable通过Fontsource本地打包，中文保留系统回退。Vite忽略conductor/test-results/playwright-report/data，防止测试trace的HTML触发持续刷新；不能把开发工具循环误判为应用逻辑或字体网络失败。
+
+## 画布布局与连接阅读
+
+`canvas-layout.ts` 复用 ELK Layered / Orthogonal，根据 React Flow 实测节点和端口返回坐标、折点；端口位置固定，不为减少交叉改写 IR。`useCanvasLayout` 负责测量、布局请求、过期结果和展示状态保存；`WorkflowCanvas` 负责图编辑与关系聚焦；`WorkflowNode` / `WorkflowEdge` 分别负责节点、实际路径及路径标签。
+
+无保存位置时首次自动整理，已有位置尊重用户选择；运行/SSE不重排。手动移动取消尚未完成的布局，端口、尺寸、位置或连接变化让旧路由失效，暂用普通边，点击“整理布局”重新计算。布局只保存 ViewState，不创建定义版本。端口标签按需显示但保留真实handle几何；键盘/悬停可追踪单一端口，选择节点显示直接关系。V1–V4 验收见 [本轮 track](../../conductor/tracks/canvas-layout_20260920/evidence.md)。

@@ -60,3 +60,11 @@ Workspace 负责组合；useWorkspace 维护 HTTP/SSE 与编辑上下文；Sideb
 ## 管理页整改（2026-09-20）
 
 正式入口修正为 shadcn/Radix + Tailwind4，components.json不再指向旧Spike。管理对象统一为工作项/流水线；列表以标题为主，编号/节点数为辅，业务状态与阶段同组，错误执行突出，修改时间成列，次要操作进入菜单。工作项分页与稳定轮询、流水线键盘Tabs共用实际控件。审计和本轮截图见 [track](../../conductor/tracks/functional-ir-management_20260920/evidence.md)。旧段落描述此前实施过程，“所有工作”命名与旧手写基础控件已被本轮替代。
+
+## 多路连接阅读（2026-09-20）
+
+参考 React Flow 官方 [ELK 多端口实例](https://reactflow.dev/examples/layout/elkjs-multiple-handles) 和 [ELK Layered](https://eclipse.dev/elk/reference/algorithms/org-eclipse-elk-layered.html)。沿用现有 Geist 暗色、shadcn 按钮、统一边框/强调色；不以彩虹连线或增加虚构节点解决密度。
+
+重复：同层节点对齐、固定端口顺序。对比：相关连线增强，其他节点仍保留可读轮廓。亲密：端口名紧邻端点，连接说明只在追踪时出现。概览保留摘要/端口数，选中或悬停再显示完整端口名称。整理按钮、关系聚焦、端口显示统一放在画布右上；窄屏保留图标及可访问名称。
+
+布局与定义分离；拖动后允许普通连接降级，用户主动整理后恢复全局路径规划。两尺寸真实操作、截图和边界记录在 [验收证据](../../conductor/tracks/canvas-layout_20260920/evidence.md)。

@@ -1,0 +1,27 @@
+{
+  "workId": "7f46e68e-5263-4509-8951-b1505fbe1b13",
+  "runId": "4085e287-e423-4a2b-ae46-259691ab886b",
+  "status": "completed",
+  "IRUnchanged": true,
+  "positionsUnchanged": true,
+  "outputCounts": {
+    "investigation": {
+      "output": 3
+    },
+    "remediation": {
+      "output": 2
+    },
+    "verification": {
+      "output": 1
+    },
+    "merged": {
+      "output": 6
+    },
+    "collected": {
+      "output": 1
+    },
+    "joined": {
+      "output": 4
+    }
+  }
+}

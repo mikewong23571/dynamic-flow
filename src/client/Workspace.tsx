@@ -336,6 +336,7 @@ export default function Workspace() {
                         selected={selectedNode}
                         onSelect={(id) => {
                           setSelectedNode(id);
+                          if (!id) return;
                           setPanel('inspector');
                           setSamplePort(
                             inputPorts(

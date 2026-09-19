@@ -1,0 +1,12 @@
+
+Running 5 tests using 1 worker
+
+(node:67019) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/browser/canvas-layout.spec.ts:67:3 › ELK真实端口布局、关系聚焦、拖动和重开 1440 (3.0s)
+  ✓  2 tests/browser/canvas-layout.spec.ts:67:3 › ELK真实端口布局、关系聚焦、拖动和重开 1024 (3.0s)
+  ✓  3 tests/browser/canvas-layout.spec.ts:217:1 › 迟到布局不覆盖整理期间的手动拖动 (1.5s)
+  ✓  4 tests/browser/multi-input.spec.ts:12:3 › 多路收集与关联编辑、运行、重开 1440 (3.6s)
+  ✓  5 tests/browser/multi-input.spec.ts:12:3 › 多路收集与关联编辑、运行、重开 1024 (3.5s)
+
+  5 passed (14.9s)

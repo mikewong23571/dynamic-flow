@@ -107,6 +107,8 @@ for (const [width, height] of [
           exact: true,
         })
         .click();
+      await page.getByRole('button', { name: '整理布局', exact: true }).click();
+      await expect(page.locator('[data-routing="elk"]')).toHaveCount(5);
       await page.locator('.react-flow__node[data-id="gather"]').click();
       await page
         .getByRole('combobox', { name: '处理函数', exact: true })
@@ -147,6 +149,9 @@ for (const [width, height] of [
         .getByRole('button', { name: '连接到此步骤', exact: true })
         .click();
       await save();
+      await expect(page.locator('[data-routing="elk"]')).toHaveCount(0);
+      await page.getByRole('button', { name: '整理布局', exact: true }).click();
+      await expect(page.locator('[data-routing="elk"]')).toHaveCount(6);
       let state = await snapshot();
       expect(state.issues).toEqual([]);
       expect(
@@ -180,6 +185,9 @@ for (const [width, height] of [
         .getByRole('button', { name: '删除端口 verification', exact: true })
         .click();
       await save();
+      await expect(page.locator('[data-routing="elk"]')).toHaveCount(0);
+      await page.getByRole('button', { name: '整理布局', exact: true }).click();
+      await expect(page.locator('[data-routing="elk"]')).toHaveCount(5);
       state = await snapshot();
       expect(
         state.definitions[state.work.draftId!].edges

@@ -1,0 +1,22 @@
+
+Running 15 tests using 1 worker
+
+(node:64904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/canvas-layout.spec.ts:67:3 › ELK真实端口布局、关系聚焦、拖动和重开 1440 (3.1s)
+  ✓   2 tests/browser/canvas-layout.spec.ts:67:3 › ELK真实端口布局、关系聚焦、拖动和重开 1024 (3.1s)
+  ✓   3 tests/browser/canvas-layout.spec.ts:217:1 › 迟到布局不覆盖整理期间的手动拖动 (1.6s)
+  ✓   4 tests/browser/functional-editor.spec.ts:7:3 › 结构化归约编辑、运行与重开 1440 (1.8s)
+  ✓   5 tests/browser/functional-editor.spec.ts:7:3 › 结构化归约编辑、运行与重开 1024 (1.9s)
+  ✓   6 tests/browser/management-presentation.spec.ts:82:3 › 管理列表层级、分页、稳定轮询与键盘 1440 (912ms)
+  ✓   7 tests/browser/management-presentation.spec.ts:82:3 › 管理列表层级、分页、稳定轮询与键盘 1024 (927ms)
+  ✓   8 tests/browser/multi-input.spec.ts:12:3 › 多路收集与关联编辑、运行、重开 1440 (3.5s)
+  ✓   9 tests/browser/multi-input.spec.ts:12:3 › 多路收集与关联编辑、运行、重开 1024 (3.6s)
+  ✓  10 tests/browser/same-work-reopen.spec.ts:4:1 › 当前工作在列表重命名后重新打开，保留工作区和未提交编辑 (2.3s)
+  ✓  11 tests/browser/work-library.spec.ts:4:1 › 工作列表搜索、分页、重命名、归档恢复与重新打开 (2.0s)
+  ✓  12 tests/browser/workitems.spec.ts:70:3 › 工作项登记、等待、事件、依据结项与重开（1440） (4.2s)
+  ✓  13 tests/browser/workitems.spec.ts:70:3 › 工作项登记、等待、事件、依据结项与重开（1024） (4.2s)
+  ✓  14 tests/browser/workspace.spec.ts:136:3 › 函数流程实际编辑、连线修错、执行与重开（1440×900） (2.3s)
+  ✓  15 tests/browser/workspace.spec.ts:136:3 › 函数流程实际编辑、连线修错、执行与重开（1024×768） (2.3s)
+
+  15 passed (38.3s)

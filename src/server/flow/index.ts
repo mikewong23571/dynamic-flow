@@ -436,6 +436,29 @@ export function createFlow(files: FileStore) {
             view.viewport.zoom <= 0))
       )
         throw new Error('画布位置与缩放必须是有效数值。');
+      if (view.showPorts !== undefined && typeof view.showPorts !== 'boolean')
+        throw new Error('画布端口显示偏好必须为开启或关闭。');
+      if (
+        view.routing !== undefined &&
+        (!object(view.routing) ||
+          typeof view.routing.signature !== 'string' ||
+          !view.routing.signature.trim() ||
+          !object(view.routing.routes) ||
+          Object.values(view.routing.routes).some(
+            (route) =>
+              !Array.isArray(route) ||
+              route.length < 2 ||
+              route.some(
+                (point) =>
+                  !object(point) ||
+                  !Number.isFinite(point.x) ||
+                  !Number.isFinite(point.y),
+              ),
+          ))
+      )
+        throw new Error(
+          '画布路由需要有效签名，每条路径至少包含两个有效坐标点。',
+        );
       await files.change(workId, (work) => {
         work.view = structuredClone(view);
       });

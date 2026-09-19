@@ -75,3 +75,7 @@ Schema 当前使用 Ajv 的 JSON Schema draft-07，允许基础类型 union；�
 集合函数 inputSchema 检查 `{端口名: 值数组}`；静态连接按 `properties[端口].items` 的明确顶层类型拒绝冲突。新 merge / join 的 expectedOutput 检查整个数组，但端口发出数组中的每项，因此静态出线取 items；collect 整个对象作为一项。其余 JSON Schema 仍由运行时校验。不是通用 schema 子类型证明。
 
 域内 `tests/multi-input.test.ts` 使用真实文件保存重开，覆盖具名多路/旧 merge、四种 join、Schema、纯表达式解构、空路/失败路、输入顺序/精确参与来源以及节点 preview/retry；浏览器和真实作者验收由本轮 track 汇总。
+
+## 画布路由持久化（2026-09-20）
+
+saveLayout 接收 ViewState 的 positions、可选 viewport、showPorts 与 routing。routing 包含非空 signature 和按连线 ID 索引的 routes；路径至少两个有限坐标点。形状错误在文件修改前拒绝，不覆盖原布局、不通知保存成功。signature 是客户端的展示失效标记，flow 不推导布局或验证它与定义的匹配；客户端只使用匹配当前几何的路由。布局保存不创建定义、不改 draftId 或 comparisons。`tests/canvas-view-state.test.ts` 以真实临时文件验证重开、旧布局兼容和坏输入不覆盖；视觉质量与前端失效判断由画布联测验收。

@@ -44,3 +44,7 @@ expressions.ts 仅定义 Expression / Pattern / PureFunction 可序列化联合�
 ## 集合端口
 
 node-ports.ts 集中 nodeInputPorts、collectionFunction、expandedCollectionOutput，避免客户端/校验/执行分别维护端口名单。FlowNode.inputNames 表达新 merge/collect 的有序端口，join 定义模式、两侧键路径与重复策略；旧无 inputNames merge 保持兼容。共享纯函数不代替 flow 的外部输入形状校验。具体例子及错误见 [多路组合](../../docs/multi-input.md)。
+
+## 画布展示状态
+
+ViewState.positions / viewport 保存节点位置与视口；可选 showPorts 保存端口显示偏好，可选 routing 保存 `{signature, routes}`。routes 以 `edge-${index}` 标识连线，每条路径为至少两个绝对坐标点。signature 由客户端按图结构、实际几何与节点位置生成，只用于检测路由是否过期；路由与偏好都不是 IR，也不影响输入端口顺序、定义版本或比较有效性。旧数据缺少可选字段仍可读取和保存，后端在 saveLayout 校验路由形状后保存。

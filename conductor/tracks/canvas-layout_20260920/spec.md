@@ -13,7 +13,7 @@
 
 client/canvas-layout.ts 复用elkjs的layered RIGHT + ORTHOGONAL。输入Definition及ReactFlow实测LayoutNode（id,width,height,inputs/outputs的id,x,y,width,height），输出positions和edge-${index}对应折点数组。FIXED_POS保持真实端口几何，不为少交叉改IR。无效草稿悬空边跳过，执行校验仍由flow负责。
 
-WorkflowCanvas负责测量、异步请求/错误、采用坐标及路由、关系聚焦；WorkflowNode负责卡片/端口显示，WorkflowEdge负责真实折点绘制。ViewState新增可选routing(signature/routes)、showPorts；flow.saveLayout校验有限坐标及路由，不改变定义。
+useCanvasLayout负责测量、异步请求/错误、采用坐标及路由；WorkflowCanvas负责图编辑与关系聚焦；WorkflowNode负责卡片/端口显示，WorkflowEdge负责真实折点绘制。ViewState新增可选routing(signature/routes)、showPorts；flow.saveLayout校验有限坐标及路由，不改变定义。
 
 不包含自动建立业务分组、虚构汇合节点、公共线编辑系统、任意规模图性能承诺。用户手动拖动后过期路由暂回退普通边，再点整理可全局规划。ELK按需加载，避免增加首屏包。
 

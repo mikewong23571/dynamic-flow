@@ -64,3 +64,5 @@ TanStack Table、react-resizable-panels、Monaco、Arborist 等仍在安装清�
 多路 merge、collect、join 使用现有 TypeScript、Ajv 与 React Flow / shadcn 控件，无新增计算框架。端口语义集中于 shared/node-ports.ts，合同见 [多路输出组合](../docs/multi-input.md)。
 
 字体通过 @fontsource-variable/geist 5.3.0 随应用本地打包，移除在线 Google Fonts CSS，避免第三方请求阻塞首次打开；保留中文系统字体回退。
+
+画布增加 elkjs 0.12.0，按需加载 Layered + Orthogonal；React Flow 的实测节点/端口作为输入，返回真实折点用于绘制。只负责展示布局，不新增图执行引擎；端口几何、路由失效、手动位置保存及运行稳定性见 [canvas-layout track](./tracks/canvas-layout_20260920/evidence.md)。

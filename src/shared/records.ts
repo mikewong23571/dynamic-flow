@@ -131,6 +131,11 @@ export interface ChatMessage {
 export interface ViewState {
   positions: Record<string, { x: number; y: number }>;
   viewport?: { x: number; y: number; zoom: number };
+  showPorts?: boolean;
+  routing?: {
+    signature: string;
+    routes: Record<string, { x: number; y: number }[]>;
+  };
 }
 export interface Work {
   id: string;

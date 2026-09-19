@@ -145,3 +145,13 @@ Work 保留方法工作区，WorkItem 新增持续业务身份，Run 保存固�
 ## 多路输出组合交接
 
 shared/node-ports.ts 统一前端、flow、runs 的实际端口与集合分发；flow/collections.ts 校验配置，runs/collections.ts 执行拼接、具名收集和键关联，client/CollectionEditor 提供结构化控件，assistant/collection-guide.ts 对齐模型工具。模块输入输出及错误例子见 [集合语义](multi-input.md)，真实验收见 [本轮证据](../conductor/tracks/multi-input_20260920/evidence.md)。
+
+## 画布布局与连接阅读（V1–V4）
+
+| 用户结果 | 实现责任 | 验收入口 |
+| --- | --- | --- |
+| 看懂分支、汇合和多路连接 | client/canvas-layout：真实端口的 ELK 布局；WorkflowEdge：折线路径和标签 | canvas-layout.test、canvas-focus.test |
+| 按节点/端口查看关系，按需看端口名称 | WorkflowCanvas / WorkflowNode / canvas-view | browser/canvas-layout、browser/multi-input |
+| 保留手动位置和显示设置，运行不重排 | useCanvasLayout、shared/ViewState、flow.saveLayout | canvas-view-state.test、浏览器拖动/重开/迟到请求 |
+
+这些为展示子问题，不改动 runtime、业务工作项或 IR 组合语义。具体边界见 [本轮设计](../conductor/tracks/canvas-layout_20260920/spec.md)。

@@ -1,6 +1,6 @@
 # Tracks Registry
 
-- [~] **Track: 多路画布布局与连接阅读**
+- [x] **Track: 多路画布布局与连接阅读**
   *Link: [canvas-layout_20260920](./tracks/canvas-layout_20260920/index.md)*
 
 - [x] **Track: 多路汇合、具名收集与按键关联**
