@@ -1,5 +1,7 @@
 # Component integration spike
 
+历史范围（2026-09-20）：当前产品已调整为 [画布 + JS 子集 IR + runtime](../../docs/design.md)。本例的树／代码编辑器及比较演示保留为接入证据，尚未实现新的 IR 编辑执行闭环；本例视觉已被用户否定，不作为正式界面模板。
+
 一个可运行的选型实验，不是正式 Workbench。详细结论见 [track 结果](../../conductor/tracks/component-integration-spike_20260919/results.md)。
 
 ## 运行

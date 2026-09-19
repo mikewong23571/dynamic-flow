@@ -1,48 +1,43 @@
 # 技术栈与决策状态
 
-## 当前状态
+当前架构依据：[简化设计 v3](../docs/design.md)。组件版本以 package.json / pnpm-lock.yaml 为准；现有安装服务于历史 Spike，不能照单复制到正式产品。
 
-Conductor 已初始化，组件接入 Spike 已落地：一个独立 example、锁定依赖、真实 Pi SDK fixture、浏览器证据。实验安装不自动代表所有库进入正式产品。
+## 当前方向
 
-详细结论：[组件 Spike 结果](./tracks/component-integration-spike_20260919/results.md)。
-
-## 基于实测的建议
-
-| 领域 | 建议 | 状态与边界 |
+| 领域 | 选择 / 边界 | 证据状态 |
 | --- | --- | --- |
-| 前端 | React 19.3.0 + Vite 8.3.0 + TypeScript 7.0.2 | 已运行；TS7 配置已修正 |
-| 基础 UI | shadcn/ui + Radix + Tailwind + Lucide | 三个控件经官方 CLI 生成；统一视觉需要业务设计 |
-| Chat | assistant-ui 0.15.21，ExternalStoreRuntime | 用户首选；真实 Pi 工具、流式、取消已验证 |
-| Agent | Pi SDK 0.85.1 | 真实 AgentSession + faux provider 已验证；真实模型和跨轮恢复未验证 |
-| 后端与传输 | Node + Hono + POST/SSE | 已运行；原型无需第二套 Agent loop 或 WebSocket |
-| 分栏 | react-resizable-panels 4.12.4 | 拖动与缩放通过；采用 v4 API |
-| 样本表格 | TanStack Table 9.2.4 | 排序、多选、筛选后稳定身份通过；锁定 v9 示例 |
-| 源码与 Diff | Monaco 0.56.0 + 编辑器 React wrapper 4.7.0 | 可用；Diff 需要薄生命周期适配，体积成本明显 |
-| Inspector | shadcn 组合 + react-markdown；JSON viewer 可选 | 不引入独立遥测平台；JSON viewer 安装版本为 alpha |
-| Work Map | 树/目录优先；Arborist 按层级需要采用 | 树与图都已试接；React Flow 暂缓进入默认产品依赖 |
-| Spike 工作区 | 复用控件，自研版本/样本/产物规则 | 本例仅内存比较与采用状态，未执行 Method |
-| 页面状态 | React state | 本例足够；没有引入 Zustand/Redux/TanStack Query |
+| 工作流定义 | JS 语义子集 IR，显式节点/连接/输入输出；只读 JS 表示 | 新设计，尚未实现 |
+| 工作流执行 | Node 上的薄 runtime，解释有限节点语义并调用 Pi/JS 函数 | 新 IR 调度尚未验证；不构建通用 JS 解释器 |
+| 主画布 | React Flow 12.11.6；nodeId 直接对应 IR | 已验证静态图/选择；拖拽连线回写 IR 与执行联动待测 |
+| 前端 | React 19.3.0、Vite 8.3.0、TypeScript 7.0.2 | 已运行；TS7 配置差异已处理 |
+| 基础控件 | shadcn/ui、Radix、Tailwind、Lucide | 技术接入通过；Spike 视觉被否定，正式页面重新设计 |
+| 对话 | assistant-ui 0.15.21，ExternalStoreRuntime | 用户首选；工具、流式与取消已测，修改 IR 工具待实现 |
+| Agent | Pi SDK 0.85.1 | 真实 SDK + faux provider 已测；真实模型与作者跨轮会话待测 |
+| API / 更新 | Hono + HTTP / SSE | 已试接；新节点事件关联待实现 |
+| 分栏 | react-resizable-panels 4.12.4，按需使用 | 拖动与窗口缩放已测，不做自由停靠 |
+| 材料/结果 | TanStack Table 9.2.4 按多列需求使用；react-markdown 报告 | 选择/排序/筛选和渲染已测 |
+| 状态 | React state 起步；IR 与运行数据明确区分 | 小型示例已测，暂无全局 store 平台需求 |
+| 持久化 | 本地定义/元数据/结果文件 + 追加事件记录 | 设计选择，尚未实现；SQLite 延后 |
 
-这些是选型建议，正式产品最终取舍留给用户讨论。不要将 example 中为了比较而同时安装的树与图等组件照单复制。
+IR 中 agent/function/branch 与逐项模式的确切字段，在下一个最小 runtime 实验中固化。普通处理复用已有 JS 函数；不要把所有控制逻辑变成 Agent 循环，也不要用硬编码业务分类替代 Agent 节点职责。
 
-## 仍待验证的关键决定
+## 不进入当前产品主路径
 
-- Method 局部执行、取消与源码位置/版本绑定。
-- TypeScript Compiler API 与 Babel 的实际索引成本；本轮没有做 AST 实验。
-- 真实 Pi 作者会话的跨轮上下文、修改代码与恢复。
-- Method、Run、Spike、Artifact 的持久化与续做：文件/JSONL 或 SQLite 元数据 + 文件仍待比较。
-- 首个场景真正需要哪些文件解析与呈现能力，不笼统添加 PDF/CSV 全套能力。
+- Monaco / 代码 Diff：保留旧实验，不作为核心编辑入口；只读定义查看不要求完整 IDE。
+- React Arborist：保留旧实验，不再推荐树/IDE Outline 作为主要流程表达。
+- Babel、recast、通用 TypeScript AST 索引：不再是待选项；IR 已直接提供结构与节点身份。
+- Pierre Diffs、CodeMirror、多套源码编辑器：不继续为已删除的核心需求做选型。
+- 复杂调度框架、隐式结果缓存、通用事件回放、额外 Agent loop、monorepo 多包：不预建。
+- JSON viewer 仅在真实结果结构需要时采用，不作为默认节点详情。
 
-## 工程工具
+## 下一轮接入验证
 
-pnpm 10.32.1；Node 实测 24.14.0，Pi 要求 >=22.19；node:test + tsx、Playwright Chromium、Prettier。具体版本见 package.json/pnpm-lock.yaml 和 example 的 evidence/versions.json。
+同一 IR 载入/保存 → 画布编辑回写 → runtime 实际执行 → 节点/样本事件定位 → 单节点试验与候选结果比较。补一个条件分流/空集合案例；验证执行版本固定、结果来源与刷新恢复。模型 fixture 和真实模型证据分开记录。
 
-命令见 [工作流程](./workflow.md) 与 [Example README](../examples/component-spike/README.md)。
+历史 [Spike 报告](./tracks/component-integration-spike_20260919/results.md) 中“Monaco 保留”“React Flow 延后”“程序索引待选”的建议已被当前设计替代；包接入失败/修复与截图记录仍有效。
 
-## 实现约束
+## 工具与命令
 
-- 复用通用机制，自研代码集中于产品语义、状态映射和必要衔接。
-- 不重建 Agent loop、模型客户端、编辑器、Diff 算法或布局引擎。
-- 不因一个技术实验成功就引入通用平台或所有候选组件。
-- 无需求不拆多包；安全、权限、隔离、生产治理不属于本原型选型范围。
-- 原设计 v2 是背景，后续用户要求和当前原型约定优先。
+pnpm 10.32.1；Node 实测 24.14.0，Pi 包要求 >=22.19；node:test + tsx、Playwright Chromium、Prettier。命令见 [workflow.md](./workflow.md) 与 [实验 README](../examples/component-spike/README.md)。
+
+不为安全、权限、隔离或生产治理扩展原型工具链。当前架构仍需实测，不把设计决定写成实现完成。

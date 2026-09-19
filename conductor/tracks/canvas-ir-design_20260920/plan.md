@@ -2,13 +2,24 @@
 
 ## Phase 1 — 归档与简化设计
 
-- [~] Task: 记录原稿摘要并原样移动到 docs/archive。
-- [ ] Task: 编写当前设计，明确 IR、画布、runtime 和 JS 查看关系以及保留/删除范围。
-- [ ] Task: Phase Verification & Checkpoint：确认归档字节与设计示例语义。
+- [x] Task: 记录原稿摘要并原样移动到 docs/archive。
+- [x] Task: 编写当前设计，明确 IR、画布、runtime 和 JS 查看关系以及保留/删除范围。
+- [x] Task: Phase Verification & Checkpoint：确认归档字节与设计示例语义。
 
 ## Phase 2 — 上下文同步与收口
 
-- [ ] Task: 同步产品、技术栈、组件、交互、开发流程与导航；标明旧实验结论被替代的部分。
-- [ ] Task: Phase Verification & Checkpoint：核对本地链接、过期要求、diff 和归档摘要，提交文档。
+- [x] Task: 同步产品、技术栈、组件、交互、开发流程与导航；标明旧实验结论被替代的部分。
+- [x] Task: Phase Verification & Checkpoint：核对本地链接、过期要求、diff 和归档摘要，提交文档。
 
 文档任务采用内容与链接核对，不运行无关应用测试。技能目录已核对，无需安装附加技能。
+
+## 验证记录（2026-09-20）
+
+- 原稿移入 docs/archive，44,446 字节；SHA-256 与移动前一致：`cf89fa5feaa3998b86e4df7dd1285da04b35e092c2a686ba581fb43beaec585e`。
+- 当前设计、产品、技术栈、组件职责、前端指南、开发流程、导航和 AGENTS 已同步。历史 Spike 结果与 example 入口已标明建议被替代的范围。
+- Python 检查 22 份 Markdown 的 67 个本地链接，全部存在；归档正文不改写。
+- Node 加载当前设计的示例 JS 模块，节点、输入、输出引用有效，图无环；这只验证文档示例，不是 runtime 集成验证。
+- 过期要求检索并人工复核：源码编辑、AST、树优先等只出现在明确的删除项或历史适用范围说明中。
+- 当前文档的 staged diff 空白检查通过（排除原稿归档）；原稿自带 3 处 Markdown 行尾空格及末尾空行，按字节保留，不为格式检查改写。应用代码、依赖与锁文件未改动；未重复执行无关应用测试。
+
+结果：文档与归档任务完成。新的 IR、画布编辑与 runtime 闭环尚未实现，下一轮按当前设计第 9 节验证。

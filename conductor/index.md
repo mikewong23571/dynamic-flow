@@ -2,6 +2,9 @@
 
 ## Definition
 
+- [当前产品与技术设计](../docs/design.md)
+- [设计文档与原稿归档](../docs/README.md)
+
 - [Product Definition](./product.md)
 - [Product Guidelines](./product-guidelines.md)
 - [Tech Stack](./tech-stack.md)
@@ -13,8 +16,8 @@
 
 ## Component Decisions
 
-- [关键组件选型准备](./component-options.md)
-- [组件接入 Spike 结果](./tracks/component-integration-spike_20260919/results.md)
+- [当前关键组件与待验证项](./component-options.md)
+- [历史组件接入 Spike 结果](./tracks/component-integration-spike_20260919/results.md)
 - [Tracks Registry](./tracks.md)
 
 ## Tracks

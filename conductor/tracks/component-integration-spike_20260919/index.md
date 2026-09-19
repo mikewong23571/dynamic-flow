@@ -1,5 +1,7 @@
 # Component Integration Spike
 
+历史说明：该实验的视觉及源码编辑主线不作为后续产品基线，后续实现遵循 [当前设计](../../../docs/design.md)。
+
 - [Specification](./spec.md)
 - [Plan](./plan.md)
 - [Metadata](./metadata.json)
