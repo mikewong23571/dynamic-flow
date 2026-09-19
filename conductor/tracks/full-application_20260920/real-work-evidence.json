@@ -1,0 +1,2406 @@
+{
+  "work": {
+    "id": "7f617b1f-ead0-400f-958b-3f4560a3ce5f",
+    "goal": "分析客户反馈：逐条分类为问题、需求或称赞，保留原文依据，再汇总成可交付的 Markdown 报告和行动建议。所有结论引用材料编号。",
+    "createdAt": "2026-09-19T17:57:32.617Z",
+    "updatedAt": "2026-09-19T18:26:11.413Z",
+    "revision": 177,
+    "materials": [
+      {
+        "id": "M01",
+        "text": "界面很顺手，但导出报告经常失败，影响交付。"
+      },
+      {
+        "id": "M02",
+        "text": "希望支持批量导出，逐条操作太慢。"
+      },
+      {
+        "id": "M03",
+        "text": "搜索比以前快很多，团队很满意。"
+      },
+      {
+        "id": "M04",
+        "text": "筛选后页码错乱，希望尽快修复。"
+      }
+    ],
+    "definitionIds": [
+      "7d5b566c-4326-4616-8912-201d9db931e3",
+      "a5d52f26-16fc-4780-a12f-1a52c9c04d0a",
+      "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+      "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+      "659abb8a-ae99-4ed5-ab5a-2876eb13ed2d"
+    ],
+    "view": {
+      "positions": {
+        "$input": {
+          "x": 50,
+          "y": 160
+        },
+        "classify_feedback": {
+          "x": 390,
+          "y": 160
+        },
+        "summarize_report": {
+          "x": 730,
+          "y": 160
+        }
+      },
+      "viewport": {
+        "x": 49.79569892473114,
+        "y": 83.66559139784945,
+        "zoom": 0.7440860215053764
+      }
+    },
+    "runs": [
+      {
+        "id": "af7c030b-1496-4188-8dd3-2c8ae487e05e",
+        "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+        "scope": "full",
+        "inputs": {
+          "materials": [
+            {
+              "sampleId": "M01",
+              "value": "界面很顺手，但导出报告经常失败，影响交付。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M02",
+              "value": "希望支持批量导出，逐条操作太慢。",
+              "materialIds": [
+                "M02"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M03",
+              "value": "搜索比以前快很多，团队很满意。",
+              "materialIds": [
+                "M03"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "status": "failed",
+        "stopRequested": false,
+        "nodeStates": {
+          "classify_feedback": "completed",
+          "summarize_report": "failed"
+        },
+        "results": [
+          {
+            "id": "38cf5632-f75c-4b31-8eca-4c71de1d9ba3",
+            "runId": "af7c030b-1496-4188-8dd3-2c8ae487e05e",
+            "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M01:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": "界面很顺手，但导出报告经常失败，影响交付。",
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M01",
+                  "value": {
+                    "materialId": "M01",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "界面很顺手"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "导出报告经常失败，影响交付"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": [
+                    "38cf5632-f75c-4b31-8eca-4c71de1d9ba3"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "af7c030b-1496-4188-8dd3-2c8ae487e05e:classify_feedback:M01:0:call_6056ebe3eaf44cdfb1bd1ca4",
+                "toolCallId": "call_6056ebe3eaf44cdfb1bd1ca4",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M01\",\"text\":\"界面很顺手，但导出报告经常失败，影响交付。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M01",
+                    "text": "界面很顺手，但导出报告经常失败，影响交付。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:02:25.911Z",
+            "finishedAt": "2026-09-19T18:02:41.989Z"
+          },
+          {
+            "id": "bd3f87af-51c6-436f-bce4-732b607484b3",
+            "runId": "af7c030b-1496-4188-8dd3-2c8ae487e05e",
+            "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M02:1",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M02",
+                  "value": "希望支持批量导出，逐条操作太慢。",
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M02",
+                  "value": {
+                    "materialId": "M02",
+                    "items": [
+                      {
+                        "category": "需求",
+                        "evidence": "希望支持批量导出"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "逐条操作太慢"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": [
+                    "bd3f87af-51c6-436f-bce4-732b607484b3"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "af7c030b-1496-4188-8dd3-2c8ae487e05e:classify_feedback:M02:1:call_4d63c86caf1546589badd17a",
+                "toolCallId": "call_4d63c86caf1546589badd17a",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M02\",\"text\":\"希望支持批量导出，逐条操作太慢。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M02",
+                    "text": "希望支持批量导出，逐条操作太慢。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:02:41.991Z",
+            "finishedAt": "2026-09-19T18:03:00.830Z"
+          },
+          {
+            "id": "eb7d3079-19c4-41e2-929e-1d2d0e06907d",
+            "runId": "af7c030b-1496-4188-8dd3-2c8ae487e05e",
+            "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M03:2",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M03",
+                  "value": "搜索比以前快很多，团队很满意。",
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M03",
+                  "value": {
+                    "materialId": "M03",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "搜索比以前快很多，团队很满意。"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "eb7d3079-19c4-41e2-929e-1d2d0e06907d"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "af7c030b-1496-4188-8dd3-2c8ae487e05e:classify_feedback:M03:2:call_99d893fdf104450cbfcda9d1",
+                "toolCallId": "call_99d893fdf104450cbfcda9d1",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M03\",\"text\":\"搜索比以前快很多，团队很满意。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M03",
+                    "text": "搜索比以前快很多，团队很满意。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:03:00.831Z",
+            "finishedAt": "2026-09-19T18:03:20.612Z"
+          },
+          {
+            "id": "f444c612-b7e9-4a1b-8e94-0d5e04879db5",
+            "runId": "af7c030b-1496-4188-8dd3-2c8ae487e05e",
+            "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+            "nodeId": "summarize_report",
+            "instanceId": "summarize_report:all:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": {
+                    "materialId": "M01",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "界面很顺手"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "导出报告经常失败，影响交付"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": [
+                    "38cf5632-f75c-4b31-8eca-4c71de1d9ba3"
+                  ]
+                },
+                {
+                  "sampleId": "M02",
+                  "value": {
+                    "materialId": "M02",
+                    "items": [
+                      {
+                        "category": "需求",
+                        "evidence": "希望支持批量导出"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "逐条操作太慢"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": [
+                    "bd3f87af-51c6-436f-bce4-732b607484b3"
+                  ]
+                },
+                {
+                  "sampleId": "M03",
+                  "value": {
+                    "materialId": "M03",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "搜索比以前快很多，团队很满意。"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "eb7d3079-19c4-41e2-929e-1d2d0e06907d"
+                  ]
+                }
+              ]
+            },
+            "outputs": {},
+            "status": "failed",
+            "activities": [
+              {
+                "id": "af7c030b-1496-4188-8dd3-2c8ae487e05e:summarize_report:all:0:call_96906e41a74a40bcbf0b4a44",
+                "toolCallId": "call_96906e41a74a40bcbf0b4a44",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M01\",\"text\":\"界面很顺手，但导出报告经常失败，影响交付。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M01",
+                    "text": "界面很顺手，但导出报告经常失败，影响交付。"
+                  }
+                }
+              },
+              {
+                "id": "af7c030b-1496-4188-8dd3-2c8ae487e05e:summarize_report:all:0:call_5430f40a07c4489194841934",
+                "toolCallId": "call_5430f40a07c4489194841934",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M02\",\"text\":\"希望支持批量导出，逐条操作太慢。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M02",
+                    "text": "希望支持批量导出，逐条操作太慢。"
+                  }
+                }
+              },
+              {
+                "id": "af7c030b-1496-4188-8dd3-2c8ae487e05e:summarize_report:all:0:call_56ab6c1279d5494d8a1fa921",
+                "toolCallId": "call_56ab6c1279d5494d8a1fa921",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M03\",\"text\":\"搜索比以前快很多，团队很满意。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M03",
+                    "text": "搜索比以前快很多，团队很满意。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:03:20.615Z",
+            "error": "结果需要 string 类型。",
+            "finishedAt": "2026-09-19T18:03:56.553Z"
+          }
+        ],
+        "startedAt": "2026-09-19T18:02:25.897Z",
+        "finishedAt": "2026-09-19T18:03:56.554Z"
+      },
+      {
+        "id": "f814f056-4d70-4977-8012-92b56f978467",
+        "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+        "scope": {
+          "nodeId": "summarize_report"
+        },
+        "inputs": {
+          "input": [
+            {
+              "sampleId": "M01",
+              "value": {
+                "materialId": "M01",
+                "items": [
+                  {
+                    "category": "称赞",
+                    "evidence": "界面很顺手"
+                  },
+                  {
+                    "category": "问题",
+                    "evidence": "导出报告经常失败，影响交付"
+                  }
+                ]
+              },
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "38cf5632-f75c-4b31-8eca-4c71de1d9ba3"
+              ]
+            },
+            {
+              "sampleId": "M02",
+              "value": {
+                "materialId": "M02",
+                "items": [
+                  {
+                    "category": "需求",
+                    "evidence": "希望支持批量导出"
+                  },
+                  {
+                    "category": "问题",
+                    "evidence": "逐条操作太慢"
+                  }
+                ]
+              },
+              "materialIds": [
+                "M02"
+              ],
+              "sourceResultIds": [
+                "bd3f87af-51c6-436f-bce4-732b607484b3"
+              ]
+            },
+            {
+              "sampleId": "M03",
+              "value": {
+                "materialId": "M03",
+                "items": [
+                  {
+                    "category": "称赞",
+                    "evidence": "搜索比以前快很多，团队很满意。"
+                  }
+                ]
+              },
+              "materialIds": [
+                "M03"
+              ],
+              "sourceResultIds": [
+                "eb7d3079-19c4-41e2-929e-1d2d0e06907d"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "stopRequested": false,
+        "nodeStates": {
+          "summarize_report": "completed"
+        },
+        "results": [
+          {
+            "id": "9a79af65-a45b-468a-84de-bd9b8beca441",
+            "runId": "f814f056-4d70-4977-8012-92b56f978467",
+            "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+            "nodeId": "summarize_report",
+            "instanceId": "summarize_report:all:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": {
+                    "materialId": "M01",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "界面很顺手"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "导出报告经常失败，影响交付"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": [
+                    "38cf5632-f75c-4b31-8eca-4c71de1d9ba3"
+                  ]
+                },
+                {
+                  "sampleId": "M02",
+                  "value": {
+                    "materialId": "M02",
+                    "items": [
+                      {
+                        "category": "需求",
+                        "evidence": "希望支持批量导出"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "逐条操作太慢"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": [
+                    "bd3f87af-51c6-436f-bce4-732b607484b3"
+                  ]
+                },
+                {
+                  "sampleId": "M03",
+                  "value": {
+                    "materialId": "M03",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "搜索比以前快很多，团队很满意。"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "eb7d3079-19c4-41e2-929e-1d2d0e06907d"
+                  ]
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "9a79af65-a45b-468a-84de-bd9b8beca441",
+                  "value": "# 用户反馈分类汇总报告\n\n本次汇总覆盖 3 条原始材料（M01–M03），分类明细均基于原始正文与既有分类结果，未引入材料之外的结论。\n\n## 一、分类明细\n\n### 1. 问题（共 2 条）\n\n| 编号 | 分类结果依据（逐条分类摘录） | 原文依据 |\n| --- | --- | --- |\n| M01 | 导出报告经常失败，影响交付 | 「界面很顺手，但导出报告经常失败，影响交付。」[M01] |\n| M02 | 逐条操作太慢 | 「希望支持批量导出，逐条操作太慢。」[M02] |\n\n### 2. 需求（共 1 条）\n\n| 编号 | 分类结果依据（逐条分类摘录） | 原文依据 |\n| --- | --- | --- |\n| M02 | 希望支持批量导出 | 「希望支持批量导出，逐条操作太慢。」[M02] |\n\n### 3. 称赞（共 2 条）\n\n| 编号 | 分类结果依据（逐条分类摘录） | 原文依据 |\n| --- | --- | --- |\n| M01 | 界面很顺手 | 「界面很顺手，但导出报告经常失败，影响交付。」[M01] |\n| M03 | 搜索比以前快很多，团队很满意。 | 「搜索比以前快很多，团队很满意。」[M03] |\n\n## 二、总体结论\n\n1. **问题集中于导出与操作效率**：3 条材料中有 2 条包含问题反馈——导出报告经常失败、影响交付（M01），以及逐条操作太慢（M02）。\n2. **需求指向批量能力**：唯一的明确需求是支持批量导出，与 M02 提到的「逐条操作太慢」相互呼应 [M02]。\n3. **正向反馈集中在体验与搜索**：界面易用性获认可（M01），搜索速度较以前提升且团队满意（M03）。\n4. 整体呈现「基础体验获认可、导出链路存在可靠性与效率短板」的格局（基于 M01、M02、M03 的分类分布）。\n\n## 三、行动建议\n\n1. **修复导出失败问题**：优先排查并修复导出报告经常失败的情况，保障交付稳定性 [M01]。\n2. **落地批量导出能力**：响应用户「希望支持批量导出」的需求，缓解逐条操作太慢的效率问题 [M02]。\n3. **延续体验与搜索优势**：保持当前界面易用性优势，并固化搜索性能优化成果 [M01][M03]。",
+                  "materialIds": [
+                    "M01",
+                    "M02",
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "9a79af65-a45b-468a-84de-bd9b8beca441"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "f814f056-4d70-4977-8012-92b56f978467:summarize_report:all:0:call_c2aea3a78d52454ab4a1c5b4",
+                "toolCallId": "call_c2aea3a78d52454ab4a1c5b4",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M01\",\"text\":\"界面很顺手，但导出报告经常失败，影响交付。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M01",
+                    "text": "界面很顺手，但导出报告经常失败，影响交付。"
+                  }
+                }
+              },
+              {
+                "id": "f814f056-4d70-4977-8012-92b56f978467:summarize_report:all:0:call_dc2064524cfa4ac6aa90c400",
+                "toolCallId": "call_dc2064524cfa4ac6aa90c400",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M02\",\"text\":\"希望支持批量导出，逐条操作太慢。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M02",
+                    "text": "希望支持批量导出，逐条操作太慢。"
+                  }
+                }
+              },
+              {
+                "id": "f814f056-4d70-4977-8012-92b56f978467:summarize_report:all:0:call_ddf0ad779351440db5238ef3",
+                "toolCallId": "call_ddf0ad779351440db5238ef3",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M03\",\"text\":\"搜索比以前快很多，团队很满意。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M03",
+                    "text": "搜索比以前快很多，团队很满意。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:12:12.814Z",
+            "finishedAt": "2026-09-19T18:12:42.893Z"
+          }
+        ],
+        "nodeTotals": {
+          "summarize_report": 1
+        },
+        "startedAt": "2026-09-19T18:12:12.810Z",
+        "finishedAt": "2026-09-19T18:12:42.897Z"
+      },
+      {
+        "id": "0f40ab0c-fee4-4c03-811b-bd260addd5e7",
+        "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+        "scope": {
+          "nodeId": "classify_feedback"
+        },
+        "inputs": {
+          "input": [
+            {
+              "sampleId": "M01",
+              "value": "界面很顺手，但导出报告经常失败，影响交付。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M03",
+              "value": "搜索比以前快很多，团队很满意。",
+              "materialIds": [
+                "M03"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "status": "completed",
+        "stopRequested": false,
+        "comparisonId": "5e4181cc-ea4d-4304-921d-6f31fb8687db",
+        "nodeStates": {
+          "classify_feedback": "completed"
+        },
+        "results": [
+          {
+            "id": "edf12d7a-f93a-480e-afc0-7983b4a1ab38",
+            "runId": "0f40ab0c-fee4-4c03-811b-bd260addd5e7",
+            "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M01:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": "界面很顺手，但导出报告经常失败，影响交付。",
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M01",
+                  "value": {
+                    "materialId": "M01",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "界面很顺手"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "导出报告经常失败，影响交付"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": [
+                    "edf12d7a-f93a-480e-afc0-7983b4a1ab38"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "0f40ab0c-fee4-4c03-811b-bd260addd5e7:classify_feedback:M01:0:call_9ce6e6b794814a2f882963bc",
+                "toolCallId": "call_9ce6e6b794814a2f882963bc",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M01\",\"text\":\"界面很顺手，但导出报告经常失败，影响交付。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M01",
+                    "text": "界面很顺手，但导出报告经常失败，影响交付。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:19:15.901Z",
+            "finishedAt": "2026-09-19T18:19:30.648Z"
+          },
+          {
+            "id": "6b675077-991f-4a4a-a780-3075bb67ca77",
+            "runId": "0f40ab0c-fee4-4c03-811b-bd260addd5e7",
+            "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M03:1",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M03",
+                  "value": "搜索比以前快很多，团队很满意。",
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M03",
+                  "value": {
+                    "materialId": "M03",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "搜索比以前快很多，团队很满意。"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "6b675077-991f-4a4a-a780-3075bb67ca77"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "0f40ab0c-fee4-4c03-811b-bd260addd5e7:classify_feedback:M03:1:call_005134ecd3514145bc78e463",
+                "toolCallId": "call_005134ecd3514145bc78e463",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M03\",\"text\":\"搜索比以前快很多，团队很满意。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M03",
+                    "text": "搜索比以前快很多，团队很满意。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:19:30.650Z",
+            "finishedAt": "2026-09-19T18:19:46.509Z"
+          }
+        ],
+        "nodeTotals": {
+          "classify_feedback": 2
+        },
+        "startedAt": "2026-09-19T18:19:15.896Z",
+        "finishedAt": "2026-09-19T18:19:46.514Z"
+      },
+      {
+        "id": "1f16bdcc-c0b8-4c43-bb95-abb4e6569df7",
+        "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+        "scope": {
+          "nodeId": "classify_feedback"
+        },
+        "inputs": {
+          "input": [
+            {
+              "sampleId": "M01",
+              "value": "界面很顺手，但导出报告经常失败，影响交付。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M03",
+              "value": "搜索比以前快很多，团队很满意。",
+              "materialIds": [
+                "M03"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "status": "completed",
+        "stopRequested": false,
+        "comparisonId": "5e4181cc-ea4d-4304-921d-6f31fb8687db",
+        "nodeStates": {
+          "classify_feedback": "completed"
+        },
+        "results": [
+          {
+            "id": "4608be5a-4b68-461c-8464-959484cc1759",
+            "runId": "1f16bdcc-c0b8-4c43-bb95-abb4e6569df7",
+            "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M01:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": "界面很顺手，但导出报告经常失败，影响交付。",
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M01",
+                  "value": {
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "界面很顺手"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "导出报告经常失败，影响交付"
+                      }
+                    ],
+                    "materialId": "M01",
+                    "primaryCategory": "问题"
+                  },
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": [
+                    "4608be5a-4b68-461c-8464-959484cc1759"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "1f16bdcc-c0b8-4c43-bb95-abb4e6569df7:classify_feedback:M01:0:call_0b11d082bd944d79b7ea5cf3",
+                "toolCallId": "call_0b11d082bd944d79b7ea5cf3",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M01\",\"text\":\"界面很顺手，但导出报告经常失败，影响交付。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M01",
+                    "text": "界面很顺手，但导出报告经常失败，影响交付。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:19:46.523Z",
+            "finishedAt": "2026-09-19T18:20:02.624Z"
+          },
+          {
+            "id": "5dfc5ba3-c06e-4697-800a-84f63c492573",
+            "runId": "1f16bdcc-c0b8-4c43-bb95-abb4e6569df7",
+            "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M03:1",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M03",
+                  "value": "搜索比以前快很多，团队很满意。",
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M03",
+                  "value": {
+                    "materialId": "M03",
+                    "primaryCategory": "称赞",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "搜索比以前快很多，团队很满意。"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "5dfc5ba3-c06e-4697-800a-84f63c492573"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [],
+            "startedAt": "2026-09-19T18:20:02.625Z",
+            "finishedAt": "2026-09-19T18:20:16.300Z"
+          }
+        ],
+        "nodeTotals": {
+          "classify_feedback": 2
+        },
+        "startedAt": "2026-09-19T18:19:46.515Z",
+        "finishedAt": "2026-09-19T18:20:16.303Z"
+      },
+      {
+        "id": "be57216c-3cc0-4fae-84a0-1294853ef09e",
+        "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+        "scope": {
+          "nodeId": "summarize_report"
+        },
+        "inputs": {
+          "input": [
+            {
+              "sampleId": "M01",
+              "value": {
+                "items": [
+                  {
+                    "category": "称赞",
+                    "evidence": "界面很顺手"
+                  },
+                  {
+                    "category": "问题",
+                    "evidence": "导出报告经常失败，影响交付"
+                  }
+                ],
+                "materialId": "M01",
+                "primaryCategory": "问题"
+              },
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "4608be5a-4b68-461c-8464-959484cc1759"
+              ]
+            },
+            {
+              "sampleId": "M02",
+              "value": {
+                "materialId": "M02",
+                "items": [
+                  {
+                    "category": "需求",
+                    "evidence": "希望支持批量导出"
+                  },
+                  {
+                    "category": "问题",
+                    "evidence": "逐条操作太慢"
+                  }
+                ]
+              },
+              "materialIds": [
+                "M02"
+              ],
+              "sourceResultIds": [
+                "bd3f87af-51c6-436f-bce4-732b607484b3"
+              ]
+            },
+            {
+              "sampleId": "M03",
+              "value": {
+                "materialId": "M03",
+                "items": [
+                  {
+                    "category": "称赞",
+                    "evidence": "搜索比以前快很多，团队很满意。"
+                  }
+                ]
+              },
+              "materialIds": [
+                "M03"
+              ],
+              "sourceResultIds": [
+                "eb7d3079-19c4-41e2-929e-1d2d0e06907d"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "stopRequested": false,
+        "nodeStates": {
+          "summarize_report": "completed"
+        },
+        "results": [
+          {
+            "id": "075f32d9-78e9-482d-a0c5-3473481b0768",
+            "runId": "be57216c-3cc0-4fae-84a0-1294853ef09e",
+            "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+            "nodeId": "summarize_report",
+            "instanceId": "summarize_report:all:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": {
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "界面很顺手"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "导出报告经常失败，影响交付"
+                      }
+                    ],
+                    "materialId": "M01",
+                    "primaryCategory": "问题"
+                  },
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": [
+                    "4608be5a-4b68-461c-8464-959484cc1759"
+                  ]
+                },
+                {
+                  "sampleId": "M02",
+                  "value": {
+                    "materialId": "M02",
+                    "items": [
+                      {
+                        "category": "需求",
+                        "evidence": "希望支持批量导出"
+                      },
+                      {
+                        "category": "问题",
+                        "evidence": "逐条操作太慢"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": [
+                    "bd3f87af-51c6-436f-bce4-732b607484b3"
+                  ]
+                },
+                {
+                  "sampleId": "M03",
+                  "value": {
+                    "materialId": "M03",
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "搜索比以前快很多，团队很满意。"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "eb7d3079-19c4-41e2-929e-1d2d0e06907d"
+                  ]
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "075f32d9-78e9-482d-a0c5-3473481b0768",
+                  "value": "# 分类结果汇总报告\n\n## 一、分类明细\n\n### 问题（2 条）\n\n| 编号 | 原文依据 |\n|------|----------|\n| [M01] | 「导出报告经常失败，影响交付」 |\n| [M02] | 「逐条操作太慢」 |\n\n### 需求（1 条）\n\n| 编号 | 原文依据 |\n|------|----------|\n| [M02] | 「希望支持批量导出」 |\n\n### 称赞（2 条）\n\n| 编号 | 原文依据 |\n|------|----------|\n| [M01] | 「界面很顺手」 |\n| [M03] | 「搜索比以前快很多，团队很满意。」 |\n\n> 原始材料全文核对：\n> - [M01]：「界面很顺手，但导出报告经常失败，影响交付。」（同一条材料同时包含称赞与问题）\n> - [M02]：「希望支持批量导出，逐条操作太慢。」（同一条材料同时包含需求与问题）\n> - [M03]：「搜索比以前快很多，团队很满意。」\n\n## 二、总体结论\n\n本次共分析 3 条材料，检出 5 个分类条目：问题 2 条、称赞 2 条、需求 1 条。\n\n- **问题集中在导出环节**：[M01] 反映导出报告经常失败且已影响交付；[M02] 反映当前逐条操作的方式效率太慢。二者共同指向导出/操作流程是当前最突出的痛点。\n- **需求与问题相互印证**：[M02] 提出的「支持批量导出」正是对「逐条操作太慢」这一问题的直接回应。\n- **正面反馈集中在易用性与性能**：[M01] 对界面的顺手程度表示称赞，[M03] 对搜索速度的提升表示满意，说明界面易用性与搜索性能目前获得认可。\n\n## 三、行动建议\n\n1. **优先排查并修复导出报告失败的问题**，该问题已被明确指出影响交付，优先级最高。[M01]\n2. **评估并上线批量导出能力**，以解决逐条操作效率低的问题，此为材料中明确的用户需求。[M02]\n3. **在迭代中保持界面易用性与搜索性能的现状**，避免已获称赞的体验出现回归。[M01][M03]",
+                  "materialIds": [
+                    "M01",
+                    "M02",
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "075f32d9-78e9-482d-a0c5-3473481b0768"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "be57216c-3cc0-4fae-84a0-1294853ef09e:summarize_report:all:0:call_7a0748707c3041dcbde70acf",
+                "toolCallId": "call_7a0748707c3041dcbde70acf",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M01\",\"text\":\"界面很顺手，但导出报告经常失败，影响交付。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M01",
+                    "text": "界面很顺手，但导出报告经常失败，影响交付。"
+                  }
+                }
+              },
+              {
+                "id": "be57216c-3cc0-4fae-84a0-1294853ef09e:summarize_report:all:0:call_e9c443a05b9f4892bff124c2",
+                "toolCallId": "call_e9c443a05b9f4892bff124c2",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M02\",\"text\":\"希望支持批量导出，逐条操作太慢。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M02",
+                    "text": "希望支持批量导出，逐条操作太慢。"
+                  }
+                }
+              },
+              {
+                "id": "be57216c-3cc0-4fae-84a0-1294853ef09e:summarize_report:all:0:call_c8625a4af9f34e75af23ecc7",
+                "toolCallId": "call_c8625a4af9f34e75af23ecc7",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M03\",\"text\":\"搜索比以前快很多，团队很满意。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M03",
+                    "text": "搜索比以前快很多，团队很满意。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:21:42.545Z",
+            "finishedAt": "2026-09-19T18:22:07.239Z"
+          }
+        ],
+        "nodeTotals": {
+          "summarize_report": 1
+        },
+        "startedAt": "2026-09-19T18:21:42.540Z",
+        "finishedAt": "2026-09-19T18:22:07.243Z"
+      },
+      {
+        "id": "51790fe6-1b5f-419e-960f-88e1ca7bd9cd",
+        "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+        "scope": "full",
+        "inputs": {
+          "materials": [
+            {
+              "sampleId": "M01",
+              "value": "界面很顺手，但导出报告经常失败，影响交付。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M02",
+              "value": "希望支持批量导出，逐条操作太慢。",
+              "materialIds": [
+                "M02"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "status": "cancelled",
+        "stopRequested": true,
+        "nodeStates": {
+          "classify_feedback": "cancelled",
+          "summarize_report": "cancelled"
+        },
+        "results": [
+          {
+            "id": "ac7988b8-7de4-4197-9f96-ccfdcc67d4f6",
+            "runId": "51790fe6-1b5f-419e-960f-88e1ca7bd9cd",
+            "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M01:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": "界面很顺手，但导出报告经常失败，影响交付。",
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {},
+            "status": "cancelled",
+            "activities": [],
+            "startedAt": "2026-09-19T18:22:46.724Z",
+            "error": "已停止",
+            "finishedAt": "2026-09-19T18:22:52.473Z"
+          }
+        ],
+        "nodeTotals": {
+          "classify_feedback": 2
+        },
+        "startedAt": "2026-09-19T18:22:46.702Z",
+        "finishedAt": "2026-09-19T18:22:52.476Z"
+      },
+      {
+        "id": "f7bd8d92-5087-4091-a41f-857757c1a07d",
+        "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+        "scope": "full",
+        "inputs": {
+          "materials": [
+            {
+              "sampleId": "M04",
+              "value": "筛选后页码错乱，希望尽快修复。",
+              "materialIds": [
+                "M04"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "status": "completed",
+        "stopRequested": false,
+        "nodeStates": {
+          "classify_feedback": "completed",
+          "summarize_report": "completed"
+        },
+        "results": [
+          {
+            "id": "fd1812b8-ab23-4042-858f-e9885e97ac27",
+            "runId": "f7bd8d92-5087-4091-a41f-857757c1a07d",
+            "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M04:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M04",
+                  "value": "筛选后页码错乱，希望尽快修复。",
+                  "materialIds": [
+                    "M04"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M04",
+                  "value": {
+                    "materialId": "M04",
+                    "primaryCategory": "问题",
+                    "items": [
+                      {
+                        "category": "问题",
+                        "evidence": "筛选后页码错乱"
+                      },
+                      {
+                        "category": "需求",
+                        "evidence": "希望尽快修复"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M04"
+                  ],
+                  "sourceResultIds": [
+                    "fd1812b8-ab23-4042-858f-e9885e97ac27"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [],
+            "startedAt": "2026-09-19T18:23:04.964Z",
+            "finishedAt": "2026-09-19T18:23:16.952Z"
+          },
+          {
+            "id": "8c65b535-3f47-458a-9947-cd70225835ca",
+            "runId": "f7bd8d92-5087-4091-a41f-857757c1a07d",
+            "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+            "nodeId": "summarize_report",
+            "instanceId": "summarize_report:all:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M04",
+                  "value": {
+                    "materialId": "M04",
+                    "primaryCategory": "问题",
+                    "items": [
+                      {
+                        "category": "问题",
+                        "evidence": "筛选后页码错乱"
+                      },
+                      {
+                        "category": "需求",
+                        "evidence": "希望尽快修复"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M04"
+                  ],
+                  "sourceResultIds": [
+                    "fd1812b8-ab23-4042-858f-e9885e97ac27"
+                  ]
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M04",
+                  "value": "# 分类结果汇总报告\n\n## 一、分类明细\n\n### 1. 问题\n\n| 材料编号 | 原文依据 | 分类说明 |\n| --- | --- | --- |\n| M04 | 「筛选后页码错乱」 | 筛选功能执行后出现页码错乱的故障现象，属于功能缺陷类问题 [M04] |\n\n### 2. 需求\n\n| 材料编号 | 原文依据 | 分类说明 |\n| --- | --- | --- |\n| M04 | 「希望尽快修复」 | 用户明确提出尽快修复上述问题的诉求 [M04] |\n\n### 3. 称赞\n\n本期输入材料中未包含任何「称赞」类分类结果，无相关明细。\n\n## 二、总体结论\n\n本期汇总仅覆盖材料 M04，其内容为：「筛选后页码错乱，希望尽快修复。」[M04]。该材料同时包含两类信息：一是「筛选后页码错乱」的问题反馈（主要分类为「问题」）[M04]；二是「希望尽快修复」的修复需求 [M04]。本期未出现「称赞」类内容。\n\n## 三、行动建议\n\n1. **排查并修复筛选后页码错乱问题**：针对「筛选后页码错乱」的功能缺陷进行定位与修复 [M04]。\n2. **尽快响应修复需求**：依据「希望尽快修复」的诉求，优先安排上述问题的修复排期 [M04]。",
+                  "materialIds": [
+                    "M04"
+                  ],
+                  "sourceResultIds": [
+                    "8c65b535-3f47-458a-9947-cd70225835ca"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "f7bd8d92-5087-4091-a41f-857757c1a07d:summarize_report:all:0:call_a8961e1ba2bc481cb414faa5",
+                "toolCallId": "call_a8961e1ba2bc481cb414faa5",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M04\",\"text\":\"筛选后页码错乱，希望尽快修复。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M04",
+                    "text": "筛选后页码错乱，希望尽快修复。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:23:16.959Z",
+            "finishedAt": "2026-09-19T18:23:38.789Z"
+          }
+        ],
+        "nodeTotals": {
+          "classify_feedback": 1,
+          "summarize_report": 1
+        },
+        "startedAt": "2026-09-19T18:23:04.956Z",
+        "finishedAt": "2026-09-19T18:23:38.793Z"
+      },
+      {
+        "id": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82",
+        "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+        "scope": "full",
+        "inputs": {
+          "materials": [
+            {
+              "sampleId": "M01",
+              "value": "界面很顺手，但导出报告经常失败，影响交付。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M02",
+              "value": "希望支持批量导出，逐条操作太慢。",
+              "materialIds": [
+                "M02"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M03",
+              "value": "搜索比以前快很多，团队很满意。",
+              "materialIds": [
+                "M03"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "status": "completed",
+        "stopRequested": false,
+        "nodeStates": {
+          "classify_feedback": "completed",
+          "summarize_report": "completed"
+        },
+        "results": [
+          {
+            "id": "31e24765-7a87-4f12-b797-bdf562c1ce23",
+            "runId": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82",
+            "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M01:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": "界面很顺手，但导出报告经常失败，影响交付。",
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M01",
+                  "value": {
+                    "items": [
+                      {
+                        "category": "问题",
+                        "evidence": "导出报告经常失败，影响交付。"
+                      },
+                      {
+                        "category": "称赞",
+                        "evidence": "界面很顺手"
+                      }
+                    ],
+                    "materialId": "M01",
+                    "primaryCategory": "问题"
+                  },
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": [
+                    "31e24765-7a87-4f12-b797-bdf562c1ce23"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82:classify_feedback:M01:0:call_4b8ed349a24b48ea8c40fde5",
+                "toolCallId": "call_4b8ed349a24b48ea8c40fde5",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M01\",\"text\":\"界面很顺手，但导出报告经常失败，影响交付。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M01",
+                    "text": "界面很顺手，但导出报告经常失败，影响交付。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:24:38.349Z",
+            "finishedAt": "2026-09-19T18:24:50.872Z"
+          },
+          {
+            "id": "243d872d-d7cf-491e-bac9-416c18e5f06c",
+            "runId": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82",
+            "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M02:1",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M02",
+                  "value": "希望支持批量导出，逐条操作太慢。",
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M02",
+                  "value": {
+                    "materialId": "M02",
+                    "primaryCategory": "需求",
+                    "items": [
+                      {
+                        "category": "需求",
+                        "evidence": "希望支持批量导出，逐条操作太慢。"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": [
+                    "243d872d-d7cf-491e-bac9-416c18e5f06c"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82:classify_feedback:M02:1:call_e5defb08fca046edb3a40eaa",
+                "toolCallId": "call_e5defb08fca046edb3a40eaa",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M02\",\"text\":\"希望支持批量导出，逐条操作太慢。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M02",
+                    "text": "希望支持批量导出，逐条操作太慢。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:24:50.875Z",
+            "finishedAt": "2026-09-19T18:25:20.587Z"
+          },
+          {
+            "id": "3e49589d-14b8-4fd0-9a2f-7def3dfe75c8",
+            "runId": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82",
+            "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+            "nodeId": "classify_feedback",
+            "instanceId": "classify_feedback:M03:2",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M03",
+                  "value": "搜索比以前快很多，团队很满意。",
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "M03",
+                  "value": {
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "搜索比以前快很多"
+                      },
+                      {
+                        "category": "称赞",
+                        "evidence": "团队很满意"
+                      }
+                    ],
+                    "materialId": "M03",
+                    "primaryCategory": "称赞"
+                  },
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "3e49589d-14b8-4fd0-9a2f-7def3dfe75c8"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82:classify_feedback:M03:2:call_98b907e0d6904ad7abf6be0d",
+                "toolCallId": "call_98b907e0d6904ad7abf6be0d",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M03\",\"text\":\"搜索比以前快很多，团队很满意。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M03",
+                    "text": "搜索比以前快很多，团队很满意。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:25:20.589Z",
+            "finishedAt": "2026-09-19T18:25:38.069Z"
+          },
+          {
+            "id": "12a238a5-7fba-44ef-bea3-5c6e42d68f57",
+            "runId": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82",
+            "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+            "nodeId": "summarize_report",
+            "instanceId": "summarize_report:all:0",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": {
+                    "items": [
+                      {
+                        "category": "问题",
+                        "evidence": "导出报告经常失败，影响交付。"
+                      },
+                      {
+                        "category": "称赞",
+                        "evidence": "界面很顺手"
+                      }
+                    ],
+                    "materialId": "M01",
+                    "primaryCategory": "问题"
+                  },
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": [
+                    "31e24765-7a87-4f12-b797-bdf562c1ce23"
+                  ]
+                },
+                {
+                  "sampleId": "M02",
+                  "value": {
+                    "materialId": "M02",
+                    "primaryCategory": "需求",
+                    "items": [
+                      {
+                        "category": "需求",
+                        "evidence": "希望支持批量导出，逐条操作太慢。"
+                      }
+                    ]
+                  },
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": [
+                    "243d872d-d7cf-491e-bac9-416c18e5f06c"
+                  ]
+                },
+                {
+                  "sampleId": "M03",
+                  "value": {
+                    "items": [
+                      {
+                        "category": "称赞",
+                        "evidence": "搜索比以前快很多"
+                      },
+                      {
+                        "category": "称赞",
+                        "evidence": "团队很满意"
+                      }
+                    ],
+                    "materialId": "M03",
+                    "primaryCategory": "称赞"
+                  },
+                  "materialIds": [
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "3e49589d-14b8-4fd0-9a2f-7def3dfe75c8"
+                  ]
+                }
+              ]
+            },
+            "outputs": {
+              "output": [
+                {
+                  "sampleId": "12a238a5-7fba-44ef-bea3-5c6e42d68f57",
+                  "value": "# 用户反馈分类汇总报告\n\n## 一、分类明细\n\n### 1. 问题（1 条）\n\n| 材料编号 | 原文依据 | 主分类 |\n| --- | --- | --- |\n| M01 | 「导出报告经常失败，影响交付。」 | 问题 |\n\n### 2. 需求（1 条）\n\n| 材料编号 | 原文依据 | 主分类 |\n| --- | --- | --- |\n| M02 | 「希望支持批量导出，逐条操作太慢。」 | 需求 |\n\n### 3. 称赞（3 条）\n\n| 材料编号 | 原文依据 | 主分类 |\n| --- | --- | --- |\n| M01 | 「界面很顺手」 | 问题（含称赞条目） |\n| M03 | 「搜索比以前快很多」 | 称赞 |\n| M03 | 「团队很满意」 | 称赞 |\n\n以上原文依据均逐字取自原始材料：M01 全文为「界面很顺手，但导出报告经常失败，影响交付。」[M01]；M02 全文为「希望支持批量导出，逐条操作太慢。」[M02]；M03 全文为「搜索比以前快很多，团队很满意。」[M03]。\n\n## 二、总体结论\n\n- 本次汇总共覆盖 3 份材料（M01–M03），5 条分类条目，其中：问题 1 条、需求 1 条、称赞 3 条。\n- 称赞集中在体验与性能层面：界面易用（M01「界面很顺手」）、搜索提速（M03「搜索比以前快很多」），并得到团队层面的正面认可（M03「团队很满意」）。\n- 核心短板集中在导出能力：既有导出经常失败、影响交付的问题（M01），又存在缺少批量导出、逐条操作太慢的需求（M02）。两者均指向同一功能模块。\n- 主分类分布为：M01 问题、M02 需求、M03 称赞。\n\n## 三、行动建议\n\n1. **优先修复导出失败问题**：排查并解决「导出报告经常失败，影响交付」的情况，保障交付稳定性。[M01]\n2. **落地批量导出能力**：响应「希望支持批量导出，逐条操作太慢」的需求，减少重复操作成本。[M02]\n3. **保持并延续既有优势**：在迭代中继续维持界面易用性（「界面很顺手」）与搜索性能优势（「搜索比以前快很多」），巩固「团队很满意」的整体口碑。[M01][M03]",
+                  "materialIds": [
+                    "M01",
+                    "M02",
+                    "M03"
+                  ],
+                  "sourceResultIds": [
+                    "12a238a5-7fba-44ef-bea3-5c6e42d68f57"
+                  ]
+                }
+              ]
+            },
+            "status": "completed",
+            "activities": [
+              {
+                "id": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82:summarize_report:all:0:call_0c358eab85f448bf9c2f12f9",
+                "toolCallId": "call_0c358eab85f448bf9c2f12f9",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M01\",\"text\":\"界面很顺手，但导出报告经常失败，影响交付。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M01",
+                    "text": "界面很顺手，但导出报告经常失败，影响交付。"
+                  }
+                }
+              },
+              {
+                "id": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82:summarize_report:all:0:call_a2a0bdf96c004d1a8f0179ec",
+                "toolCallId": "call_a2a0bdf96c004d1a8f0179ec",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M02\",\"text\":\"希望支持批量导出，逐条操作太慢。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M02",
+                    "text": "希望支持批量导出，逐条操作太慢。"
+                  }
+                }
+              },
+              {
+                "id": "d40e8d3a-4f07-407a-8e11-4a5fe1283d82:summarize_report:all:0:call_9eb819a786804038b5fa53fc",
+                "toolCallId": "call_9eb819a786804038b5fa53fc",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M03\",\"text\":\"搜索比以前快很多，团队很满意。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M03",
+                    "text": "搜索比以前快很多，团队很满意。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-19T18:25:38.076Z",
+            "finishedAt": "2026-09-19T18:26:11.407Z"
+          }
+        ],
+        "nodeTotals": {
+          "classify_feedback": 3,
+          "summarize_report": 1
+        },
+        "startedAt": "2026-09-19T18:24:38.339Z",
+        "finishedAt": "2026-09-19T18:26:11.413Z"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "5e4181cc-ea4d-4304-921d-6f31fb8687db",
+        "baselineId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+        "candidateId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+        "nodeId": "classify_feedback",
+        "frozenInputs": {
+          "input": [
+            {
+              "sampleId": "M01",
+              "value": "界面很顺手，但导出报告经常失败，影响交付。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M03",
+              "value": "搜索比以前快很多，团队很满意。",
+              "materialIds": [
+                "M03"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "status": "completed",
+        "stopRequested": false,
+        "createdAt": "2026-09-19T18:19:15.892Z",
+        "baselineRunId": "0f40ab0c-fee4-4c03-811b-bd260addd5e7",
+        "candidateRunId": "1f16bdcc-c0b8-4c43-bb95-abb4e6569df7"
+      }
+    ],
+    "keptResultIds": [
+      "4608be5a-4b68-461c-8464-959484cc1759"
+    ],
+    "messages": [
+      {
+        "id": "bd236e1a-aa57-4392-9646-e0baccebb49c",
+        "role": "user",
+        "text": "请根据本次工作目标和材料生成可运行的流程：分析客户反馈：逐条分类为问题、需求或称赞，保留原文依据，再汇总成可交付的 Markdown 报告和行动建议。所有结论引用材料编号。。节点名称、任务和最终产物要对应目标；输出引用材料编号。"
+      },
+      {
+        "id": "2c03bee9-836a-4eac-85fd-2bb4d2d95688",
+        "role": "assistant",
+        "text": "流程已保存成功，无遗留问题（definitionId: `de0b4bcf-dfe5-4189-836b-c4c4aa0491ab`）。\n\n## 流程结构\n\n**输入**：`materials`（三条客户反馈 M01–M03）\n\n1. **逐条分类客户反馈**（agent，each 模式）\n   - 对每条反馈独立判断为「问题」「需求」或「称赞」\n   - 支持一条材料拆出多个分类点（如 M01 同时含称赞\"界面很顺手\"与问题\"导出报告经常失败\"）\n   - 每条结论必须附 evidence（原文逐字片段），并保留材料编号\n   - 结构化输出：`{ materialId, items: [{ category, evidence }] }`\n\n2. **汇总生成 Markdown 报告与行动建议**（agent，all 模式）\n   - 汇总全部分类结果，产出可交付的 Markdown 报告\n   - 内容包括：按「问题/需求/称赞」分类的明细（每条引用材料编号与原文依据）、总体结论、行动建议（每条标注对应材料编号）\n   - 明确要求所有结论引用材料编号，不得引入材料之外的结论\n   - 输出为 Markdown 字符串，作为最终交付物 `report`\n\n**数据流向**：`$input.materials` → 逐条分类（并行处理三条） → 汇总报告 → 输出 `report`\n\n保存过程中修正了两处连接问题：外部输入来源节点需使用 `$input` 标识；最终产物由 `outputs` 映射直接指向汇总节点的输出端口承接。",
+        "status": "completed",
+        "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab"
+      },
+      {
+        "id": "94a019f0-e6dd-4e37-979e-eb0b50a6ca32",
+        "role": "user",
+        "text": "给每条反馈增加一个唯一的主要分类。混合反馈中只要出现影响使用的故障，主要分类优先为问题；纯正面反馈仍为称赞。同时保留现有的正反两方面原文依据和材料编号。只修改当前分类步骤，保持汇总步骤与连接不变。",
+        "definitionId": "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab",
+        "nodeId": "classify_feedback",
+        "sampleIds": [
+          "M01",
+          "M02",
+          "M03"
+        ]
+      },
+      {
+        "id": "dbd9bc68-f200-404c-980a-556f0ff5b148",
+        "role": "assistant",
+        "text": "已更新分类节点：每条反馈现在会输出唯一的主要分类 primaryCategory，混合反馈中出现影响使用的故障时优先判定为「问题」，纯正面反馈定为「称赞」，同时 items 保留正反两方面的原文依据和材料编号。汇总节点与连接保持不变，可直接重新运行流程验证新分类结果并生成报告。",
+        "status": "completed",
+        "definitionId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+        "nodeId": "classify_feedback",
+        "sampleIds": [
+          "M01",
+          "M02",
+          "M03"
+        ]
+      }
+    ],
+    "draftId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+    "draftBaseId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+    "adoptedId": "fc679c8c-7d62-4ae2-b9c7-4870599befb9",
+    "title": "客户反馈分析",
+    "titleEdited": true
+  },
+  "definitions": {
+    "7d5b566c-4326-4616-8912-201d9db931e3": {
+      "edges": [
+        {
+          "from": [
+            "input",
+            "materials"
+          ],
+          "to": [
+            "classify_feedback",
+            "input"
+          ]
+        },
+        {
+          "from": [
+            "classify_feedback",
+            "output"
+          ],
+          "to": [
+            "summarize_report",
+            "input"
+          ]
+        },
+        {
+          "from": [
+            "summarize_report",
+            "output"
+          ],
+          "to": [
+            "output",
+            "report"
+          ]
+        }
+      ],
+      "inputs": [
+        "materials"
+      ],
+      "nodes": [
+        {
+          "expectedOutput": {
+            "properties": {
+              "items": {
+                "items": {
+                  "properties": {
+                    "category": {
+                      "enum": [
+                        "问题",
+                        "需求",
+                        "称赞"
+                      ],
+                      "type": "string"
+                    },
+                    "evidence": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "category",
+                    "evidence"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "materialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "materialId",
+              "items"
+            ],
+            "type": "object"
+          },
+          "id": "classify_feedback",
+          "kind": "agent",
+          "label": "逐条分类客户反馈",
+          "mode": "each",
+          "task": "对每条客户反馈独立分析：判断其属于「问题」「需求」还是「称赞」。一条材料若包含多个要点，可拆分为多条分类结果（例如同时包含称赞与问题）。每条分类必须附 evidence（原文逐字片段作为依据），并保留原始材料编号 materialId。输入来自 ['$input', 'materials']。"
+        },
+        {
+          "expectedOutput": {
+            "type": "string"
+          },
+          "id": "summarize_report",
+          "kind": "agent",
+          "label": "汇总生成 Markdown 报告与行动建议",
+          "mode": "all",
+          "task": "汇总全部分类结果，产出可交付的 Markdown 报告，包含：1) 按「问题/需求/称赞」分类的明细，每条注明材料编号（如 M01）与原文依据；2) 总体结论；3) 行动建议，每条建议标注对应的材料编号。所有结论必须引用材料编号，不得引入材料之外的结论。"
+        }
+      ],
+      "outputs": {
+        "report": [
+          "summarize_report",
+          "output"
+        ]
+      },
+      "schemaVersion": 1
+    },
+    "a5d52f26-16fc-4780-a12f-1a52c9c04d0a": {
+      "edges": [
+        {
+          "from": [
+            "$input",
+            "materials"
+          ],
+          "to": [
+            "classify_feedback",
+            "input"
+          ]
+        },
+        {
+          "from": [
+            "classify_feedback",
+            "output"
+          ],
+          "to": [
+            "summarize_report",
+            "input"
+          ]
+        },
+        {
+          "from": [
+            "summarize_report",
+            "output"
+          ],
+          "to": [
+            "$output",
+            "report"
+          ]
+        }
+      ],
+      "inputs": [
+        "materials"
+      ],
+      "nodes": [
+        {
+          "expectedOutput": {
+            "properties": {
+              "items": {
+                "items": {
+                  "properties": {
+                    "category": {
+                      "enum": [
+                        "问题",
+                        "需求",
+                        "称赞"
+                      ],
+                      "type": "string"
+                    },
+                    "evidence": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "category",
+                    "evidence"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "materialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "materialId",
+              "items"
+            ],
+            "type": "object"
+          },
+          "id": "classify_feedback",
+          "kind": "agent",
+          "label": "逐条分类客户反馈",
+          "mode": "each",
+          "task": "对每条客户反馈独立分析：判断其属于「问题」「需求」还是「称赞」。一条材料若包含多个要点，可拆分为多条分类结果（例如同时包含称赞与问题）。每条分类必须附 evidence（原文逐字片段作为依据），并保留原始材料编号 materialId。输入来自 ['$input', 'materials']。"
+        },
+        {
+          "expectedOutput": {
+            "type": "string"
+          },
+          "id": "summarize_report",
+          "kind": "agent",
+          "label": "汇总生成 Markdown 报告与行动建议",
+          "mode": "all",
+          "task": "汇总全部分类结果，产出可交付的 Markdown 报告，包含：1) 按「问题/需求/称赞」分类的明细，每条注明材料编号（如 M01）与原文依据；2) 总体结论；3) 行动建议，每条建议标注对应的材料编号。所有结论必须引用材料编号，不得引入材料之外的结论。"
+        }
+      ],
+      "outputs": {
+        "report": [
+          "summarize_report",
+          "output"
+        ]
+      },
+      "schemaVersion": 1
+    },
+    "de0b4bcf-dfe5-4189-836b-c4c4aa0491ab": {
+      "edges": [
+        {
+          "from": [
+            "$input",
+            "materials"
+          ],
+          "to": [
+            "classify_feedback",
+            "input"
+          ]
+        },
+        {
+          "from": [
+            "classify_feedback",
+            "output"
+          ],
+          "to": [
+            "summarize_report",
+            "input"
+          ]
+        }
+      ],
+      "inputs": [
+        "materials"
+      ],
+      "nodes": [
+        {
+          "expectedOutput": {
+            "properties": {
+              "items": {
+                "items": {
+                  "properties": {
+                    "category": {
+                      "enum": [
+                        "问题",
+                        "需求",
+                        "称赞"
+                      ],
+                      "type": "string"
+                    },
+                    "evidence": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "category",
+                    "evidence"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "materialId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "materialId",
+              "items"
+            ],
+            "type": "object"
+          },
+          "id": "classify_feedback",
+          "kind": "agent",
+          "label": "逐条分类客户反馈",
+          "mode": "each",
+          "task": "对每条客户反馈独立分析：判断其属于「问题」「需求」还是「称赞」。一条材料若包含多个要点，可拆分为多条分类结果（例如同时包含称赞与问题）。每条分类必须附 evidence（原文逐字片段作为依据），并保留原始材料编号 materialId。输入来自 ['$input', 'materials']。"
+        },
+        {
+          "expectedOutput": {
+            "type": "string"
+          },
+          "id": "summarize_report",
+          "kind": "agent",
+          "label": "汇总生成 Markdown 报告与行动建议",
+          "mode": "all",
+          "task": "汇总全部分类结果，产出可交付的 Markdown 报告，包含：1) 按「问题/需求/称赞」分类的明细，每条注明材料编号（如 M01）与原文依据；2) 总体结论；3) 行动建议，每条建议标注对应的材料编号。所有结论必须引用材料编号，不得引入材料之外的结论。"
+        }
+      ],
+      "outputs": {
+        "report": [
+          "summarize_report",
+          "output"
+        ]
+      },
+      "schemaVersion": 1
+    },
+    "fc679c8c-7d62-4ae2-b9c7-4870599befb9": {
+      "edges": [
+        {
+          "from": [
+            "$input",
+            "materials"
+          ],
+          "to": [
+            "classify_feedback",
+            "input"
+          ]
+        },
+        {
+          "from": [
+            "classify_feedback",
+            "output"
+          ],
+          "to": [
+            "summarize_report",
+            "input"
+          ]
+        }
+      ],
+      "inputs": [
+        "materials"
+      ],
+      "nodes": [
+        {
+          "expectedOutput": {
+            "properties": {
+              "items": {
+                "items": {
+                  "properties": {
+                    "category": {
+                      "enum": [
+                        "问题",
+                        "需求",
+                        "称赞"
+                      ],
+                      "type": "string"
+                    },
+                    "evidence": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "category",
+                    "evidence"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "materialId": {
+                "type": "string"
+              },
+              "primaryCategory": {
+                "enum": [
+                  "问题",
+                  "需求",
+                  "称赞"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "materialId",
+              "primaryCategory",
+              "items"
+            ],
+            "type": "object"
+          },
+          "id": "classify_feedback",
+          "kind": "agent",
+          "label": "逐条分类客户反馈",
+          "mode": "each",
+          "task": "对每条客户反馈独立分析，给出一个唯一的主要分类 primaryCategory（问题/需求/称赞）。判定规则：混合反馈中只要出现影响使用的故障（如导出失败），主要分类优先定为「问题」；纯正面反馈主要分类为「称赞」。同时在 items 中保留该材料的全部要点分类，包括正反两方面，每条附 evidence（原文逐字片段作为依据），并保留原始材料编号 materialId。输入来自 ['$input', 'materials']。"
+        },
+        {
+          "expectedOutput": {
+            "type": "string"
+          },
+          "id": "summarize_report",
+          "kind": "agent",
+          "label": "汇总生成 Markdown 报告与行动建议",
+          "mode": "all",
+          "task": "汇总全部分类结果，产出可交付的 Markdown 报告，包含：1) 按「问题/需求/称赞」分类的明细，每条注明材料编号（如 M01）与原文依据；2) 总体结论；3) 行动建议，每条建议标注对应的材料编号。所有结论必须引用材料编号，不得引入材料之外的结论。"
+        }
+      ],
+      "outputs": {
+        "report": [
+          "summarize_report",
+          "output"
+        ]
+      },
+      "schemaVersion": 1
+    },
+    "659abb8a-ae99-4ed5-ab5a-2876eb13ed2d": {
+      "edges": [
+        {
+          "from": [
+            "$input",
+            "materials"
+          ],
+          "to": [
+            "classify_feedback",
+            "input"
+          ]
+        },
+        {
+          "from": [
+            "classify_feedback",
+            "output"
+          ],
+          "to": [
+            "summarize_report",
+            "input"
+          ]
+        }
+      ],
+      "inputs": [
+        "materials"
+      ],
+      "nodes": [
+        {
+          "expectedOutput": {
+            "properties": {
+              "items": {
+                "items": {
+                  "properties": {
+                    "category": {
+                      "enum": [
+                        "问题",
+                        "需求",
+                        "称赞"
+                      ],
+                      "type": "string"
+                    },
+                    "evidence": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "category",
+                    "evidence"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "materialId": {
+                "type": "string"
+              },
+              "primaryCategory": {
+                "enum": [
+                  "问题",
+                  "需求",
+                  "称赞"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "materialId",
+              "primaryCategory",
+              "items"
+            ],
+            "type": "object"
+          },
+          "id": "classify_feedback",
+          "kind": "agent",
+          "label": "逐条分类客户反馈",
+          "mode": "each",
+          "task": "对每条客户反馈独立分析，给出唯一主要分类 primaryCategory（问题/需求/称赞）。出现影响使用的故障优先为问题，纯正面反馈为称赞。items 保留全部正反要点、category和逐字evidence，保留materialId。对无法分类的反馈说明缺少的信息。"
+        },
+        {
+          "expectedOutput": {
+            "type": "string"
+          },
+          "id": "summarize_report",
+          "kind": "agent",
+          "label": "汇总生成 Markdown 报告与行动建议",
+          "mode": "all",
+          "task": "汇总全部分类结果，产出可交付的 Markdown 报告，包含：1) 按「问题/需求/称赞」分类的明细，每条注明材料编号（如 M01）与原文依据；2) 总体结论；3) 行动建议，每条建议标注对应的材料编号。所有结论必须引用材料编号，不得引入材料之外的结论。"
+        }
+      ],
+      "outputs": {
+        "report": [
+          "summarize_report",
+          "output"
+        ]
+      },
+      "schemaVersion": 1
+    }
+  },
+  "issues": []
+}

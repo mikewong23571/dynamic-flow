@@ -1,0 +1,22 @@
+{
+  "reasoningEffort": "max",
+  "temperature": 1,
+  "topP": 0.95,
+  "contextWindow": 1000000,
+  "protocol": "anthropic-messages",
+  "baseUrl": "https://open.bigmodel.cn/api/anthropic",
+  "model": "glm-5.3-flash",
+  "ready": true,
+  "apiKeyConfigured": true,
+  "source": "workspace",
+  "warnings": [
+    "Anthropic 使用思考令牌预算映射强度：low 1024、medium 4096、high 8192、max 16384；这不是 Chat Completions 的 reasoning_effort。兼容网关是否严格执行预算由服务端决定。",
+    "Anthropic 使用自身工具流和思考格式，不发送 Chat 专用的 tool_stream 或 clear_thinking。"
+  ],
+  "supportedReasoningEfforts": [
+    "low",
+    "medium",
+    "high",
+    "max"
+  ]
+}

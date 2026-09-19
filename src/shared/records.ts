@@ -75,6 +75,7 @@ export interface Run {
   stopRequested: boolean;
   comparisonId?: string;
   nodeStates: Record<string, Status | 'blocked'>;
+  nodeTotals?: Record<string, number>;
   results: NodeResult[];
   startedAt: string;
   finishedAt?: string;
@@ -101,6 +102,7 @@ export interface ChatMessage {
   requestId?: string;
   definitionId?: string;
   nodeId?: string;
+  sampleIds?: string[];
   activities?: Activity[];
   error?: string;
   proposedDefinition?: Definition;
@@ -111,6 +113,9 @@ export interface ViewState {
 }
 export interface Work {
   id: string;
+  title?: string;
+  titleEdited?: boolean;
+  archivedAt?: string;
   goal: string;
   createdAt: string;
   updatedAt: string;
@@ -130,6 +135,38 @@ export interface Snapshot {
   work: Work;
   definitions: Record<string, Definition>;
   issues: Issue[];
+}
+export interface ModelSettings {
+  protocol:
+    'anthropic-messages' | 'openai-chat-completions' | 'openai-responses';
+  baseUrl: string;
+  model: string;
+  apiKey?: string;
+  reasoningEffort: 'low' | 'medium' | 'high' | 'max';
+  temperature: number;
+  topP: number;
+  contextWindow: number;
+}
+export interface ModelConfiguration extends Omit<ModelSettings, 'apiKey'> {
+  ready: boolean;
+  apiKeyConfigured: boolean;
+  source: 'env' | 'workspace';
+  error?: string;
+  warnings?: string[];
+  supportedReasoningEfforts?: ModelSettings['reasoningEffort'][];
+}
+export interface WorkSummary {
+  id: string;
+  title?: string;
+  goal: string;
+  updatedAt: string;
+  archivedAt?: string;
+}
+export interface WorkPage {
+  works: WorkSummary[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 export interface StartRun {
   definitionId: string;

@@ -36,3 +36,11 @@
 改动域 src/shared、src/server/{index,runs,trials}、根工具配置、集成/浏览器测试与track。目标：固定交接、执行与比较、模块接线及最终产品验收。非目标：替子agent重做整域实现或增加平台。负责消解跨域问题并同步调用双方。
 
 模块先域内自测，无重度审计；完成后报告实现、测试命令、未测项与对调用方影响。不提交 Git，由根统一提交。用户已授权完整十九故事，过去“范围待讨论”不再是阻塞。
+
+## 追加交接：G1/G2
+
+shared新增 ModelSettings/ModelConfiguration、WorkSummary/WorkPage，Work.title/archivedAt可选兼容历史。G1由Pi agent实现assistant.saveConfiguration(settings):Promise<ModelConfiguration>与configuration()增强；设置文件由createAssistant options.settingsPath传入(根用dataRoot/model-settings.json)，.env回退，UI空apiKey保持已有；配置对象不暴露secret。HTTP POST /api/config {…ModelSettings} 返回ModelConfiguration；GET保留。当前推理模型默认max、temperature1、topP.95、contextWindow1000000；用户可改，不能误称Anthropic支持Chat专有字段。按协议实际验证。
+
+G2由状态agent实现 work.listWorks({query?,page?,pageSize?,archived?}):Promise<WorkPage>、rename(workId,title):Promise<void>、archive(workId,archived:boolean):Promise<void>。GET /api/works相同query参数返回WorkPage；actions增加rename {title}、archive {archived}。作者update_flow可生成短title，只有work.title未被用户手改时更新（手改标记titleEdited?:boolean，根追加shared）。初始fallback取goal前28字符，正式标题由作者工具写，不硬编码业务。
+
+新增前端WorkLibrary.tsx由状态agent单独拥有，签名 default export WorkLibrary({onOpen:(id)=>void,onCreate:()=>void,refreshKey?:number})，组件内部读列表API和rename/archive操作。产品前端agent负责集成该组件到“所有工作”导航，以及ModelSettingsDialog表单与Assistant友好性；不要写WorkLibrary.tsx避免重叠。

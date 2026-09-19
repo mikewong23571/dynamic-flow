@@ -16,12 +16,12 @@
 
 ## 最少对象
 
-| 对象 | 意义 |
-| --- | --- |
-| Work | 当前任务、目标与材料 |
-| DefinitionVersion | 一版固定的 IR 定义；候选为可编辑草稿 |
-| Run | 按固定定义执行；样本试验也使用同一 Run 模型 |
-| NodeResult | 节点实例的输入输出、状态及产物来源 |
+| 对象              | 意义                                        |
+| ----------------- | ------------------------------------------- |
+| Work              | 当前任务、标题、目标、材料与归档状态        |
+| DefinitionVersion | 一版固定的 IR 定义；候选为可编辑草稿        |
+| Run               | 按固定定义执行；样本试验也使用同一 Run 模型 |
+| NodeResult        | 节点实例的输入输出、状态及产物来源          |
 
 Node / Edge 属于定义；运行实例关联稳定输入项 ID。反馈与修改说明附在草稿/运行上，不单建 Region、Site、Correction 或 Spike 平台。
 
@@ -38,25 +38,19 @@ Node / Edge 属于定义；运行实例关联稳定输入项 ID。反馈与修�
 - 续做发起新的 Run，不承诺调用栈恢复、隐式缓存或自动依赖失效。
 - Work、定义、结果和事件保存到本地文件，业务状态不依赖聊天历史。
 
-## LLM 接入与本地配置
+## 模型设置与工作库
 
-用户要求 LLM 支持自定义端点：协议、Base URL、模型名与 API Key 可配置，不绑定某一家供应商。这里的任意端点指兼容所选协议的端点，不要求兼容所有私有协议。作者 Assistant 和工作流 Agent 节点均使用这一接入约定；初期可共用同一组配置。
+模型设置（G1）已经接入正式客户端和后端。作者 Assistant 与工作流 Agent 节点共用当前配置；界面可设置协议、服务地址、模型名、API Key、推理强度、Temperature、Top P 和上下文窗口。
 
-用户提供的端点如下（2026-09-20，尚未实测）：
+支持的公开协议值是 `anthropic-messages`、`openai-chat-completions` 与 `openai-responses`；任意端点指兼容所选协议的端点，不承诺兼容私有协议。后端映射各协议的实际参数，反馈支持的推理档位与限制；配置格式合法或保存成功不代表真实端点调用已通过。
 
-| 协议 | 配置值 `LLM_PROTOCOL` | Base URL |
-| --- | --- | --- |
-| Anthropic Messages | `anthropic-messages` | `https://open.bigmodel.cn/api/anthropic` |
-| OpenAI Chat Completions | `openai-chat-completions` | `https://open.bigmodel.cn/api/coding/paas/v4` |
-| OpenAI Responses | `openai-responses` | `https://open.bigmodel.cn/api/v1` |
+尚未保存工作台配置时，后端从根目录 `.env.local` 与进程环境变量读取 `LLM_PROTOCOL`、`LLM_BASE_URL`、`LLM_MODEL`、`LLM_API_KEY` 作为初始值，同名进程变量优先。界面保存至 `data/model-settings.json`，之后优先使用该文件，不改写环境文件。API Key 留空沿用现有值；读取配置和界面不会回显密钥，密钥不写入单个工作文件。配置失败、调用失败和参数不支持均明确报错，不使用假模型兜底。
 
-仓库根目录已创建 `.env.local`，预留 `LLM_PROTOCOL`、`LLM_BASE_URL`、`LLM_MODEL`、`LLM_API_KEY`。先以表中第一组协议/地址作为占位默认，模型名和 API Key 留空，由用户后续填写；切换协议时同步修改 Base URL，也可填写其他兼容地址。上述协议值为本项目配置约定，接入时映射到 SDK 的协议标识。
-
-`.env.local` 已由现有 `.gitignore` 排除，仅由后端加载，不使用 `VITE_` 前缀暴露密钥。当前只准备配置文件并记录要求，现有 Spike 仍使用 faux provider，尚未实现配置加载或验证真实端点。后续接入须验证真实请求、流式回复、工具调用与取消；不能把填入配置等同于接入通过。
+工作库维护（G2）提供标题/目标搜索、分页、短标题修改、归档与恢复。标题和完整目标独立保存；Assistant 可以提供简短标题，但不覆盖用户已手工修改的标题。归档保留材料、定义及历史结果；原型不建设模板市场或跨项目发布。
 
 ## 首个场景与验收
 
-分类故事、逐条验收条件和端到端路线见 [用户故事与原型验收（讨论稿）](../docs/user-stories.md)。最终故事范围尚待讨论；未将新增故事标为已实现或已验收。
+用户已授权十九个核心故事，并追加 G1/G2。逐条条件与 T1–T8 路线见 [用户故事与原型验收](../docs/user-stories.md)；正式实现已接线，实际通过、失败与待验收状态见 [当前 track 证据](./tracks/full-application_20260920/evidence.md)。
 
 3 条真实客户反馈：生成分类/汇总流程 → 画布调整分类要求 → 样本运行 → 查看错误结果 → 修改选中节点 → 同输入比较 → 分别采用定义与结果 → 生成最终报告。
 
@@ -66,8 +60,6 @@ Node / Edge 属于定义；运行实例关联稳定输入项 ID。反馈与修�
 
 核心源码编辑/代码 Diff、通用程序分析器、任意 JS 与画布双向转换、源码位置索引、通用代码片段执行与恢复、复杂自动调度/缓存/失效平台、IDE 式固定多栏、无需求的多包架构。
 
-当前新 IR/runtime 尚未实现。已完成的 component-spike 仅证明部分库接入，不能作为新架构或最终视觉验收。
+正式应用位于 src/，已实现共享 IR、画布编辑、有限节点运行、同样本比较、显式结果续做、Pi 接入与文件恢复。默认 `pnpm dev`、`pnpm build`、`pnpm test` 与 `pnpm test:browser` 面向正式应用；历史组件实验使用 `pnpm spike:*`，其包接入证据不等于正式架构或视觉验收。
 
-当前 [伪代码 Spike](../spike/README.md) 给出少量功能文件、项目目录及故事测试推演。它只指导后续实现，不代表用户故事或真实 LLM 接入已经验收。
-
-正式 [src 骨架](../src/AGENTS.md) 已建立，按功能目录的 AGENTS 规定职责、目标、非目标、依赖、模块验收及未知；[模块与验收地图](../docs/implementation-map.md) 分配 P01–P31 责任与跨模块联测。源码当前只有入口，所有业务仍未实现/未验收。模块边界和字段按真实反例修订，不能为了维护骨架削弱用户故事。
+[伪代码 Spike](../spike/README.md) 保留需求拆分与测试推演。当前接口以 shared 类型和实际模块交接为准；[模块与验收地图](../docs/implementation-map.md) 分配 P01–P32 及 G1/G2 的职责。模块边界和字段仍可按具体反例修订，不能为了维护旧骨架削弱故事。

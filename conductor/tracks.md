@@ -1,6 +1,6 @@
 # Tracks Registry
 
-- [~] **Track: 整个应用原型实现**
+- [x] **Track: 整个应用原型实现**
   *Link: [full-application_20260920](./tracks/full-application_20260920/index.md)*
 
 选型实验与正式产品实现分别追踪。

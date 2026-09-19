@@ -1,6 +1,6 @@
 # Project Workflow
 
-本文件从 Conductor 默认 workflow 模板复制后，按用户明确的原型范围与“先初始化、后选型”顺序精简。当前已有组件接入 example，不代表正式应用已经实现。
+本文件从 Conductor 默认 workflow 模板复制后，按用户明确的原型范围与“先初始化、后选型”顺序精简。正式应用在 src/，历史组件 example 单独保留。完成状态以当前 track 的验证证据为准。
 
 ## 工作原则
 
@@ -14,9 +14,9 @@
 
 ## 当前阶段
 
-用户已授权并完成组件接入 Spike，随后将产品收敛为画布编辑 + JS 子集 IR + 薄 runtime，见 [当前设计](../docs/design.md)。该执行与编辑闭环尚未实现；旧示例仅用于历史接入证据，正式实现仍须单独建 track，不因为实验安装了某库就自动采用。
+用户已授权并完成组件接入 Spike，随后将产品收敛为画布编辑 + JS 子集 IR + 薄 runtime，见 [当前设计](../docs/design.md)。执行与编辑闭环已在 full-application_20260920 track 实现；旧示例仅用于历史接入证据，不因为实验安装了某库就自动采用。
 
-正式 src 模块骨架与就近 AGENTS 已创建，见 [模块与验收地图](../docs/implementation-map.md)。骨架 track 完成不等于业务实现完成；实际模块任务以用户故事与跨模块联测推进。
+正式 src 模块实现与就近 AGENTS 已同步，见 [模块与验收地图](../docs/implementation-map.md)。骨架 track 完成不等于业务实现完成；实际模块任务以用户故事与跨模块联测推进。
 
 ## 每项任务
 
@@ -71,9 +71,9 @@ conductor/code_styleguides/ 下的 general、typescript、html-css 原样复制�
 
 从仓库根运行：`pnpm install --frozen-lockfile`、`pnpm dev`、`pnpm test`、`pnpm typecheck`、`pnpm build`、`pnpm format:check`、`pnpm test:browser`。首次浏览器检查先运行 `pnpm exec playwright install chromium`。
 
-新源码骨架检查使用 `pnpm typecheck:app`、`pnpm format:check:app`；`pnpm typecheck` 覆盖旧实验及新源码。当前 dev/build/test 仍只针对旧实验。
+正式源码检查使用 `pnpm typecheck:app`、`pnpm format:check:app`；`pnpm typecheck` 覆盖旧实验及新源码。默认 dev/build/test 已针对正式应用；旧实验使用 spike:* 命令。
 
-示例服务为 4317/4318；复跑说明和能力边界见 `examples/component-spike/README.md`。检查命令均为单次执行。
+正式服务为前端 4320、API 4321；旧示例服务为 4317/4318；复跑说明和能力边界见 `examples/component-spike/README.md`。检查命令均为单次执行。
 
 ## 提交与文档
 

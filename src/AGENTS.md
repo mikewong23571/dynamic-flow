@@ -1,6 +1,6 @@
 # 应用源码约定
 
-适用 src 下所有代码，模块 AGENTS 补充具体职责。现在是代码骨架，业务尚未实现。先读 [用户故事](../docs/user-stories.md)、[模块与验收地图](../docs/implementation-map.md)，再读要修改目录的 AGENTS。
+适用 src 下所有代码，模块 AGENTS 补充具体职责。正式应用已实现；各模块的测试与产品证据见当前 Conductor track。先读 [用户故事](../docs/user-stories.md)、[模块与验收地图](../docs/implementation-map.md)，再读要修改目录的 AGENTS。
 
 ## 目标与非目标
 
@@ -13,7 +13,7 @@
 - client 是一个共享上下文的工作区。
 - server 是一个进程，work/flow/runs/assistant/trials/files 按功能直接调用。
 - shared 只放多个调用方真实需要共享的字段类型。
-- `.ts`/`.tsx` 当前仅留入口，`export {}` 表示未实现，不表示具备功能。接口意图在各模块 AGENTS 与 Spike；实现前需给交接双方最小输入/输出/错误及例子，再落地必要类型。不要批量生成无用占位函数，但也不能把所有关键接口都推迟到各模块独立猜测。
+- `.ts`/`.tsx` 是正式实现；`spike/` 保留历史伪代码。实际共享记录在 `shared/records.ts`，HTTP 动作在 `server/index.ts`，客户端操作在 `client/useWorkspace.ts`。变更前仍需确认输入、输出、错误和双方调用。
 
 ## 如何处理一个子问题
 
@@ -32,4 +32,6 @@
 
 ## 基础检查
 
-`pnpm typecheck:app` 检查新源码；`pnpm typecheck` 同时检查旧实验和新源码。没有功能代码时不要伪造业务测试或用无断言的测试占位。UI 实现需要浏览器操作和截图；当前入口没有挂载界面，不算视觉验收。
+`pnpm typecheck:app` 检查新源码；`pnpm typecheck` 同时检查旧实验和新源码。`pnpm test` 验证模块与 HTTP/SSE 联测；`pnpm test:browser` 验证正式入口。UI 变更需要实际操作和截图，真实模型证据与确定性测试分开记录。
+
+产品级验证与边界见 [本轮验收证据](../conductor/tracks/full-application_20260920/evidence.md)。

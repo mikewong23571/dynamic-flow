@@ -1,6 +1,6 @@
 # 本地保存、读取与重开
 
-适用本目录，继承上层约定。当前仅骨架，业务未实现。
+适用本目录，继承上层约定。当前已实现本模块业务；域内证据与产品联测边界见文末实现交接。
 
 ## 职责与子问题
 
@@ -18,19 +18,29 @@
 
 ## 接口与依赖
 
-writeNewDefinition / change / openWork / onServerStart 暂定。保存通知由 server 入口接入 HTTP/SSE，本目录只做文件与数据。
+提供 create/read/list/change/writeDefinition/readDefinition/onChange/onServerStart。保存通知由 server 入口接入 HTTP/SSE，本目录只做文件与数据。
 
 仅 Node 内置 fs/promises、path 等，无其它业务模块依赖。参考 [伪代码](../../../spike/src/server/files.pseudo.md) 与 [数据约定](../../../data/AGENTS.md)。不在工作文件保存密钥。
 
-## 验收计划
+## 验收与证据
 
 下文编号只是查阅索引：P 表示具体测试场景，T 表示完整用户验收路线；含义见 [术语与编号](../../../docs/glossary.md)。
 
-- [ ] 真实临时目录保存重开，定义、布局、比较、结果与来源对应（场景 P21）。
-- [ ] 注入写失败，旧内容可读，不发保存成功，引用不指向未完成文件（场景 P22）。
-- [ ] 与 server/client 联测快照包含定义内容、断线重连不重跑（场景 P23/P31）。
-- [ ] 与 runs 验证进程重启后的 interrupted；页面刷新不能误标中断。不能只用内存 mock 验收文件行为。
+- [x] 真实临时目录保存重开，定义、布局、比较、结果与来源对应（场景 P21）。
+- [x] 注入写失败，旧内容可读，不发保存成功，引用不指向未完成文件（场景 P22；真实临时目录域内测试）。
+- [x] 与 server/client 联测快照包含定义内容、断线重连不重跑（场景 P23/P31）。
+- [x] 与 runs 验证进程重启后的 interrupted；页面刷新不能误标中断。不能只用内存 mock 验收文件行为。
 
 ## 假设与未知
 
 单 work.json 面向小规模；消息/产物增长或写频率可能推翻该选择。先测真实内容再改文件布局，不先建数据库，也不同时保留两份权威定义。本清单不穷尽未知。
+
+## 2026-09-20 实现交接
+
+已实现 `createFiles(root): FileStore`，确切类型见本目录 index.ts。工作在 `<root>/<workId>/work.json`，不可变定义在 `definitions/<id>.js`；定义文件只解析应用生成的 `export default` 字面量，不执行任意 JS。`change` 按工作串行，先原子替换文件再通知；读取返回独立对象。`onServerStart` 仅由服务启动调用，读取/页面刷新不调用。
+
+域内证据：`pnpm exec tsx --test tests/state.test.ts` 使用真实临时目录验证重开、隔离读取、串行写、目录权限导致的真实写失败、定义目录故障与启动中断。完成结果保留；未完成运行、实例、比较和作者消息标中断。
+
+状态为 **模块实现完成，产品联测待验收**。HTTP/SSE、Pi 取消和前端重连由入口联测，不能以本域测试代替。文件容量和多进程同时写仍未测试；当前约定仅单进程。
+
+产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
