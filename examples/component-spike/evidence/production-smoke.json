@@ -1,0 +1,17 @@
+{
+  "url": "http://127.0.0.1:4319",
+  "editor": true,
+  "diff": true,
+  "workers": [
+    "http://127.0.0.1:4319/assets/ts.worker-BSZ_obF4.js",
+    "http://127.0.0.1:4319/assets/editor.worker-BbVB3hfz.js",
+    "http://127.0.0.1:4319/assets/editor.worker-BbVB3hfz.js",
+    "http://127.0.0.1:4319/assets/editor.worker-BbVB3hfz.js"
+  ],
+  "errors": [],
+  "health": {
+    "ok": true,
+    "provider": "pi-faux",
+    "active": 0
+  }
+}

@@ -1,0 +1,147 @@
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 250ms using pnpm v10.32.1
+
+> dynamic-flow-component-spike@ test /Users/mike/Documents/ChatGPT/dynamic-flow
+> tsx --test examples/component-spike/*.test.ts
+
+✔ tool result survives subsequent text deltas (0.524417ms)
+✔ selection is snapshotted by stable identity, including filtered-out samples (0.065584ms)
+✔ real Pi session calls the sample tool and streams its final response (26.380917ms)
+✔ cancel reaches Pi while streaming and stops before final response (265.116625ms)
+✔ two Pi sessions keep their sample context and cancellation independent (24.219959ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1000.075
+
+> dynamic-flow-component-spike@ typecheck /Users/mike/Documents/ChatGPT/dynamic-flow
+> tsc --noEmit
+
+
+> dynamic-flow-component-spike@ build /Users/mike/Documents/ChatGPT/dynamic-flow
+> vite build --config examples/component-spike/vite.config.ts
+
+vite v8.3.0 building client environment for production...
+transforming...
+✓ 4474 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/component-spike/index.html                                  0.41 kB │ gzip:   0.28 kB
+dist/component-spike/assets/codicon-Brq4_Ui5.ttf               140.95 kB
+dist/component-spike/assets/editor.worker-BbVB3hfz.js          301.07 kB
+dist/component-spike/assets/json.worker-2CEmYLij.js            430.43 kB
+dist/component-spike/assets/html.worker-ChWxMUlM.js            740.68 kB
+dist/component-spike/assets/css.worker-CR6cVwG0.js           1,075.63 kB
+dist/component-spike/assets/ts.worker-BSZ_obF4.js            6,926.00 kB
+dist/component-spike/assets/index-Ccv58ywo.css                  39.16 kB │ gzip:   8.13 kB
+dist/component-spike/assets/editor-8AbsNvUX.css                 79.50 kB │ gzip:  12.28 kB
+dist/component-spike/assets/code-lab--ixms01u.css               82.32 kB │ gzip:  12.97 kB
+dist/component-spike/assets/javascript-J-yejkct.js               0.68 kB │ gzip:   0.41 kB
+dist/component-spike/assets/azcli-Bc_sGQ0U.js                    0.70 kB │ gzip:   0.28 kB
+dist/component-spike/assets/ini-sBoK_t0W.js                      0.96 kB │ gzip:   0.49 kB
+dist/component-spike/assets/workers-MmtIj9_u.js                  1.25 kB │ gzip:   0.59 kB
+dist/component-spike/assets/csp-bTuwJoIa.js                      1.27 kB │ gzip:   0.48 kB
+dist/component-spike/assets/pla-CopQ2nXW.js                      1.54 kB │ gzip:   0.60 kB
+dist/component-spike/assets/scheme-BeGwcela.js                   1.62 kB │ gzip:   0.77 kB
+dist/component-spike/assets/flow9-C5_-GSwl.js                    1.66 kB │ gzip:   0.80 kB
+dist/component-spike/assets/sb-CcwsVR0C.js                       1.68 kB │ gzip:   0.78 kB
+dist/component-spike/assets/bat-i0X4ZdIN.js                      1.69 kB │ gzip:   0.82 kB
+dist/component-spike/assets/dockerfile-DZFCIeNp.js               1.72 kB │ gzip:   0.63 kB
+dist/component-spike/assets/pascaligo-D-ptJ9y-.js                1.85 kB │ gzip:   0.86 kB
+dist/component-spike/assets/xml-Cxm2wObC.js                      1.92 kB │ gzip:   0.72 kB
+dist/component-spike/assets/cameligo-DMUM7wLl.js                 1.97 kB │ gzip:   0.91 kB
+dist/component-spike/assets/lua-CsQS60Ue.js                      1.98 kB │ gzip:   0.88 kB
+dist/component-spike/assets/objective-c-FvmIjYaQ.js              2.10 kB │ gzip:   1.01 kB
+dist/component-spike/assets/graphql-fmXr3nnJ.js                  2.11 kB │ gzip:   0.99 kB
+dist/component-spike/assets/sparql-D_Lu-MrJ.js                   2.21 kB │ gzip:   1.10 kB
+dist/component-spike/assets/lexon-CfSJPG6W.js                    2.28 kB │ gzip:   0.88 kB
+dist/component-spike/assets/mips-CIPQ_RoX.js                     2.32 kB │ gzip:   1.02 kB
+dist/component-spike/assets/go-C-y9NEjX.js                       2.35 kB │ gzip:   1.11 kB
+dist/component-spike/assets/bicep-B5-_aFwp.js                    2.36 kB │ gzip:   0.91 kB
+dist/component-spike/assets/sophia-CRfGWb83.js                   2.48 kB │ gzip:   1.15 kB
+dist/component-spike/assets/m3-D-oSqn_W.js                       2.52 kB │ gzip:   1.29 kB
+dist/component-spike/assets/typespec-B8J7ngcE.js                 2.62 kB │ gzip:   1.01 kB
+dist/component-spike/assets/pascal-DrH0SRf2.js                   2.63 kB │ gzip:   1.35 kB
+dist/component-spike/assets/fsharp-C8Ef5oNN.js                   2.65 kB │ gzip:   1.27 kB
+dist/component-spike/assets/qsharp-DkqhCAOL.js                   2.72 kB │ gzip:   1.37 kB
+dist/component-spike/assets/shell-CC2rA5mh.js                    2.81 kB │ gzip:   1.16 kB
+dist/component-spike/assets/r-BwWrilGY.js                        2.83 kB │ gzip:   1.25 kB
+dist/component-spike/assets/java-BEtHBSE6.js                     2.90 kB │ gzip:   1.34 kB
+dist/component-spike/assets/cssMode-BBgc-BdX.js                  2.95 kB │ gzip:   1.13 kB
+dist/component-spike/assets/redis-ClamHrr6.js                    3.03 kB │ gzip:   1.41 kB
+dist/component-spike/assets/kotlin-BOotOW0E.js                   3.04 kB │ gzip:   1.41 kB
+dist/component-spike/assets/cypher-CVaqCwHa.js                   3.04 kB │ gzip:   1.40 kB
+dist/component-spike/assets/powershell-DmHpPYUd.js               3.05 kB │ gzip:   1.33 kB
+dist/component-spike/assets/tcl-DISqw1ZD.js                      3.27 kB │ gzip:   1.32 kB
+dist/component-spike/assets/liquid-wdxNUzMR.js                   3.34 kB │ gzip:   1.42 kB
+dist/component-spike/assets/coffee-Ba7i2nA0.js                   3.36 kB │ gzip:   1.24 kB
+dist/component-spike/assets/htmlMode-pro4fQtt.js                 3.40 kB │ gzip:   1.24 kB
+dist/component-spike/assets/hcl-CpzslTdj.js                      3.44 kB │ gzip:   1.45 kB
+dist/component-spike/assets/python-DJvTOmgs.js                   3.45 kB │ gzip:   1.42 kB
+dist/component-spike/assets/apex-BWPQTe0t.js                     3.46 kB │ gzip:   1.70 kB
+dist/component-spike/assets/yaml-DXmnG_3i.js                     3.54 kB │ gzip:   1.29 kB
+dist/component-spike/assets/markdown-Cimd5fb3.js                 3.63 kB │ gzip:   1.34 kB
+dist/component-spike/assets/rust-DdL9SqIa.js                     3.66 kB │ gzip:   1.80 kB
+dist/component-spike/assets/restructuredtext-BYgofb2h.js         3.74 kB │ gzip:   1.32 kB
+dist/component-spike/assets/less-B9JPFI3C.js                     3.74 kB │ gzip:   1.36 kB
+dist/component-spike/assets/dart-onAF5SnQ.js                     3.93 kB │ gzip:   1.60 kB
+dist/component-spike/assets/csharp-BKxtCVv1.js                   4.11 kB │ gzip:   1.66 kB
+dist/component-spike/assets/msdax-DauUninz.js                    4.27 kB │ gzip:   1.87 kB
+dist/component-spike/assets/mdx-CVboEyiK.js                      4.31 kB │ gzip:   1.21 kB
+dist/component-spike/assets/css-DIMkf-bt.js                      4.36 kB │ gzip:   1.33 kB
+dist/component-spike/assets/pug-Z5eAx3Zn.js                      4.46 kB │ gzip:   1.60 kB
+dist/component-spike/assets/swift-Bxkupp3x.js                    4.48 kB │ gzip:   1.99 kB
+dist/component-spike/assets/html-CsRgIPx_.js                     4.51 kB │ gzip:   1.15 kB
+dist/component-spike/assets/ecl-D05T4iGw.js                      4.62 kB │ gzip:   2.19 kB
+dist/component-spike/assets/typescript-BLyBOG_J.js               4.67 kB │ gzip:   1.94 kB
+dist/component-spike/assets/cpp-C7h46wYY.js                      4.74 kB │ gzip:   2.02 kB
+dist/component-spike/assets/vb-DV3o63ZY.js                       5.30 kB │ gzip:   2.01 kB
+dist/component-spike/assets/twig-De2hgUGE.js                     5.78 kB │ gzip:   1.48 kB
+dist/component-spike/assets/scss-gp-XZpBa.js                     6.26 kB │ gzip:   1.70 kB
+dist/component-spike/assets/handlebars-CXKRv1NK.js               6.28 kB │ gzip:   1.37 kB
+dist/component-spike/assets/julia-Bri6UV-V.js                    6.50 kB │ gzip:   2.64 kB
+dist/component-spike/assets/systemverilog-Bz4Y3fRF.js            6.85 kB │ gzip:   2.72 kB
+dist/component-spike/assets/st-DbInun42.js                       6.94 kB │ gzip:   2.24 kB
+dist/component-spike/assets/scala-DHpiXF5c.js                    7.11 kB │ gzip:   2.07 kB
+dist/component-spike/assets/wgsl-DpFanUEy.js                     7.18 kB │ gzip:   2.73 kB
+dist/component-spike/assets/perl-oz_6vUea.js                     7.35 kB │ gzip:   3.10 kB
+dist/component-spike/assets/postiats-43DmfD33.js                 7.36 kB │ gzip:   2.39 kB
+dist/component-spike/assets/php-nr791fC2.js                      7.74 kB │ gzip:   2.03 kB
+dist/component-spike/assets/razor-BA8eWH0R.js                    8.11 kB │ gzip:   2.05 kB
+dist/component-spike/assets/clojure-Cm7r79vr.js                  8.21 kB │ gzip:   3.49 kB
+dist/component-spike/assets/ruby-DezsRK8O.js                     8.21 kB │ gzip:   2.55 kB
+dist/component-spike/assets/sql-NEE52Syq.js                      8.84 kB │ gzip:   3.73 kB
+dist/component-spike/assets/protobuf-C531GsRP.js                 8.89 kB │ gzip:   2.04 kB
+dist/component-spike/assets/mysql-SOo6toE5.js                    9.65 kB │ gzip:   3.98 kB
+dist/component-spike/assets/elixir-6RTg0lbw.js                  10.11 kB │ gzip:   2.50 kB
+dist/component-spike/assets/redshift-DT7zqm-g.js                10.33 kB │ gzip:   4.24 kB
+dist/component-spike/assets/abap-08VXUWAP.js                    11.69 kB │ gzip:   5.15 kB
+dist/component-spike/assets/pgsql-DTj74zXo.js                   11.91 kB │ gzip:   4.42 kB
+dist/component-spike/assets/jsonMode-vfDW2193.js                12.18 kB │ gzip:   4.45 kB
+dist/component-spike/assets/powerquery-D3hlyOfw.js              15.34 kB │ gzip:   4.73 kB
+dist/component-spike/assets/freemarker2-BLzo1iv-.js             15.54 kB │ gzip:   3.97 kB
+dist/component-spike/assets/solidity-BEEn4gHE.js                15.99 kB │ gzip:   4.39 kB
+dist/component-spike/assets/tsMode-CaSz7gDN.js                  21.84 kB │ gzip:   6.15 kB
+dist/component-spike/assets/lspLanguageFeatures-Nvc39vEN.js     28.22 kB │ gzip:   7.17 kB
+dist/component-spike/assets/index-BhdDzgfj.js                1,110.63 kB │ gzip: 334.10 kB
+dist/component-spike/assets/code-lab-BYe9QC-D.js             1,284.25 kB │ gzip: 325.07 kB
+dist/component-spike/assets/editor.api-BBwSxvQd.js           2,653.84 kB │ gzip: 683.59 kB
+
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.45s
+
+> dynamic-flow-component-spike@ format:check /Users/mike/Documents/ChatGPT/dynamic-flow
+> prettier --check "examples/component-spike/**/*.{ts,tsx,css,html}" package.json tsconfig.json components.json
+
+Checking formatting...
+All matched files use Prettier code style!

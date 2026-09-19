@@ -1,0 +1,14 @@
+
+> dynamic-flow-component-spike@ test:browser /Users/mike/Documents/ChatGPT/dynamic-flow
+> playwright test --config examples/component-spike/playwright.config.ts
+
+
+Running 3 tests using 1 worker
+
+(node:83700) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 examples/component-spike/browser.spec.ts:8:1 › workspace selection, tree/graph, resize, keyboard and narrow desktop (878ms)
+  ✓  2 examples/component-spike/browser.spec.ts:84:1 › Monaco local workers, edits persist, diff and separate adoption decisions (3.5s)
+  ✓  3 examples/component-spike/browser.spec.ts:154:1 › assistant-ui real Pi stream, frozen selection, cancellation and transport error (2.8s)
+
+  3 passed (7.4s)
