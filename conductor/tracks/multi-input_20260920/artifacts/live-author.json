@@ -1,0 +1,2091 @@
+{
+  "model": {
+    "model": "glm-5.3-flash",
+    "protocol": "anthropic-messages",
+    "reasoningEffort": "max"
+  },
+  "workId": "7f46e68e-5263-4509-8951-b1505fbe1b13",
+  "prompt": "创建并保存“多路结果 · 组合示例”，只使用6个function节点，不用Agent。这是可重复运行的合成教学样例，不是真实漏洞结论。\n外部仅有materials输入。前三个节点都从materials接input，每个用operation:flatMap、mode:each、expression literal生成固定数组：investigation=[{id:'A',severity:'high'},{id:'B',severity:'low'},{id:'A',severity:'medium'}]；remediation=[{id:'A',fixed:true},{id:'C',fixed:false}]；verification=[{id:'V',verified:true}]。材料只有一条触发文本。输入schema string，expectedOutput是对应array of objects。\n其后三个节点同时接收这些上游节点真实输出：merged使用新的merge，inputNames=['investigation','remediation','verification']；collected用collect，inputNames相同；joined用join，left连接investigation，right连接remediation，左右key路径均['id']，type:full，duplicates:all。这三个均mode:all/operation:aggregate，inputSchema为具名数组对象并required所有对应端口，merge/join expectedOutput为array，collect expectedOutput为object of arrays。所有节点label使用简洁中文。最终outputs命名merged,collected,joined指向对应3节点output。不要增加其它节点，不要编造运行结果，调用update_flow真实保存。",
+  "message": {
+    "id": "af5b416a-2884-4a23-a64b-c14375f2c444",
+    "role": "assistant",
+    "text": "已保存「多路结果组合示例」：前三个表达式节点用 flatMap 从 materials 展开固定的调查/修复/验证数组，后三个节点分别以 merge 多路汇合、collect 具名收集、join 按 id 全连接（duplicates:all）组合上游输出，最终 outputs 声明 merged、collected、joined 三个结果。这是一次试运行即可复现的合成教学样例，运行后可用 inspect_result 查看各组合节点的真实输出对比三种合并行为。",
+    "requestId": "1452539e-d1e2-4300-be8d-0be0f7caff00",
+    "sampleIds": [],
+    "status": "completed",
+    "activities": [
+      {
+        "id": "286a8ae9-884c-4703-a4fa-63b749661649",
+        "toolCallId": "call_d91ccbe2153740ddb5c7a440",
+        "toolName": "update_flow",
+        "status": "failed",
+        "args": {
+          "definition": {
+            "edges": [
+              [
+                "$input",
+                "materials"
+              ],
+              [
+                "investigation",
+                "input"
+              ],
+              [
+                "$input",
+                "materials"
+              ],
+              [
+                "remediation",
+                "input"
+              ],
+              [
+                "$input",
+                "materials"
+              ],
+              [
+                "verification",
+                "input"
+              ],
+              [
+                "investigation",
+                "output"
+              ],
+              [
+                "merged",
+                "investigation"
+              ],
+              [
+                "remediation",
+                "output"
+              ],
+              [
+                "merged",
+                "remediation"
+              ],
+              [
+                "verification",
+                "output"
+              ],
+              [
+                "merged",
+                "verification"
+              ],
+              [
+                "investigation",
+                "output"
+              ],
+              [
+                "collected",
+                "investigation"
+              ],
+              [
+                "remediation",
+                "output"
+              ],
+              [
+                "collected",
+                "remediation"
+              ],
+              [
+                "verification",
+                "output"
+              ],
+              [
+                "collected",
+                "verification"
+              ],
+              [
+                "investigation",
+                "output"
+              ],
+              [
+                "joined",
+                "left"
+              ],
+              [
+                "remediation",
+                "output"
+              ],
+              [
+                "joined",
+                "right"
+              ]
+            ],
+            "inputs": [
+              "materials"
+            ],
+            "nodes": [
+              {
+                "expectedOutput": {
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "severity": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "severity"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "expression": {
+                  "kind": "literal",
+                  "value": [
+                    {
+                      "id": "A",
+                      "severity": "high"
+                    },
+                    {
+                      "id": "B",
+                      "severity": "low"
+                    },
+                    {
+                      "id": "A",
+                      "severity": "medium"
+                    }
+                  ]
+                },
+                "functionName": "expression",
+                "id": "investigation",
+                "inputSchema": {
+                  "type": "string"
+                },
+                "kind": "function",
+                "label": "调查数据",
+                "mode": "each",
+                "operation": "flatMap"
+              },
+              {
+                "expectedOutput": {
+                  "items": {
+                    "properties": {
+                      "fixed": {
+                        "type": "boolean"
+                      },
+                      "id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "fixed"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "expression": {
+                  "kind": "literal",
+                  "value": [
+                    {
+                      "fixed": true,
+                      "id": "A"
+                    },
+                    {
+                      "fixed": false,
+                      "id": "C"
+                    }
+                  ]
+                },
+                "functionName": "expression",
+                "id": "remediation",
+                "inputSchema": {
+                  "type": "string"
+                },
+                "kind": "function",
+                "label": "修复数据",
+                "mode": "each",
+                "operation": "flatMap"
+              },
+              {
+                "expectedOutput": {
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "verified": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "verified"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "expression": {
+                  "kind": "literal",
+                  "value": [
+                    {
+                      "id": "V",
+                      "verified": true
+                    }
+                  ]
+                },
+                "functionName": "expression",
+                "id": "verification",
+                "inputSchema": {
+                  "type": "string"
+                },
+                "kind": "function",
+                "label": "验证数据",
+                "mode": "each",
+                "operation": "flatMap"
+              },
+              {
+                "expectedOutput": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "functionName": "merge",
+                "id": "merged",
+                "inputNames": [
+                  "investigation",
+                  "remediation",
+                  "verification"
+                ],
+                "inputSchema": {
+                  "properties": {
+                    "investigation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "remediation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "verification": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "investigation",
+                    "remediation",
+                    "verification"
+                  ],
+                  "type": "object"
+                },
+                "kind": "function",
+                "label": "多路汇合",
+                "mode": "all",
+                "operation": "aggregate"
+              },
+              {
+                "expectedOutput": {
+                  "properties": {
+                    "investigation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "remediation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "verification": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "investigation",
+                    "remediation",
+                    "verification"
+                  ],
+                  "type": "object"
+                },
+                "functionName": "collect",
+                "id": "collected",
+                "inputNames": [
+                  "investigation",
+                  "remediation",
+                  "verification"
+                ],
+                "inputSchema": {
+                  "properties": {
+                    "investigation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "remediation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "verification": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "investigation",
+                    "remediation",
+                    "verification"
+                  ],
+                  "type": "object"
+                },
+                "kind": "function",
+                "label": "具名收集",
+                "mode": "all",
+                "operation": "aggregate"
+              },
+              {
+                "expectedOutput": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "functionName": "join",
+                "id": "joined",
+                "inputSchema": {
+                  "properties": {
+                    "left": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "right": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "left",
+                    "right"
+                  ],
+                  "type": "object"
+                },
+                "join": {
+                  "duplicates": "all",
+                  "leftKey": [
+                    "id"
+                  ],
+                  "rightKey": [
+                    "id"
+                  ],
+                  "type": "full"
+                },
+                "kind": "function",
+                "label": "按编号关联",
+                "mode": "all",
+                "operation": "aggregate"
+              }
+            ],
+            "outputs": {
+              "collected": [
+                "collected",
+                "output"
+              ],
+              "joined": [
+                "joined",
+                "output"
+              ],
+              "merged": [
+                "merged",
+                "output"
+              ]
+            },
+            "schemaVersion": 1
+          },
+          "title": "多路结果组合示例"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Validation failed for tool \"update_flow\":\n  - definition.edges.0: must be object\n  - definition.edges.1: must be object\n  - definition.edges.2: must be object\n  - definition.edges.3: must be object\n  - definition.edges.4: must be object\n  - definition.edges.5: must be object\n  - definition.edges.6: must be object\n  - definition.edges.7: must be object\n\nReceived arguments:\n{\n  \"definition\": {\n    \"edges\": [\n      [\n        \"$input\",\n        \"materials\"\n      ],\n      [\n        \"investigation\",\n        \"input\"\n      ],\n      [\n        \"$input\",\n        \"materials\"\n      ],\n      [\n        \"remediation\",\n        \"input\"\n      ],\n      [\n        \"$input\",\n        \"materials\"\n      ],\n      [\n        \"verification\",\n        \"input\"\n      ],\n      [\n        \"investigation\",\n        \"output\"\n      ],\n      [\n        \"merged\",\n        \"investigation\"\n      ],\n      [\n        \"remediation\",\n        \"output\"\n      ],\n      [\n        \"merged\",\n        \"remediation\"\n      ],\n      [\n        \"verification\",\n        \"output\"\n      ],\n      [\n        \"merged\",\n        \"verification\"\n      ],\n      [\n        \"investigation\",\n        \"output\"\n      ],\n      [\n        \"collected\",\n        \"investigation\"\n      ],\n      [\n        \"remediation\",\n        \"output\"\n      ],\n      [\n        \"collected\",\n        \"remediation\"\n      ],\n      [\n        \"verification\",\n        \"output\"\n      ],\n      [\n        \"collected\",\n        \"verification\"\n      ],\n      [\n        \"investigation\",\n        \"output\"\n      ],\n      [\n        \"joined\",\n        \"left\"\n      ],\n      [\n        \"remediation\",\n        \"output\"\n      ],\n      [\n        \"joined\",\n        \"right\"\n      ]\n    ],\n    \"inputs\": [\n      \"materials\"\n    ],\n    \"nodes\": [\n      {\n        \"expectedOutput\": {\n          \"items\": {\n            \"properties\": {\n              \"id\": {\n                \"type\": \"string\"\n              },\n              \"severity\": {\n                \"type\": \"string\"\n              }\n            },\n            \"required\": [\n              \"id\",\n              \"severity\"\n            ],\n            \"type\": \"object\"\n          },\n          \"type\": \"array\"\n        },\n        \"expression\": {\n          \"kind\": \"literal\",\n          \"value\": [\n            {\n              \"id\": \"A\",\n              \"severity\": \"high\"\n            },\n            {\n              \"id\": \"B\",\n              \"severity\": \"low\"\n            },\n            {\n              \"id\": \"A\",\n              \"severity\": \"medium\"\n            }\n          ]\n        },\n        \"functionName\": \"expression\",\n        \"id\": \"investigation\",\n        \"inputSchema\": {\n          \"type\": \"string\"\n        },\n        \"kind\": \"function\",\n        \"label\": \"调查数据\",\n        \"mode\": \"each\",\n        \"operation\": \"flatMap\"\n      },\n      {\n        \"expectedOutput\": {\n          \"items\": {\n            \"properties\": {\n              \"fixed\": {\n                \"type\": \"boolean\"\n              },\n              \"id\": {\n                \"type\": \"string\"\n              }\n            },\n            \"required\": [\n              \"id\",\n              \"fixed\"\n            ],\n            \"type\": \"object\"\n          },\n          \"type\": \"array\"\n        },\n        \"expression\": {\n          \"kind\": \"literal\",\n          \"value\": [\n            {\n              \"fixed\": true,\n              \"id\": \"A\"\n            },\n            {\n              \"fixed\": false,\n              \"id\": \"C\"\n            }\n          ]\n        },\n        \"functionName\": \"expression\",\n        \"id\": \"remediation\",\n        \"inputSchema\": {\n          \"type\": \"string\"\n        },\n        \"kind\": \"function\",\n        \"label\": \"修复数据\",\n        \"mode\": \"each\",\n        \"operation\": \"flatMap\"\n      },\n      {\n        \"expectedOutput\": {\n          \"items\": {\n            \"properties\": {\n              \"id\": {\n                \"type\": \"string\"\n              },\n              \"verified\": {\n                \"type\": \"boolean\"\n              }\n            },\n            \"required\": [\n              \"id\",\n              \"verified\"\n            ],\n            \"type\": \"object\"\n          },\n          \"type\": \"array\"\n        },\n        \"expression\": {\n          \"kind\": \"literal\",\n          \"value\": [\n            {\n              \"id\": \"V\",\n              \"verified\": true\n            }\n          ]\n        },\n        \"functionName\": \"expression\",\n        \"id\": \"verification\",\n        \"inputSchema\": {\n          \"type\": \"string\"\n        },\n        \"kind\": \"function\",\n        \"label\": \"验证数据\",\n        \"mode\": \"each\",\n        \"operation\": \"flatMap\"\n      },\n      {\n        \"expectedOutput\": {\n          \"items\": {\n            \"type\": \"object\"\n          },\n          \"type\": \"array\"\n        },\n        \"functionName\": \"merge\",\n        \"id\": \"merged\",\n        \"inputNames\": [\n          \"investigation\",\n          \"remediation\",\n          \"verification\"\n        ],\n        \"inputSchema\": {\n          \"properties\": {\n            \"investigation\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            },\n            \"remediation\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            },\n            \"verification\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            }\n          },\n          \"required\": [\n            \"investigation\",\n            \"remediation\",\n            \"verification\"\n          ],\n          \"type\": \"object\"\n        },\n        \"kind\": \"function\",\n        \"label\": \"多路汇合\",\n        \"mode\": \"all\",\n        \"operation\": \"aggregate\"\n      },\n      {\n        \"expectedOutput\": {\n          \"properties\": {\n            \"investigation\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            },\n            \"remediation\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            },\n            \"verification\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            }\n          },\n          \"required\": [\n            \"investigation\",\n            \"remediation\",\n            \"verification\"\n          ],\n          \"type\": \"object\"\n        },\n        \"functionName\": \"collect\",\n        \"id\": \"collected\",\n        \"inputNames\": [\n          \"investigation\",\n          \"remediation\",\n          \"verification\"\n        ],\n        \"inputSchema\": {\n          \"properties\": {\n            \"investigation\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            },\n            \"remediation\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            },\n            \"verification\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            }\n          },\n          \"required\": [\n            \"investigation\",\n            \"remediation\",\n            \"verification\"\n          ],\n          \"type\": \"object\"\n        },\n        \"kind\": \"function\",\n        \"label\": \"具名收集\",\n        \"mode\": \"all\",\n        \"operation\": \"aggregate\"\n      },\n      {\n        \"expectedOutput\": {\n          \"items\": {\n            \"type\": \"object\"\n          },\n          \"type\": \"array\"\n        },\n        \"functionName\": \"join\",\n        \"id\": \"joined\",\n        \"inputSchema\": {\n          \"properties\": {\n            \"left\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            },\n            \"right\": {\n              \"items\": {\n                \"type\": \"object\"\n              },\n              \"type\": \"array\"\n            }\n          },\n          \"required\": [\n            \"left\",\n            \"right\"\n          ],\n          \"type\": \"object\"\n        },\n        \"join\": {\n          \"duplicates\": \"all\",\n          \"leftKey\": [\n            \"id\"\n          ],\n          \"rightKey\": [\n            \"id\"\n          ],\n          \"type\": \"full\"\n        },\n        \"kind\": \"function\",\n        \"label\": \"按编号关联\",\n        \"mode\": \"all\",\n        \"operation\": \"aggregate\"\n      }\n    ],\n    \"outputs\": {\n      \"collected\": [\n        \"collected\",\n        \"output\"\n      ],\n      \"joined\": [\n        \"joined\",\n        \"output\"\n      ],\n      \"merged\": [\n        \"merged\",\n        \"output\"\n      ]\n    },\n    \"schemaVersion\": 1\n  },\n  \"title\": \"多路结果组合示例\"\n}"
+            }
+          ],
+          "details": {}
+        }
+      },
+      {
+        "id": "e583c57b-2e13-4020-96b5-0ef942c00010",
+        "toolCallId": "call_0cb4085ee0b24b69af1f002b",
+        "toolName": "update_flow",
+        "status": "completed",
+        "args": {
+          "definition": {
+            "edges": [
+              {
+                "from": [
+                  "$input",
+                  "materials"
+                ],
+                "to": [
+                  "investigation",
+                  "input"
+                ]
+              },
+              {
+                "from": [
+                  "$input",
+                  "materials"
+                ],
+                "to": [
+                  "remediation",
+                  "input"
+                ]
+              },
+              {
+                "from": [
+                  "$input",
+                  "materials"
+                ],
+                "to": [
+                  "verification",
+                  "input"
+                ]
+              },
+              {
+                "from": [
+                  "investigation",
+                  "output"
+                ],
+                "to": [
+                  "merged",
+                  "investigation"
+                ]
+              },
+              {
+                "from": [
+                  "remediation",
+                  "output"
+                ],
+                "to": [
+                  "merged",
+                  "remediation"
+                ]
+              },
+              {
+                "from": [
+                  "verification",
+                  "output"
+                ],
+                "to": [
+                  "merged",
+                  "verification"
+                ]
+              },
+              {
+                "from": [
+                  "investigation",
+                  "output"
+                ],
+                "to": [
+                  "collected",
+                  "investigation"
+                ]
+              },
+              {
+                "from": [
+                  "remediation",
+                  "output"
+                ],
+                "to": [
+                  "collected",
+                  "remediation"
+                ]
+              },
+              {
+                "from": [
+                  "verification",
+                  "output"
+                ],
+                "to": [
+                  "collected",
+                  "verification"
+                ]
+              },
+              {
+                "from": [
+                  "investigation",
+                  "output"
+                ],
+                "to": [
+                  "joined",
+                  "left"
+                ]
+              },
+              {
+                "from": [
+                  "remediation",
+                  "output"
+                ],
+                "to": [
+                  "joined",
+                  "right"
+                ]
+              }
+            ],
+            "inputs": [
+              "materials"
+            ],
+            "nodes": [
+              {
+                "expectedOutput": {
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "severity": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "severity"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "expression": {
+                  "kind": "literal",
+                  "value": [
+                    {
+                      "id": "A",
+                      "severity": "high"
+                    },
+                    {
+                      "id": "B",
+                      "severity": "low"
+                    },
+                    {
+                      "id": "A",
+                      "severity": "medium"
+                    }
+                  ]
+                },
+                "functionName": "expression",
+                "id": "investigation",
+                "inputSchema": {
+                  "type": "string"
+                },
+                "kind": "function",
+                "label": "调查数据",
+                "mode": "each",
+                "operation": "flatMap"
+              },
+              {
+                "expectedOutput": {
+                  "items": {
+                    "properties": {
+                      "fixed": {
+                        "type": "boolean"
+                      },
+                      "id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "fixed"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "expression": {
+                  "kind": "literal",
+                  "value": [
+                    {
+                      "fixed": true,
+                      "id": "A"
+                    },
+                    {
+                      "fixed": false,
+                      "id": "C"
+                    }
+                  ]
+                },
+                "functionName": "expression",
+                "id": "remediation",
+                "inputSchema": {
+                  "type": "string"
+                },
+                "kind": "function",
+                "label": "修复数据",
+                "mode": "each",
+                "operation": "flatMap"
+              },
+              {
+                "expectedOutput": {
+                  "items": {
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "verified": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "verified"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "expression": {
+                  "kind": "literal",
+                  "value": [
+                    {
+                      "id": "V",
+                      "verified": true
+                    }
+                  ]
+                },
+                "functionName": "expression",
+                "id": "verification",
+                "inputSchema": {
+                  "type": "string"
+                },
+                "kind": "function",
+                "label": "验证数据",
+                "mode": "each",
+                "operation": "flatMap"
+              },
+              {
+                "expectedOutput": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "functionName": "merge",
+                "id": "merged",
+                "inputNames": [
+                  "investigation",
+                  "remediation",
+                  "verification"
+                ],
+                "inputSchema": {
+                  "properties": {
+                    "investigation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "remediation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "verification": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "investigation",
+                    "remediation",
+                    "verification"
+                  ],
+                  "type": "object"
+                },
+                "kind": "function",
+                "label": "多路汇合",
+                "mode": "all",
+                "operation": "aggregate"
+              },
+              {
+                "expectedOutput": {
+                  "properties": {
+                    "investigation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "remediation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "verification": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "investigation",
+                    "remediation",
+                    "verification"
+                  ],
+                  "type": "object"
+                },
+                "functionName": "collect",
+                "id": "collected",
+                "inputNames": [
+                  "investigation",
+                  "remediation",
+                  "verification"
+                ],
+                "inputSchema": {
+                  "properties": {
+                    "investigation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "remediation": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "verification": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "investigation",
+                    "remediation",
+                    "verification"
+                  ],
+                  "type": "object"
+                },
+                "kind": "function",
+                "label": "具名收集",
+                "mode": "all",
+                "operation": "aggregate"
+              },
+              {
+                "expectedOutput": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "functionName": "join",
+                "id": "joined",
+                "inputSchema": {
+                  "properties": {
+                    "left": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "right": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "left",
+                    "right"
+                  ],
+                  "type": "object"
+                },
+                "join": {
+                  "duplicates": "all",
+                  "leftKey": [
+                    "id"
+                  ],
+                  "rightKey": [
+                    "id"
+                  ],
+                  "type": "full"
+                },
+                "kind": "function",
+                "label": "按编号关联",
+                "mode": "all",
+                "operation": "aggregate"
+              }
+            ],
+            "outputs": {
+              "collected": [
+                "collected",
+                "output"
+              ],
+              "joined": [
+                "joined",
+                "output"
+              ],
+              "merged": [
+                "merged",
+                "output"
+              ]
+            },
+            "schemaVersion": 1
+          },
+          "title": "多路结果组合示例"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"saved\":true,\"changed\":true,\"definitionId\":\"57565e49-dc0e-4ee2-a251-c293f79406a8\",\"issues\":[]}"
+            }
+          ],
+          "details": {
+            "definitionId": "57565e49-dc0e-4ee2-a251-c293f79406a8"
+          }
+        }
+      }
+    ],
+    "definitionId": "57565e49-dc0e-4ee2-a251-c293f79406a8"
+  },
+  "definition": {
+    "edges": [
+      {
+        "from": [
+          "$input",
+          "materials"
+        ],
+        "to": [
+          "investigation",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "$input",
+          "materials"
+        ],
+        "to": [
+          "remediation",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "$input",
+          "materials"
+        ],
+        "to": [
+          "verification",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "investigation",
+          "output"
+        ],
+        "to": [
+          "merged",
+          "investigation"
+        ]
+      },
+      {
+        "from": [
+          "remediation",
+          "output"
+        ],
+        "to": [
+          "merged",
+          "remediation"
+        ]
+      },
+      {
+        "from": [
+          "verification",
+          "output"
+        ],
+        "to": [
+          "merged",
+          "verification"
+        ]
+      },
+      {
+        "from": [
+          "investigation",
+          "output"
+        ],
+        "to": [
+          "collected",
+          "investigation"
+        ]
+      },
+      {
+        "from": [
+          "remediation",
+          "output"
+        ],
+        "to": [
+          "collected",
+          "remediation"
+        ]
+      },
+      {
+        "from": [
+          "verification",
+          "output"
+        ],
+        "to": [
+          "collected",
+          "verification"
+        ]
+      },
+      {
+        "from": [
+          "investigation",
+          "output"
+        ],
+        "to": [
+          "joined",
+          "left"
+        ]
+      },
+      {
+        "from": [
+          "remediation",
+          "output"
+        ],
+        "to": [
+          "joined",
+          "right"
+        ]
+      }
+    ],
+    "inputs": [
+      "materials"
+    ],
+    "nodes": [
+      {
+        "expectedOutput": {
+          "items": {
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "severity": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "severity"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expression": {
+          "kind": "literal",
+          "value": [
+            {
+              "id": "A",
+              "severity": "high"
+            },
+            {
+              "id": "B",
+              "severity": "low"
+            },
+            {
+              "id": "A",
+              "severity": "medium"
+            }
+          ]
+        },
+        "functionName": "expression",
+        "id": "investigation",
+        "inputSchema": {
+          "type": "string"
+        },
+        "kind": "function",
+        "label": "调查数据",
+        "mode": "each",
+        "operation": "flatMap"
+      },
+      {
+        "expectedOutput": {
+          "items": {
+            "properties": {
+              "fixed": {
+                "type": "boolean"
+              },
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "fixed"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expression": {
+          "kind": "literal",
+          "value": [
+            {
+              "fixed": true,
+              "id": "A"
+            },
+            {
+              "fixed": false,
+              "id": "C"
+            }
+          ]
+        },
+        "functionName": "expression",
+        "id": "remediation",
+        "inputSchema": {
+          "type": "string"
+        },
+        "kind": "function",
+        "label": "修复数据",
+        "mode": "each",
+        "operation": "flatMap"
+      },
+      {
+        "expectedOutput": {
+          "items": {
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "verified": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "verified"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expression": {
+          "kind": "literal",
+          "value": [
+            {
+              "id": "V",
+              "verified": true
+            }
+          ]
+        },
+        "functionName": "expression",
+        "id": "verification",
+        "inputSchema": {
+          "type": "string"
+        },
+        "kind": "function",
+        "label": "验证数据",
+        "mode": "each",
+        "operation": "flatMap"
+      },
+      {
+        "expectedOutput": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "functionName": "merge",
+        "id": "merged",
+        "inputNames": [
+          "investigation",
+          "remediation",
+          "verification"
+        ],
+        "inputSchema": {
+          "properties": {
+            "investigation": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "remediation": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "verification": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "investigation",
+            "remediation",
+            "verification"
+          ],
+          "type": "object"
+        },
+        "kind": "function",
+        "label": "多路汇合",
+        "mode": "all",
+        "operation": "aggregate"
+      },
+      {
+        "expectedOutput": {
+          "properties": {
+            "investigation": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "remediation": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "verification": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "investigation",
+            "remediation",
+            "verification"
+          ],
+          "type": "object"
+        },
+        "functionName": "collect",
+        "id": "collected",
+        "inputNames": [
+          "investigation",
+          "remediation",
+          "verification"
+        ],
+        "inputSchema": {
+          "properties": {
+            "investigation": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "remediation": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "verification": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "investigation",
+            "remediation",
+            "verification"
+          ],
+          "type": "object"
+        },
+        "kind": "function",
+        "label": "具名收集",
+        "mode": "all",
+        "operation": "aggregate"
+      },
+      {
+        "expectedOutput": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "functionName": "join",
+        "id": "joined",
+        "inputSchema": {
+          "properties": {
+            "left": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "right": {
+              "items": {
+                "type": "object"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "left",
+            "right"
+          ],
+          "type": "object"
+        },
+        "join": {
+          "duplicates": "all",
+          "leftKey": [
+            "id"
+          ],
+          "rightKey": [
+            "id"
+          ],
+          "type": "full"
+        },
+        "kind": "function",
+        "label": "按编号关联",
+        "mode": "all",
+        "operation": "aggregate"
+      }
+    ],
+    "outputs": {
+      "collected": [
+        "collected",
+        "output"
+      ],
+      "joined": [
+        "joined",
+        "output"
+      ],
+      "merged": [
+        "merged",
+        "output"
+      ]
+    },
+    "schemaVersion": 1
+  },
+  "issues": [],
+  "run": {
+    "id": "d185c568-f8f1-47e6-a511-de80ecdd4352",
+    "definitionId": "57565e49-dc0e-4ee2-a251-c293f79406a8",
+    "scope": "full",
+    "inputs": {
+      "materials": [
+        {
+          "sampleId": "trigger",
+          "value": "合成示例",
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "effectMode": "preview",
+    "status": "completed",
+    "stopRequested": false,
+    "nodeStates": {
+      "investigation": "completed",
+      "remediation": "completed",
+      "verification": "completed",
+      "merged": "completed",
+      "collected": "completed",
+      "joined": "completed"
+    },
+    "nodeTotals": {
+      "investigation": 1,
+      "remediation": 1,
+      "verification": 1,
+      "merged": 1,
+      "collected": 1,
+      "joined": 1
+    },
+    "results": [
+      {
+        "id": "a8eb38ab-56d8-4cbe-9d4e-a53113613df8",
+        "runId": "d185c568-f8f1-47e6-a511-de80ecdd4352",
+        "definitionId": "57565e49-dc0e-4ee2-a251-c293f79406a8",
+        "nodeId": "investigation",
+        "instanceId": "investigation:trigger:0",
+        "input": {
+          "input": [
+            {
+              "sampleId": "trigger",
+              "value": "合成示例",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": {
+                "id": "A",
+                "severity": "high"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "B",
+                "severity": "low"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "A",
+                "severity": "medium"
+              },
+              "sampleId": "trigger:2",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:57:00.593Z",
+        "finishedAt": "2026-09-19T20:57:00.605Z"
+      },
+      {
+        "id": "4e058812-9149-43ee-8b7d-0cf70a6a4014",
+        "runId": "d185c568-f8f1-47e6-a511-de80ecdd4352",
+        "definitionId": "57565e49-dc0e-4ee2-a251-c293f79406a8",
+        "nodeId": "remediation",
+        "instanceId": "remediation:trigger:0",
+        "input": {
+          "input": [
+            {
+              "sampleId": "trigger",
+              "value": "合成示例",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": {
+                "fixed": true,
+                "id": "A"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            },
+            {
+              "value": {
+                "fixed": false,
+                "id": "C"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:57:00.595Z",
+        "finishedAt": "2026-09-19T20:57:00.606Z"
+      },
+      {
+        "id": "00db0407-b02b-4396-9235-9b721b266adb",
+        "runId": "d185c568-f8f1-47e6-a511-de80ecdd4352",
+        "definitionId": "57565e49-dc0e-4ee2-a251-c293f79406a8",
+        "nodeId": "verification",
+        "instanceId": "verification:trigger:0",
+        "input": {
+          "input": [
+            {
+              "sampleId": "trigger",
+              "value": "合成示例",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": {
+                "id": "V",
+                "verified": true
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "00db0407-b02b-4396-9235-9b721b266adb"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:57:00.597Z",
+        "finishedAt": "2026-09-19T20:57:00.608Z"
+      },
+      {
+        "id": "2f1c4389-2f64-421f-8879-675fc9e27de2",
+        "runId": "d185c568-f8f1-47e6-a511-de80ecdd4352",
+        "definitionId": "57565e49-dc0e-4ee2-a251-c293f79406a8",
+        "nodeId": "merged",
+        "instanceId": "merged:all:0",
+        "input": {
+          "investigation": [
+            {
+              "value": {
+                "id": "A",
+                "severity": "high"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "B",
+                "severity": "low"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "A",
+                "severity": "medium"
+              },
+              "sampleId": "trigger:2",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            }
+          ],
+          "remediation": [
+            {
+              "value": {
+                "fixed": true,
+                "id": "A"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            },
+            {
+              "value": {
+                "fixed": false,
+                "id": "C"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            }
+          ],
+          "verification": [
+            {
+              "value": {
+                "id": "V",
+                "verified": true
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "00db0407-b02b-4396-9235-9b721b266adb"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": {
+                "id": "A",
+                "severity": "high"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "2f1c4389-2f64-421f-8879-675fc9e27de2",
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "B",
+                "severity": "low"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "2f1c4389-2f64-421f-8879-675fc9e27de2",
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "A",
+                "severity": "medium"
+              },
+              "sampleId": "trigger:2",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "2f1c4389-2f64-421f-8879-675fc9e27de2",
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "fixed": true,
+                "id": "A"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "2f1c4389-2f64-421f-8879-675fc9e27de2",
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            },
+            {
+              "value": {
+                "fixed": false,
+                "id": "C"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "2f1c4389-2f64-421f-8879-675fc9e27de2",
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            },
+            {
+              "value": {
+                "id": "V",
+                "verified": true
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "2f1c4389-2f64-421f-8879-675fc9e27de2",
+                "00db0407-b02b-4396-9235-9b721b266adb"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:57:00.619Z",
+        "finishedAt": "2026-09-19T20:57:00.627Z"
+      },
+      {
+        "id": "5a815092-5115-4c20-a0e2-da884256ea48",
+        "runId": "d185c568-f8f1-47e6-a511-de80ecdd4352",
+        "definitionId": "57565e49-dc0e-4ee2-a251-c293f79406a8",
+        "nodeId": "collected",
+        "instanceId": "collected:all:0",
+        "input": {
+          "investigation": [
+            {
+              "value": {
+                "id": "A",
+                "severity": "high"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "B",
+                "severity": "low"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "A",
+                "severity": "medium"
+              },
+              "sampleId": "trigger:2",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            }
+          ],
+          "remediation": [
+            {
+              "value": {
+                "fixed": true,
+                "id": "A"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            },
+            {
+              "value": {
+                "fixed": false,
+                "id": "C"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            }
+          ],
+          "verification": [
+            {
+              "value": {
+                "id": "V",
+                "verified": true
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "00db0407-b02b-4396-9235-9b721b266adb"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": {
+                "investigation": [
+                  {
+                    "id": "A",
+                    "severity": "high"
+                  },
+                  {
+                    "id": "B",
+                    "severity": "low"
+                  },
+                  {
+                    "id": "A",
+                    "severity": "medium"
+                  }
+                ],
+                "remediation": [
+                  {
+                    "fixed": true,
+                    "id": "A"
+                  },
+                  {
+                    "fixed": false,
+                    "id": "C"
+                  }
+                ],
+                "verification": [
+                  {
+                    "id": "V",
+                    "verified": true
+                  }
+                ]
+              },
+              "sampleId": "5a815092-5115-4c20-a0e2-da884256ea48",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "5a815092-5115-4c20-a0e2-da884256ea48",
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8",
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014",
+                "00db0407-b02b-4396-9235-9b721b266adb"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:57:00.620Z",
+        "finishedAt": "2026-09-19T20:57:00.628Z"
+      },
+      {
+        "id": "c0c4ba1f-7948-430d-a54e-24e90a9f00b8",
+        "runId": "d185c568-f8f1-47e6-a511-de80ecdd4352",
+        "definitionId": "57565e49-dc0e-4ee2-a251-c293f79406a8",
+        "nodeId": "joined",
+        "instanceId": "joined:all:0",
+        "input": {
+          "left": [
+            {
+              "value": {
+                "id": "A",
+                "severity": "high"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "B",
+                "severity": "low"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "id": "A",
+                "severity": "medium"
+              },
+              "sampleId": "trigger:2",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            }
+          ],
+          "right": [
+            {
+              "value": {
+                "fixed": true,
+                "id": "A"
+              },
+              "sampleId": "trigger:0",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            },
+            {
+              "value": {
+                "fixed": false,
+                "id": "C"
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": {
+                "left": {
+                  "id": "A",
+                  "severity": "high"
+                },
+                "right": {
+                  "fixed": true,
+                  "id": "A"
+                }
+              },
+              "sampleId": "c0c4ba1f-7948-430d-a54e-24e90a9f00b8",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "c0c4ba1f-7948-430d-a54e-24e90a9f00b8",
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8",
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            },
+            {
+              "value": {
+                "left": {
+                  "id": "B",
+                  "severity": "low"
+                },
+                "right": null
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "c0c4ba1f-7948-430d-a54e-24e90a9f00b8",
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8"
+              ]
+            },
+            {
+              "value": {
+                "left": {
+                  "id": "A",
+                  "severity": "medium"
+                },
+                "right": {
+                  "fixed": true,
+                  "id": "A"
+                }
+              },
+              "sampleId": "c0c4ba1f-7948-430d-a54e-24e90a9f00b8",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "c0c4ba1f-7948-430d-a54e-24e90a9f00b8",
+                "a8eb38ab-56d8-4cbe-9d4e-a53113613df8",
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            },
+            {
+              "value": {
+                "left": null,
+                "right": {
+                  "fixed": false,
+                  "id": "C"
+                }
+              },
+              "sampleId": "trigger:1",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": [
+                "c0c4ba1f-7948-430d-a54e-24e90a9f00b8",
+                "4e058812-9149-43ee-8b7d-0cf70a6a4014"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [],
+        "startedAt": "2026-09-19T20:57:00.621Z",
+        "finishedAt": "2026-09-19T20:57:00.629Z"
+      }
+    ],
+    "waits": [],
+    "signals": [],
+    "startedAt": "2026-09-19T20:57:00.556Z",
+    "finishedAt": "2026-09-19T20:57:00.635Z"
+  },
+  "actualOutputs": {
+    "collected": [
+      {
+        "investigation": [
+          {
+            "id": "A",
+            "severity": "high"
+          },
+          {
+            "id": "B",
+            "severity": "low"
+          },
+          {
+            "id": "A",
+            "severity": "medium"
+          }
+        ],
+        "remediation": [
+          {
+            "fixed": true,
+            "id": "A"
+          },
+          {
+            "fixed": false,
+            "id": "C"
+          }
+        ],
+        "verification": [
+          {
+            "id": "V",
+            "verified": true
+          }
+        ]
+      }
+    ],
+    "joined": [
+      {
+        "left": {
+          "id": "A",
+          "severity": "high"
+        },
+        "right": {
+          "fixed": true,
+          "id": "A"
+        }
+      },
+      {
+        "left": {
+          "id": "B",
+          "severity": "low"
+        },
+        "right": null
+      },
+      {
+        "left": {
+          "id": "A",
+          "severity": "medium"
+        },
+        "right": {
+          "fixed": true,
+          "id": "A"
+        }
+      },
+      {
+        "left": null,
+        "right": {
+          "fixed": false,
+          "id": "C"
+        }
+      }
+    ],
+    "merged": [
+      {
+        "id": "A",
+        "severity": "high"
+      },
+      {
+        "id": "B",
+        "severity": "low"
+      },
+      {
+        "id": "A",
+        "severity": "medium"
+      },
+      {
+        "fixed": true,
+        "id": "A"
+      },
+      {
+        "fixed": false,
+        "id": "C"
+      },
+      {
+        "id": "V",
+        "verified": true
+      }
+    ]
+  }
+}

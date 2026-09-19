@@ -141,3 +141,7 @@ Work 保留方法工作区，WorkItem 新增持续业务身份，Run 保存固�
 `pnpm dev`、`pnpm build`、`pnpm test` 与 `pnpm test:browser` 面向正式应用，历史实验改由 `pnpm spike:*` 运行。类型、模块测试、真实模型调用、浏览器操作和用户视觉判断分别报告；不因为脚本已切换或源码已实现就宣称整体验收完成。
 
 本轮 [管理页与函数式 IR](../conductor/tracks/functional-ir-management_20260920/index.md)：flow 负责表达式完整形状/作用域校验，runs 执行纯变换并保留 schema/来源边界，assistant 通过相同校验保存，client 提供结构化配置与紧凑摘要。共享类型位于 src/shared/expressions.ts，无新运行服务。
+
+## 多路输出组合交接
+
+shared/node-ports.ts 统一前端、flow、runs 的实际端口与集合分发；flow/collections.ts 校验配置，runs/collections.ts 执行拼接、具名收集和键关联，client/CollectionEditor 提供结构化控件，assistant/collection-guide.ts 对齐模型工具。模块输入输出及错误例子见 [集合语义](multi-input.md)，真实验收见 [本轮证据](../conductor/tracks/multi-input_20260920/evidence.md)。

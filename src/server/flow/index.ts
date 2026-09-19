@@ -1,9 +1,16 @@
+import {
+  nodeInputPorts,
+  collectionFunction,
+  expandedCollectionOutput,
+} from '../../shared/node-ports.ts';
+import { checkCollection, collectionPortSchema } from './collections.ts';
 import { checkExpression } from './expressions.ts';
 import { schemaIssue, incompatibleTypes } from './schema.ts';
 import type {
   Definition,
   FlowNode,
   Issue,
+  Json,
   Snapshot,
   ViewState,
 } from '../../shared/records.js';
@@ -43,6 +50,12 @@ function assertShape(value: unknown): asserts value is Definition {
       !['each', 'all'].includes(node.mode as string)
     )
       throw new Error('节点结构无效：需要 id、label、支持的 kind 和 mode。');
+    if (
+      node.inputNames !== undefined &&
+      (!Array.isArray(node.inputNames) ||
+        !node.inputNames.every((name) => typeof name === 'string'))
+    )
+      throw new Error(`节点 ${node.id} 的 inputNames 必须是文本数组。`);
     if (node.task !== undefined && typeof node.task !== 'string')
       throw new Error(`节点 ${node.id} 的任务必须是文本。`);
     if (
@@ -74,11 +87,7 @@ function assertShape(value: unknown): asserts value is Definition {
   )
     throw new Error('连接和输出必须明确指定 [节点, 端口]。');
 }
-export function inputPorts(node: FlowNode): string[] {
-  return node.kind === 'function' && node.functionName === 'merge'
-    ? ['left', 'right']
-    : ['input'];
-}
+export const inputPorts = nodeInputPorts;
 export function outputPorts(node: FlowNode): string[] {
   return node.kind === 'branch'
     ? ['matched', 'unmatched']
@@ -163,14 +172,20 @@ export function checkDefinition(definition: Definition): Issue[] {
       add('里程碑需要阶段和进展摘要。', 'milestone');
     if (node.kind === 'agent' && !node.task?.trim())
       add('请填写节点任务，再运行此步骤。', 'task');
+    for (const issue of checkCollection(node)) add(issue.message, issue.field);
     if (node.kind === 'function') {
       if (
-        !['identity', 'select-fields', 'merge', 'expression'].includes(
-          node.functionName ?? '',
-        )
+        ![
+          'identity',
+          'select-fields',
+          'merge',
+          'collect',
+          'join',
+          'expression',
+        ].includes(node.functionName ?? '')
       )
         add(
-          '请选择已有处理函数：identity、select-fields、merge 或 expression。',
+          '请选择已有处理函数：identity、select-fields、merge、collect、join 或 expression。',
           'functionName',
         );
       if (node.functionName === 'expression') {
@@ -254,7 +269,8 @@ export function checkDefinition(definition: Definition): Issue[] {
         : (target.operation ?? (target.mode === 'each' ? 'map' : 'aggregate'));
       let schema = source.expectedOutput;
       if (
-        (sourceOperation === 'flatMap' ||
+        (expandedCollectionOutput(source) ||
+          sourceOperation === 'flatMap' ||
           ['wait', 'milestone', 'branch'].includes(source.kind)) &&
         schema &&
         typeof schema === 'object' &&
@@ -265,7 +281,22 @@ export function checkDefinition(definition: Definition): Issue[] {
         targetOperation === 'aggregate'
           ? { type: 'array', items: schema }
           : schema;
-      if (incompatibleTypes(received, target.inputSchema))
+      const targetSchema = collectionFunction(target)
+        ? collectionPortSchema(target.inputSchema, edge.to[1])
+        : target.inputSchema;
+      const portItemSchema =
+        collectionFunction(target) && object(targetSchema)
+          ? (targetSchema.items as Json | undefined)
+          : undefined;
+      if (
+        incompatibleTypes(
+          collectionFunction(target)
+            ? { type: 'array', items: schema }
+            : received,
+          targetSchema,
+        ) ||
+        incompatibleTypes(schema, portItemSchema)
+      )
         issues.push({
           edgeIndex,
           nodeId: target.id,

@@ -79,3 +79,5 @@ T、P 是这里使用的索引前缀，不是通用行业缩写；旧文档没�
 这些原则不意味着忽略基本工程实践：明确接口、职责分离、共享类型、错误处理、必要复用与测试都是起点。避免的是无现实需求的通用平台与昂贵抽象。
 
 本轮管理与函数式验收编号：M1–M3 为管理体验故事，FP1–FP3 为纯函数变换故事，完整定义见 [track 规格](../conductor/tracks/functional-ir-management_20260920/spec.md)。pipe 是从左到右组合；reduce 是有初值的顺序归约；pattern 是用于匹配和解构的数据形状；rest 是解构后剩余字段/元素，均不是外部服务或模块名。
+
+本轮组合故事 C1–C4 仅在 [多路组合 track](../conductor/tracks/multi-input_20260920/spec.md) 内编号：merge 是按端口顺序拼接，collect 是保留名称的数组对象，join 是按键配对。inner/left/right/full 分别为内/左/右/全连接，缺配侧为 null；详细边界见 [集合语义](multi-input.md)。

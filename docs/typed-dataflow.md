@@ -27,13 +27,13 @@ WorkItem 保有持续业务身份；Run 固定方法与工作项输入快照。�
 
 `operation` 为明确组合语义；缺省 each/all 继续适配旧定义。旧普通 Function 未设 operation 时保留已有透传/合并方式；新定义需显式选择运算，不能把兼容行为描述为新的统一类型系统。
 
-LLM 整批报告是 aggregate，不保证结合律或确定性，不能自动改为并行 reduce。merge 连接既有两路输入，不等于按键 join 或归约。map/flatMap 空集合不调用处理器；aggregate 接收空数组，是否允许由输入 schema 和处理器约定。独立就绪节点最多并行 4 个，逐项并发可配 1–8，最终按输入顺序归集；失败保留其它成功实例但阻止依赖完整结果的下游。
+LLM 整批报告是 aggregate，不保证结合律或确定性，不能自动改为并行 reduce。旧 merge 连接既有两路输入；新增具名多路 merge、collect 与按键 join，详见 [多路输出组合](multi-input.md)。merge 是拼接，不等于关联或归约。map/flatMap 空集合不调用处理器；aggregate 接收空数组，是否允许由输入 schema 和处理器约定。独立就绪节点最多并行 4 个，逐项并发可配 1–8，最终按输入顺序归集；失败保留其它成功实例但阻止依赖完整结果的下游。
 
 expression 的 pipe、map/filter/flatMap/reduce 和 match/let 详见 [纯函数 IR](functional-ir.md)。图级 operation 与内部值组合的边界不同：表达式返回数组仍是一个值，只有节点 flatMap 向端口展开。
 
 ## 三、Schema 的实现边界
 
-当前字段是节点的单次调用契约：`inputSchema` 描述传给调用的值，`expectedOutput` 描述返回值。Map 是 T / R，FlatMap 是 T / R[]，Aggregate 是 T[] / R。运行器身份、来源和状态在记录外层，不让模型构造这些字段。Wait、Milestone、Branch 的 expectedOutput 统一约束整批透传值数组，分流前也校验实际值；Wait 的 event 端口另有事件记录结构，不套用透传数组约束。
+新集合函数的具名输入与固定分发是明确例外：inputSchema 为具名数组对象，merge/join expectedOutput 为整批数组且分发各项，collect 为对象且输出一项。其余计算节点字段是单次调用契约：`inputSchema` 描述传给调用的值，`expectedOutput` 描述返回值。Map 是 T / R，FlatMap 是 T / R[]，Aggregate 是 T[] / R。运行器身份、来源和状态在记录外层，不让模型构造这些字段。Wait、Milestone、Branch 的 expectedOutput 统一约束整批透传值数组，分流前也校验实际值；Wait 的 event 端口另有事件记录结构，不套用透传数组约束。
 
 [flow/schema.ts](../src/server/flow/schema.ts) 统一使用 Ajv 默认 JSON Schema 编译器；未知 schema 关键字通过 strictSchema 检查，不做类型强转。定义保存检查 schema 是否可编译；运行器对 Agent 和普通处理的实际输入/返回执行校验，错误带实例与字段路径。没有 schema 的旧定义仍兼容运行，不能称为“已经类型证明”。
 

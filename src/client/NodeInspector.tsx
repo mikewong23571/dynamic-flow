@@ -5,6 +5,10 @@ import { inputPorts, outputPorts, removeNode, portLabel } from './model';
 import { Button, Empty } from './components/ui';
 import { ExpressionEditor } from './ExpressionEditor';
 import { variable } from './expression-model';
+import { CollectionEditor } from './CollectionEditor';
+import { changeFunction } from './collection-model';
+import { collectionFunction } from '../shared/node-ports';
+import { NativeSelect } from './components/ui/native-select';
 export function NodeInspector({
   definition,
   nodeId,
@@ -56,7 +60,10 @@ export function NodeInspector({
           onChange={(e) => update({ label: e.target.value })}
         />
       </label>
-      {(node.kind === 'agent' || node.kind === 'function') && (
+      {(node.kind === 'agent' ||
+        (node.kind === 'function' &&
+          !collectionFunction(node) &&
+          node.functionName !== 'merge')) && (
         <>
           <label className="field">
             处理方式
@@ -196,33 +203,33 @@ export function NodeInspector({
         <>
           <label className="field">
             处理函数
-            <select
+            <NativeSelect
               value={node.functionName || 'identity'}
               onChange={(e) =>
-                update({
-                  functionName: e.target.value as FlowNode['functionName'],
-                  ...(e.target.value === 'expression'
-                    ? {
-                        expression: node.expression || variable(),
-                        operation:
-                          node.operation ||
-                          (node.mode === 'all'
-                            ? ('aggregate' as const)
-                            : ('map' as const)),
-                      }
-                    : {}),
-                  ...(e.target.value === 'merge'
-                    ? { mode: 'all' as const, operation: 'aggregate' as const }
-                    : {}),
-                })
+                onChange(
+                  changeFunction(
+                    definition,
+                    node.id,
+                    e.target.value as FlowNode['functionName'],
+                  ),
+                )
               }
             >
               <option value="identity">原样传递</option>
               <option value="expression">数据变换</option>
               <option value="select-fields">提取字段</option>
-              <option value="merge">合并两路输入</option>
-            </select>
+              <option value="merge">多路汇合</option>
+              <option value="collect">具名收集</option>
+              <option value="join">按键关联</option>
+            </NativeSelect>
           </label>
+          {['merge', 'collect', 'join'].includes(node.functionName || '') && (
+            <CollectionEditor
+              node={node}
+              definition={definition}
+              onChange={onChange}
+            />
+          )}
           {node.functionName === 'expression' && (
             <ExpressionEditor
               key={node.id}
@@ -308,7 +315,11 @@ export function NodeInspector({
       <details className="details">
         <summary>输入与输出 Schema</summary>
         <p className="muted">
-          描述单次调用的值；Map 保留数组，FlatMap 展开一层。
+          {collectionFunction(node)
+            ? node.functionName === 'collect'
+              ? '输入和输出均为具名数组对象；输出对象作为一项。'
+              : '输入为具名数组对象；输出 Schema 描述整批数组。'
+            : '描述单次调用的值；Map 保留数组，FlatMap 展开一层。'}
         </p>
         <SchemaField
           label="输入 Schema"
@@ -356,7 +367,7 @@ export function NodeInspector({
       <details className="details">
         <summary>添加连接</summary>
         <ConnectionForm
-          key={`${node.id}:${node.functionName}`}
+          key={`${node.id}:${node.functionName}:${JSON.stringify(inputPorts(node))}`}
           definition={definition}
           node={node}
           onChange={onChange}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   ReactFlow,
+  useUpdateNodeInternals,
   Background,
   Controls,
   Handle,
@@ -14,6 +15,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { expressionSummary } from './expression-model';
+import { collectionSummary } from './collection-model';
 import {
   Boxes,
   GitBranch,
@@ -42,7 +44,7 @@ type CanvasData = {
   progress?: string;
   final?: boolean;
 };
-function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
+function WorkflowNode({ id, data, selected }: NodeProps<Node<CanvasData>>) {
   const { node } = data;
   const Icon = !node
     ? FileText
@@ -58,6 +60,11 @@ function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
   const inputs = node ? inputPorts(node) : [];
   const outputs = node ? outputPorts(node) : data.ports || [];
   const state = data.status;
+  const updateNodeInternals = useUpdateNodeInternals();
+  const portIdentity = JSON.stringify([inputs, outputs]);
+  useEffect(() => {
+    updateNodeInternals(id);
+  }, [id, portIdentity, updateNodeInternals]);
   return (
     <div
       className={`workflow-node ${selected ? 'selected' : ''} ${state || ''}`}
@@ -108,15 +115,16 @@ function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
       <div className="node-summary">
         <span>
           {node
-            ? node.kind === 'wait'
-              ? node.wait?.event || '等待事件'
-              : node.kind === 'milestone'
-                ? node.milestone?.stage || '记录进展'
-                : node.operation === 'flatMap'
-                  ? 'FlatMap · 展开'
-                  : node.mode === 'each'
-                    ? `Map · 并发 ${node.concurrency || 1}`
-                    : '整批汇总'
+            ? collectionSummary(node) ||
+              (node.kind === 'wait'
+                ? node.wait?.event || '等待事件'
+                : node.kind === 'milestone'
+                  ? node.milestone?.stage || '记录进展'
+                  : node.operation === 'flatMap'
+                    ? 'FlatMap · 展开'
+                    : node.mode === 'each'
+                      ? `Map · 并发 ${node.concurrency || 1}`
+                      : '整批汇总')
             : '原始材料'}
           {data.final && <span className="node-final">最终产物</span>}
         </span>
@@ -148,14 +156,14 @@ function WorkflowNode({ data, selected }: NodeProps<Node<CanvasData>>) {
                 id={port}
                 aria-label={`输入 ${portLabel(port)}`}
               />
-              <span>{portLabel(port)}</span>
+              <span title={portLabel(port)}>{portLabel(port)}</span>
             </div>
           ))}
         </div>
         <div className="port-column">
           {outputs.map((port) => (
             <div key={port} className="node-port output">
-              <span>{portLabel(port)}</span>
+              <span title={portLabel(port)}>{portLabel(port)}</span>
               <Handle
                 type="source"
                 position={Position.Right}

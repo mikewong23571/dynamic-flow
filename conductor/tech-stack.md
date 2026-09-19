@@ -60,3 +60,7 @@ pnpm 10.32.1；Pi 包要求 Node >=22.19，当前开发环境使用 Node 24.14.0
 TanStack Table、react-resizable-panels、Monaco、Arborist 等仍在安装清单中，其中未进入当前正式客户端的依赖不视为已采用。原型不为安全、权限、隔离或生产治理扩展工具链。
 
 本轮管理页与表达式验收见 [functional-ir-management](./tracks/functional-ir-management_20260920/evidence.md)。shadcn 是维护在仓库的组件源码，不是另外安装一个运行时框架；管理列表使用其 Table，当前无需再加 TanStack 表格状态层。
+
+多路 merge、collect、join 使用现有 TypeScript、Ajv 与 React Flow / shadcn 控件，无新增计算框架。端口语义集中于 shared/node-ports.ts，合同见 [多路输出组合](../docs/multi-input.md)。
+
+字体通过 @fontsource-variable/geist 5.3.0 随应用本地打包，移除在线 Google Fonts CSS，避免第三方请求阻塞首次打开；保留中文系统字体回退。

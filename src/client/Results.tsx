@@ -246,10 +246,13 @@ export function Results({
                 {final && <Badge>最终产物</Badge>}
                 <Badge status={result.status} />
                 <span className="muted">
-                  {Object.values(result.input)
-                    .flat()
-                    .map((i) => i.materialIds.join(', '))
-                    .join(' · ')}
+                  {[
+                    ...new Set(
+                      Object.values(result.input)
+                        .flat()
+                        .flatMap((i) => i.materialIds),
+                    ),
+                  ].join(' · ')}
                 </span>
               </header>
               {result.error && <p className="inline-error">{result.error}</p>}
@@ -347,9 +350,13 @@ export function Results({
                     .some((i) => i.sourceResultIds.length > 0) && (
                     <p className="muted">
                       来源结果：
-                      {Object.values(result.input)
-                        .flat()
-                        .flatMap((i) => i.sourceResultIds)
+                      {[
+                        ...new Set(
+                          Object.values(result.input)
+                            .flat()
+                            .flatMap((i) => i.sourceResultIds),
+                        ),
+                      ]
                         .map(short)
                         .join('、')}
                     </p>

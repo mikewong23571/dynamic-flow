@@ -12,7 +12,7 @@
 
 ## 依赖与交接
 
-仅 TypeScript 类型能力，无运行时依赖，不 import client/server。业务字段由使用该字段的模块共同确认，shared 不独自定义业务规则。
+TypeScript 类型与少量跨调用方共享的纯语义函数，无外部运行时依赖，不 import client/server。业务字段由使用该字段的模块共同确认，shared 不独自定义业务规则。
 
 ## 已验证交接
 
@@ -40,3 +40,7 @@ Work 保留方法与样本；WorkItem 是独立业务编号、目标、材料、
 ## 纯表达式记录
 
 expressions.ts 仅定义 Expression / Pattern / PureFunction 可序列化联合类型；通过 FlowNode.expression 引用，不能携带函数、闭包或运行时实例。结构化编辑、作者工具、flow校验、runs求值共同遵循 [纯函数语义](../../docs/functional-ir.md)。WorkSummary 的 definitionState/nodeCount 为当页真实定义的派生摘要，不是独立可写状态。
+
+## 集合端口
+
+node-ports.ts 集中 nodeInputPorts、collectionFunction、expandedCollectionOutput，避免客户端/校验/执行分别维护端口名单。FlowNode.inputNames 表达新 merge/collect 的有序端口，join 定义模式、两侧键路径与重复策略；旧无 inputNames merge 保持兼容。共享纯函数不代替 flow 的外部输入形状校验。具体例子及错误见 [多路组合](../../docs/multi-input.md)。

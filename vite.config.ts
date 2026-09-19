@@ -9,6 +9,14 @@ export default defineConfig({
     host: '127.0.0.1',
     port: 4320,
     strictPort: true,
+    watch: {
+      ignored: [
+        '**/conductor/**',
+        '**/test-results/**',
+        '**/playwright-report/**',
+        '**/data/**',
+      ],
+    },
     proxy: { '/api': 'http://127.0.0.1:4321' },
   },
   build: { outDir: 'dist' },

@@ -1,3 +1,6 @@
+import { collectionFunction, nodeInputPorts } from '../../shared/node-ports.ts';
+export { nodeInputPorts } from '../../shared/node-ports.ts';
+import { executeCollection, namedValues } from './collections.ts';
 import { randomUUID } from 'node:crypto';
 import type { FileStore } from '../files/index.ts';
 import { validateValue } from '../flow/schema.ts';
@@ -30,11 +33,6 @@ function field(value: Json, path: string): Json | undefined {
         v && typeof v === 'object' && !Array.isArray(v) ? v[k] : undefined,
       value,
     );
-}
-export function nodeInputPorts(node: FlowNode) {
-  return node.kind === 'function' && node.functionName === 'merge'
-    ? ['left', 'right']
-    : ['input'];
 }
 export function validateInputs(inputs: Inputs, ports: string[]) {
   for (const p of ports)
@@ -433,11 +431,35 @@ export function createRuns(
           const source = items(batch);
           validateValue(
             node.inputSchema,
-            aggregate ? source.map((i) => i.value) : source[0].value,
+            collectionFunction(node)
+              ? namedValues(node, batch)
+              : aggregate
+                ? source.map((i) => i.value)
+                : source[0].value,
             '输入',
           );
           let produced: Inputs;
-          if (node.kind === 'branch') {
+          if (collectionFunction(node)) {
+            const rows = executeCollection(node, batch);
+            validateValue(
+              node.expectedOutput,
+              node.functionName === 'collect'
+                ? rows[0].value
+                : rows.map((row) => row.value),
+              '输出',
+            );
+            produced = {
+              output: rows.map((row) => ({
+                ...wrap(row.value, row.sources, row.sampleId),
+                sourceResultIds: [
+                  ...new Set([
+                    result.id,
+                    ...row.sources.flatMap((item) => item.sourceResultIds),
+                  ]),
+                ],
+              })),
+            };
+          } else if (node.kind === 'branch') {
             validateValue(
               node.expectedOutput,
               source.map((item) => item.value),

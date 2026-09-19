@@ -67,3 +67,11 @@ Schema 当前使用 Ajv 的 JSON Schema draft-07，允许基础类型 union；�
 实现边界是最多 2000 个语法/字面值条目、64 层嵌套、每次 100000 次表达式求值；错误明确提示缩小表达式/输入。此为原型可解释执行的边界，不是通用语言或隔离平台。结果无输入别名，无任意 JS、闭包、递归或模型调用。
 
 域内证据 `tests/functional-ir.test.ts` 覆盖组合语义、空集合、守卫、解构、词法作用域、错误路径、纯运算、真实文件保存重开、schema 拒绝和下游阻断。作者接线另见 `tests/functional-author.test.ts`；真实模型、结构化画布编辑和视觉验收由本轮 track 汇总，不能由求值器测试替代。
+
+## 多路集合函数（2026-09-20）
+
+正式端口语义共用 `src/shared/node-ports.ts`。`merge` 配置 `inputNames` 后支持至少两路具名输入；旧 merge 不配置此字段时继续 left/right 与历史行为。`collect` 要求 `inputNames`，`join` 固定 left/right；配置集合函数均为 all，operation 只能省略或 aggregate。`collections.ts` 校验具名端口唯一、join 类型/路径/重复键策略并返回字段问题；坏字段类型不会令校验崩溃。
+
+集合函数 inputSchema 检查 `{端口名: 值数组}`；静态连接按 `properties[端口].items` 的明确顶层类型拒绝冲突。新 merge / join 的 expectedOutput 检查整个数组，但端口发出数组中的每项，因此静态出线取 items；collect 整个对象作为一项。其余 JSON Schema 仍由运行时校验。不是通用 schema 子类型证明。
+
+域内 `tests/multi-input.test.ts` 使用真实文件保存重开，覆盖具名多路/旧 merge、四种 join、Schema、纯表达式解构、空路/失败路、输入顺序/精确参与来源以及节点 preview/retry；浏览器和真实作者验收由本轮 track 汇总。

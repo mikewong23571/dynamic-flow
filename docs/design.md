@@ -37,7 +37,7 @@ IR（Intermediate Representation，中间表示）是本应用有限、声明式
 | 节点      | 当前语义                                                                         |
 | --------- | -------------------------------------------------------------------------------- |
 | Agent     | 任务和明确输入交给 Pi，返回有类型的结果；工具活动关联实例                        |
-| Function  | 调用 identity / select-fields / merge，或执行 expression 纯数据变换                             |
+| Function  | 调用 identity / select-fields / merge / collect / join，或执行 expression 纯数据变换                             |
 | Branch    | 有限字段条件，将输入路由到 matched / unmatched 端口                              |
 | Milestone | 明确声明业务阶段与摘要；正式推进时记录输入证据与来源，再透传输入                 |
 | Wait      | 保存事件名称、原因及可选相对截止时间；匹配事件或到期后继续，输出原输入与触发事件 |
@@ -111,3 +111,7 @@ Assistant 固定请求中的方法版本、节点与样本上下文，工具真�
 模块替身、真实文件/HTTP、受控时钟跨天、真实进程重启、真实模型和浏览器分别记录。[本轮证据](../conductor/tracks/workitem-lifecycle_20260920/evidence.md) 是结论入口，本文不提前宣布全部路线通过。
 
 具体模块责任见 [模块与验收地图](implementation-map.md)，字段与动作见 [本轮交接](../conductor/tracks/workitem-lifecycle_20260920/handoff.md)，技术状态见 [技术栈](../conductor/tech-stack.md)。原稿与历史 Spike 不作为当前产品事实。
+
+## 多路结果组合
+
+[集合语义](multi-input.md) 明确多路 merge、具名 collect 与按键 join 的输入、Schema、输出基数和来源。它们是有限集合函数，使用现有调度与连接，不引入新平台。

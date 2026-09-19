@@ -62,3 +62,11 @@ functionName=expression 只走显式 operation 调用路径，不能落入旧函
 原有 InputItem 包装保留顺序与来源：map 来源是对应输入，aggregate 来源是参与本次调用的全部输入，flatMap 每个子项继承该调用的来源。表达式内部 filter 不声称更精细的逐字段来源推导。旧 identity/select-fields/merge 未指定 operation 时继续保持历史行为。
 
 `tests/functional-ir.test.ts` 通过真实文件保存、重开、执行验证表达式的 aggregate/map/flatMap、来源与顺序、草稿拒跑、schema 阻断及旧定义兼容；`tests/runs.test.ts` 与 `tests/lifecycle-runtime.test.ts` 为原有调度和生命周期回归。
+
+## 多路汇合、具名收集与按键关联（2026-09-20）
+
+`collections.ts` 是仅处理有限 JSON 数组的纯集合运算：新 merge 按 inputNames 声明顺序连接每路项；collect 返回一项具名数组对象（空路仍是 []）；join 按左顺序与右路原顺序配对，right/full 最后追加右缺配项。join 只接受自身字段路径中的 string/finite number/boolean 键，类型严格区分；空路径读取整值。null/缺失/数组/对象明确失败。duplicates=all 全部配对，error 检查两侧重复，即使对面为空。
+
+集合调用先校验具名输入对象、再校验整体输出。新 merge/join 校验整个数组后分发逐项输出，collect 保留对象单项。沿用 DAG 就绪/失败阻断、固定版本/上下文、节点 preview/retry 路径，不建额外调度器。
+
+每个输出的 materialIds 仅来自实际参与行；sourceResultIds 为当前集合实例 ID 加参与行的直接来源 ID。一次集合实例的 input 仍包含全部输入，不能宣称仅凭当前实例 ID 可逆推每行来源；输出包装的显式上游 ID 用于精确直接来源。重复键会自然令同一源行参与多个输出，不强制去重业务行。

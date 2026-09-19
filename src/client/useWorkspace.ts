@@ -18,6 +18,7 @@ import {
   materialInputs,
   splitMaterials,
   localInputs,
+  inputPorts,
 } from './model';
 
 const emptyDefinition: Definition = {
@@ -107,6 +108,10 @@ export function useWorkspace() {
     snapshot?.definitions[work?.draftId || work?.adoptedId || ''] ||
     emptyDefinition;
   const selected = definition.nodes.find((n) => n.id === selectedNode);
+  useEffect(() => {
+    if (selected && !inputPorts(selected).includes(samplePort))
+      setSamplePort(inputPorts(selected)[0] || 'input');
+  }, [selected, samplePort]);
   const defaultId = work?.adoptedId || work?.draftId;
   const selectedDefinitionId =
     runDefinition === 'draft' ? work?.draftId : defaultId;

@@ -1,3 +1,4 @@
+import { nodeInputPorts as inputPorts } from '../shared/node-ports';
 import type {
   Comparison,
   Definition,
@@ -75,9 +76,7 @@ export function acceptSnapshot(
     ? previous
     : next;
 }
-export function inputPorts(node: FlowNode) {
-  return node.functionName === 'merge' ? ['left', 'right'] : ['input'];
-}
+export { nodeInputPorts as inputPorts } from '../shared/node-ports';
 export function outputPorts(node: FlowNode) {
   return node.kind === 'branch'
     ? ['matched', 'unmatched']

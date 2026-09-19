@@ -59,3 +59,9 @@
 ## 纯表达式编辑交接
 
 NodeInspector 的数据变换使用 ExpressionEditor、PatternEditor 和 ExpressionFields：常用和嵌套语义均通过控件编辑；对象/数组常量也可选择JSON输入，但不是构造对象/数组的必经入口。expression-model只提供显示名、默认对象和纯编辑辅助函数，不复制服务端求值器。操作与语义见 [纯函数 IR](../../docs/functional-ir.md)。
+
+## 多路组合编辑
+
+CollectionEditor / collection-model 负责merge/collect动态端口及join模式、路径、重复策略，复用shared/node-ports和正式控件；变更端口后更新React Flow internals。改名/删除同步目标连线及具名Schema顶层properties/required，collect输出Schema同样处理；不自动改写任意嵌套Schema或下游表达式。局部试验选择实际端口，集合函数固定整批。tests/multi-input-client.test.ts 与 tests/browser/multi-input.spec.ts 覆盖交接。
+
+Geist Variable通过Fontsource本地打包，中文保留系统回退。Vite忽略conductor/test-results/playwright-report/data，防止测试trace的HTML触发持续刷新；不能把开发工具循环误判为应用逻辑或字体网络失败。

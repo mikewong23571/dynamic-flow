@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [x] **Track: 多路汇合、具名收集与按键关联**
+  *Link: [multi-input_20260920](./tracks/multi-input_20260920/index.md)*
+
 - [x] **Track: 管理页与函数式 IR**
   *Link: [functional-ir-management_20260920](./tracks/functional-ir-management_20260920/index.md)*
 

@@ -23,7 +23,15 @@ export interface FlowNode {
   wait?: { event: string; reason: string; timeoutSeconds?: number };
   milestone?: { stage: string; summary: string };
   expectedOutput?: Json;
-  functionName?: 'identity' | 'select-fields' | 'merge' | 'expression';
+  functionName?:
+    'identity' | 'select-fields' | 'merge' | 'collect' | 'join' | 'expression';
+  inputNames?: string[];
+  join?: {
+    type: 'inner' | 'left' | 'right' | 'full';
+    leftKey: (string | number)[];
+    rightKey: (string | number)[];
+    duplicates: 'all' | 'error';
+  };
   expression?: Expression;
   params?: { fields?: string[] };
   condition?: {

@@ -58,3 +58,7 @@ NodeExecution.workItem 提供固定业务编号、目标与 data；materials 使
 update_flow 接受 functionName=expression 与纯表达式树；根传输 schema 要求支持的 kind，完整递归形状、变量作用域和模式约束由 flow.checkDefinition 在保存前验证，避免兼容端点因递归 $ref schema 拒绝工具。expression-guide.ts 描述精确字段和实例，不新增模型/工具循环。坏表达式不会进入已保存草稿，修正后通过原有版本冲突机制保存。
 
 本轮 tests/functional-author.test.ts 为 Pi 边界替身，实际模型记录另见 functional-ir-management track 的 artifacts/live-author.json；不可互换两类证据。
+
+## 多路组合作者合同
+
+update_flow 接受 inputNames 与 join 配置，collection-guide.ts 提供具名数组输入、固定分发、四种关联、重复/缺键的明确规则。工具传输 schema 与 flow 语义检查共同生效，错误提案不写草稿；测试见 tests/multi-input-author.test.ts，真实模型证据见 multi-input_20260920 track。不要把普通 aggregate 扁平数组规则套到新集合函数上。
