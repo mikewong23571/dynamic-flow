@@ -38,6 +38,22 @@ Node / Edge 属于定义；运行实例关联稳定输入项 ID。反馈与修�
 - 续做发起新的 Run，不承诺调用栈恢复、隐式缓存或自动依赖失效。
 - Work、定义、结果和事件保存到本地文件，业务状态不依赖聊天历史。
 
+## LLM 接入与本地配置
+
+用户要求 LLM 支持自定义端点：协议、Base URL、模型名与 API Key 可配置，不绑定某一家供应商。这里的任意端点指兼容所选协议的端点，不要求兼容所有私有协议。作者 Assistant 和工作流 Agent 节点均使用这一接入约定；初期可共用同一组配置。
+
+用户提供的端点如下（2026-09-20，尚未实测）：
+
+| 协议 | 配置值 `LLM_PROTOCOL` | Base URL |
+| --- | --- | --- |
+| Anthropic Messages | `anthropic-messages` | `https://open.bigmodel.cn/api/anthropic` |
+| OpenAI Chat Completions | `openai-chat-completions` | `https://open.bigmodel.cn/api/coding/paas/v4` |
+| OpenAI Responses | `openai-responses` | `https://open.bigmodel.cn/api/v1` |
+
+仓库根目录已创建 `.env.local`，预留 `LLM_PROTOCOL`、`LLM_BASE_URL`、`LLM_MODEL`、`LLM_API_KEY`。先以表中第一组协议/地址作为占位默认，模型名和 API Key 留空，由用户后续填写；切换协议时同步修改 Base URL，也可填写其他兼容地址。上述协议值为本项目配置约定，接入时映射到 SDK 的协议标识。
+
+`.env.local` 已由现有 `.gitignore` 排除，仅由后端加载，不使用 `VITE_` 前缀暴露密钥。当前只准备配置文件并记录要求，现有 Spike 仍使用 faux provider，尚未实现配置加载或验证真实端点。后续接入须验证真实请求、流式回复、工具调用与取消；不能把填入配置等同于接入通过。
+
 ## 首个场景与验收
 
 分类故事、逐条验收条件和端到端路线见 [用户故事与原型验收（讨论稿）](../docs/user-stories.md)。最终故事范围尚待讨论；未将新增故事标为已实现或已验收。
