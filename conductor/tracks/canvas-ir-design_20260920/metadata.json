@@ -1,7 +1,7 @@
 {
   "id": "canvas-ir-design_20260920",
   "type": "chore",
-  "status": "new",
+  "status": "in_progress",
   "created_at": "2026-09-20",
   "updated_at": "2026-09-20",
   "description": "Simplify design around canvas editing and a JS semantic subset IR; archive original v2"

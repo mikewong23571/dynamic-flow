@@ -2,7 +2,7 @@
 
 ## Phase 1 — 归档与简化设计
 
-- [ ] Task: 记录原稿摘要并原样移动到 docs/archive。
+- [~] Task: 记录原稿摘要并原样移动到 docs/archive。
 - [ ] Task: 编写当前设计，明确 IR、画布、runtime 和 JS 查看关系以及保留/删除范围。
 - [ ] Task: Phase Verification & Checkpoint：确认归档字节与设计示例语义。
 
