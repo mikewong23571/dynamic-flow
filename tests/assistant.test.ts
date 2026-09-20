@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, readFile, readdir } from 'node:fs/promises';
+import { mkdtemp, rm, readFile, readdir, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { Type } from '@earendil-works/pi-ai';
 import { defineTool } from '@earendil-works/pi-coding-agent';
@@ -364,11 +364,65 @@ test('node executor sees only selected source materials and rejects fabricated r
       category: '问题',
     });
     assert.equal(JSON.parse(input!.prompt).materials.length, 1);
+    // agent 节点会话带运行时与文件访问
+    assert.deepEqual(input!.builtinTools, ['read', 'grep', 'find', 'ls', 'bash']);
+    assert.equal(input!.linkRuntime, true);
+    assert.equal(typeof input!.collect, 'function');
     context.node = {
       ...context.node,
       expectedOutput: { type: 'object', required: ['evidence'] },
     };
     await assert.rejects(f.assistant.executeNode(context), /evidence/);
+  } finally {
+    await f.clean();
+  }
+});
+
+test('node session links work uploads and collects only cleaned artifacts', async () => {
+  let input: SessionInput | undefined;
+  const f = await fixture(async (session) => {
+    input = session;
+    return '{"category":"问题"}';
+  });
+  try {
+    await f.files.saveUpload(f.work.id, '数据.csv', Buffer.from('a,b\n1,2\n'));
+    const material = f.work.materials[0];
+    const context: NodeExecution = {
+      workId: f.work.id,
+      runId: 'r',
+      definitionId: f.id,
+      node: definition.nodes[0],
+      instanceId: 'i',
+      inputs: {
+        input: [
+          {
+            sampleId: material.id,
+            value: material.text,
+            materialIds: [material.id],
+            sourceResultIds: [],
+          },
+        ],
+      },
+      materials: f.work.materials,
+      signal: new AbortController().signal,
+      onActivity: async () => {},
+    };
+    await f.assistant.executeNode(context);
+    assert.deepEqual(
+      input!.linkFiles!.map((link) => link.as),
+      ['数据.csv'],
+    );
+    assert.match(input!.linkFiles![0].path, /数据\.csv$/);
+    const stage = await mkdtemp(join(tmpdir(), 'node-stage-'));
+    await writeFile(join(stage, 'cleaned-out.csv'), 'x\n');
+    await writeFile(join(stage, 'scratch.mjs'), '// 不收割');
+    await input!.collect!(stage);
+    assert.equal(
+      await readFile(f.files.uploadPath(f.work.id, 'cleaned-out.csv'), 'utf8'),
+      'x\n',
+    );
+    await assert.rejects(readFile(f.files.uploadPath(f.work.id, 'scratch.mjs')), /ENOENT/);
+    await rm(stage, { recursive: true, force: true });
   } finally {
     await f.clean();
   }
@@ -848,6 +902,34 @@ test('item goal and frozen evidence reach the real Pi boundary; shared schema su
         }),
       /schema/,
     );
+  } finally {
+    await f.clean();
+  }
+});
+
+test('author prompt clips large material lists with an explicit marker', async () => {
+  let seen: { materials?: unknown[] } | undefined;
+  const f = await fixture(async (input) => {
+    seen = JSON.parse(input.prompt);
+    const next = structuredClone(definition);
+    next.nodes[0].task = '调整后的分类任务';
+    await save(input, next);
+    return '完成';
+  });
+  try {
+    const service = createWorkService(f.files);
+    await service.addMaterials(
+      f.work.id,
+      Array.from({ length: 40 }, (_, i) => `补充材料 ${i + 1}`),
+    );
+    const requestId = await f.assistant.requestEdit(f.work.id, {
+      text: '调整分类任务',
+      expectedDraftId: f.id,
+    });
+    const message = await f.finish(requestId);
+    assert.equal(message.status, 'completed', message.error ?? '');
+    assert.equal(seen!.materials!.length, 31);
+    assert.match(String(seen!.materials!.at(-1)), /已截断：共 42 条/);
   } finally {
     await f.clean();
   }

@@ -233,7 +233,7 @@ test('迟到布局不覆盖整理期间的手动拖动', async ({ page, request 
     await gate;
     await route.fulfill({ status: 200, body: 'ready' });
   });
-  await page.route('**/src/client/canvas-layout.ts*', async (route) => {
+  await page.route('**/src/client/features/canvas/canvas-layout.ts*', async (route) => {
     const response = await route.fetch();
     const body = (await response.text()).replace(
       'export async function layoutWorkflow(',

@@ -14,9 +14,11 @@ export type Status =
 export interface FlowNode {
   id: string;
   label: string;
-  kind: 'agent' | 'function' | 'branch' | 'wait' | 'milestone';
+  kind: 'agent' | 'function' | 'branch' | 'wait' | 'milestone' | 'file';
   mode: 'each' | 'all';
   task?: string;
+  /** file 来源节点：指向工作 uploads 中的文件名，输出文件名供下游用运行时读取。 */
+  file?: { name: string };
   operation?: 'map' | 'flatMap' | 'aggregate';
   concurrency?: number;
   inputSchema?: Json;
@@ -209,6 +211,10 @@ export interface EditRequest {
   expectedDraftId?: string;
   nodeId?: string;
   sampleIds?: string[];
+}
+export interface ImportRequest {
+  file: string;
+  note?: string;
 }
 export interface NodeExecution {
   workItem?: WorkItemInput;

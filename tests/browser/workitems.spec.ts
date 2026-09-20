@@ -89,8 +89,10 @@ for (const [width, height] of [
     try {
       await page.goto('/');
       await page.getByRole('button', { name: '工作项', exact: true }).click();
+      // 空列表时空态区也有同名按钮；页头入口是稳定目标
       await page
         .getByRole('button', { name: '新建工作项', exact: true })
+        .first()
         .click();
       const create = page.getByRole('dialog', { name: '新建工作项' });
       await create

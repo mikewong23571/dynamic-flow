@@ -1,0 +1,7 @@
+{
+  "track_id": "source-nodes_20260920",
+  "type": "feature",
+  "status": "in-progress",
+  "created_at": "2026-09-20",
+  "description": "file来源节点进入IR与执行，剖析流程迁移，创建去材料化"
+}

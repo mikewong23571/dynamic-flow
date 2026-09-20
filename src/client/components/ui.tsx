@@ -1,5 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
-import { statusNames } from '../model';
+import { statusNames } from '../core/format';
 import { Button as PrimitiveButton } from './ui/button';
 import { Badge as PrimitiveBadge } from './ui/badge';
 import {

@@ -17,6 +17,10 @@ export interface FileStore {
   change(workId: string, edit: (work: Work) => void): Promise<Work>;
   writeDefinition(workId: string, definition: Definition): Promise<string>;
   readDefinition(workId: string, id: string): Promise<Definition>;
+  saveUpload(workId: string, name: string, data: Buffer): Promise<string>;
+  readUpload(workId: string, name: string): Promise<Buffer>;
+  uploadPath(workId: string, name: string): string;
+  listUploads(workId: string): Promise<string[]>;
   onChange(listener: (workId: string) => void): () => void;
   onServerStart(): Promise<void>;
 }
@@ -38,7 +42,7 @@ export function createFiles(root: string): FileStore {
       }
     }
   };
-  async function atomicWrite(path: string, contents: string) {
+  async function atomicWrite(path: string, contents: string | Buffer) {
     const temp = `${path}.${randomUUID()}.tmp`;
     try {
       await writeFile(temp, contents, { flag: 'wx' });
@@ -46,6 +50,13 @@ export function createFiles(root: string): FileStore {
     } finally {
       await rm(temp, { force: true });
     }
+  }
+  /** 上传文件只取 basename，不接受目录穿越。 */
+  function uploadName(name: string): string {
+    const base = name.replace(/\\/g, '/').split('/').pop() ?? '';
+    const clean = base.replace(/^\.+/, '').trim();
+    if (!clean) throw new Error('缺少有效的文件名。');
+    return clean;
   }
   function serial<T>(id: string, operation: () => Promise<T>): Promise<T> {
     const next = (pending.get(id) ?? Promise.resolve())
@@ -123,6 +134,27 @@ export function createFiles(root: string): FileStore {
       return JSON.parse(
         source.slice('export default '.length, -2),
       ) as Definition;
+    },
+    async saveUpload(workId, name, data) {
+      const clean = uploadName(name);
+      const directory = join(root, workId, 'uploads');
+      await mkdir(directory, { recursive: true });
+      await atomicWrite(join(directory, clean), data);
+      return clean;
+    },
+    async readUpload(workId, name) {
+      return readFile(join(root, workId, 'uploads', uploadName(name)));
+    },
+    uploadPath(workId, name) {
+      return join(root, workId, 'uploads', uploadName(name));
+    },
+    async listUploads(workId) {
+      try {
+        return await readdir(join(root, workId, 'uploads'));
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
+        throw error;
+      }
     },
     onChange(listener) {
       listeners.add(listener);

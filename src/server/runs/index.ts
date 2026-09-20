@@ -58,6 +58,8 @@ export interface RunHooks {
     node: FlowNode,
     inputs: Inputs,
   ) => Promise<void>;
+  /** 运行进入终态（completed/failed/cancelled）后调用；用于系统流程的收尾登记。 */
+  onFinish?: (workId: string, run: Run) => Promise<void>;
   now?: () => number;
 }
 export function createRuns(
@@ -312,6 +314,63 @@ export function createRuns(
     });
     const runNode = async (node: FlowNode) => {
       const nodeId = node.id;
+      // file 来源节点：不调模型，校验文件存在后直接产出文件名
+      if (node.kind === 'file') {
+        states[nodeId] = 'running';
+        await changeRun(workId, run.id, (r) => {
+          if (!r.stopRequested) r.nodeStates[nodeId] = 'running';
+        });
+        const result: NodeResult = {
+          id: randomUUID(),
+          runId: run.id,
+          definitionId: run.definitionId,
+          nodeId,
+          instanceId: `${nodeId}:file:0`,
+          input: {},
+          outputs: {},
+          status: 'running',
+          activities: [],
+          startedAt: timestamp(),
+        };
+        await changeRun(workId, run.id, (r) => {
+          (r.nodeTotals ??= {})[nodeId] = 1;
+          r.results.push(result);
+        });
+        const name = node.file?.name?.trim() ?? '';
+        try {
+          if (!name) throw new Error('文件来源节点未选择工作文件。');
+          await files.readUpload(workId, name).catch(() => {
+            throw new Error(`工作文件 ${name} 不存在，请重新上传。`);
+          });
+          result.outputs = {
+            output: [
+              {
+                value: name,
+                sampleId: name,
+                materialIds: [],
+                sourceResultIds: [result.id],
+              },
+            ],
+          };
+          result.status = 'completed';
+          states[nodeId] = 'completed';
+          values[nodeId] = { output: copy(result.outputs.output) };
+        } catch (error) {
+          result.status = 'failed';
+          result.error = message(error);
+          states[nodeId] = 'failed';
+        }
+        result.finishedAt = timestamp();
+        await changeRun(workId, run.id, (r) => {
+          const saved = r.results.find((x) => x.id === result.id)!;
+          saved.outputs = result.outputs;
+          saved.status = result.status;
+          saved.error = result.error;
+          saved.finishedAt = result.finishedAt;
+          r.nodeStates[nodeId] = states[nodeId];
+        });
+        return;
+      }
       const edges = definition.edges.filter((e) => e.to[0] === nodeId);
       const input: Inputs =
         run.scope === 'full'
@@ -709,6 +768,11 @@ export function createRuns(
               r.status === 'cancelled' ? 'cancelled' : 'blocked';
       }
     });
+    const finished = await readRun(workId, run.id);
+    if (hooks.onFinish && terminal(finished))
+      await hooks.onFinish(workId, finished).catch((error) => {
+        console.error('运行收尾处理失败：', message(error));
+      });
   }
   async function stop(workId: string, runId: string) {
     active.get(runId)?.controller.abort();

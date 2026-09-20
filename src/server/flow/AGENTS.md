@@ -43,6 +43,8 @@
 
 已实现 `createFlow(files): FlowService`，确切方法签名见本目录 index.ts 与 track 的 handoff.md。`saveDraft` 检查 expectedDraftId，两次交错修改只有一方成功；语义相同沿用 ID。形状错误拒绝保存，缺配置、无效端口和回连作为 `Issue` 保留在可编辑草稿，运行/采用需先通过校验。`beginCandidate` 检查本工作定义，保留明确起点，替换已有未采用草稿需 `replaceExisting=true`；继续同一草稿保留原起点。采用与放弃不删除历史。
 
+file 来源节点（kind:file, file.name 非空）无入边、输出 output；定义存在 file 来源节点时 inputs 可为空，否则仍需至少一个非空不重复输入名。
+
 当前端口：普通节点 input/output；branch input → matched/unmatched、mode=all；merge left/right → output、mode=all。每个目标端口仅一条来源。条件 field 为空字符串表示判断整个 value，非空字段由 runtime 读取；这是文本材料直接分流的具体需要，影响 B2/T2，已与 runs 实现者同步并加入域内有效定义测试。旧伪代码 match/rest 不再是实际接口。
 
 域内证据：`pnpm exec tsx --test tests/state.test.ts` 验证冲突、起点、保存不完整配置、局部问题、环、显式汇合和布局不改版本。状态为 **模块实现完成，产品联测待验收**；连线实际输入、Pi 改图和浏览器操作交由相邻模块与根验收。

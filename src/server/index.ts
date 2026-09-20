@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { streamSSE } from 'hono/streaming';
+import { randomUUID } from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createFiles } from './files/index.ts';
@@ -11,7 +13,13 @@ import { createAssistant } from './assistant/index.ts';
 import { createRuns } from './runs/index.ts';
 import { createWorkItems } from './work-items/index.ts';
 import { createTrials } from './trials/index.ts';
+import {
+  buildProfileDefinition,
+  profileOutputs,
+  withProfileFile,
+} from './assistant/profile-flow.ts';
 import type {
+  ChatMessage,
   Definition,
   EditRequest,
   Inputs,
@@ -23,6 +31,10 @@ import type {
   CreateWorkItem,
   CompletionCriterion,
 } from '../shared/records.ts';
+
+/** 内建数据剖析工作：规范定义的单一事实源，在工作库可见，被各工作导入使用。 */
+const BUILTIN_PROFILE_TITLE = '内建·数据剖析';
+
 export async function createApplication(
   options: {
     dataRoot?: string;
@@ -38,8 +50,122 @@ export async function createApplication(
       settingsPath: resolve(dataRoot, 'model-settings.json'),
     });
   const items = createWorkItems(dataRoot, files);
+  /** 剖析运行 ID → 导入消息 requestId，用于收尾更新。 */
+  const importRuns = new Map<string, string>();
+  /** 读取内建剖析的规范定义；内建工作不存在时先创建。 */
+  async function canonicalProfileDefinition(): Promise<Definition> {
+    const works = await files.list();
+    let builtin = works.find((w) => w.title === BUILTIN_PROFILE_TITLE);
+    if (!builtin) {
+      builtin = await work.createWork(
+        '内建数据剖析流程：上传文件触发，probe 判断规模，小文件直接拆分，大文件产出 schema 化洞见与清洗制品。',
+        [],
+      );
+      await files.change(builtin.id, (w) => {
+        w.title = BUILTIN_PROFILE_TITLE;
+        w.titleEdited = true;
+      });
+      const id = await files.writeDefinition(
+        builtin.id,
+        buildProfileDefinition(),
+      );
+      await files.change(builtin.id, (w) => {
+        w.definitionIds.push(id);
+        w.adoptedId = id;
+      });
+      return buildProfileDefinition();
+    }
+    if (builtin.adoptedId)
+      return files.readDefinition(builtin.id, builtin.adoptedId);
+    return buildProfileDefinition();
+  }
+  /** 调用方工作持有按文件名实例化、与规范定义全等的剖析定义副本。 */
+  async function seedProfileFlow(workId: string, file: string): Promise<string> {
+    const want = withProfileFile(await canonicalProfileDefinition(), file);
+    const current = await files.read(workId);
+    for (const id of current.definitionIds) {
+      const saved = await files.readDefinition(workId, id);
+      if (isDeepStrictEqual(saved, want)) return id;
+    }
+    const id = await files.writeDefinition(workId, want);
+    await files.change(workId, (w) => {
+      if (!w.definitionIds.includes(id)) w.definitionIds.push(id);
+    });
+    return id;
+  }
+  async function finishImportRun(workId: string, run: Run) {
+    const requestId = importRuns.get(run.id);
+    if (!requestId) return;
+    importRuns.delete(run.id);
+    const patch = (edit: (message: ChatMessage) => void) =>
+      files.change(workId, (current) => {
+        const message = current.messages.find(
+          (m) => m.role === 'assistant' && m.requestId === requestId,
+        );
+        if (message) edit(message);
+      });
+    if (run.status !== 'completed') {
+      const detail =
+        run.error ||
+        run.results.find((result) => result.error)?.error ||
+        `剖析运行${run.status === 'cancelled' ? '已停止' : '失败'}。`;
+      await patch((message) => {
+        message.status = 'failed';
+        message.error = detail;
+      });
+      return;
+    }
+    try {
+      const small = profileOutputs(run, 'register-small');
+      const large = profileOutputs(run, 'profile');
+      if (small.length) {
+        const texts = small.flatMap((value) => {
+          const list = (value as { materials?: unknown }).materials;
+          return Array.isArray(list) ? (list as string[]) : [];
+        });
+        if (!texts.length) throw new Error('小文件拆分没有产出条目。');
+        await work.addMaterials(workId, texts);
+        await patch((message) => {
+          message.status = 'completed';
+          message.text = `已登记 ${texts.length} 条材料。`;
+        });
+      } else if (large.length) {
+        // 洞见以 cleaned-insight.json 为准（节点脚本校验过），回复文本只做进度说明
+        let insight: Json;
+        try {
+          insight = JSON.parse(
+            (await files.readUpload(workId, 'cleaned-insight.json')).toString(
+              'utf8',
+            ),
+          ) as Json;
+        } catch {
+          throw new Error(
+            '剖析运行未产出 cleaned-insight.json，请重试本次导入。',
+          );
+        }
+        for (const key of ['overview', 'structure', 'stats'])
+          if ((insight as Record<string, unknown>)[key] === undefined)
+            throw new Error(
+              `cleaned-insight.json 缺少 ${key} 字段，请重试本次导入。`,
+            );
+        await work.addMaterials(workId, [JSON.stringify(insight)]);
+        await patch((message) => {
+          message.status = 'completed';
+          message.text = '已登记剖析洞见；清洗制品已保存在工作文件中。';
+        });
+      } else {
+        throw new Error('剖析运行没有产出可登记的内容。');
+      }
+    } catch (error) {
+      await patch((message) => {
+        message.status = 'failed';
+        message.error = error instanceof Error ? error.message : String(error);
+      });
+    }
+  }
   const runs = createRuns(files, options.executeNode ?? assistant.executeNode, {
       onMilestone: items.milestone,
+      onFinish: finishImportRun,
     }),
     trials = createTrials(files, runs);
   await items.reconcile();
@@ -158,8 +284,8 @@ export async function createApplication(
     ),
   );
   app.post('/api/works', async (c) => {
-    const body = await c.req.json<{ goal: string; materials: string[] }>();
-    const w = await work.createWork(body.goal, body.materials);
+    const body = await c.req.json<{ goal: string; materials?: string[] }>();
+    const w = await work.createWork(body.goal, body.materials ?? []);
     return c.json(await flow.snapshot(w.id), 201);
   });
   app.get('/api/works/:id', async (c) =>
@@ -171,6 +297,19 @@ export async function createApplication(
       inputs: await work.previewResults(c.req.param('id'), resultIds),
     });
   });
+  app.post('/api/works/:id/uploads', async (c) => {
+    const name = c.req.query('name');
+    if (!name) throw new Error('缺少文件名。');
+    const data = Buffer.from(await c.req.arrayBuffer());
+    if (!data.byteLength) throw new Error('文件内容为空。');
+    if (data.byteLength > 50 * 1024 * 1024)
+      throw new Error('文件超过 50MB；助手会分段读取，但过大文件请先拆分。');
+    const file = await files.saveUpload(c.req.param('id'), name, data);
+    return c.json({ file }, 201);
+  });
+  app.get('/api/works/:id/uploads', async (c) =>
+    c.json({ files: await files.listUploads(c.req.param('id')) }),
+  );
   app.post('/api/works/:id/actions', async (c) => {
     const id = c.req.param('id'),
       b = await c.req.json<Record<string, unknown>>();
@@ -184,6 +323,56 @@ export async function createApplication(
       case 'addMaterials':
         await work.addMaterials(id, b.materials as string[]);
         break;
+      case 'importMaterials': {
+        const file = typeof b.file === 'string' ? b.file.trim() : '';
+        if (!file) throw Error('缺少上传文件名。');
+        try {
+          await files.readUpload(id, file);
+        } catch {
+          throw Error('找不到该上传文件，请重新上传。');
+        }
+        const definitionId = await seedProfileFlow(id, file);
+        const requestId = randomUUID();
+        await files.change(id, (current) => {
+          current.messages.push(
+            {
+              id: randomUUID(),
+              role: 'user',
+              text: `导入上传文件 ${file}`,
+              requestId,
+            },
+            {
+              id: randomUUID(),
+              role: 'assistant',
+              text: '正在剖析文件，可在运行结果中查看进度。',
+              requestId,
+              status: 'running',
+              activities: [],
+            },
+          );
+        });
+        try {
+          const runId = await runs.start(id, {
+            definitionId,
+            scope: 'full',
+            inputs: {},
+          });
+          importRuns.set(runId, requestId);
+        } catch (error) {
+          await files.change(id, (current) => {
+            const message = current.messages.find(
+              (m) => m.role === 'assistant' && m.requestId === requestId,
+            );
+            if (message) {
+              message.status = 'failed';
+              message.error =
+                error instanceof Error ? error.message : String(error);
+            }
+          });
+          throw error;
+        }
+        break;
+      }
       case 'saveDraft':
         await flow.saveDraft(
           id,
@@ -247,9 +436,15 @@ export async function createApplication(
           sampleIds: b.sampleIds,
         } as EditRequest);
         break;
-      case 'stopEdit':
-        await assistant.stopEdit(id, b.requestId as string);
+      case 'stopEdit': {
+        const requestId = b.requestId as string;
+        const importRun = [...importRuns.entries()].find(
+          ([, req]) => req === requestId,
+        );
+        if (importRun) await runs.stop(id, importRun[0]);
+        else await assistant.stopEdit(id, requestId);
         break;
+      }
       default:
         throw Error('未知操作，请刷新后重试。');
     }
@@ -326,7 +521,8 @@ if (
 ) {
   const { app } = await createApplication();
   const port = Number(process.env.PORT ?? 4321);
-  serve({ fetch: app.fetch, port, hostname: '127.0.0.1' }, () =>
-    console.log(`Dynamic Flow API http://127.0.0.1:${port}`),
+  const hostname = process.env.HOST ?? '0.0.0.0';
+  serve({ fetch: app.fetch, port, hostname }, () =>
+    console.log(`Dynamic Flow API http://${hostname}:${port}`),
   );
 }

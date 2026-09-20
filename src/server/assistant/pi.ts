@@ -1,6 +1,7 @@
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { InMemoryCredentialStore, type Model } from '@earendil-works/pi-ai';
 import { streamSimple as anthropicStreamSimple } from '@earendil-works/pi-ai/api/anthropic-messages';
@@ -21,6 +22,14 @@ export interface SessionInput {
   systemPrompt: string;
   prompt: string;
   tools: ToolDefinition[];
+  /** 启用的内置工具名（read/grep/find/ls/bash 等）；默认不启用任何内置工具。 */
+  builtinTools?: string[];
+  /** 会话工作目录内的软链文件，供内置只读工具按相对名访问。 */
+  linkFiles?: { path: string; as: string }[];
+  /** 软链应用 node_modules 进会话目录，让 bash 会话内 node 脚本可解析预集成库。 */
+  linkRuntime?: boolean;
+  /** 会话成功结束后、临时目录清理前收割会话内产出的文件。 */
+  collect?: (dir: string) => Promise<void>;
   signal: AbortSignal;
   onText?: (delta: string) => Promise<void>;
   onActivity?: (activity: Activity) => Promise<void>;
@@ -51,9 +60,20 @@ export const runPiSession: SessionRunner = async (input) => {
     void session?.abort();
   };
   try {
+    for (const link of input.linkFiles ?? []) {
+      const as = basename(link.as);
+      if (!as) throw new Error('链接文件名无效。');
+      await symlink(link.path, join(dir, as));
+    }
+    if (input.linkRuntime) {
+      const projectRoot = fileURLToPath(new URL('../../..', import.meta.url));
+      await symlink(join(projectRoot, 'node_modules'), join(dir, 'node_modules'));
+    }
     const settingsManager = SettingsManager.inMemory({
       compaction: { enabled: false },
-      retry: { enabled: false },
+      // 网关会在长时间思考/长会话中断流（terminated）；模型调用级重试让循环续跑，
+      // 已完成的工具调用不会重放。
+      retry: { enabled: true, maxRetries: 3, baseDelayMs: 2000 },
     });
     const modelRuntime = await ModelRuntime.create({
       credentials: new InMemoryCredentialStore(),
@@ -164,7 +184,10 @@ export const runPiSession: SessionRunner = async (input) => {
       resourceLoader,
       settingsManager,
       sessionManager: SessionManager.inMemory(),
-      tools: input.tools.map((tool) => tool.name),
+      tools: [
+        ...(input.builtinTools ?? []),
+        ...input.tools.map((tool) => tool.name),
+      ],
       customTools: input.tools,
     }));
     session.subscribe((event) => {
@@ -225,6 +248,7 @@ export const runPiSession: SessionRunner = async (input) => {
       );
     if (last?.role === 'assistant' && last.stopReason === 'length')
       throw new Error('模型输出达到长度上限，请缩小输入或任务后重试。');
+    if (input.collect) await input.collect(dir);
     return session.getLastAssistantText() ?? '';
   } catch (error) {
     if (input.signal.aborted)

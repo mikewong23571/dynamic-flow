@@ -13,7 +13,7 @@
 - client 是一个共享上下文的工作区。
 - server 是一个进程，work/flow/runs/assistant/trials/files 按功能直接调用。
 - shared 只放多个调用方真实需要共享的字段类型。
-- `.ts`/`.tsx` 是正式实现；`spike/` 保留历史伪代码。实际共享记录在 `shared/records.ts`，HTTP 动作在 `server/index.ts`，客户端操作在 `client/useWorkspace.ts`。变更前仍需确认输入、输出、错误和双方调用。
+- `.ts`/`.tsx` 是正式实现；`spike/` 保留历史伪代码。实际共享记录在 `shared/records.ts`，HTTP 动作在 `server/index.ts`，客户端操作组合根在 `client/app/controller.ts`（域 hook 在 `client/state/`）。变更前仍需确认输入、输出、错误和双方调用。
 
 ## 如何处理一个子问题
 

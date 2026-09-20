@@ -48,6 +48,10 @@ H3–H8 取代上文“始终顺序/重启只能另起重试”的限制。Run �
 
 `signal(workId,runId,{id,name,payload?})` 只释放匹配待定等待；相同事件重复无效果、冲突 ID 报错。event 端口包含事件名称、payload、接收时间，超时标记 timer。`recover()` 在 files.onServerStart 后恢复等待和到期任务；`resume()` 显式继续 interrupted。成功实例从检查点恢复，不再请求外部模型。不确定调用可能再次执行，不承诺外部副作用恰好一次。`close()` 取消本进程计时与调度，保留持久状态。
 
+file 来源节点在 runNode 开头短路：校验 upload 存在后产出文件名项（不调模型），文件缺失如实失败。
+
+`onFinish(workId, run)` 在运行进入终态后调用（completed/failed/cancelled，waiting 不算），供系统流程收尾登记（当前用于数据剖析导入的洞见/材料登记与消息更新）；回调错误只记录日志，不改写运行状态。
+
 独立就绪节点最多 4 个并行，逐项 concurrency 默认 1、允许 1–8；输出按输入顺序组合。operation map 保留返回数组为一个值，flatMap 明确展开一层，aggregate 全量调用一次；旧 function 未设 operation 的定义维持历史逐输入透传语义。inputSchema/expectedOutput 是单次调用契约，经 Ajv 实际校验；失败实例不出结果，依赖它的汇总阻断。执行上下文使用 workItem 快照材料，普通方法运行继续兼容 Work 材料。
 
 域内证据：tests/lifecycle-runtime.test.ts 覆盖真实文件重开、受控时钟离线跨45天与45天长等待分段计时、显式恢复不重跑成功调用、迟到事件、预览、并发顺序/来源、schema 错误。模型为测试替身；真实 HTTP/进程/浏览器由 track 验收补充。

@@ -37,7 +37,7 @@
 
 ## 2026-09-20 实现交接
 
-已实现 `createWorkService(files)`：createWork、addMaterials、keepResults、previewResults；签名见本目录 index.ts。目标与非空材料必填，新材料 ID 使用工作内稳定短编号 M01、M02 等；追加在 files.change 内从现有最大短编号递增，避免并发冲突。旧 UUID 材料及历史引用保持原样。只保留成功结果；保留不修改采用版本。预览仅取用户明确选择的成功结果输出，提供 input 端口，保留 materialIds 和 sourceResultIds 并补上直接来源结果 ID。
+已实现 `createWorkService(files)`：createWork、addMaterials、keepResults、previewResults；签名见本目录 index.ts。目标必填，材料可空（创建只需目标；数据经来源节点/批次输入进入流程，空白条目仍拒绝）。新材料 ID 使用工作内稳定短编号 M01、M02 等；追加在 files.change 内从现有最大短编号递增，避免并发冲突。旧 UUID 材料及历史引用保持原样。只保留成功结果；保留不修改采用版本。预览仅取用户明确选择的成功结果输出，提供 input 端口，保留 materialIds 和 sourceResultIds 并补上直接来源结果 ID。
 
 重复结果、重复样本和重叠材料（包括单条与汇总产物的重叠）拒绝续做预览，让用户明确选择版本。预览不自动取所有保留产物，也不挑最新结果。报告由调用方读取快照中的原始结果；不另复制一份报告权威状态。
 

@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { Definition } from '../src/shared/records';
-import { inputPorts, localInputs } from '../src/client/model';
+import { inputPorts, localInputs } from '../src/client/core/index.ts';
 import {
   changeFunction,
   changeInputNames,
   collectionSummary,
-} from '../src/client/collection-model';
+} from '../src/client/features/inspector/collection-model';
 const definition: Definition = {
   schemaVersion: 1,
   inputs: ['materials'],

@@ -44,7 +44,7 @@ function assertShape(value: unknown): asserts value is Definition {
       !object(node) ||
       typeof node.id !== 'string' ||
       typeof node.label !== 'string' ||
-      !['agent', 'function', 'branch', 'wait', 'milestone'].includes(
+      !['agent', 'function', 'branch', 'wait', 'milestone', 'file'].includes(
         node.kind as string,
       ) ||
       !['each', 'all'].includes(node.mode as string)
@@ -104,16 +104,27 @@ export function checkDefinition(definition: Definition): Issue[] {
   const issues: Issue[] = [];
   const nodes = new Map<string, FlowNode>();
   if (
-    !definition.inputs.length ||
-    definition.inputs.some((p) => !p.trim()) ||
-    new Set(definition.inputs).size !== definition.inputs.length
+    !definition.nodes.length
+  )
+    issues.push({ field: 'nodes', message: '请添加至少一个处理节点。' });
+  const hasFileSource = definition.nodes.some((node) => node.kind === 'file');
+  if (
+    !hasFileSource &&
+    (!definition.inputs.length ||
+      definition.inputs.some((p) => !p.trim()) ||
+      new Set(definition.inputs).size !== definition.inputs.length)
   )
     issues.push({
       field: 'inputs',
-      message: '请设置至少一个不重复且非空的流程输入名称。',
+      message: '请设置至少一个不重复且非空的流程输入名称，或添加文件来源节点。',
     });
-  if (!definition.nodes.length)
-    issues.push({ field: 'nodes', message: '请添加至少一个处理节点。' });
+  if (definition.inputs.length) {
+    if (
+      definition.inputs.some((p) => !p.trim()) ||
+      new Set(definition.inputs).size !== definition.inputs.length
+    )
+      issues.push({ field: 'inputs', message: '流程输入名称不能为空或重复。' });
+  }
   for (const node of definition.nodes) {
     const add = (message: string, field?: string) =>
       issues.push({ nodeId: node.id, message, field });
@@ -172,6 +183,8 @@ export function checkDefinition(definition: Definition): Issue[] {
       add('里程碑需要阶段和进展摘要。', 'milestone');
     if (node.kind === 'agent' && !node.task?.trim())
       add('请填写节点任务，再运行此步骤。', 'task');
+    if (node.kind === 'file' && !node.file?.name?.trim())
+      add('文件来源节点需要选择工作文件。', 'file');
     for (const issue of checkCollection(node)) add(issue.message, issue.field);
     if (node.kind === 'function') {
       if (

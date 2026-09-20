@@ -122,7 +122,7 @@ for (const width of [1440, 1024])
         .locator('tr[data-item-id="presentation-4"]')
         .getByText('已结项', { exact: true }),
     ).toHaveCount(1);
-    await expect(table.getByText('执行失败', { exact: true })).toHaveCount(2);
+    await expect(table.getByText('失败', { exact: true })).toHaveCount(2);
     await search.fill('');
     await page.getByRole('button', { name: '下一页', exact: true }).click();
     await expect(table.locator('tbody tr')).toHaveCount(2);

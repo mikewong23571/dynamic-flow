@@ -14,7 +14,7 @@
 
 ## 入口与依赖
 
-入口为 main.tsx/Workspace.tsx；状态与 HTTP/SSE 交接位于 useWorkspace.ts，按画布、配置、结果、对话、比较、设置、工作库拆分组件。
+入口为 main.tsx → app/App.tsx（页面组装）；状态组合根在 app/controller.ts，按依赖顺序组合 state/ 下五个域 hook：useConnection（工作库/快照/SSE）、useDraft（本地未保存草稿）、useSelection（选中与每工作上下文）、usePanels（面板与对话框）、useActions（服务端动作）。与 UI 无关的纯逻辑在 core/（api、action、format、inputs、definition、compare、results），展示组件按业务域放 features/（canvas、inspector、assistant、results、library、work-items、materials、settings、workspace），控件原语在 components/。
 
 依赖服务端的具体操作与状态快照，通过 shared 类型交接，不直接 import server 执行代码。外部复用 React、@xyflow/react、assistant-ui、shadcn/Radix/Tailwind/Lucide；Markdown、表格、分栏按内容需要使用。详见 [依赖说明](../../spike/pi-canvas-dependencies.md) 和 [交互伪代码](../../spike/src/client/workspace.pseudo.md)。
 
@@ -36,38 +36,40 @@
 
 ## 2026-09-20 实现交接
 
-正式入口 main.tsx/Workspace.tsx 已实现。工作区状态与 HTTP/SSE 在 useWorkspace.ts；画布、节点配置、结果、比较、Assistant、设置、工作列表按可见职责分开。设计参考、截图、域内已测与未测见 [DESIGN-NOTES.md](./DESIGN-NOTES.md)。上方勾选依据整个应用 track 的真实路线与浏览器记录；响应替身与真实模型证据分开。
+正式入口 main.tsx → app/App.tsx 已实现。工作区状态组合根在 app/controller.ts（返回形状即 WorkspaceController，组件只依赖该类型）；域 hook 在 state/，纯逻辑在 core/，业务组件在 features/ 按可见职责分开。设计参考、截图、域内已测与未测见 [DESIGN-NOTES.md](./DESIGN-NOTES.md)。上方勾选依据整个应用 track 的真实路线与浏览器记录；响应替身与真实模型证据分开。
 
 客户端不会将流式快照覆盖未保存草稿；未提交定义、对话和样本上下文按工作保存在浏览器。服务端版本变化时保留本地内容并显示冲突，显式保存通过 expectedDraftId 校验。图布局与定义分离，默认可读缩放；外部更新保留当前视口。模型配置中 API key 只在密码框内短暂输入，不放本地存储、列表或响应展示。
 
+添加步骤可选「文件」来源节点，NodeInspector 从工作 uploads 选择文件；画布显示文件名。创建与添加材料对话框都支持上传文件：创建时未粘贴材料可跟随文件导入（先建工作再上传并触发 importMaterials），已有工作内从「添加新材料」上传；两端都是助手读取拆分并登记，应用不解析文件。
+
 产品级验证与边界见 [本轮验收证据](../../conductor/tracks/full-application_20260920/evidence.md)。
 
-最新视觉方向与证据见 [Geist 暗色工作区 track](../../conductor/tracks/geist-workspace_20260920/evidence.md)。默认暗色，语义颜色集中在 styles.css；Sidebar 负责紧凑工作导航，MaterialsDialog 负责材料全文和选择；WorkflowCanvas 只展示节点摘要，任务全文由 NodeInspector 编辑。旧浅色/紫色截图不作为新页面模板。
+最新视觉方向与证据见 [Geist 暗色工作区 track](../../conductor/tracks/geist-workspace_20260920/evidence.md) 与 [视觉锐利度 track](../../conductor/tracks/visual-sharpness_20260920/evidence.md)。默认暗色：`#000` 纯黑底，结构分隔用 `--line`（白 0.08 alpha），卡片/表单描边用 `--line-strong`（0.16），标题纯白 `--ink-strong`；蓝色仅焦点环、链接、选中/运行描边与状态 badge。语义颜色与各状态色（运行状态、工作项业务状态、流水线定义状态）集中在 styles.css 的 `:root` 与 `.badge` 段落，组件样式文件不再自带状态配色；Sidebar 负责紧凑工作导航，MaterialsDialog 负责材料全文和选择；WorkflowCanvas 只展示节点摘要，任务全文由 NodeInspector 编辑。旧浅色/紫色截图不作为新页面模板。
 
 ## 持续工作项交接
 
-`WorkItems` / `WorkItemDetail` / `WorkItemDialogs` 承载 H1–H11 的管理入口、业务进展、条件依据和生命周期操作，HTTP 交接见 [本轮 handoff](../../conductor/tracks/workitem-lifecycle_20260920/handoff.md)。Work 仍为方法空间，WorkItem 有独立材料和稳定业务身份，Run 是固定输入/版本的具体执行。不要把运行完成映射为业务结项，或用心跳更新时间替代最近业务进展。
+`features/work-items/` 的 WorkItems / WorkItemDetail / WorkItemDialogs 承载 H1–H11 的管理入口、业务进展、条件依据和生命周期操作，HTTP 交接见 [本轮 handoff](../../conductor/tracks/workitem-lifecycle_20260920/handoff.md)。Work 仍为方法空间，WorkItem 有独立材料和稳定业务身份，Run 是固定输入/版本的具体执行。不要把运行完成映射为业务结项，或用心跳更新时间替代最近业务进展。
 
 管理页轮询只读 `/api/items`；用户更新均通过 actions，出错保留输入。等待、事件、停止、恢复、方法切换的约束以服务端为准，前端禁用仅用于动作提示。运行链接须同时保持 workId/runId，避免同名方法或历史方法切换到错误执行记录。
 
 ## 管理页与控件交接
 
-正式 shadcn/Radix 控件在 `components/ui/`，接入与主题约定见该目录 README；`components/ui.tsx` 为既有业务调用提供薄兼容层。新增控件优先复用这里的 primitives，不继续给全局原生元素叠样式。
+正式 shadcn/Radix 控件在 `components/ui/`，接入与主题约定见该目录 README；`components/ui.tsx` 为既有业务调用提供薄兼容层。新增控件优先复用这里的 primitives，不继续给全局原生元素叠样式。`styles.css` 已分层：业务布局在 `@layer components`，原生元素默认与原生控件外观在 `@layer base`，未分层的只剩必须压过 Tailwind 工具类的存量共享外观与兼容层/第三方覆盖（清单与原因见文件顶部注释）。`.muted`/`.field`/`.button`/`.badge`/`.modal` 等未迁移规则与其组合仍保持未分层，包进 `@layer components` 会改变现有控件外观；要覆盖它们只能同样写在未分层。
 
 用户可见入口统一为“工作项 / 流水线”。流水线归档标签为“未归档 / 已归档”，不把未归档叫进行中；定义状态、节点数来自服务端 summary。两页共享 Management 页头、搜索提交、分页和 Table，业务字段与动作留在各自页面。工作项每次轮询更新已有行，不因服务端进展排序变化自动移动阅读中的行；新行追加，显式搜索/筛选重新取得顺序。当前为客户端分页（不宣称服务端规模优化）。
 
 ## 纯表达式编辑交接
 
-NodeInspector 的数据变换使用 ExpressionEditor、PatternEditor 和 ExpressionFields：常用和嵌套语义均通过控件编辑；对象/数组常量也可选择JSON输入，但不是构造对象/数组的必经入口。expression-model只提供显示名、默认对象和纯编辑辅助函数，不复制服务端求值器。操作与语义见 [纯函数 IR](../../docs/functional-ir.md)。
+features/inspector/ 的 NodeInspector 使用 ExpressionEditor、PatternEditor 和 ExpressionFields 编辑数据变换：常用和嵌套语义均通过控件编辑；对象/数组常量也可选择JSON输入，但不是构造对象/数组的必经入口。expression-model 只提供显示名、默认对象和纯编辑辅助函数，不复制服务端求值器。操作与语义见 [纯函数 IR](../../docs/functional-ir.md)。
 
 ## 多路组合编辑
 
-CollectionEditor / collection-model 负责merge/collect动态端口及join模式、路径、重复策略，复用shared/node-ports和正式控件；变更端口后更新React Flow internals。改名/删除同步目标连线及具名Schema顶层properties/required，collect输出Schema同样处理；不自动改写任意嵌套Schema或下游表达式。局部试验选择实际端口，集合函数固定整批。tests/multi-input-client.test.ts 与 tests/browser/multi-input.spec.ts 覆盖交接。
+features/inspector/ 的 CollectionEditor / collection-model 负责merge/collect动态端口及join模式、路径、重复策略，复用shared/node-ports和正式控件；变更端口后更新React Flow internals。改名/删除同步目标连线及具名Schema顶层properties/required，collect输出Schema同样处理；不自动改写任意嵌套Schema或下游表达式。局部试验选择实际端口，集合函数固定整批。tests/multi-input-client.test.ts 与 tests/browser/multi-input.spec.ts 覆盖交接。
 
 Geist Variable通过Fontsource本地打包，中文保留系统回退。Vite忽略conductor/test-results/playwright-report/data，防止测试trace的HTML触发持续刷新；不能把开发工具循环误判为应用逻辑或字体网络失败。
 
 ## 画布布局与连接阅读
 
-`canvas-layout.ts` 复用 ELK Layered / Orthogonal，根据 React Flow 实测节点和端口返回坐标、折点；端口位置固定，不为减少交叉改写 IR。`useCanvasLayout` 负责测量、布局请求、过期结果和展示状态保存；`WorkflowCanvas` 负责图编辑与关系聚焦；`WorkflowNode` / `WorkflowEdge` 分别负责节点、实际路径及路径标签。
+features/canvas/ 的 canvas-layout 复用 ELK Layered / Orthogonal，根据 React Flow 实测节点和端口返回坐标、折点；端口位置固定，不为减少交叉改写 IR。useCanvasLayout 负责测量、布局请求、过期结果和展示状态保存；WorkflowCanvas 负责图编辑与关系聚焦；WorkflowNode / WorkflowEdge 分别负责节点、实际路径及路径标签。
 
 无保存位置时首次自动整理，已有位置尊重用户选择；运行/SSE不重排。手动移动取消尚未完成的布局，端口、尺寸、位置或连接变化让旧路由失效，暂用普通边，点击“整理布局”重新计算。布局只保存 ViewState，不创建定义版本。端口标签按需显示但保留真实handle几何；键盘/悬停可追踪单一端口，选择节点显示直接关系。V1–V4 验收见 [本轮 track](../../conductor/tracks/canvas-layout_20260920/evidence.md)。

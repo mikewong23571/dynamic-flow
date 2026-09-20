@@ -52,8 +52,11 @@ export function createWorkService(files: FileStore) {
     async createWork(goal: string, materials: string[]): Promise<Work> {
       if (typeof goal !== 'string' || !goal.trim())
         throw new Error('请填写工作目标。');
-      const texts = materialTexts(materials),
-        now = new Date().toISOString();
+      // 创建只需目标；材料可空，数据经来源节点/批次输入进入流程
+      const texts = (materials ?? []).map((text) => text.trim());
+      if (texts.some((text) => !text))
+        throw new Error('材料条目不能为空，请删除空白条目后重试。');
+      const now = new Date().toISOString();
       const work: Work = {
         id: randomUUID(),
         title: fallbackTitle(goal),

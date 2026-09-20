@@ -1,5 +1,11 @@
 # Tracks Registry
 
+- [ ] **Track: 来源节点**
+  *Link: [source-nodes_20260920](./tracks/source-nodes_20260920/index.md)*
+
+- [ ] **Track: 视觉锐利度提升**
+  *Link: [visual-sharpness_20260920](./tracks/visual-sharpness_20260920/index.md)*
+
 - [x] **Track: 多路画布布局与连接阅读**
   *Link: [canvas-layout_20260920](./tracks/canvas-layout_20260920/index.md)*
 

@@ -1,0 +1,7 @@
+{
+  "track_id": "visual-sharpness_20260920",
+  "type": "refactor",
+  "status": "in-progress",
+  "created_at": "2026-09-20",
+  "description": "纯黑底与alpha边框重调暗色tokens，侧边栏与中间编辑区观感向Vercel锐利风格靠拢"
+}

@@ -301,13 +301,22 @@ test('保留与采用独立，旧新结果仅按明确选择预览并拒绝重�
 test('缺目标和材料报错，追加材料保持旧材料与结果', async (t) => {
   const { files, service, work } = await setup(t);
   await assert.rejects(service.createWork(' ', ['材料']), /目标/);
-  await assert.rejects(service.createWork('目标', []), /材料/);
   await assert.rejects(service.addMaterials(work.id, [' ']), /材料/);
   await service.addMaterials(work.id, ['筛选后页码错乱']);
   const current = await files.read(work.id);
   assert.deepEqual(current.materials.slice(0, 3), work.materials);
   assert.equal(current.materials.length, 4);
   assert.equal(new Set(current.materials.map((m) => m.id)).size, 4);
+});
+
+test('创建允许空材料，空白条目仍拒绝', async (t) => {
+  const { files, service } = await setup(t);
+  const pending = await service.createWork('目标', []);
+  assert.equal(pending.materials.length, 0);
+  const reopened = await files.read(pending.id);
+  assert.equal(reopened.goal, '目标');
+  assert.equal(reopened.materials.length, 0);
+  await assert.rejects(service.createWork('目标', [' ']), /空白/);
 });
 
 test('串行修改无覆盖，失败不通知且磁盘旧状态可读', async (t) => {

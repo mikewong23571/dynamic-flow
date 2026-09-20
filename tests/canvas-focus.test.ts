@@ -4,9 +4,9 @@ import {
   focusedEdges,
   routingSignature,
   routeMidpoint,
-} from '../src/client/canvas-view.ts';
+} from '../src/client/features/canvas/canvas-view.ts';
 import type { Definition } from '../src/shared/records.ts';
-import type { LayoutNode } from '../src/client/canvas-layout.ts';
+import type { LayoutNode } from '../src/client/features/canvas/canvas-layout.ts';
 const definition: Definition = {
   schemaVersion: 1,
   inputs: ['data'],

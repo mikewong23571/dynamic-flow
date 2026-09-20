@@ -37,7 +37,7 @@
 
 ## 2026-09-20 实现交接
 
-已实现 `createFiles(root): FileStore`，确切类型见本目录 index.ts。工作在 `<root>/<workId>/work.json`，不可变定义在 `definitions/<id>.js`；定义文件只解析应用生成的 `export default` 字面量，不执行任意 JS。`change` 按工作串行，先原子替换文件再通知；读取返回独立对象。`onServerStart` 仅由服务启动调用，读取/页面刷新不调用。
+已实现 `createFiles(root): FileStore`，确切类型见本目录 index.ts。工作在 `<root>/<workId>/work.json`，不可变定义在 `definitions/<id>.js`；定义文件只解析应用生成的 `export default` 字面量，不执行任意 JS。用户上传的原始文件与剖析产生的 cleaned- 清洗制品都在 `uploads/<name>`，只取 basename、原子写入，同名覆盖；`uploadPath` 供会话软链，`listUploads` 供节点会话列举链接，本目录不解析格式。`change` 按工作串行，先原子替换文件再通知；读取返回独立对象。`onServerStart` 仅由服务启动调用，读取/页面刷新不调用。
 
 域内证据：`pnpm exec tsx --test tests/state.test.ts` 使用真实临时目录验证重开、隔离读取、串行写、目录权限导致的真实写失败、定义目录故障与启动中断。完成结果保留；未完成运行、实例、比较和作者消息标中断。
 

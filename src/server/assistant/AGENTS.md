@@ -44,6 +44,7 @@ Pi 如何根据当前工作生成/修改真实流程，并完成 Agent 节点任
 - 浏览器反例表明作者的临时无效定义会污染首份比较基线：作者 update_flow 必须在 saveDraft 前 validateForRun；手工 flow.saveDraft 仍允许不完整编辑。嵌套 evidence 字符串与 quote 都必须核对继承的材料编号及原文，不能借用其它样本的真实引文。
 - G1 设置接口：createAssistant options.settingsPath 指定服务器配置文件；configuration 返回非密钥配置与协议限制，saveConfiguration 原子保存且空 apiKey 沿用已有。没有已保存设置时 .env 回退，禁止修改用户 .env。请求内固定配置。Anthropic 预算语义与 Chat effort 必须区分，不能把保存成功当成任何模型都支持全部参数。
 - G2 作者工具可选 title 只在最新 work.titleEdited 不为 true 时写入，不覆盖手工命名。
+- 材料导入 = 内置**数据剖析 workflow**（profile-flow.ts）：file 来源节点引用上传文件 → probe 识别格式与规模 → branch 按 scale 分流；seed 按文件名实例化（withProfileFile）并与内建规范全等 → 小文件直接拆分登记、大文件剖析并把 schema 化洞见写入 cleaned-insight.json（六字段：overview/structure/stats/qualityIssues/artifacts/suggestions，structure/stats 可为嵌套对象）。server 入口 importMaterials 负责 seed（与 buildProfileDefinition() 全等才算命中，契约演进自动重 seed，不占 draft/adopted）、runs.start 与 onFinish 收尾：小文件登记拆分条目，大文件以 cleaned-insight.json 为准校验登记一条洞见材料。executeNode 的 agent 节点会话带 Pi 内置 read/grep/find/ls/bash、linkRuntime（node_modules 软链，预装 xlsx/mammoth/unpdf，新增库须同步节点提示词）、uploads 全量 linkFiles 与 cleaned- 制品 collect 收割；节点最终回复保持简短，结构化产物落文件，避免长 JSON 回复格式事故。披露给模型的材料/结果列表用 clipList 裁剪并附截断标记。模型调用级 retry 已开启（网关长会话断流续跑，工具调用不重放）。
 
 产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
 

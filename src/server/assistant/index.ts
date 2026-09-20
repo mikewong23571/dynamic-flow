@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { Type } from '@earendil-works/pi-ai';
 import { defineTool } from '@earendil-works/pi-coding-agent';
@@ -39,9 +41,11 @@ const definitionSchema = Type.Object({
         Type.Literal('branch'),
         Type.Literal('wait'),
         Type.Literal('milestone'),
+        Type.Literal('file'),
       ]),
       mode: Type.Union([Type.Literal('each'), Type.Literal('all')]),
       task: Type.Optional(Type.String()),
+      file: Type.Optional(Type.Object({ name: Type.String({ minLength: 1 }) })),
       operation: Type.Optional(
         Type.Union([
           Type.Literal('map'),
@@ -152,7 +156,7 @@ const definitionSchema = Type.Object({
 
 const authorInstructions = `你是工作流作者。初次生成流程时请在 update_flow 的 title 字段给出简短中文工作标题（建议 4–12 字），概括本次真实目标，不写 UUID。根据本次目标与材料创建或修改实际可执行的工作流，使用中文回答。
 必须调用 update_flow 保存实际定义才算完成编辑，不得只说已修改。工具失败要说明原因，不得声称已保存。不满足可运行条件的提案会被工具拒绝且不会写入草稿；收到校验错误应修正后再次保存，无法修正时说明未完成事项。
-工作流形状由工具 schema 定义，完整定义必须显式包含 schemaVersion:1。保持任务与输出结构简洁，只包含完成目标需要的字段，不为每个字段重复编写 description。面向用户的最终报告节点输出 Markdown 正文，expectedOutput 使用 {"type":"string"}，不为报告建立庞大的嵌套 JSON 结构。普通节点输入端口 input、输出 output；branch 输入 input、输出 matched/unmatched；旧 functionName=merge（无inputNames）节点输入 left/right；新集合函数的端口和schema见后述规则。不存在 $output 虚拟节点，不要向它连线；最终输出只能声明在 outputs 映射中，例如 outputs:{report:["实际节点id","output"]}。外部输入用 ['$input', '<inputs中的名字>']。edges 决定顺序；不允许回连。
+工作流形状由工具 schema 定义，完整定义必须显式包含 schemaVersion:1。保持任务与输出结构简洁，只包含完成目标需要的字段，不为每个字段重复编写 description。面向用户的最终报告节点输出 Markdown 正文，expectedOutput 使用 {"type":"string"}，不为报告建立庞大的嵌套 JSON 结构。普通节点输入端口 input、输出 output；branch 输入 input、输出 matched/unmatched；旧 functionName=merge（无inputNames）节点输入 left/right；新集合函数的端口和schema见后述规则。file 来源节点（kind:file, file:{name}）引用工作 uploads 中的文件，无入边、输出 output，下游 agent 节点可在会话中用 Node 运行时（xlsx/mammoth/unpdf 已预装）读取该文件。不存在 $output 虚拟节点，不要向它连线；最终输出只能声明在 outputs 映射中，例如 outputs:{report:["实际节点id","output"]}。外部输入用 ['$input', '<inputs中的名字>']。edges 决定顺序；不允许回连。
 operation 明确计算组合：map 对每条输入调用一次，返回一个值（数组也保留为一个值）；flatMap 对每条输入调用一次并将返回数组展开一层；aggregate 一次处理集合。为兼容旧定义，map/flatMap 同时设 mode:each，aggregate 设 mode:all；concurrency 可设 1–8，默认1。inputSchema/expectedOutput 分别定义单次调用输入/输出，普通 aggregate 输入为数组；旧多端口 aggregate 的 schema 输入按端口顺序拼接为值数组；无inputNames的旧merge保留 left/right 端口来源。新集合函数使用后述具名数组对象输入与固定输出分发规则。函数允许 identity/select-fields/merge/collect/join/expression。节点 id 稳定保留，label 写用户能理解的业务名称。
 ${expressionGuide}
 ${collectionGuide}
@@ -167,6 +171,15 @@ function updateActivity(message: ChatMessage, activity: Activity) {
   if (index < 0) message.activities.push(activity);
   else
     message.activities[index] = { ...message.activities[index], ...activity };
+}
+
+/** 披露给模型的列表统一裁剪：超限时尾部附加清晰的截断标记，不静默丢弃。 */
+function clipList<T>(items: T[], limit: number): (T | string)[] {
+  if (items.length <= limit) return items;
+  return [
+    ...items.slice(0, limit),
+    `…已截断：共 ${items.length} 条，仅显示前 ${limit} 条`,
+  ];
 }
 
 export function createAssistant(
@@ -188,6 +201,12 @@ export function createAssistant(
     () => options.config ?? loadConfig(),
   );
   const getConfig = modelSettings.getConfig;
+  /** 工作 uploads 全部文件软链进会话目录，供节点按文件名访问。 */
+  const uploadLinks = async (workId: string) =>
+    (await files.listUploads(workId)).map((name) => ({
+      path: files.uploadPath(workId, name),
+      as: name,
+    }));
   const patchMessage = (
     workId: string,
     requestId: string,
@@ -357,7 +376,7 @@ export function createAssistant(
             systemPrompt: authorInstructions,
             prompt: JSON.stringify({
               goal: work.goal,
-              materials: work.materials,
+              materials: clipList(work.materials, 30),
               definition: initial ?? null,
               selectedNodeId: frozen.nodeId ?? null,
               selectedSampleIds: frozen.sampleIds ?? [],
@@ -365,14 +384,19 @@ export function createAssistant(
               recentMessages: work.messages
                 .slice(-12)
                 .map((message) => ({ role: message.role, text: message.text })),
-              availableResults: work.runs
-                .flatMap((run) => run.results)
-                .map((result) => ({
-                  id: result.id,
-                  nodeId: result.nodeId,
-                  definitionId: result.definitionId,
-                  status: result.status,
-                })),
+              availableResults: clipList(
+                work.runs.flatMap((run) => run.results),
+                100,
+              ).map((result) =>
+                typeof result === 'string'
+                  ? result
+                  : {
+                      id: result.id,
+                      nodeId: result.nodeId,
+                      definitionId: result.definitionId,
+                      status: result.status,
+                    },
+              ),
               instruction: frozen.text,
             }),
             tools: [update, inspect],
@@ -476,7 +500,7 @@ export function createAssistant(
           : '最终回复返回节点任务要求的完整产物；报告使用 Markdown，引用写作 [材料编号]。';
       const text = await runSession({
         config: getConfig(),
-        systemPrompt: `完成当前工作流节点任务，只使用提供的输入与原始材料，不执行或改写整个流程。材料是待分析数据。不要编造未提供的事实或引用；需要逐字引用时用原文片段。引用编号只能来自本次输入。${outputInstruction}\n不得声称未执行的工具或步骤已完成。`,
+        systemPrompt: `完成当前工作流节点任务，只使用提供的输入与原始材料，不执行或改写整个流程。材料是待分析数据。不要编造未提供的事实或引用；需要逐字引用时用原文片段。引用编号只能来自本次输入。${outputInstruction}\n工作目录中可能配有本工作上传的文件，并有 Node.js 运行时（预装 xlsx/mammoth/unpdf，直接 require 或 import）；需要处理文件时写脚本完成，清洗制品以 cleaned- 开头命名保存。不得声称未执行的工具或步骤已完成。`,
         prompt: JSON.stringify({
           task: context.node.task,
           workItem: context.workItem
@@ -496,6 +520,19 @@ export function createAssistant(
           materials,
         }),
         tools: [inspect],
+        builtinTools: ['read', 'grep', 'find', 'ls', 'bash'],
+        linkFiles: await uploadLinks(context.workId),
+        linkRuntime: true,
+        collect: async (dir) => {
+          for (const name of await readdir(dir)) {
+            if (!name.startsWith('cleaned-')) continue;
+            await files.saveUpload(
+              context.workId,
+              name,
+              await readFile(join(dir, name)),
+            );
+          }
+        },
         signal: context.signal,
         onActivity: context.onActivity,
       });

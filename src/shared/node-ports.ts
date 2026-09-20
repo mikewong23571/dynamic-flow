@@ -10,6 +10,7 @@ export function collectionFunction(node: FlowNode): boolean {
   );
 }
 export function nodeInputPorts(node: FlowNode): string[] {
+  if (node.kind === 'file') return [];
   if (node.kind !== 'function') return ['input'];
   if (node.functionName === 'join') return ['left', 'right'];
   if (node.functionName === 'collect') return node.inputNames ?? [];

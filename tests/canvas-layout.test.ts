@@ -4,7 +4,7 @@ import {
   layoutWorkflow,
   type LayoutNode,
   type LayoutPoint,
-} from '../src/client/canvas-layout';
+} from '../src/client/features/canvas/canvas-layout';
 import type { Definition } from '../src/shared/records';
 
 function measure(
