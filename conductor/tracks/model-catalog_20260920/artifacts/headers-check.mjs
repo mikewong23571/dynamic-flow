@@ -1,0 +1,27 @@
+import { chromium } from '@playwright/test';
+const out = process.env.OUT_DIR;
+const b = await chromium.launch({ headless: true });
+const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+const errors = [];
+p.on('pageerror', (e) => errors.push(String(e)));
+await p.goto('http://127.0.0.1:4391/');
+await p.getByRole('button', { name: /模型设置/ }).click();
+const dialog = p.getByRole('dialog');
+await dialog.waitFor();
+await dialog.getByRole('button', { name: '新增 Provider' }).click();
+await dialog.getByRole('textbox', { name: 'Provider 名称' }).fill('acme');
+await dialog.getByRole('textbox', { name: '服务地址' }).fill('https://api.example.com/v1');
+await dialog.getByRole('textbox', { name: 'API 密钥' }).fill('sk-placeholder-0123456789');
+await dialog.getByRole('button', { name: '添加' }).click();
+await dialog.getByRole('button', { name: '添加' }).click();
+await dialog.getByRole('textbox', { name: '请求头名称 1' }).fill('X-Org-Route');
+await dialog.getByRole('textbox', { name: '请求头内容 1' }).fill('route-key-value');
+await p.screenshot({ path: `${out}/r7-headers-1440.png` });
+// 移除第二行后应只剩一行
+await dialog.getByRole('button', { name: '移除请求头 2' }).click();
+const count = await dialog.getByRole('textbox', { name: /请求头名称/ }).count();
+if (count !== 1) throw new Error(`expected 1 header row, got ${count}`);
+await p.screenshot({ path: `${out}/r8-headers-removed-1440.png` });
+if (errors.length) throw new Error(errors.join(';'));
+console.log('HEADERS_OK');
+await b.close();

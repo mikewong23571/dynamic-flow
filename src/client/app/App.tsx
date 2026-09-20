@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import type { ItemRunRef } from '../../shared/records';
+import type {
+  ItemRunRef,
+  ModelSelection,
+  Snapshot,
+} from '../../shared/records';
+import { api } from '../core/api';
 import { Results } from '../features/results/Results';
 import { Comparison } from '../features/results/Comparison';
 import WorkLibrary from '../features/library/WorkLibrary';
@@ -72,6 +77,7 @@ export default function Workspace() {
     setCodeOpen,
     action,
     perform,
+    receive,
     editDefinition,
     saveDefinition,
     discardLocalChanges,
@@ -89,6 +95,13 @@ export default function Workspace() {
       setPendingRun(undefined);
     }
   }, [pendingRun, work?.id, snapshot]);
+  const selectModel = async (selection: ModelSelection | null) => {
+    if (!workId) return;
+    const next = await api<Snapshot>(`/api/works/${workId}/model-selection`, {
+      selection,
+    });
+    receive(next);
+  };
   return (
     <div className="app-shell">
       <Sidebar
@@ -182,6 +195,8 @@ export default function Workspace() {
                     onAction={perform}
                     onCandidate={beginFrom}
                     selectedDefinitionId={selectedDefinitionId}
+                    configuration={configuration}
+                    onOpenSettings={() => setSettingsOpen(true)}
                     onContinue={() => {
                       setContinueOpen(true);
                       setContinueNode(
@@ -226,6 +241,10 @@ export default function Workspace() {
                   setSamplePort={setSamplePort}
                   action={action}
                   perform={perform}
+                  configuration={configuration}
+                  workSelection={work.modelSelections?.assistant ?? null}
+                  onModelSelection={selectModel}
+                  onOpenSettings={() => setSettingsOpen(true)}
                 />
               )}
             </div>

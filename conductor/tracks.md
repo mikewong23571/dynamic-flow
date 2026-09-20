@@ -1,5 +1,8 @@
 # Tracks Registry
 
+- [x] **Track: 模型目录与按 Work 的模型选择**
+  *Link: [model-catalog_20260920](./tracks/model-catalog_20260920/index.md)*
+
 - [ ] **Track: 来源节点**
   *Link: [source-nodes_20260920](./tracks/source-nodes_20260920/index.md)*
 

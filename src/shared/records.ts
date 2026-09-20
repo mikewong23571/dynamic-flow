@@ -82,6 +82,7 @@ export interface NodeResult {
   status: Status;
   error?: string;
   activities: Activity[];
+  effectiveModel?: EffectiveModel;
   startedAt: string;
   finishedAt?: string;
 }
@@ -129,6 +130,7 @@ export interface ChatMessage {
   activities?: Activity[];
   error?: string;
   proposedDefinition?: Definition;
+  effectiveModel?: EffectiveModel;
 }
 export interface ViewState {
   positions: Record<string, { x: number; y: number }>;
@@ -158,30 +160,71 @@ export interface Work {
   comparisons: Comparison[];
   keptResultIds: string[];
   messages: ChatMessage[];
+  /** 按 scope 的模型覆盖；当前只有 assistant（对话），workflow 预留。 */
+  modelSelections?: { assistant?: ModelSelection };
 }
 export interface Snapshot {
   work: Work;
   definitions: Record<string, Definition>;
   issues: Issue[];
 }
+export type ReasoningEffort =
+  'off' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max';
 export interface ModelSettings {
   protocol:
     'anthropic-messages' | 'openai-chat-completions' | 'openai-responses';
   baseUrl: string;
   model: string;
   apiKey?: string;
-  reasoningEffort: 'low' | 'medium' | 'high' | 'max';
+  reasoningEffort: ReasoningEffort;
   temperature: number;
   topP: number;
   contextWindow: number;
 }
-export interface ModelConfiguration extends Omit<ModelSettings, 'apiKey'> {
-  ready: boolean;
+export type ModelScope = 'assistant' | 'workflow';
+export interface ModelSelection {
+  alias: string;
+  effort?: ReasoningEffort;
+}
+/** 模型目录公开条目（不含密钥）。supportedEfforts 为空表示该模型不设置思考级别。 */
+export interface ModelCatalogEntry {
+  alias: string;
+  provider: string;
+  model: string;
+  displayName: string;
+  protocol: ModelSettings['protocol'];
+  baseUrl: string;
+  contextWindow: number;
+  supportedEfforts: ReasoningEffort[];
+  defaultEffort?: ReasoningEffort;
   apiKeyConfigured: boolean;
-  source: 'env' | 'workspace';
+}
+/** 目录 provider 的公开信息（不含密钥与请求头内容）。 */
+export interface ModelCatalogProvider {
+  name: string;
+  protocol: ModelSettings['protocol'];
+  baseUrl: string;
+  apiKeyConfigured: boolean;
+  headersConfigured: boolean;
+}
+/** 本次调用实际生效的模型（无密钥），随消息与节点结果保存。 */
+export interface EffectiveModel {
+  source: 'work' | 'default';
+  alias?: string;
+  model: string;
+  effort?: ModelSettings['reasoningEffort'];
+}
+/** 模型设置响应：目录（models.toml）是唯一模型配置来源。 */
+export interface ModelConfiguration {
+  ready: boolean;
+  /** 未就绪原因：未选择默认模型、目录无法读取或默认选择失效，引导去目录配置。 */
   error?: string;
   warnings?: string[];
-  supportedReasoningEfforts?: ModelSettings['reasoningEffort'][];
+  catalog?: ModelCatalogEntry[];
+  catalogProviders?: ModelCatalogProvider[];
+  defaultSelection?: ModelSelection;
+  /** 全局默认解析是否落到目录。 */
+  resolved?: { default: 'catalog' | 'none' };
 }
 export interface WorkSummary {
   id: string;
@@ -227,6 +270,8 @@ export interface NodeExecution {
   materials: Work['materials'];
   signal: AbortSignal;
   onActivity: (activity: Activity) => Promise<void>;
+  /** executeNode 在请求开始固定配置后写入本次生效模型，由 runs 存进 NodeResult。 */
+  effectiveModel?: EffectiveModel;
 }
 
 // A business item outlives any method workspace or individual execution.

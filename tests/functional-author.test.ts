@@ -8,6 +8,7 @@ import { createFiles } from '../src/server/files/index.ts';
 import { createFlow } from '../src/server/flow/index.ts';
 import { createWorkService } from '../src/server/work/index.ts';
 import { createAssistant } from '../src/server/assistant/index.ts';
+import { seedCatalog } from './catalog-fixture.ts';
 import type { Definition } from '../src/shared/records.ts';
 
 test('作者工具承载纯表达式；无效局部绑定被拒绝，修正后实际保存并可重开', async (t) => {
@@ -51,13 +52,13 @@ test('作者工具承载纯表达式；无效局部绑定被拒绝，修正后�
     edges: [{ from: ['$input', 'scores'], to: ['sum', 'input'] }],
     outputs: { total: ['sum', 'output'] },
   };
+  const paths = await seedCatalog(root, {
+    baseUrl: 'http://test.invalid',
+    model: 'fixture',
+    apiKey: 'test-only',
+  });
   const assistant = createAssistant(files, flow, {
-    config: {
-      protocol: 'anthropic-messages',
-      baseUrl: 'http://test.invalid',
-      model: 'fixture',
-      apiKey: 'test-only',
-    },
+    ...paths,
     runSession: async (input) => {
       assert.match(input.systemPrompt, /reduce.*initial/);
       assert.match(input.systemPrompt, /otherwise/);

@@ -68,6 +68,10 @@ features/inspector/ 的 CollectionEditor / collection-model 负责merge/collect�
 
 Geist Variable通过Fontsource本地打包，中文保留系统回退。Vite忽略conductor/test-results/playwright-report/data，防止测试trace的HTML触发持续刷新；不能把开发工具循环误判为应用逻辑或字体网络失败。
 
+## 模型目录界面交接
+
+ModelSettingsDialog 是模型管理入口；目录（models.toml）是唯一配置来源，手动/env 回退已于 2026-09-20 按用户决定移除：「默认模型」区块（别名+强度，改完即存 PUT /api/config/default，行内「已保存」反馈）、CatalogManager（provider 卡片就地展开编辑，删除两步确认；「新增 Provider / 新增模型 / 添加请求头」统一在各区头右侧；整份 PUT /api/config/catalog，密钥框留空沿用、custom_headers 未动沿用且每行可移除，逐模型「测试」走 POST /api/config/test 行内显示结果；长值字段如服务地址/API 密钥独占整行，短值才两栏；模型卡片默认折叠、新增自动展开）。思考级别词表为 off/minimal/low/medium/high/xhigh/max（与运行时 thinkingLevel 对齐，覆盖 OpenAI none=off、Claude、Kimi、GLM），编辑器里 Thinking efforts 是整行勾选（off 可勾 = 允许运行时选择不思考；全不选 = 不设置思考级别），Default effort 下拉跟随勾选集合；非法值由服务端给出中文错误。composer footer 的 ModelSelector 是本工作对话覆盖切换器（受控：无覆盖时选中「跟随默认」项，POST /api/works/:id/model-selection 后由快照刷新；目录为空或配置未加载时隐藏）。组件源码 vendor 自 @assistant-ui/model-selector registry（components/assistant-ui/model-selector.tsx，受控模式，不走它的 ModelContext 链路；连带 components/ui/popover.tsx、command.tsx 与 cmdk 依赖，import 已按项目约定改写）。强度展示统一英文。消息与节点结果小字展示 effectiveModel（含"所选模型已失效，实际使用 xxx"回退标注）；助手与节点失败处有「检查模型设置」按钮打开该对话框。
+
 ## 画布布局与连接阅读
 
 features/canvas/ 的 canvas-layout 复用 ELK Layered / Orthogonal，根据 React Flow 实测节点和端口返回坐标、折点；端口位置固定，不为减少交叉改写 IR。useCanvasLayout 负责测量、布局请求、过期结果和展示状态保存；WorkflowCanvas 负责图编辑与关系聚焦；WorkflowNode / WorkflowEdge 分别负责节点、实际路径及路径标签。

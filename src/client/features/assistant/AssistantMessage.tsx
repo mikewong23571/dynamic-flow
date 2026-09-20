@@ -13,27 +13,39 @@ import {
   Sparkles,
   Square,
 } from 'lucide-react';
-import type { ChatMessage, Definition } from '../../../shared/records';
+import type {
+  ChatMessage,
+  Definition,
+  ModelConfiguration,
+  ModelSelection,
+} from '../../../shared/records';
 import { changeSummary } from '../../core/definition';
 import { active, short, statusNames } from '../../core/format';
 import { Badge, Button } from '../../components/ui';
+import { effectiveModelLabel } from '../settings/catalog-model';
 export const AssistantMessagesContext = createContext<{
   messages: ChatMessage[];
   definitions: Record<string, Definition>;
   nodeLabels: Record<string, string>;
   draftId?: string;
   disabled: boolean;
+  configuration: ModelConfiguration | null;
+  workSelection: ModelSelection | null;
   onRetry: (message: ChatMessage) => void;
   onStop: (id: string) => void;
   onShowCanvas: (id?: string) => void;
+  onOpenSettings: () => void;
 }>({
   messages: [],
   definitions: {},
   nodeLabels: {},
   disabled: false,
+  configuration: null,
+  workSelection: null,
   onRetry: () => {},
   onStop: () => {},
   onShowCanvas: () => {},
+  onOpenSettings: () => {},
 });
 export const toolNames: Record<string, string> = {
   update_flow: '保存做法',
@@ -86,9 +98,12 @@ export function AssistantMessage() {
     nodeLabels,
     draftId,
     disabled,
+    configuration,
+    workSelection,
     onRetry,
     onStop,
     onShowCanvas,
+    onOpenSettings,
   } = useOriginalMessage();
   if (!message) return null;
   const original = messages.find(
@@ -114,6 +129,19 @@ export function AssistantMessage() {
         <Sparkles size={14} />
         Assistant
       </span>
+      {message.effectiveModel && (
+        <div className="message-model muted">
+          {effectiveModelLabel(
+            message.effectiveModel,
+            configuration?.catalog ?? [],
+          )}
+          {workSelection && message.effectiveModel.source !== 'work' && (
+            <span className="error-text">
+              所选模型已失效，实际使用 {message.effectiveModel.model}
+            </span>
+          )}
+        </div>
+      )}
       {message.text && (
         <MessagePrimitive.Parts
           components={{
@@ -244,6 +272,9 @@ export function AssistantMessage() {
               重试本次修改
             </Button>
           )}
+          <Button variant="ghost" onClick={onOpenSettings}>
+            检查模型设置
+          </Button>
         </div>
       )}
       {message.status === 'cancelled' && (

@@ -27,10 +27,11 @@ import type {
   NodeExecution,
   Run,
   ViewState,
-  ModelSettings,
+  ModelSelection,
   CreateWorkItem,
   CompletionCriterion,
 } from '../shared/records.ts';
+import type { CatalogInput } from './assistant/catalog.ts';
 
 /** 内建数据剖析工作：规范定义的单一事实源，在工作库可见，被各工作导入使用。 */
 const BUILTIN_PROFILE_TITLE = '内建·数据剖析';
@@ -48,6 +49,10 @@ export async function createApplication(
     work = createWorkService(files),
     assistant = createAssistant(files, flow, {
       settingsPath: resolve(dataRoot, 'model-settings.json'),
+      // 未显式给数据目录时用仓库根 models.toml；测试数据目录下目录随之隔离。
+      catalogPath: options.dataRoot
+        ? resolve(dataRoot, 'models.toml')
+        : resolve('models.toml'),
     });
   const items = createWorkItems(dataRoot, files);
   /** 剖析运行 ID → 导入消息 requestId，用于收尾更新。 */
@@ -80,7 +85,10 @@ export async function createApplication(
     return buildProfileDefinition();
   }
   /** 调用方工作持有按文件名实例化、与规范定义全等的剖析定义副本。 */
-  async function seedProfileFlow(workId: string, file: string): Promise<string> {
+  async function seedProfileFlow(
+    workId: string,
+    file: string,
+  ): Promise<string> {
     const want = withProfileFile(await canonicalProfileDefinition(), file);
     const current = await files.read(workId);
     for (const id of current.definitionIds) {
@@ -176,11 +184,18 @@ export async function createApplication(
     return c.json({ error: error.message, ...(issues ? { issues } : {}) }, 400);
   });
   app.get('/api/config', (c) => c.json(assistant.configuration()));
-  app.post('/api/config', async (c) =>
-    c.json(
-      await assistant.saveConfiguration(await c.req.json<ModelSettings>()),
-    ),
+  app.put('/api/config/catalog', async (c) =>
+    c.json(await assistant.saveCatalog(await c.req.json<CatalogInput>())),
   );
+  app.put('/api/config/default', async (c) => {
+    const body = await c.req.json<{ selection?: ModelSelection | null }>();
+    return c.json(await assistant.saveDefaultSelection(body.selection ?? null));
+  });
+  app.post('/api/config/test', async (c) => {
+    const body = await c.req.json<{ alias?: string }>();
+    if (!body.alias?.trim()) throw new Error('缺少要测试的模型别名。');
+    return c.json(await assistant.testCatalogEntry(body.alias.trim()));
+  });
   app.get('/api/items', async (c) =>
     c.json(
       await items.list({
@@ -448,6 +463,12 @@ export async function createApplication(
       default:
         throw Error('未知操作，请刷新后重试。');
     }
+    return c.json(await flow.snapshot(id));
+  });
+  app.post('/api/works/:id/model-selection', async (c) => {
+    const id = c.req.param('id'),
+      body = await c.req.json<{ selection?: ModelSelection | null }>();
+    await assistant.saveWorkSelection(id, body.selection ?? null);
     return c.json(await flow.snapshot(id));
   });
   app.get('/api/works/:id/events', async (c) => {

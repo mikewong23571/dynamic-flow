@@ -16,7 +16,7 @@
 
 ## 接口与验收
 
-- 按 [功能接口](../../spike/interfaces.md) 暴露直接操作；实际路径以 index.ts 为准：/api/config、/api/works、/api/works/:id/actions、preview-results 与 events。返回 Snapshot 含 Work、定义和校验问题；错误返回 error 和可选 issues。
+- 按 [功能接口](../../spike/interfaces.md) 暴露直接操作；实际路径以 index.ts 为准：/api/config（含 catalog/default/test 与 works/:id/model-selection 的模型目录与选择）、/api/works、/api/works/:id/actions、preview-results 与 events。返回 Snapshot 含 Work、定义和校验问题；错误返回 error 和可选 issues。
 - 长任务返回 ID，SSE 发真实状态；业务保存成功后才生成含实际定义的工作快照，工具完成文本不能冒充图更新。
 - [x] 连入/重连取得完整定义和运行状态，操作回执不会倒灌旧快照（场景 P23/P31）。
 - [x] Pi → 工具 → 保存 → 快照 → Canvas 与节点活动链实际联通（场景 P29/P30）。

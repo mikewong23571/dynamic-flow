@@ -31,6 +31,10 @@ Node/端口、逐项/汇总来源和活动字段在真实执行、比较、HTTP/
 
 具体约定：InputItem 保存 sampleId、value、materialIds 和 sourceResultIds；NodeResult 绑定运行、版本、节点及实例；nodeTotals 是已知批次数。工作标题/归档与 ModelSettings/ModelConfiguration 支持 G1/G2；对外配置只返回 apiKeyConfigured，不返回 apiKey。测试见 tests/ 下模块及 integration。
 
+## 模型目录与选择记录
+
+ModelSelection（alias + 可选 effort）是目录选择的最小记录：全局默认存 ModelSettings.defaultSelection（同一份设置文件，允许"只有选择、尚无手动配置"的文件）；Work.modelSelections.assistant 是本工作对话覆盖，结构留 scope 位（workflow 预留未用）。ModelCatalogEntry/ModelCatalogProvider 是目录公开形状，只有 apiKeyConfigured/headersConfigured，不含密钥与请求头内容。EffectiveModel（source: work/default/manual/env + alias/model/effort）随 ChatMessage 与 NodeResult 可选保存，披露本次实际生效模型；旧数据无这些字段正常读取。NodeExecution.effectiveModel 由 executeNode 在请求开始固定后写入，runs 存进 NodeResult。
+
 产品级验证与边界见 [本轮验收证据](../../conductor/tracks/full-application_20260920/evidence.md)。
 
 ## 持续工作项记录

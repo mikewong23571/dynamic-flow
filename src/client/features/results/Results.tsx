@@ -7,6 +7,7 @@ import type {
   Definition,
   Inputs,
   Json,
+  ModelConfiguration,
   NodeResult,
   Work,
 } from '../../../shared/records';
@@ -14,6 +15,7 @@ import { resultItems, nodeTotal } from '../../core/results';
 import { isFinalOutput } from '../../core/definition';
 import { active, short, statusNames } from '../../core/format';
 import { Badge, Button, Empty } from '../../components/ui';
+import { effectiveModelLabel } from '../settings/catalog-model';
 
 /** 展开实例的全部输入端口并按字段去重，用于展示材料与来源引用。 */
 function inputRefs(
@@ -94,6 +96,8 @@ export function Results({
   onCandidate,
   onContinue,
   selectedDefinitionId,
+  configuration,
+  onOpenSettings,
 }: {
   work: Work;
   definitions: Record<string, Definition>;
@@ -108,6 +112,8 @@ export function Results({
   onCandidate: (result: NodeResult) => void;
   onContinue: () => void;
   selectedDefinitionId?: string;
+  configuration?: ModelConfiguration | null;
+  onOpenSettings?: () => void;
 }) {
   const run =
     work.runs.find((r) => r.id === selectedRun) ||
@@ -264,6 +270,14 @@ export function Results({
                 </span>
               </header>
               {result.error && <p className="inline-error">{result.error}</p>}
+              {result.effectiveModel && (
+                <p className="muted result-model">
+                  {effectiveModelLabel(
+                    result.effectiveModel,
+                    configuration?.catalog ?? [],
+                  )}
+                </p>
+              )}
               {resultItems(result).map((item, i) => (
                 <div className="result-output" key={i}>
                   <Value value={item.value} />
@@ -297,17 +311,25 @@ export function Results({
                   从此结果改进
                 </Button>
                 {result.status === 'failed' && (
-                  <Button
-                    onClick={() =>
-                      void onAction('retry', {
-                        runId: run.id,
-                        resultIds: [result.id],
-                        definitionId: selectedDefinitionId || run.definitionId,
-                      })
-                    }
-                  >
-                    用所选做法重试此输入
-                  </Button>
+                  <>
+                    <Button
+                      onClick={() =>
+                        void onAction('retry', {
+                          runId: run.id,
+                          resultIds: [result.id],
+                          definitionId:
+                            selectedDefinitionId || run.definitionId,
+                        })
+                      }
+                    >
+                      用所选做法重试此输入
+                    </Button>
+                    {result.effectiveModel && onOpenSettings && (
+                      <Button variant="ghost" onClick={onOpenSettings}>
+                        检查模型设置
+                      </Button>
+                    )}
+                  </>
                 )}
                 {result.status === 'completed' && (
                   <>

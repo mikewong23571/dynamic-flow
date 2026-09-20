@@ -17,6 +17,8 @@ export interface ModelConfig extends Partial<
   baseUrl: string;
   model: string;
   apiKey: string;
+  /** 目录 provider 的 custom_headers，原样透传给每次请求。 */
+  headers?: Record<string, string>;
 }
 
 export function loadConfig(

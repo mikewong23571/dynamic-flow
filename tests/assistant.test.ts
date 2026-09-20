@@ -1,10 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { Type } from '@earendil-works/pi-ai';
 import { defineTool } from '@earendil-works/pi-coding-agent';
-import { createModelSettings } from '../src/server/assistant/settings.ts';
 import { runPiSession } from '../src/server/assistant/pi.ts';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -12,10 +11,8 @@ import { createFiles } from '../src/server/files/index.ts';
 import { createFlow } from '../src/server/flow/index.ts';
 import { createWorkService } from '../src/server/work/index.ts';
 import { createAssistant } from '../src/server/assistant/index.ts';
-import {
-  loadConfig,
-  type ModelConfig,
-} from '../src/server/assistant/config.ts';
+import { loadConfig, type ModelConfig } from '../src/server/assistant/config.ts';
+import { seedCatalog } from './catalog-fixture.ts';
 import {
   parseOutput,
   validateEvidence,
@@ -28,7 +25,6 @@ import type {
   Definition,
   EditRequest,
   NodeExecution,
-  ModelSettings,
 } from '../src/shared/records.ts';
 
 const config: ModelConfig = {
@@ -72,8 +68,13 @@ async function fixture(runner: SessionRunner) {
     '搜索很快',
   ]);
   const id = await flow.saveDraft(work.id, undefined, definition);
+  const paths = await seedCatalog(root, {
+    baseUrl: 'http://test.invalid',
+    model: 'test',
+    apiKey: 'test-secret',
+  });
   const assistant = createAssistant(files, flow, {
-    config,
+    ...paths,
     runSession: runner,
   });
   const finish = async (requestId: string) => {
@@ -590,126 +591,35 @@ test('string report node prompts for Markdown instead of JSON and preserves stru
   }
 });
 
-const modelSettingsInput: ModelSettings = {
-  protocol: 'openai-chat-completions',
-  baseUrl: 'https://example.invalid/v1',
-  model: 'glm-5.3-flash',
-  reasoningEffort: 'max',
-  temperature: 1,
-  topP: 0.95,
-  contextWindow: 1000000,
-};
-
-test('workspace API settings persist atomically, omit secrets, preserve blank keys and survive reopening', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'assistant-settings-'));
-  const path = join(root, 'model-settings.json');
-  const envConfig = { ...config, model: 'glm-5.3-flash' };
-  try {
-    const settings = createModelSettings(path, () => envConfig);
-    const initial = settings.configuration();
-    assert.equal(initial.source, 'env');
-    assert.equal(initial.reasoningEffort, 'max');
-    assert.equal(initial.contextWindow, 1000000);
-    assert.equal(initial.apiKeyConfigured, true);
-    assert.equal('apiKey' in initial, false);
-    const saved = await settings.saveConfiguration({
-      ...modelSettingsInput,
-      apiKey: '',
-    });
-    assert.equal(saved.source, 'workspace');
-    assert.equal(JSON.stringify(saved).includes(envConfig.apiKey), false);
-    assert.equal(
-      JSON.parse(await readFile(path, 'utf8')).apiKey,
-      envConfig.apiKey,
-    );
-    const reopened = createModelSettings(path, () => {
-      throw new Error('must not use env after saving');
-    });
-    assert.equal(reopened.configuration().model, 'glm-5.3-flash');
-    assert.equal(reopened.getConfig().protocol, 'openai-completions');
-    await Promise.all([
-      settings.saveConfiguration({
-        ...modelSettingsInput,
-        apiKey: 'rotated-test-key',
-      }),
-      settings.saveConfiguration({ ...modelSettingsInput, apiKey: '' }),
-    ]);
-    assert.equal(reopened.getConfig().apiKey, 'rotated-test-key');
-    assert.deepEqual(await readdir(root), ['model-settings.json']);
-    await assert.rejects(
-      settings.saveConfiguration({
-        ...modelSettingsInput,
-        reasoningEffort: 'medium',
-      }),
-      /仅支持 low、high、max/,
-    );
-    assert.equal(reopened.getConfig().reasoningEffort, 'max');
-    await assert.rejects(
-      settings.saveConfiguration({
-        ...modelSettingsInput,
-        protocol: 'anthropic-messages',
-        temperature: 0.5,
-      }),
-      /Temperature 为 1/,
-    );
-    assert.deepEqual(reopened.configuration().supportedReasoningEfforts, [
-      'low',
-      'high',
-      'max',
-    ]);
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
-
-test('settings require a usable key when none exists and active author requests keep their captured API settings', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'assistant-settings-freeze-'));
+test('active author requests keep their captured catalog settings when the default changes mid-flight', async () => {
   const entered = deferred(),
     release = deferred();
   let captured: SessionInput | undefined;
-  const f = await fixture(async () => {
-    throw new Error('unused');
+  const f = await fixture(async (input) => {
+    captured = input;
+    entered.resolve();
+    await release.promise;
+    const proposal = structuredClone(definition);
+    proposal.nodes[0].task = '改动';
+    await save(input, proposal);
+    return '已保存';
   });
   try {
-    const empty = createModelSettings(join(root, 'empty.json'), () => {
-      throw new Error('no env');
-    });
-    await assert.rejects(
-      empty.saveConfiguration(modelSettingsInput),
-      /请填写 API Key/,
-    );
-    const assistant = createAssistant(f.files, f.flow, {
-      config,
-      settingsPath: join(root, 'settings.json'),
-      runSession: async (input) => {
-        captured = input;
-        entered.resolve();
-        await release.promise;
-        const proposal = structuredClone(definition);
-        proposal.nodes[0].task = '改动';
-        await save(input, proposal);
-        return '已保存';
-      },
-    });
-    const id = await assistant.requestEdit(f.work.id, {
+    const id = await f.assistant.requestEdit(f.work.id, {
       text: '修改',
       expectedDraftId: f.id,
     });
     await entered.promise;
-    await assistant.saveConfiguration({
-      ...modelSettingsInput,
-      model: 'glm-5.3-flashx',
-      apiKey: 'new-key',
-    });
+    // 请求开始后改默认选择，不影响本次已固定的配置
+    await f.assistant.saveDefaultSelection({ alias: 'test/test', effort: 'max' });
     assert.equal(captured!.config.model, 'test');
     assert.equal(captured!.config.apiKey, 'test-secret');
-    assert.equal(assistant.configuration().model, 'glm-5.3-flashx');
+    assert.equal(captured!.config.reasoningEffort, 'medium');
     release.resolve();
     assert.equal((await f.finish(id)).status, 'completed');
   } finally {
     release.resolve();
     await f.clean();
-    await rm(root, { recursive: true, force: true });
   }
 });
 

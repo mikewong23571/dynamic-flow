@@ -131,10 +131,19 @@ export function Sidebar({
             <span>
               <strong>模型设置</strong>
               <small>
-                {configuration?.model || '尚未配置'}
-                {configuration?.reasoningEffort
-                  ? ` · 推理${reasoningLabels[configuration.reasoningEffort]}`
-                  : ''}
+                {configuration?.resolved?.default === 'catalog' &&
+                configuration.defaultSelection
+                  ? `${
+                      configuration.catalog?.find(
+                        (entry) =>
+                          entry.alias === configuration.defaultSelection!.alias,
+                      )?.displayName || configuration.defaultSelection.alias
+                    }${
+                      configuration.defaultSelection.effort
+                        ? ` · ${reasoningLabels[configuration.defaultSelection.effort]}`
+                        : ''
+                    }`
+                  : '尚未配置'}
               </small>
             </span>
           </button>

@@ -12,10 +12,23 @@ import type {
   ChatMessage,
   Definition,
   EditRequest,
+  ModelConfiguration,
+  ModelSelection,
 } from '../../../shared/records';
 import { runAction } from '../../core/action';
 import { active } from '../../core/format';
 import { Button, Modal } from '../../components/ui';
+import {
+  ModelSelectorRoot,
+  ModelSelectorTrigger,
+  ModelSelectorValue,
+  ModelSelectorContent,
+  ModelSelectorFocusAnchor,
+  ModelSelectorList,
+  ModelSelectorEffort,
+  type ModelOption,
+} from '../../components/assistant-ui/model-selector';
+import { effortOptions } from '../settings/catalog-model';
 import {
   AssistantMessage,
   AssistantMessagesContext,
@@ -35,6 +48,10 @@ export function Assistant({
   disabled = false,
   draftText,
   onDraftChange,
+  configuration,
+  workSelection,
+  onModelSelection,
+  onOpenSettings,
 }: {
   messages: ChatMessage[];
   nodeLabel?: string;
@@ -49,6 +66,10 @@ export function Assistant({
   disabled?: boolean;
   draftText: string;
   onDraftChange: (text: string) => void;
+  configuration: ModelConfiguration | null;
+  workSelection: ModelSelection | null;
+  onModelSelection: (selection: ModelSelection | null) => Promise<unknown>;
+  onOpenSettings: () => void;
 }) {
   const [error, setError] = useState('');
   const [retryMessage, setRetryMessage] = useState<ChatMessage>();
@@ -157,6 +178,40 @@ export function Assistant({
   // 回调经 ref 读取最新值，上下文值只在消息或范围变化时更换引用。
   const latest = useRef({ onStop, onShowCanvas, retry });
   latest.current = { onStop, onShowCanvas, retry };
+  const catalog = configuration?.catalog ?? [];
+  const defaultLabel = (() => {
+    const selection = configuration?.defaultSelection;
+    const entry = selection
+      ? catalog.find((entry) => entry.alias === selection.alias)
+      : undefined;
+    if (entry) return entry.displayName;
+    return '未配置';
+  })();
+  const modelOptions = useMemo<ModelOption[]>(
+    () => [
+      {
+        id: 'default',
+        name: `跟随默认：${defaultLabel}`,
+        keywords: ['默认', 'default'],
+      },
+      ...catalog.map((entry) => ({
+        id: entry.alias,
+        name: entry.displayName,
+        description: `${entry.alias} · ${entry.model}`,
+        efforts: effortOptions(entry),
+      })),
+    ],
+    [catalog, defaultLabel],
+  );
+  const selectModel = (selection: ModelSelection | null) =>
+    runAction(
+      async () => {
+        await onModelSelection(selection);
+      },
+      { setError },
+    );
+  const selectorValue = workSelection?.alias ?? 'default';
+  const selectorEffort = workSelection?.effort;
   const messagesValue = useMemo(
     () => ({
       messages,
@@ -164,13 +219,27 @@ export function Assistant({
       nodeLabels,
       draftId,
       disabled: disabled || !!running || submitting,
+      configuration,
+      workSelection,
       onRetry: (m: ChatMessage) => {
         void latest.current.retry(m);
       },
       onStop: (id: string) => latest.current.onStop(id),
       onShowCanvas: (id?: string) => latest.current.onShowCanvas(id),
+      onOpenSettings,
     }),
-    [messages, definitions, nodeLabels, draftId, disabled, running, submitting],
+    [
+      messages,
+      definitions,
+      nodeLabels,
+      draftId,
+      disabled,
+      running,
+      submitting,
+      configuration,
+      workSelection,
+      onOpenSettings,
+    ],
   );
   return (
     <AssistantRuntimeProvider runtime={runtime}>
@@ -231,8 +300,56 @@ export function Assistant({
               maxRows={8}
             />
             <div className="composer-footer">
-              <span>
-                <CornerDownLeft size={11} />⌘ / Ctrl + Enter 发送
+              <span className="composer-meta">
+                <span>
+                  <CornerDownLeft size={11} />⌘ / Ctrl + Enter 发送
+                </span>
+                {!!catalog.length && (
+                  <ModelSelectorRoot
+                    models={modelOptions}
+                    value={selectorValue}
+                    onValueChange={(alias) => {
+                      if (alias === 'default') void selectModel(null);
+                      else {
+                        const entry = catalog.find(
+                          (entry) => entry.alias === alias,
+                        );
+                        if (entry) {
+                          const effort =
+                            selectorEffort &&
+                            entry.supportedEfforts.includes(selectorEffort)
+                              ? selectorEffort
+                              : entry.defaultEffort;
+                          void selectModel({
+                            alias,
+                            ...(effort ? { effort } : {}),
+                          });
+                        }
+                      }
+                    }}
+                    {...(selectorEffort ? { effort: selectorEffort } : {})}
+                    onEffortChange={(effort) => {
+                      if (workSelection)
+                        void selectModel({
+                          alias: workSelection.alias,
+                          effort: effort as ModelSelection['effort'] & string,
+                        });
+                    }}
+                  >
+                    <ModelSelectorTrigger
+                      variant="ghost"
+                      size="sm"
+                      aria-label="本工作的模型"
+                    >
+                      <ModelSelectorValue />
+                    </ModelSelectorTrigger>
+                    <ModelSelectorContent align="start">
+                      <ModelSelectorFocusAnchor />
+                      <ModelSelectorList />
+                      <ModelSelectorEffort label="Effort" />
+                    </ModelSelectorContent>
+                  </ModelSelectorRoot>
+                )}
               </span>
               {running ? (
                 <ComposerPrimitive.Cancel asChild>

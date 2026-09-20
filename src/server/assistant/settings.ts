@@ -3,10 +3,24 @@ import { mkdir, writeFile, rename, rm } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import type {
+  EffectiveModel,
   ModelConfiguration,
+  ModelScope,
+  ModelSelection,
   ModelSettings,
+  Work,
 } from '../../shared/records.ts';
-import { loadConfig, safeError, type ModelConfig } from './config.ts';
+import { safeError, type ModelConfig } from './config.ts';
+import {
+  loadCatalog,
+  publicCatalog,
+  publicProviders,
+  resolveModel,
+  saveCatalog as writeCatalog,
+  selectionProblem,
+  type CatalogInput,
+  type ModelCatalog,
+} from './catalog.ts';
 
 export function isGlm53(model: string) {
   return /^glm-5\.3(?:$|[-.])/i.test(model);
@@ -43,7 +57,7 @@ export function supportedEfforts(
 ): ModelSettings['reasoningEffort'][] {
   return isGlm53(settings.model) && settings.protocol !== 'anthropic-messages'
     ? ['low', 'high', 'max']
-    : ['low', 'medium', 'high', 'max'];
+    : ['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'];
 }
 export function validateSettings(settings: ModelSettings): void {
   if (!settings || typeof settings !== 'object')
@@ -102,125 +116,207 @@ export function validateSettings(settings: ModelSettings): void {
   if (settings.apiKey !== undefined && typeof settings.apiKey !== 'string')
     throw new Error('API Key 需要是文本。');
 }
-function warnings(settings: ModelSettings): string[] {
-  if (settings.protocol === 'anthropic-messages')
-    return [
-      'Anthropic 使用思考令牌预算映射强度：low 1024、medium 4096、high 8192、max 16384；这不是 Chat Completions 的 reasoning_effort。兼容网关是否严格执行预算由服务端决定。',
-      'Anthropic 使用自身工具流和思考格式，不发送 Chat 专用的 tool_stream 或 clear_thinking。',
-    ];
-  if (settings.protocol === 'openai-responses')
-    return [
-      '推理强度通过 Responses 的 reasoning.effort 发送。采样参数会如实发送；部分模型不接受与推理同时设置的 Temperature/Top P，服务端拒绝时会显示实际错误。',
-    ];
-  return [
-    '设置影响后续模型调用；保存只验证格式，不代表端点已连通或模型支持所有参数。',
-  ];
+function selectionShape(value: unknown): ModelSelection | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const selection = value as ModelSelection;
+  if (typeof selection.alias !== 'string' || !selection.alias.trim())
+    return undefined;
+  const efforts = ['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'];
+  if (
+    selection.effort !== undefined &&
+    !efforts.includes(selection.effort as string)
+  )
+    return undefined;
+  return { alias: selection.alias.trim(), effort: selection.effort };
 }
 export function createModelSettings(
   path: string | undefined,
-  fallback: () => ModelConfig = loadConfig,
+  catalogPath?: string,
 ) {
   let writes = Promise.resolve();
-  const read = (): { config: ModelConfig; source: 'env' | 'workspace' } => {
-    if (path) {
-      let saved: ModelSettings;
-      try {
-        saved = JSON.parse(readFileSync(path, 'utf8'));
-      } catch (error) {
-        if ((error as NodeJS.ErrnoException).code !== 'ENOENT')
-          throw new Error('已保存的模型设置无法读取，请重新保存设置。');
-        else return { config: fallback(), source: 'env' };
-      }
-      validateSettings(saved);
-      if (!saved.apiKey?.trim())
-        throw new Error('已保存设置缺少 API Key，请重新填写。');
-      return {
-        config: {
-          ...saved,
-          protocol:
-            saved.protocol === 'openai-chat-completions'
-              ? 'openai-completions'
-              : saved.protocol,
-          apiKey: saved.apiKey.trim(),
-        },
-        source: 'workspace',
-      };
+  const queue = <T>(operation: () => Promise<T>): Promise<T> => {
+    const next = writes.then(operation);
+    writes = next.then(
+      () => {},
+      () => {},
+    );
+    return next;
+  };
+  const atomicWrite = async (target: string, contents: string) => {
+    await mkdir(dirname(target), { recursive: true });
+    const temp = `${target}.${randomUUID()}.tmp`;
+    try {
+      await writeFile(temp, contents, { mode: 0o600 });
+      await rename(temp, target);
+    } finally {
+      await rm(temp, { force: true });
     }
-    return { config: fallback(), source: 'env' };
+  };
+  const readCatalog = (): { catalog?: ModelCatalog; error?: string } => {
+    if (!catalogPath) return { catalog: { providers: [], models: [] } };
+    try {
+      return { catalog: loadCatalog(catalogPath) };
+    } catch (error) {
+      return { error: safeError(error) };
+    }
+  };
+  /** 读取全局默认选择；设置文件只存选择，损坏或缺失都视为未选择。 */
+  const readSelection = (): ModelSelection | undefined => {
+    if (!path) return undefined;
+    try {
+      return selectionShape(
+        (
+          JSON.parse(readFileSync(path, 'utf8')) as {
+            defaultSelection?: unknown;
+          }
+        ).defaultSelection,
+      );
+    } catch {
+      return undefined;
+    }
+  };
+  /** 解析全局默认；不可用返回中文原因（未选择 / 目录不可读 / 选择失效）。 */
+  const resolveDefault = ():
+    | { config: ModelConfig; effective: EffectiveModel; problem?: undefined }
+    | { problem: string } => {
+    const listed = readCatalog();
+    if (!listed.catalog)
+      return { problem: `模型目录无法读取：${listed.error}` };
+    const selection = readSelection();
+    if (!selection)
+      return {
+        problem: '尚未选择默认模型，请在模型设置中添加目录模型并保存默认。',
+      };
+    const problem = selectionProblem(listed.catalog, selection);
+    if (problem)
+      return { problem: `默认模型「${selection.alias}」已失效：${problem}` };
+    const config = resolveModel(listed.catalog, selection);
+    return {
+      config,
+      effective: {
+        source: 'default',
+        alias: selection.alias,
+        model: config.model,
+        effort: config.reasoningEffort,
+      },
+    };
   };
   const configuration = (): ModelConfiguration => {
-    try {
-      const { config, source } = read(),
-        settings = resolvedSettings(config);
-      validateSettings(settings);
-      const { apiKey, ...safe } = settings;
-      return {
-        ...safe,
-        ready: !!apiKey,
-        apiKeyConfigured: !!apiKey,
-        source,
-        warnings: warnings(settings),
-        supportedReasoningEfforts: supportedEfforts(settings),
-      };
-    } catch (error) {
-      return {
-        protocol: 'anthropic-messages',
-        baseUrl: '',
-        model: '',
-        ...modelDefaults('glm-5.3-flash'),
-        ready: false,
-        apiKeyConfigured: false,
-        source: 'env',
-        error: safeError(error),
-      };
-    }
+    const listed = readCatalog();
+    const resolved = resolveDefault();
+    return {
+      ready: !resolved.problem,
+      ...(resolved.problem ? { error: resolved.problem } : {}),
+      ...(listed.error
+        ? { warnings: [`模型目录无法读取：${listed.error}`] }
+        : {}),
+      catalog: listed.catalog ? publicCatalog(listed.catalog) : undefined,
+      catalogProviders: listed.catalog
+        ? publicProviders(listed.catalog)
+        : undefined,
+      defaultSelection: readSelection(),
+      resolved: { default: resolved.problem ? 'none' : 'catalog' },
+    };
+  };
+  /** 校验一个目录选择；不可用抛中文错误。 */
+  const checkSelection = (selection: ModelSelection): void => {
+    if (!catalogPath) throw new Error('服务器尚未配置模型目录文件路径。');
+    const listed = readCatalog();
+    if (!listed.catalog) throw new Error(`模型目录无法读取：${listed.error}`);
+    const problem = selectionProblem(listed.catalog, selection);
+    if (problem) throw new Error(problem);
   };
   return {
     configuration,
-    getConfig: () => {
-      const { config } = read();
-      validateSettings(resolvedSettings(config));
-      return config;
+    checkSelection,
+    /** 当前保存的全局默认选择。 */
+    getDefaultSelection: readSelection,
+    /** 按别名解析目录条目为完整配置（供测试连接）。 */
+    catalogConfig: (alias: string): ModelConfig => {
+      if (!catalogPath) throw new Error('服务器尚未配置模型目录文件路径。');
+      const listed = readCatalog();
+      if (!listed.catalog) throw new Error(`模型目录无法读取：${listed.error}`);
+      const problem = selectionProblem(listed.catalog, { alias });
+      if (problem) throw new Error(problem);
+      return resolveModel(listed.catalog, { alias });
     },
-    saveConfiguration(settings: ModelSettings): Promise<ModelConfiguration> {
-      const frozen = structuredClone(settings);
-      const operation = writes.then(async () => {
+    /**
+     * 解析链：assistant 的 Work 覆盖 → 全局默认 → 未配置报错。
+     * 覆盖别名失效时如实回退默认并在 requested 可见，不静默假装仍是所选模型。
+     */
+    getScopedConfig(
+      scope: ModelScope,
+      work?: Work,
+    ): {
+      config: ModelConfig;
+      effective: EffectiveModel;
+      requested?: ModelSelection;
+    } {
+      let requested: ModelSelection | undefined;
+      if (scope === 'assistant') {
+        const selection = work?.modelSelections?.assistant;
+        if (selection) {
+          const listed = readCatalog();
+          if (!listed.catalog) requested = selection;
+          else
+            try {
+              const config = resolveModel(listed.catalog, selection);
+              return {
+                config,
+                effective: {
+                  source: 'work',
+                  alias: selection.alias,
+                  model: config.model,
+                  effort: config.reasoningEffort,
+                },
+              };
+            } catch {
+              requested = selection;
+            }
+        }
+      }
+      const resolved = resolveDefault();
+      if (resolved.problem !== undefined)
+        throw new Error(
+          requested
+            ? `对话选择的模型「${requested.alias}」已失效；${resolved.problem}`
+            : resolved.problem,
+        );
+      return {
+        config: resolved.config,
+        effective: resolved.effective,
+        requested,
+      };
+    },
+    /** 保存全局默认选择；null 清除（回到未配置）。 */
+    saveDefaultSelection(
+      selection: ModelSelection | null,
+    ): Promise<ModelConfiguration> {
+      const frozen = selection ? structuredClone(selection) : null;
+      return queue(async () => {
         if (!path) throw new Error('服务器尚未配置模型设置文件路径。');
-        validateSettings(frozen);
-        let apiKey = frozen.apiKey?.trim();
-        if (!apiKey) {
-          try {
-            apiKey = read().config.apiKey;
-          } catch {}
-        }
-        if (!apiKey) throw new Error('请填写 API Key；当前没有可沿用的密钥。');
-        const next: ModelSettings = {
-          protocol: frozen.protocol,
-          baseUrl: frozen.baseUrl.trim().replace(/\/$/, ''),
-          model: frozen.model.trim(),
-          reasoningEffort: frozen.reasoningEffort,
-          temperature: frozen.temperature,
-          topP: frozen.topP,
-          contextWindow: frozen.contextWindow,
-          apiKey,
-        };
-        await mkdir(dirname(path), { recursive: true });
-        const temp = `${path}.${randomUUID()}.tmp`;
+        if (frozen) checkSelection(frozen);
+        let saved: Record<string, unknown> = {};
         try {
-          await writeFile(temp, JSON.stringify(next, null, 2) + '\n', {
-            mode: 0o600,
-          });
-          await rename(temp, path);
-        } finally {
-          await rm(temp, { force: true });
+          saved = JSON.parse(readFileSync(path, 'utf8'));
+        } catch (error) {
+          if ((error as NodeJS.ErrnoException).code !== 'ENOENT')
+            throw new Error('已保存的模型设置无法读取，请重新保存设置。');
         }
+        if (frozen) saved.defaultSelection = frozen;
+        else delete saved.defaultSelection;
+        await atomicWrite(path, JSON.stringify(saved, null, 2) + '\n');
         return configuration();
       });
-      writes = operation.then(
-        () => {},
-        () => {},
-      );
-      return operation;
+    },
+    /** 整份重写模型目录；空 apiKey 沿用已保存值。引用检查由调用方先做。 */
+    saveCatalog(input: CatalogInput): Promise<ModelConfiguration> {
+      const frozen = structuredClone(input);
+      return queue(async () => {
+        if (!catalogPath) throw new Error('服务器尚未配置模型目录文件路径。');
+        await writeCatalog(catalogPath, frozen);
+        return configuration();
+      });
     },
   };
 }

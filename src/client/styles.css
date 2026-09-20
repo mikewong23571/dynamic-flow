@@ -2104,6 +2104,10 @@ a:focus-visible {
     color: var(--muted);
   }
   .settings-divider {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     padding: 17px 0;
     border-top: 1px solid var(--line);
     margin-top: 7px;
@@ -2116,6 +2120,13 @@ a:focus-visible {
     gap: 7px;
     font-size: 12px;
     color: var(--muted);
+  }
+  .settings-hint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 0;
   }
   .settings-warning {
     padding: 10px 12px;
@@ -2133,7 +2144,40 @@ a:focus-visible {
 }
 .model-settings .field {
   margin-top: 0;
+}
+.model-settings .settings-grid,
+.model-settings .settings-row {
   margin-bottom: 16px;
+}
+.model-settings .settings-grid .field,
+.model-settings .settings-row .field {
+  margin-bottom: 0;
+}
+@layer components {
+  /* 长值字段（服务地址、API 密钥、默认模型等）独占整行，不与其它字段挤两栏。 */
+  .settings-row {
+    display: block;
+  }
+  .settings-grid-wide {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+  .settings-grid-headers {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  }
+  .settings-grid-action {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .effort-checks {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px 14px;
+    min-height: 34px;
+    font-weight: 400;
+  }
 }
 .model-settings .settings-topline {
   margin: 13px 0 19px;
@@ -2197,5 +2241,94 @@ a:focus-visible {
   }
   [data-slot='table'] {
     border-collapse: collapse;
+  }
+}
+
+@layer components {
+  /* 模型目录管理与生效披露（model-catalog track） */
+  .composer-footer .composer-meta {
+    font-size: 11px;
+    gap: 10px;
+  }
+  .composer-meta [data-slot='model-selector-trigger'] {
+    color: var(--muted);
+    max-width: 220px;
+  }
+  .message-model {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    margin: 2px 0 6px;
+    font-size: 11px;
+  }
+  .result-model {
+    margin: 2px 0 8px;
+    font-size: 11px;
+  }
+  .catalog-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .catalog-provider {
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .catalog-provider > header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .catalog-provider-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+  }
+  .catalog-model {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-top: 1px solid var(--line);
+    padding-top: 8px;
+    font-size: 12px;
+  }
+  .catalog-model-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .catalog-test-ok {
+    color: var(--completed, #34d399);
+    font-size: 11px;
+  }
+  .catalog-model-editor {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .catalog-model-editor-head {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .catalog-model-editor-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+  .catalog-model-editor-head + .settings-grid {
+    margin-top: 10px;
   }
 }

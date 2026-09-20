@@ -37,12 +37,13 @@ Pi 如何根据当前工作生成/修改真实流程，并完成 Agent 节点任
 
 ## 实现交接与已发现反例
 
-- `createAssistant(files, flow, options)` 导出 `requestEdit/stopEdit/executeNode/configuration/saveConfiguration`。模型业务错误保留在消息/节点结果；绝不回退 fixture。`openai-chat-completions` 是用户协议名，映射 SDK `openai-completions`。
+- `createAssistant(files, flow, options)` 导出 `requestEdit/stopEdit/executeNode/configuration/saveDefaultSelection/saveWorkSelection/saveCatalog/testCatalogEntry`。模型业务错误保留在消息/节点结果；绝不回退 fixture。`openai-chat-completions` 是用户协议名，映射 SDK `openai-completions`。
 - 作者请求复制发送时节点/样本/版本；工具修改保存后广播 files 通知，自己的后续保存使用新版本，外部并发修改导致拒绝并保留提案。目标节点之外的结构变化需要全流程请求。
 - 真实端点拒绝最初 TypeBox Tuple/Record schema（HTTP 400/1210）；改用等价定长数组/additionalProperties 后真实作者通过。Definition 的后端结构校验没有放宽。首次作者遗漏 schemaVersion，Pi 工具错误反馈后真实修正；精确过程与限制见证据。
 - 作者工具未保存或仅原样保存均不计为实际变更。输出复用 flow/schema.ts 的 Ajv draft-07 校验，并做明确材料编号及逐字引文的机械核查，不把此项宣称为完整语义事实审查。
 - 浏览器反例表明作者的临时无效定义会污染首份比较基线：作者 update_flow 必须在 saveDraft 前 validateForRun；手工 flow.saveDraft 仍允许不完整编辑。嵌套 evidence 字符串与 quote 都必须核对继承的材料编号及原文，不能借用其它样本的真实引文。
-- G1 设置接口：createAssistant options.settingsPath 指定服务器配置文件；configuration 返回非密钥配置与协议限制，saveConfiguration 原子保存且空 apiKey 沿用已有。没有已保存设置时 .env 回退，禁止修改用户 .env。请求内固定配置。Anthropic 预算语义与 Chat effort 必须区分，不能把保存成功当成任何模型都支持全部参数。
+- G1 设置接口（2026-09-20 起目录为唯一来源）：createAssistant options.settingsPath 保存全局默认选择；configuration 返回非密钥目录与选择状态。手动配置与 .env 回退已按用户决定移除（原型不需要兼容性），请求内固定配置。Anthropic 预算语义与 Chat effort 必须区分，不能把保存成功当成任何模型都支持全部参数。
+- 模型目录（2026-09-20）：options.catalogPath 指向仓库根 models.toml（kimi-code schema：[providers.*] type/base_url/api_key/custom_headers + [models."provider/别名"] provider/model/max_context_size/support_efforts/default_effort；type anthropic/openai/openai-responses 映射三种协议，其它类型加载即报中文错误）。catalog.ts 负责解析/校验/原子重写（0600，空 apiKey 沿用旧值）；公开条目只有 apiKeyConfigured，密钥与请求头不出 API。思考级别词表 off/minimal/low/medium/high/xhigh/max（与 pi thinkingLevel 对齐）；support_efforts 显式空数组 = 不设置思考级别（解析为 off），省略字段 = 默认四档 low/medium/high/max；default_effort 可省略（取回退档）。解析链：assistant 的 Work 覆盖（Work.modelSelections.assistant）→ 全局默认（设置文件 defaultSelection）→ 未配置报错；目录别名失效时如实回退下一级并在 effectiveModel.source 与 requested 可见，不静默假装仍是所选模型。custom_headers 经 ModelConfig.headers 透传 pi-ai registerProvider。testCatalogEntry 跑一次最小真实会话（echo 工具回显，90s 超时），错误经 safeError 脱敏，不回退假模型。保存目录时被默认选择或任一 Work 覆盖引用的别名不得删除（服务端扫 works 拒绝）。
 - G2 作者工具可选 title 只在最新 work.titleEdited 不为 true 时写入，不覆盖手工命名。
 - 材料导入 = 内置**数据剖析 workflow**（profile-flow.ts）：file 来源节点引用上传文件 → probe 识别格式与规模 → branch 按 scale 分流；seed 按文件名实例化（withProfileFile）并与内建规范全等 → 小文件直接拆分登记、大文件剖析并把 schema 化洞见写入 cleaned-insight.json（六字段：overview/structure/stats/qualityIssues/artifacts/suggestions，structure/stats 可为嵌套对象）。server 入口 importMaterials 负责 seed（与 buildProfileDefinition() 全等才算命中，契约演进自动重 seed，不占 draft/adopted）、runs.start 与 onFinish 收尾：小文件登记拆分条目，大文件以 cleaned-insight.json 为准校验登记一条洞见材料。executeNode 的 agent 节点会话带 Pi 内置 read/grep/find/ls/bash、linkRuntime（node_modules 软链，预装 xlsx/mammoth/unpdf，新增库须同步节点提示词）、uploads 全量 linkFiles 与 cleaned- 制品 collect 收割；节点最终回复保持简短，结构化产物落文件，避免长 JSON 回复格式事故。披露给模型的材料/结果列表用 clipList 裁剪并附截断标记。模型调用级 retry 已开启（网关长会话断流续跑，工具调用不重放）。
 

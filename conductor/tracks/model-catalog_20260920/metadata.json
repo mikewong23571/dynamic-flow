@@ -1,0 +1,8 @@
+{
+  "track_id": "model-catalog_20260920",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-09-20",
+  "completed_at": "2026-09-20",
+  "description": "模型目录（provider/model/思考强度）管理 + 全局默认 + 按 Work 助手覆盖 + 测试连接与生效披露闭环"
+}

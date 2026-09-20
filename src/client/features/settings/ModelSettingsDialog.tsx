@@ -2,45 +2,18 @@ import { useEffect, useState } from 'react';
 import { Check, LoaderCircle, Settings2 } from 'lucide-react';
 import type {
   ModelConfiguration,
+  ModelSelection,
   ModelSettings,
 } from '../../../shared/records';
 import { api } from '../../core/api';
 import { runAction } from '../../core/action';
 import { errorText } from '../../core/format';
-import { Badge, Button, Modal } from '../../components/ui';
-export const reasoningLabels: Record<ModelSettings['reasoningEffort'], string> =
-  { low: '较低', medium: '中等', high: '较高', max: '最高' };
-const protocolLabels: Record<ModelSettings['protocol'], string> = {
-  'anthropic-messages': 'Anthropic Messages',
-  'openai-chat-completions': 'OpenAI Chat Completions',
-  'openai-responses': 'OpenAI Responses',
-};
-const defaults: ModelSettings = {
-  protocol: 'anthropic-messages',
-  baseUrl: '',
-  model: '',
-  reasoningEffort: 'max',
-  temperature: 1,
-  topP: 0.95,
-  contextWindow: 1000000,
-};
-function toForm(config: ModelConfiguration | null): ModelSettings {
-  return {
-    ...defaults,
-    ...(config
-      ? {
-          protocol: config.protocol || defaults.protocol,
-          baseUrl: config.baseUrl || '',
-          model: config.model || '',
-          reasoningEffort: config.reasoningEffort || defaults.reasoningEffort,
-          temperature: config.temperature ?? defaults.temperature,
-          topP: config.topP ?? defaults.topP,
-          contextWindow: config.contextWindow ?? defaults.contextWindow,
-        }
-      : {}),
-    apiKey: '',
-  };
-}
+import { Badge, Modal } from '../../components/ui';
+import { CatalogManager } from './CatalogManager';
+import { effortLabels } from './catalog-model';
+export const reasoningLabels = effortLabels;
+
+/** 模型设置 = 全局默认选择（改完即存）+ 模型目录管理；models.toml 是唯一配置来源。 */
 export function ModelSettingsDialog({
   open,
   onOpenChange,
@@ -52,27 +25,33 @@ export function ModelSettingsDialog({
   configuration: ModelConfiguration | null;
   onSaved: (c: ModelConfiguration) => void;
 }) {
-  const [form, setForm] = useState<ModelSettings>(() => toForm(configuration));
   const [current, setCurrent] = useState(configuration);
+  const [defaultAlias, setDefaultAlias] = useState('');
+  const [defaultEffort, setDefaultEffort] =
+    useState<ModelSettings['reasoningEffort']>('medium');
+  const [defaultSaved, setDefaultSaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [saved, setSaved] = useState(false);
   useEffect(() => {
-    if (!open) {
-      setForm((f) => ({ ...f, apiKey: '' }));
-      return;
-    }
+    if (!open) return;
     let live = true;
-    setSaved(false);
+    setDefaultSaved(false);
     setError('');
-    setForm(toForm(configuration));
-    setCurrent(configuration);
+    const apply = (config: ModelConfiguration | null) => {
+      setCurrent(config);
+      setDefaultAlias(config?.defaultSelection?.alias ?? '');
+      setDefaultEffort(
+        config?.defaultSelection?.effort ??
+          config?.catalog?.find(
+            (entry) => entry.alias === config.defaultSelection?.alias,
+          )?.defaultEffort ??
+          'medium',
+      );
+    };
+    apply(configuration);
     void api<ModelConfiguration>('/api/config')
       .then((config) => {
-        if (live) {
-          setCurrent(config);
-          setForm(toForm(config));
-        }
+        if (live) apply(config);
       })
       .catch((e) => {
         if (live) setError(errorText(e));
@@ -81,210 +60,130 @@ export function ModelSettingsDialog({
       live = false;
     };
   }, [open]);
-  const update = (patch: Partial<ModelSettings>) => {
-    setForm((prev) => ({ ...prev, ...patch }));
-    setSaved(false);
-  };
-  async function save() {
+  /** 默认模型是偏好切换：改完即存，与目录表单的显式保存区分。 */
+  async function applyDefault(
+    alias: string,
+    effort: ModelSettings['reasoningEffort'],
+  ) {
+    setDefaultAlias(alias);
+    setDefaultEffort(effort);
+    setDefaultSaved(false);
+    if (!alias && !current?.defaultSelection) return;
     await runAction(
       async () => {
-        const result = await api<ModelConfiguration>('/api/config', {
-          ...form,
-          apiKey: form.apiKey?.trim() || undefined,
-        });
+        const selection: ModelSelection | null = alias
+          ? { alias, effort }
+          : null;
+        const result = await api<ModelConfiguration>(
+          '/api/config/default',
+          { selection },
+          'PUT',
+        );
         setCurrent(result);
-        setForm(toForm(result));
-        setSaved(true);
         onSaved(result);
+        setDefaultSaved(true);
       },
       { setBusy, setError },
     );
   }
+  const defaultEntry = current?.catalog?.find(
+    (entry) => entry.alias === defaultAlias,
+  );
   return (
     <Modal
       open={open}
       onOpenChange={onOpenChange}
       title="模型设置"
-      description="用于生成做法和执行 Agent 步骤。保存后用于新的请求。"
+      description="选择默认模型并管理模型目录（models.toml）；用于新的请求。"
     >
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          void save();
-        }}
-        className="model-settings"
-      >
+      <div className="model-settings">
         <div className="settings-topline">
           <span>
             <Settings2 size={15} />
-            {current?.source === 'workspace' ? '工作台配置' : '初始配置'}
+            模型目录
           </span>
           <Badge status={current?.ready ? 'completed' : 'failed'}>
             {current?.ready ? '模型已配置' : '需要配置'}
           </Badge>
         </div>
-        <label className="field">
-          服务协议
-          <select
-            aria-label="服务协议"
-            value={form.protocol}
-            onChange={(e) =>
-              update({ protocol: e.target.value as ModelSettings['protocol'] })
-            }
-          >
-            {Object.entries(protocolLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          服务地址
-          <input
-            type="url"
-            aria-label="服务地址"
-            required
-            value={form.baseUrl}
-            onChange={(e) => update({ baseUrl: e.target.value })}
-            placeholder="https://api.example.com"
-          />
-        </label>
+        {current?.error &&
+          !(
+            current.error.includes('尚未选择默认模型') &&
+            (current.catalog?.length ?? 0) === 0
+          ) && (
+            <p className="inline-error" role="alert">
+              {current.error}
+            </p>
+          )}
         <div className="settings-grid">
           <label className="field">
-            模型名称
-            <input
-              required
-              aria-label="模型名称"
-              value={form.model}
-              onChange={(e) => update({ model: e.target.value })}
-              placeholder="服务提供的模型名称"
-            />
+            默认模型
+            <select
+              aria-label="默认模型"
+              value={defaultAlias}
+              disabled={busy}
+              onChange={(e) => {
+                const alias = e.target.value;
+                void applyDefault(
+                  alias,
+                  current?.catalog?.find((entry) => entry.alias === alias)
+                    ?.defaultEffort ?? 'medium',
+                );
+              }}
+            >
+              <option value="">未选择</option>
+              {(current?.catalog ?? []).map((entry) => (
+                <option key={entry.alias} value={entry.alias}>
+                  {entry.displayName}（{entry.alias}）
+                </option>
+              ))}
+            </select>
           </label>
           <label className="field">
-            推理强度
+            Reasoning effort
             <select
-              aria-label="推理强度"
-              value={form.reasoningEffort}
+              aria-label="默认推理强度"
+              value={defaultEffort}
+              disabled={busy || !defaultEntry}
               onChange={(e) =>
-                update({
-                  reasoningEffort: e.target
-                    .value as ModelSettings['reasoningEffort'],
-                })
+                void applyDefault(
+                  defaultAlias,
+                  e.target.value as ModelSettings['reasoningEffort'],
+                )
               }
             >
-              {Object.entries(reasoningLabels).map(([value, label]) => (
-                <option
-                  key={value}
-                  value={value}
-                  disabled={
-                    current?.protocol === form.protocol &&
-                    !!current.supportedReasoningEfforts &&
-                    !current.supportedReasoningEfforts.includes(
-                      value as ModelSettings['reasoningEffort'],
-                    )
-                  }
-                >
-                  {label}
+              {!defaultEntry && <option value={defaultEffort}>—</option>}
+              {(defaultEntry?.supportedEfforts ?? []).map((effort) => (
+                <option key={effort} value={effort}>
+                  {reasoningLabels[effort]}
                 </option>
               ))}
             </select>
           </label>
         </div>
-        <label className="field">
-          API 密钥{' '}
-          <span className="field-note">
-            {current?.apiKeyConfigured
-              ? '已配置，留空沿用现有密钥'
-              : '尚未配置'}
-          </span>
-          <input
-            type="password"
-            aria-label="API 密钥"
-            autoComplete="new-password"
-            value={form.apiKey || ''}
-            onChange={(e) => update({ apiKey: e.target.value })}
-            placeholder={
-              current?.apiKeyConfigured ? '输入新密钥以替换' : '输入 API 密钥'
-            }
-          />
-        </label>
-        <div className="settings-divider">生成参数</div>
-        <div className="settings-grid">
-          <label className="field">
-            随机程度（Temperature）
-            <input
-              type="number"
-              aria-label="随机程度"
-              min="0"
-              max="2"
-              step="0.05"
-              required
-              value={form.temperature}
-              onChange={(e) => update({ temperature: Number(e.target.value) })}
-            />
-          </label>
-          <label className="field">
-            采样范围（Top P）
-            <input
-              type="number"
-              aria-label="采样范围"
-              min="0"
-              max="1"
-              step="0.01"
-              required
-              value={form.topP}
-              onChange={(e) => update({ topP: Number(e.target.value) })}
-            />
-          </label>
-        </div>
-        <label className="field">
-          上下文窗口（token）
-          <input
-            type="number"
-            aria-label="上下文窗口"
-            min="1"
-            step="1"
-            required
-            value={form.contextWindow}
-            onChange={(e) => update({ contextWindow: Number(e.target.value) })}
-          />
-        </label>
-        {current?.protocol === form.protocol && !!current.warnings?.length && (
-          <details className="details">
-            <summary>协议说明</summary>
-            {current.warnings.map((warning, i) => (
-              <p className="settings-warning" key={i}>
-                {warning}
-              </p>
-            ))}
-          </details>
-        )}
+        <p className="muted settings-hint">
+          <span>作用于全部调用（含流程执行）；对话里可按工作覆盖。</span>
+          {busy && <LoaderCircle size={13} className="spin" />}
+          {defaultSaved && !busy && (
+            <span className="settings-saved" role="status">
+              <Check size={13} />
+              已保存
+            </span>
+          )}
+        </p>
+        <CatalogManager
+          configuration={current}
+          onSaved={(config) => {
+            setCurrent(config);
+            onSaved(config);
+          }}
+        />
         {error && (
           <p className="inline-error" role="alert">
             {error}
           </p>
         )}
-        {saved && (
-          <p className="settings-saved" role="status">
-            <Check size={15} />
-            模型配置已保存
-          </p>
-        )}
-        <div className="modal-actions">
-          <Button type="button" onClick={() => onOpenChange(false)}>
-            关闭
-          </Button>
-          <Button type="submit" variant="primary" disabled={busy}>
-            {busy ? (
-              <LoaderCircle size={15} className="spin" />
-            ) : (
-              <Check size={15} />
-            )}
-            保存配置
-          </Button>
-        </div>
-      </form>
+      </div>
     </Modal>
   );
 }

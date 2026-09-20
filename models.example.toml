@@ -1,0 +1,36 @@
+# 模型目录模板：复制为仓库根目录 models.toml 后填入真实密钥（models.toml 已在 .gitignore 中）。
+# schema 参考 kimi-code config.toml：[providers.<名称>] + [models."<provider/别名>"]。
+# provider type 只支持 anthropic / openai / openai-responses，分别映射 Anthropic Messages、
+# OpenAI Chat Completions 与 OpenAI Responses 协议；思考强度只取 low / medium / high / max。
+
+[providers.anthropic-main]
+type = "anthropic"
+base_url = "https://api.anthropic.com"
+api_key = "sk-ant-在此填入密钥"
+# custom_headers = { "X-Organization" = "org-在此填入" }
+
+[providers.openai-main]
+type = "openai"
+base_url = "https://api.openai.com/v1"
+api_key = "sk-在此填入密钥"
+
+[models."anthropic-main/sonnet"]
+provider = "anthropic-main"
+model = "claude-sonnet-4-5"
+display_name = "Sonnet 4.5"
+max_context_size = 200000
+support_efforts = ["low", "medium", "high", "max"]
+default_effort = "high"
+
+[models."openai-main/gpt-main"]
+provider = "openai-main"
+model = "gpt-5.2"
+display_name = "GPT 主力"
+max_context_size = 128000
+support_efforts = ["low", "medium", "high"]
+default_effort = "medium"
+
+[models."openai-main/gpt-fast"]
+provider = "openai-main"
+model = "gpt-5-mini"
+max_context_size = 128000

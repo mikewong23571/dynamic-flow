@@ -8,6 +8,7 @@ import { createFiles } from '../src/server/files/index.ts';
 import { createFlow } from '../src/server/flow/index.ts';
 import { createWorkService } from '../src/server/work/index.ts';
 import { createAssistant } from '../src/server/assistant/index.ts';
+import { seedCatalog } from './catalog-fixture.ts';
 import type { Definition, FlowNode } from '../src/shared/records.ts';
 
 for (const functionName of ['merge', 'collect', 'join'] as const) {
@@ -59,13 +60,13 @@ for (const functionName of ['merge', 'collect', 'join'] as const) {
       })),
       outputs: { combined: ['combine', 'output'] },
     };
+    const paths = await seedCatalog(root, {
+      baseUrl: 'http://test.invalid',
+      model: 'fixture',
+      apiKey: 'test-only',
+    });
     const assistant = createAssistant(files, flow, {
-      config: {
-        protocol: 'anthropic-messages',
-        baseUrl: 'http://test.invalid',
-        model: 'fixture',
-        apiKey: 'test-only',
-      },
+      ...paths,
       runSession: async (input) => {
         assert.match(input.systemPrompt, /inputNames/);
         assert.match(input.systemPrompt, /每路均是数组/);

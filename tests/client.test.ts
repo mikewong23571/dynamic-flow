@@ -221,3 +221,72 @@ test('数据变换默认值与画布摘要区分节点调用和数组组合', as
   });
   assert.equal(nextField({ field1: 0, field3: 0 }), 'field2');
 });
+
+test('catalog editor merge assigns edited models to the provider being saved', async () => {
+  const { mergeEdited, toPayload } =
+    await import('../src/client/features/settings/catalog-model.ts');
+  const provider = {
+    name: 'evidence',
+    type: 'openai' as const,
+    baseUrl: 'http://127.0.0.1:9/v1',
+    apiKey: 'k',
+    headers: [],
+    headersTouched: false,
+    isNew: true,
+  };
+  // 新建 provider 时模型行在名称填写前创建，provider 字段是空串；合并必须归属当前 provider
+  const edited = [
+    {
+      alias: 'evidence/glm-a',
+      provider: '',
+      model: 'glm-a',
+      displayName: '',
+      contextWindow: 128000,
+      supportedEfforts: ['low' as const, 'medium' as const],
+      defaultEffort: 'medium' as const,
+      collapsed: false,
+      isNew: true,
+    },
+    {
+      alias: 'evidence/blank',
+      provider: '',
+      model: '  ',
+      displayName: '',
+      contextWindow: 128000,
+      supportedEfforts: ['low' as const],
+      defaultEffort: 'low' as const,
+      collapsed: false,
+      isNew: true,
+    },
+  ];
+  const merged = mergeEdited([], [], '', provider, edited);
+  assert.equal(merged.providers.length, 1);
+  assert.equal(merged.models.length, 1);
+  assert.equal(merged.models[0].provider, 'evidence');
+  const payload = toPayload(merged.providers, merged.models);
+  assert.equal(payload.models[0].provider, 'evidence');
+  assert.deepEqual(payload.models[0].supportedEfforts, ['low', 'medium']);
+  // 编辑既有 provider：其它 provider 的模型保留，本 provider 模型整体替换
+  const other = {
+    alias: 'other/m',
+    provider: 'other',
+    model: 'm',
+    displayName: '',
+    contextWindow: 8192,
+    supportedEfforts: ['low' as const],
+    defaultEffort: 'low' as const,
+    collapsed: true,
+    isNew: false,
+  };
+  const remerged = mergeEdited(
+    [provider, { ...provider, name: 'other' }],
+    [other, { ...other, alias: 'evidence/old', provider: 'evidence' }],
+    'evidence',
+    { ...provider, baseUrl: 'http://127.0.0.1:10/v1' },
+    edited,
+  );
+  assert.deepEqual(
+    remerged.models.map((m) => m.alias),
+    ['other/m', 'evidence/glm-a'],
+  );
+});

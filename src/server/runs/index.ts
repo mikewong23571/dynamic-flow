@@ -486,6 +486,7 @@ export function createRuns(
           materialIds: [...new Set(source.flatMap((i) => i.materialIds))],
           sourceResultIds: [result.id],
         });
+        let execution: NodeExecution | undefined;
         try {
           const source = items(batch);
           validateValue(
@@ -621,33 +622,35 @@ export function createRuns(
                     : argument;
             } else {
               const work = await files.read(workId);
-              value = await executeNode({
-                workId,
-                runId: run.id,
-                definitionId: run.definitionId,
-                workItem: run.workItem,
-                node,
-                instanceId,
-                inputs: copy(batch),
-                materials: copy(run.workItem?.materials ?? work.materials),
-                signal,
-                onActivity: async (activity) => {
-                  if (closed || signal.aborted) return;
-                  await changeRun(workId, run.id, (r) => {
-                    const found = r.results.find((x) => x.id === result.id)!;
-                    if (found.status !== 'running' || r.stopRequested) return;
-                    const at = found.activities.findIndex(
-                      (a) => a.toolCallId === activity.toolCallId,
-                    );
-                    const scoped = {
-                      ...activity,
-                      id: `${run.id}:${instanceId}:${activity.toolCallId}`,
-                    };
-                    if (at < 0) found.activities.push(scoped);
-                    else found.activities[at] = scoped;
-                  });
-                },
-              });
+              value = await executeNode(
+                (execution = {
+                  workId,
+                  runId: run.id,
+                  definitionId: run.definitionId,
+                  workItem: run.workItem,
+                  node,
+                  instanceId,
+                  inputs: copy(batch),
+                  materials: copy(run.workItem?.materials ?? work.materials),
+                  signal,
+                  onActivity: async (activity) => {
+                    if (closed || signal.aborted) return;
+                    await changeRun(workId, run.id, (r) => {
+                      const found = r.results.find((x) => x.id === result.id)!;
+                      if (found.status !== 'running' || r.stopRequested) return;
+                      const at = found.activities.findIndex(
+                        (a) => a.toolCallId === activity.toolCallId,
+                      );
+                      const scoped = {
+                        ...activity,
+                        id: `${run.id}:${instanceId}:${activity.toolCallId}`,
+                      };
+                      if (at < 0) found.activities.push(scoped);
+                      else found.activities[at] = scoped;
+                    });
+                  },
+                }),
+              );
             }
             validateValue(node.expectedOutput, value, '输出');
             if (operation === 'flatMap' && !Array.isArray(value))
@@ -669,6 +672,8 @@ export function createRuns(
             if (r.stopRequested) return;
             saved.outputs = produced;
             saved.status = 'completed';
+            if (execution?.effectiveModel)
+              saved.effectiveModel = execution.effectiveModel;
             saved.finishedAt = timestamp();
           });
         } catch (error) {
@@ -677,6 +682,8 @@ export function createRuns(
             const saved = r.results.find((x) => x.id === result.id)!;
             saved.status = signal.aborted ? 'cancelled' : 'failed';
             saved.error = signal.aborted ? '已停止' : message(error);
+            if (execution?.effectiveModel)
+              saved.effectiveModel = execution.effectiveModel;
             saved.finishedAt = timestamp();
           });
         }

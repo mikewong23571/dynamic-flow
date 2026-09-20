@@ -5,6 +5,8 @@ import type {
   Definition,
   FlowNode,
   Issue,
+  ModelConfiguration,
+  ModelSelection,
   Snapshot,
 } from '../../shared/records';
 import { inputPorts } from '../core/inputs';
@@ -36,6 +38,10 @@ export function ContextPanel({
   setSamplePort,
   action,
   perform,
+  configuration,
+  workSelection,
+  onModelSelection,
+  onOpenSettings,
 }: {
   panel: 'inspector' | 'assistant';
   setPanel: (panel: 'inspector' | 'assistant' | null) => void;
@@ -61,6 +67,10 @@ export function ContextPanel({
     name: string,
     fields?: Record<string, unknown>,
   ) => Promise<Snapshot | undefined>;
+  configuration: ModelConfiguration | null;
+  workSelection: ModelSelection | null;
+  onModelSelection: (selection: ModelSelection | null) => Promise<unknown>;
+  onOpenSettings: () => void;
 }) {
   const nodeLabels = useMemo(
     () => Object.fromEntries(definition.nodes.map((n) => [n.id, n.label])),
@@ -130,6 +140,10 @@ export function ContextPanel({
               setSelectedNode(id);
           }}
           disabled={dirty}
+          configuration={configuration}
+          workSelection={workSelection}
+          onModelSelection={onModelSelection}
+          onOpenSettings={onOpenSettings}
           onSend={(request) => action('edit', { ...request })}
           onStop={(requestId) => {
             void perform('stopEdit', { requestId });

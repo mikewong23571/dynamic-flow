@@ -9,3 +9,6 @@ playwright-report/
 
 /data/*
 !/data/AGENTS.md
+
+# 模型目录含 API 密钥，不入库；模板见 models.example.toml
+models.toml

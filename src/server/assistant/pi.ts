@@ -67,7 +67,10 @@ export const runPiSession: SessionRunner = async (input) => {
     }
     if (input.linkRuntime) {
       const projectRoot = fileURLToPath(new URL('../../..', import.meta.url));
-      await symlink(join(projectRoot, 'node_modules'), join(dir, 'node_modules'));
+      await symlink(
+        join(projectRoot, 'node_modules'),
+        join(dir, 'node_modules'),
+      );
     }
     const settingsManager = SettingsManager.inMemory({
       compaction: { enabled: false },
@@ -87,12 +90,19 @@ export const runPiSession: SessionRunner = async (input) => {
     const isZai =
       /^glm-/i.test(settings.model) ||
       /(?:bigmodel\.cn|z\.ai)/i.test(settings.baseUrl);
-    const budget = { low: 1024, medium: 4096, high: 8192, max: 16384 }[
-      settings.reasoningEffort
-    ];
+    const budget = {
+      off: 1024,
+      minimal: 1024,
+      low: 1024,
+      medium: 4096,
+      high: 8192,
+      xhigh: 16384,
+      max: 16384,
+    }[settings.reasoningEffort];
     modelRuntime.registerProvider('dynamic-flow', {
       baseUrl: input.config.baseUrl,
       api: input.config.protocol,
+      ...(input.config.headers ? { headers: input.config.headers } : {}),
       ...(input.config.protocol === 'anthropic-messages'
         ? {
             streamSimple: (model, context, options) =>

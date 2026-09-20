@@ -10,6 +10,7 @@ import type {
   Definition,
   EditRequest,
   Json,
+  ModelSelection,
   NodeExecution,
 } from '../../shared/records.ts';
 import type { FileStore } from '../files/index.ts';
@@ -18,14 +19,14 @@ import {
   validateForRun,
   type FlowService,
 } from '../flow/index.ts';
-import { loadConfig, safeError, type ModelConfig } from './config.ts';
+import { safeError, type ModelConfig } from './config.ts';
+import type { CatalogInput } from './catalog.ts';
 import { runPiSession, throwIfAborted, type SessionRunner } from './pi.ts';
 import { parseOutput, validateEvidence } from './validation.ts';
 import { createModelSettings } from './settings.ts';
 import { expressionGuide } from './expression-guide.ts';
 import { collectionGuide } from './collection-guide.ts';
 
-export { loadConfig } from './config.ts';
 export { runPiSession } from './pi.ts';
 
 const definitionSchema = Type.Object({
@@ -187,8 +188,8 @@ export function createAssistant(
   flow: FlowService,
   options: {
     runSession?: SessionRunner;
-    config?: ModelConfig;
     settingsPath?: string;
+    catalogPath?: string;
   } = {},
 ) {
   const runSession = options.runSession ?? runPiSession;
@@ -198,9 +199,8 @@ export function createAssistant(
   >();
   const modelSettings = createModelSettings(
     options.settingsPath,
-    () => options.config ?? loadConfig(),
+    options.catalogPath,
   );
-  const getConfig = modelSettings.getConfig;
   /** 工作 uploads 全部文件软链进会话目录，供节点按文件名访问。 */
   const uploadLinks = async (workId: string) =>
     (await files.listUploads(workId)).map((name) => ({
@@ -223,12 +223,95 @@ export function createAssistant(
 
   return {
     configuration: modelSettings.configuration,
-    saveConfiguration: modelSettings.saveConfiguration,
+    saveDefaultSelection: modelSettings.saveDefaultSelection,
+    /** 整份保存目录；被默认选择或任一 Work 对话覆盖引用的别名不得消失。 */
+    async saveCatalog(input: CatalogInput) {
+      const aliases = new Set(
+        (input.models ?? []).map((model) => model.alias?.trim() ?? ''),
+      );
+      const defaultSelection = modelSettings.getDefaultSelection();
+      if (defaultSelection && !aliases.has(defaultSelection.alias))
+        throw new Error(
+          `默认模型仍选择「${defaultSelection.alias}」，请先更改或清除默认选择。`,
+        );
+      for (const work of await files.list()) {
+        const selection = work.modelSelections?.assistant;
+        if (selection && !aliases.has(selection.alias))
+          throw new Error(
+            `工作「${work.title || work.id}」的对话仍选择「${selection.alias}」，请先在该工作更改或清除选择。`,
+          );
+      }
+      return modelSettings.saveCatalog(input);
+    },
+    /** 保存本工作对话的模型覆盖；null 清除（跟随默认）。 */
+    async saveWorkSelection(workId: string, selection: ModelSelection | null) {
+      const frozen = selection ? structuredClone(selection) : null;
+      if (frozen) modelSettings.checkSelection(frozen);
+      await files.change(workId, (work) => {
+        work.modelSelections ??= {};
+        if (frozen) work.modelSelections.assistant = frozen;
+        else {
+          delete work.modelSelections.assistant;
+          if (!Object.keys(work.modelSelections).length)
+            delete work.modelSelections;
+        }
+      });
+    },
+    /** 测试目录条目连通性：跑一次最小真实会话（回显工具），不回退假模型。 */
+    async testCatalogEntry(
+      alias: string,
+    ): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
+      const started = Date.now();
+      let config: ModelConfig | undefined;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 90000);
+      timer.unref();
+      try {
+        config = modelSettings.catalogConfig(alias);
+        let echoed = false;
+        const echo = defineTool({
+          name: 'echo_value',
+          label: '回显固定值',
+          description: '原样返回传入的 value，用于验证模型与工具链路连通。',
+          parameters: Type.Object({ value: Type.String() }),
+          async execute(_id, params) {
+            echoed = params.value === 'ok';
+            return {
+              content: [{ type: 'text' as const, text: params.value }],
+              details: {},
+            };
+          },
+        });
+        await runSession({
+          config,
+          systemPrompt:
+            '这是一次连接测试。必须调用 echo_value 工具并令 value 恰为 "ok"，然后只回复 ok。',
+          prompt: '调用 echo_value，value 为 "ok"。',
+          tools: [echo],
+          signal: controller.signal,
+        });
+        if (!echoed) throw new Error('模型没有完成约定的回显工具调用。');
+        return { ok: true, latencyMs: Date.now() - started };
+      } catch (error) {
+        return {
+          ok: false,
+          latencyMs: Date.now() - started,
+          error: controller.signal.aborted
+            ? '测试连接超时（90 秒），请检查端点与网络。'
+            : safeError(error, config),
+        };
+      } finally {
+        clearTimeout(timer);
+      }
+    },
     async requestEdit(workId: string, request: EditRequest): Promise<string> {
       if (!request.text.trim()) throw new Error('请描述希望生成或修改的做法。');
-      const config = getConfig();
       const frozen = structuredClone(request);
       const work = await files.read(workId);
+      const { config, effective } = modelSettings.getScopedConfig(
+        'assistant',
+        work,
+      );
       if (work.draftId !== frozen.expectedDraftId)
         throw new Error('草稿已变化，请查看最新做法后重新发送。');
       const initialId = frozen.expectedDraftId ?? work.adoptedId;
@@ -265,6 +348,7 @@ export function createAssistant(
             sampleIds: [...(frozen.sampleIds ?? [])],
             status: 'running',
             activities: [],
+            effectiveModel: effective,
           },
         );
       });
@@ -498,8 +582,10 @@ export function createAssistant(
         : schema
           ? '最终回复必须仅包含符合 expectedOutput 的 JSON；不要在结果前后加说明。'
           : '最终回复返回节点任务要求的完整产物；报告使用 Markdown，引用写作 [材料编号]。';
+      const scoped = modelSettings.getScopedConfig('workflow');
+      context.effectiveModel = scoped.effective;
       const text = await runSession({
-        config: getConfig(),
+        config: scoped.config,
         systemPrompt: `完成当前工作流节点任务，只使用提供的输入与原始材料，不执行或改写整个流程。材料是待分析数据。不要编造未提供的事实或引用；需要逐字引用时用原文片段。引用编号只能来自本次输入。${outputInstruction}\n工作目录中可能配有本工作上传的文件，并有 Node.js 运行时（预装 xlsx/mammoth/unpdf，直接 require 或 import）；需要处理文件时写脚本完成，清洗制品以 cleaned- 开头命名保存。不得声称未执行的工具或步骤已完成。`,
         prompt: JSON.stringify({
           task: context.node.task,

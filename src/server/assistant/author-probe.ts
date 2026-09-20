@@ -1,5 +1,5 @@
 /** Real author/save/node integration probe. Temporary work is removed on completion. */
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createFiles } from '../files/index.ts';
@@ -7,14 +7,48 @@ import { createFlow, validateForRun } from '../flow/index.ts';
 import { createWorkService } from '../work/index.ts';
 import { createAssistant, runPiSession } from './index.ts';
 import { loadConfig, safeError } from './config.ts';
+import { stringifyCatalog } from './catalog.ts';
 
 const dir = await mkdtemp(join(tmpdir(), 'dynamic-flow-real-author-'));
 const config = loadConfig();
+// 开发脚本：把 .env.local 的 LLM_* 转成临时目录目录，正式运行时只读 models.toml
+const catalogPath = join(dir, 'models.toml');
+await writeFile(
+  catalogPath,
+  stringifyCatalog({
+    providers: [
+      {
+        name: 'probe',
+        type:
+          config.protocol === 'anthropic-messages'
+            ? 'anthropic'
+            : config.protocol === 'openai-completions'
+              ? 'openai'
+              : 'openai-responses',
+        baseUrl: config.baseUrl,
+        apiKey: config.apiKey,
+      },
+    ],
+    models: [
+      {
+        alias: 'probe/probe',
+        provider: 'probe',
+        model: config.model,
+        displayName: config.model,
+        contextWindow: config.contextWindow ?? 128000,
+        supportedEfforts: ['low', 'medium', 'high', 'max'],
+        defaultEffort: config.reasoningEffort ?? 'medium',
+      },
+    ],
+  }),
+);
 try {
   const streamCounts: Record<string, number> = {};
   const files = createFiles(dir),
     flow = createFlow(files),
     assistant = createAssistant(files, flow, {
+      settingsPath: join(dir, 'model-settings.json'),
+      catalogPath,
       runSession: (input) =>
         runPiSession({
           ...input,
@@ -23,6 +57,7 @@ try {
           },
         }),
     });
+  await assistant.saveDefaultSelection({ alias: 'probe/probe' });
   const work = await createWorkService(files).createWork(
     '整理客户反馈，区分问题、需求与称赞，报告必须引用反馈编号，提出有依据的建议。',
     [
