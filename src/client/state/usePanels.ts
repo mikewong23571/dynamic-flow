@@ -26,6 +26,7 @@ export function usePanels(hasWork: boolean) {
   const [sourceChoice, setSourceChoice] = useState('');
   const [replaceDraft, setReplaceDraft] = useState(false);
   const [codeOpen, setCodeOpen] = useState(false);
+  const [invokeOpen, setInvokeOpen] = useState(false);
   const [addKind, setAddKind] = useState<FlowNode['kind']>('function');
   useEffect(() => {
     localStorage.setItem('dynamic-flow.goal', goal);
@@ -68,6 +69,8 @@ export function usePanels(hasWork: boolean) {
     setReplaceDraft,
     codeOpen,
     setCodeOpen,
+    invokeOpen,
+    setInvokeOpen,
     addKind,
     setAddKind,
   };

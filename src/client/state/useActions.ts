@@ -120,6 +120,26 @@ export function useActions(deps: ActionDeps) {
       setTab('results');
     }
   }
+  /** 直接输入调用：裸值走 invoke 端点，同步等待终态；loose 为显式豁免。 */
+  async function invokeWork(inputs: Record<string, unknown[]>, loose: boolean) {
+    if (!workId) throw new Error('请先创建工作');
+    if (!selectedDefinitionId) throw new Error('没有可调用的做法版本。');
+    const result = await api<{
+      runId: string;
+      status: string;
+      error?: string;
+    }>(`/api/works/${workId}/invoke`, {
+      inputs,
+      definition: selectedDefinitionId,
+      wait: true,
+      ...(loose ? { mode: 'loose' } : {}),
+    });
+    const next = await api<Snapshot>(`/api/works/${workId}`, undefined, 'GET');
+    if (activeWorkId.current === workId) receive(next);
+    setSelectedRun(result.runId);
+    setTab('results');
+    return result;
+  }
   function prepareResultInputs() {
     return runAction(
       async () => {
@@ -217,6 +237,7 @@ export function useActions(deps: ActionDeps) {
     saveDefinition,
     generate,
     runFull,
+    invokeWork,
     prepareResultInputs,
     trial,
     beginFrom,

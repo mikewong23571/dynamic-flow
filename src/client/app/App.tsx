@@ -75,6 +75,7 @@ export default function Workspace() {
     setContinueOpen,
     setContinueNode,
     setCodeOpen,
+    setInvokeOpen,
     action,
     perform,
     receive,
@@ -145,6 +146,7 @@ export default function Workspace() {
               discardLocalChanges={discardLocalChanges}
               saveDefinition={saveDefinition}
               runFull={runFull}
+              openInvoke={() => setInvokeOpen(true)}
             />
             <WorkspaceTabs
               work={work}
@@ -197,6 +199,7 @@ export default function Workspace() {
                     selectedDefinitionId={selectedDefinitionId}
                     configuration={configuration}
                     onOpenSettings={() => setSettingsOpen(true)}
+                    onInvoke={() => setInvokeOpen(true)}
                     onContinue={() => {
                       setContinueOpen(true);
                       setContinueNode(

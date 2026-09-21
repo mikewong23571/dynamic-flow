@@ -5,6 +5,7 @@ import { SelectStartDialog } from './SelectStartDialog';
 import { TrialDialog } from './TrialDialog';
 import { ResumeDialog } from './ResumeDialog';
 import { DefinitionJsDialog } from './DefinitionJsDialog';
+import { InvokeDialog } from './InvokeDialog';
 
 /** 对话框组装层：把 controller 的值显式交给各对话框，各自只依赖自己用到的字段。 */
 export function WorkspaceDialogs({
@@ -51,6 +52,9 @@ export function WorkspaceDialogs({
     setSelectedRun,
     codeOpen,
     setCodeOpen,
+    invokeOpen,
+    setInvokeOpen,
+    invokeWork,
     work,
     definition,
     selected,
@@ -141,6 +145,12 @@ export function WorkspaceDialogs({
         open={codeOpen}
         onOpenChange={setCodeOpen}
         definition={definition}
+      />
+      <InvokeDialog
+        open={invokeOpen}
+        onOpenChange={setInvokeOpen}
+        definition={executionDefinition}
+        invokeWork={invokeWork}
       />
     </>
   );

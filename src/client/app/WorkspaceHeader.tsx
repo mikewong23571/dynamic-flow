@@ -1,4 +1,4 @@
-import { Check, Play, Save } from 'lucide-react';
+import { Check, Keyboard, Play, Save } from 'lucide-react';
 import type { Work } from '../../shared/records';
 import { active, workTitle } from '../core/format';
 import { Button } from '../components/ui';
@@ -15,6 +15,7 @@ export function WorkspaceHeader({
   discardLocalChanges,
   saveDefinition,
   runFull,
+  openInvoke,
 }: {
   work: Work;
   dirty: boolean;
@@ -26,6 +27,7 @@ export function WorkspaceHeader({
   discardLocalChanges: () => void;
   saveDefinition: () => void;
   runFull: () => void;
+  openInvoke: () => void;
 }) {
   return (
     <header className="workspace-header">
@@ -66,6 +68,15 @@ export function WorkspaceHeader({
           </option>
           {work.draftId && <option value="draft">候选草稿</option>}
         </select>
+        <Button
+          variant="secondary"
+          aria-label="直接输入运行"
+          disabled={!selectedDefinitionId || busy}
+          onClick={openInvoke}
+        >
+          <Keyboard size={15} />
+          直接输入
+        </Button>
         <Button
           variant="primary"
           disabled={

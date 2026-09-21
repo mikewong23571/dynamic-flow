@@ -1250,6 +1250,34 @@ a:focus-visible {
   margin-right: auto;
 }
 @layer components {
+  /* 直接输入调用对话框（invoke-form track） */
+  .invoke-port {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .invoke-port-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .invoke-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .invoke-entry > :first-child {
+    flex: 1;
+    min-width: 0;
+  }
+  .invoke-port > .button,
+  .invoke-port > button {
+    align-self: flex-start;
+  }
   .material-preview {
     border: 1px solid var(--line);
     border-radius: 8px;

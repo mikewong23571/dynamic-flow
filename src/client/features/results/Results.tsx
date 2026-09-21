@@ -76,7 +76,10 @@ export function InputContent({ inputs }: { inputs: Inputs }) {
           {items.map((item, i) => (
             <div className="sample-content" key={`${item.sampleId}-${i}`}>
               <span className="sample-id">
-                {item.materialIds.join(' · ') || item.sampleId}
+                {item.materialIds.join(' · ') ||
+                  (item.sourceResultIds.length
+                    ? item.sampleId
+                    : `直接输入 · ${item.sampleId}`)}
               </span>
               <Value value={item.value} />
             </div>
@@ -96,6 +99,7 @@ export function Results({
   onAction,
   onCandidate,
   onContinue,
+  onInvoke,
   selectedDefinitionId,
   configuration,
   onOpenSettings,
@@ -112,6 +116,7 @@ export function Results({
   ) => Promise<unknown>;
   onCandidate: (result: NodeResult) => void;
   onContinue: () => void;
+  onInvoke?: () => void;
   selectedDefinitionId?: string;
   configuration?: ModelConfiguration | null;
   onOpenSettings?: () => void;
@@ -125,6 +130,11 @@ export function Results({
     return (
       <Empty title="还没有运行结果">
         <p>选择材料，运行流程后将在这里看到逐条进展。</p>
+        {onInvoke && (
+          <Button variant="secondary" onClick={onInvoke}>
+            直接输入运行
+          </Button>
+        )}
       </Empty>
     );
   const original = definitions[run.definitionId];
@@ -158,6 +168,8 @@ export function Results({
                         (typeof r.scope === 'object' ? r.scope.nodeId : ''),
                     )?.label || '单节点'}{' '}
                 · {statusNames[r.status]} · {short(r.definitionId)}
+                {r.invocation?.loose ? ' · 宽松调用' : ''}
+                {r.invocation?.repairedPorts?.length ? ' · 自动修复' : ''}
               </option>
             ))}
           </select>
@@ -186,6 +198,12 @@ export function Results({
           {run.results.length} 个执行实例
         </span>
         <span>输入 {Object.values(run.inputs).flat().length} 条</span>
+        {run.invocation?.loose && <span>宽松调用（豁免入口契约）</span>}
+        {!!run.invocation?.repairedPorts?.length && (
+          <span>
+            端口 {run.invocation.repairedPorts.join('、')} 经自动修复
+          </span>
+        )}
       </div>
       {run.error && <p className="inline-error">{run.error}</p>}
       <div className="scroll results-body">
