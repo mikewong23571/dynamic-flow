@@ -61,15 +61,25 @@ export interface Definition {
     evidence: string;
   };
   inputs: string[];
+  /** 严格入口契约：按端口声明条目 schema 与违约行为；未声明的端口保持宽松。 */
+  inputContracts?: Record<string, InputContract>;
   nodes: FlowNode[];
   edges: { from: [string, string]; to: [string, string] }[];
   outputs: Record<string, [string, string]>;
 }
+/** 严格入口契约：条目形状与违约行为。宽松端口不声明契约。 */
+export interface InputContract {
+  /** 每条输入的 JSON Schema（draft-07，复用 flow/schema 校验）；缺省 = 任意值。 */
+  item?: Record<string, unknown>;
+  /** invoke 是否必须提供该端口输入；缺省 true。 */
+  required?: boolean;
+  /** 违约行为：reject（缺省，invoke 门口拒绝）| interpret（agent 修复环，复检仍败则拒绝）。 */
+  onInvalid?: 'reject' | 'interpret';
+}
 export interface InputItem {
   sampleId: string;
   value: Json;
-  materialIds: string[];
-  sourceResultIds: string[];
+  materialIds: string[];  sourceResultIds: string[];
 }
 export type Inputs = Record<string, InputItem[]>;
 export interface Issue {
@@ -130,6 +140,8 @@ export interface Run {
   }[];
   startedAt: string;
   finishedAt?: string;
+  /** invoke 触发留痕：loose = 调用级豁免契约；repairedPorts = interpret 修复环实际修复的端口。 */
+  invocation?: { loose?: boolean; repairedPorts?: string[] };
   error?: string;
 }
 export interface Comparison {

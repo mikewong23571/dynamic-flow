@@ -96,3 +96,7 @@ saveLayout 接收 ViewState 的 positions、可选 viewport、showPorts 与 rout
 ## 问题认知、步骤合同与展开候选
 
 `semantic.ts` 校验问题字段、合同、动态上限和迭代配置，`checkDefinition` 统一调用；手工可保存未完成草稿，运行与作者保存仍须通过完整校验。`freezeExpansion(workId,expectedDraftId,runId,nodeId)` 只复用已经完成且责任未变化的展开，生成新草稿，不自动采用、不改历史 Run。统一图投影在 shared/expansion.ts，动态提案校验在 flow/expansion.ts。测试：semantic-workflow.test.ts、semantic-author.test.ts。
+
+## 输入契约（2026-09-21）
+
+`contracts.ts`：Definition.inputContracts 按端口声明 item schema（draft-07，复用 schema.ts 编译校验）、required（缺省 true）与 onInvalid（reject 缺省 / interpret）。checkDefinition 统一调用 checkInputContracts（端口须存在、schema 可编译），手工可保存不完整契约，运行前校验不变。validateInvocation 供 invoke 路由逐条校验裸值；机械算子语义不变，契约只管入口。测试 tests/invoke.test.ts。

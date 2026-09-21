@@ -1,5 +1,11 @@
 # Tracks Registry
 
+- [x] **Track: 输入契约与 invoke 触发面**
+  *Link: [input-contract-invoke_20260921](./tracks/input-contract-invoke_20260921/index.md)*
+
+- [x] **Track: Assistant 持久会话**
+  *Link: [assistant-session_20260921](./tracks/assistant-session_20260921/index.md)*
+
 - [x] **Track: 问题驱动的动态工作流优化**
   *Link: [semantic-workflow_20260921](./tracks/semantic-workflow_20260921/index.md)*
 

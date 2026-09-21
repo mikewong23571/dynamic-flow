@@ -25,6 +25,7 @@
 | `GET/POST /api/works` | 分页搜索流水线 / 创建方法工作区 |
 | `GET /api/works/:id` | 返回 Snapshot：Work + 实际定义内容 + 校验问题 |
 | `POST /api/works/:id/actions` | switch 分派命名、归档、材料、草稿、运行、比较、作者等动作；完成分派后返回 Snapshot |
+| `POST /api/works/:id/invoke` | 一次性触发：裸值包装为 InputItem（ad-hoc 无材料来源），definition 缺省 adopted；声明 inputContracts 的端口违约默认 400 拒绝，`mode:"loose"` 显式豁免、`onInvalid:"interpret"` 走 assistant.repairInvocation 修复环，均留痕 Run.invocation；`wait` 同步等终态返回 outputs，超时 202 |
 | `POST /api/works/:id/preview-results` | 所选成功结果 → 带来源 Inputs，不执行续做 |
 | `GET/POST /api/works/:id/uploads` | 列出 / 保存上传文件；上传不等于登记为材料 |
 | `GET /api/works/:id/events` | SSE 完整 snapshot 与 ping；不是增量业务事件回放 |

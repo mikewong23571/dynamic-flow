@@ -1,5 +1,6 @@
 import { materializeDefinition } from '../../shared/expansion.ts';
 import { checkProblem, checkSemantic } from './semantic.ts';
+import { checkInputContracts } from './contracts.ts';
 import {
   nodeInputPorts,
   collectionFunction,
@@ -110,6 +111,7 @@ export function checkDefinition(definition: Definition): Issue[] {
     return [{ message: (error as Error).message, field: 'definition' }];
   }
   const issues: Issue[] = checkProblem(definition.problem);
+  issues.push(...checkInputContracts(definition));
   const nodes = new Map<string, FlowNode>();
   if (!definition.nodes.length)
     issues.push({ field: 'nodes', message: '请添加至少一个处理节点。' });

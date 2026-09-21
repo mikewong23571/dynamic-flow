@@ -359,6 +359,37 @@ export function createAssistant(
         clearTimeout(timer);
       }
     },
+    /** interpret 逃生通道的修复环：契约违约输入经 agent 修复为合规裸值；修不出如实抛错。 */
+    async repairInvocation(
+      workId: string,
+      input: {
+        port: string;
+        schema: Record<string, unknown>;
+        errors: string[];
+        values: unknown[];
+      },
+    ): Promise<unknown[]> {
+      const work = await files.read(workId);
+      const { config } = modelSettings.getScopedConfig('assistant', work);
+      const text = await runSession({
+        config,
+        systemPrompt:
+          '你是输入修复器。把不符合输入契约的条目修复为符合契约的值，保持原意、逐条对应、数量不变，不编造内容。只输出 JSON 数组，不要其它文字。',
+        prompt: JSON.stringify({
+          port: input.port,
+          schema: input.schema,
+          errors: input.errors,
+          values: input.values,
+        }),
+        tools: [],
+        // 修复是无状态单轮，不写入作者的持久会话。
+        signal: AbortSignal.timeout(120_000),
+      });
+      const parsed = parseOutput(text, { type: 'array' });
+      if (!Array.isArray(parsed) || parsed.length !== input.values.length)
+        throw new Error('修复结果与输入条目数量不一致。');
+      return parsed;
+    },
     async requestEdit(workId: string, request: EditRequest): Promise<string> {
       if (!request.text.trim()) throw new Error('请描述希望生成或修改的做法。');
       const frozen = structuredClone(request);

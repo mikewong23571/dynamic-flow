@@ -70,3 +70,7 @@ ViewState.positions / viewport 保存节点位置与视口；可选 showPorts �
 ## 问题驱动的动态工作流
 
 `Definition.problem` 保存当前 framing/known/unknown/constraints/evidence 文本，随定义版本冻结；`FlowNode.contract` 描述 responsibility/done/rationale/semanticRole，不把文本完成条件当机器证明。`repeat` 是 map 步骤的有限迭代配置，`dynamic` 是有限局部子图规划。`Run.expansions` 保存实际子图；`NodeResult.purpose/iteration/intermediate/repeatDone` 区分规划、逐轮和最终结果。`expansion.ts` 仅将已记录展开投影成同一执行图，原 Definition 不变。具体边界见 [本轮合同](../../docs/semantic-workflow.md)。
+
+## 输入契约与 invoke 留痕（2026-09-21）
+
+Definition.inputContracts（端口 → InputContract{item?, required?, onInvalid?}）是严格入口的声明；未声明端口保持宽松。Run.invocation 记录 invoke 留痕（loose 豁免 / repairedPorts 修复）。旧数据无字段正常读取。

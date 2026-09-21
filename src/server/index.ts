@@ -18,6 +18,12 @@ import {
   profileOutputs,
   withProfileFile,
 } from './assistant/profile-flow.ts';
+import {
+  invalidPolicy,
+  validateInvocation,
+} from './flow/contracts.ts';
+import { validateForRun } from './flow/index.ts';
+import type { SessionRunner } from './assistant/pi.ts';
 import type {
   ChatMessage,
   Definition,
@@ -40,6 +46,8 @@ export async function createApplication(
   options: {
     dataRoot?: string;
     executeNode?: (context: NodeExecution) => Promise<Json>;
+    /** 测试注入：替换 Pi 会话执行器（interpret 修复环等真实模型路径的替身）。 */
+    runSession?: SessionRunner;
   } = {},
 ) {
   const dataRoot = options.dataRoot ?? resolve('data');
@@ -53,10 +61,13 @@ export async function createApplication(
       catalogPath: options.dataRoot
         ? resolve(dataRoot, 'models.toml')
         : resolve('models.toml'),
+      ...(options.runSession ? { runSession: options.runSession } : {}),
     });
   const items = createWorkItems(dataRoot, files);
   /** 剖析运行 ID → 导入消息 requestId，用于收尾更新。 */
   const importRuns = new Map<string, string>();
+  /** invoke 同步等待：runId → 终态通知；onFinish 到达时兑现。 */
+  const invokeWaiters = new Map<string, (run: Run) => void>();
   /** 读取内建剖析的规范定义；内建工作不存在时先创建。 */
   async function canonicalProfileDefinition(): Promise<Definition> {
     const works = await files.list();
@@ -173,7 +184,12 @@ export async function createApplication(
   }
   const runs = createRuns(files, options.executeNode ?? assistant.executeNode, {
       onMilestone: items.milestone,
-      onFinish: finishImportRun,
+      onFinish: async (workId, run) => {
+        await finishImportRun(workId, run);
+        const waiter = invokeWaiters.get(run.id);
+        invokeWaiters.delete(run.id);
+        waiter?.(run);
+      },
     }),
     trials = createTrials(files, runs);
   await items.reconcile();
@@ -472,6 +488,158 @@ export async function createApplication(
         throw Error('未知操作，请刷新后重试。');
     }
     return c.json(await flow.snapshot(id));
+  });
+  /** 一次提取声明输出的最终值：排除规划与中间轮实例。 */
+  const finalOutputs = (definition: Definition, run: Run) =>
+    Object.fromEntries(
+      Object.entries(definition.outputs).map(([name, [nodeId, port]]) => [
+        name,
+        run.results
+          .filter(
+            (r) =>
+              r.nodeId === nodeId &&
+              r.status === 'completed' &&
+              !r.intermediate &&
+              !r.purpose,
+          )
+          .flatMap((r) => (r.outputs[port] ?? []).map((i) => i.value)),
+      ]),
+    );
+  /** 一次性触发：裸值进、InputItem 服务端包装；契约违约默认门口拒绝，loose/interpret 显式留痕。 */
+  app.post('/api/works/:id/invoke', async (c) => {
+    const id = c.req.param('id');
+    const b = await c.req.json<{
+      inputs?: Record<string, unknown[]>;
+      definition?: 'adopted' | 'draft' | string;
+      mode?: 'loose';
+      wait?: boolean;
+      timeoutSeconds?: number;
+    }>();
+    const current = await files.read(id);
+    const definitionId =
+      !b.definition || b.definition === 'adopted'
+        ? current.adoptedId
+        : b.definition === 'draft'
+          ? current.draftId
+          : b.definition;
+    if (!definitionId)
+      throw new Error(
+        '该工作还没有已采用的做法版本，请先采用或显式指定 definition。',
+      );
+    if (!current.definitionIds.includes(definitionId))
+      throw new Error('指定的做法版本不存在。');
+    const definition = await files.readDefinition(id, definitionId);
+    validateForRun(definition);
+    const rawInputs = b.inputs ?? {};
+    for (const [port, values] of Object.entries(rawInputs)) {
+      if (!definition.inputs.includes(port))
+        throw new Error(`流程没有输入端口「${port}」。`);
+      if (!Array.isArray(values))
+        throw new Error(`端口「${port}」的输入必须是一组条目（数组）。`);
+    }
+    // 严格入口：声明了契约且未显式 loose 时逐条校验。
+    const contracts = definition.inputContracts ?? {};
+    const repairedPorts: string[] = [];
+    if (Object.keys(contracts).length && b.mode !== 'loose') {
+      const issues = validateInvocation(definition, rawInputs);
+      if (issues.length) {
+        const interpretPorts = new Set(
+          Object.entries(contracts)
+            .filter(([, contract]) => invalidPolicy(contract) === 'interpret')
+            .map(([port]) => port),
+        );
+        const hard = issues.filter((issue) => !interpretPorts.has(issue.port));
+        if (hard.length)
+          throw new Error(
+            `输入不符合契约：${hard.map((issue) => issue.message).join('；')}`,
+          );
+        // interpret 修复环：违约细节喂回 agent 修复，复检仍失败如实拒绝。
+        for (const port of interpretPorts) {
+          const contract = contracts[port]!;
+          const repaired = await assistant
+            .repairInvocation(id, {
+              port,
+              schema: contract.item ?? {},
+              errors: issues
+                .filter((issue) => issue.port === port)
+                .map((issue) => issue.message),
+              values: rawInputs[port] ?? [],
+            })
+            .catch((error) => {
+              throw new Error(
+                `输入不符合契约且修复失败：${error instanceof Error ? error.message : String(error)}`,
+              );
+            });
+          const still = validateInvocation(definition, {
+            ...rawInputs,
+            [port]: repaired,
+          }).filter((issue) => issue.port === port);
+          if (still.length)
+            throw new Error(
+              `输入不符合契约且修复失败：${still.map((issue) => issue.message).join('；')}`,
+            );
+          rawInputs[port] = repaired;
+          repairedPorts.push(port);
+        }
+      }
+    }
+    const inputs: Inputs = Object.fromEntries(
+      Object.entries(rawInputs).map(([port, values]) => [
+        port,
+        values.map((value, index) => ({
+          sampleId: `${port}-${index + 1}`,
+          value: value as Json,
+          materialIds: [],
+          sourceResultIds: [],
+        })),
+      ]),
+    );
+    const runId = await runs.start(id, {
+      definitionId,
+      scope: 'full',
+      inputs,
+    });
+    if (b.mode === 'loose' || repairedPorts.length)
+      await files.change(id, (work) => {
+        const run = work.runs.find((r) => r.id === runId);
+        if (run)
+          run.invocation = {
+            ...(b.mode === 'loose' ? { loose: true } : {}),
+            ...(repairedPorts.length ? { repairedPorts } : {}),
+          };
+      });
+    if (!b.wait) return c.json({ runId, status: 'started' });
+    const timeoutMs =
+      Math.min(Math.max(b.timeoutSeconds ?? 120, 1), 600) * 1000;
+    const finished = await new Promise<Run | undefined>((resolveWait) => {
+      const timer = setTimeout(() => {
+        invokeWaiters.delete(runId);
+        resolveWait(undefined);
+      }, timeoutMs);
+      invokeWaiters.set(runId, (run) => {
+        clearTimeout(timer);
+        resolveWait(run);
+      });
+      // 极快运行可能在注册等待前已终态。
+      void files.read(id).then((work) => {
+        const run = work.runs.find((r) => r.id === runId);
+        if (
+          run &&
+          ['completed', 'failed', 'cancelled'].includes(run.status) &&
+          invokeWaiters.delete(runId)
+        ) {
+          clearTimeout(timer);
+          resolveWait(run);
+        }
+      });
+    });
+    if (!finished) return c.json({ runId, status: 'running' }, 202);
+    return c.json({
+      runId,
+      status: finished.status,
+      ...(finished.error ? { error: finished.error } : {}),
+      outputs: finalOutputs(definition, finished),
+    });
   });
   app.post('/api/works/:id/model-selection', async (c) => {
     const id = c.req.param('id'),
