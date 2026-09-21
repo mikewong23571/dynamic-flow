@@ -16,7 +16,7 @@
 | `state/useSelection.ts` | 节点/运行/材料/结果选择，按工作恢复本地上下文与待保存草稿 |
 | `state/usePanels.ts` | 标签页、面板、对话框和表单状态 |
 | `state/useActions.ts` | 保存、运行、停止、比较、候选、布局等服务端动作及响应处理 |
-| `core/` | 可复用的请求与动作辅助（api/action），以及纯逻辑（format/inputs/definition/compare/results）；不在此放 React 状态或执行器 |
+| `core/` | 可复用的请求与动作辅助（api/action），以及纯逻辑（format/inputs/definition/compare/results/invoke-form）；不在此放 React 状态或执行器 |
 
 `useConnection` 接收 Snapshot → `useDraft` 与 `useSelection` 维护编辑上下文 → features 展示与收集意图 → `useActions` 调用 HTTP → 服务端保存并通过响应/SSE 更新。查看 `core/definition.ts` 的 revision 接受规则与 `useActions` 的工作 ID 检查，避免迟到响应串到其它工作。
 
@@ -26,7 +26,7 @@
 
 | 目录 | 核心文件与职责 | 相邻合同 / 主要测试 |
 | --- | --- | --- |
-| `features/workspace/` | Sidebar 导航；WorkspaceDialogs 组合创建、添加材料、候选起点、试验、续做和只读 JS 对话框 | controller、state；`tests/browser/same-work-reopen.spec.ts` |
+| `features/workspace/` | Sidebar 导航；WorkspaceDialogs 组合创建、添加材料、候选起点、试验、续做、只读 JS 和直接输入调用（InvokeDialog）对话框 | controller、state；`tests/browser/same-work-reopen.spec.ts` |
 | `features/canvas/` | WorkflowCanvas 编辑图与关系聚焦；WorkflowNode/Edge 展示；canvas-layout 做 ELK 几何计算，useCanvasLayout 管理测量/异步布局/保存，canvas-view 做展示辅助 | shared/node-ports、ViewState、flow.saveLayout；`tests/canvas-*.test.ts`、`tests/browser/canvas-layout.spec.ts` |
 | `features/inspector/` | NodeInspector 配置节点；ExpressionEditor/Fields、PatternEditor 编辑纯表达式；CollectionEditor 编辑 merge/collect/join | shared、flow 校验；`tests/multi-input-client.test.ts`、`tests/browser/functional-editor.spec.ts`、`tests/browser/multi-input.spec.ts` |
 | `features/assistant/` | Assistant、AssistantMessage：请求上下文、消息、工具活动与保存反馈。Composer 约束：IME composition 期间不得向父级 setState 同步草稿（重渲染会被 Chromium 强制提交组合、候选框闪断），组合结束才回写；`useExternalStoreRuntime` 的 store 对象须保持稳定引用（useMemo + 回调走 ref），否则每次渲染 setAdapter 通知全部订阅者 | assistant-ui、服务端 assistant；`tests/browser/workspace.spec.ts` 与真实作者证据 |
