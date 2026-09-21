@@ -1,6 +1,6 @@
 # Tracks Registry
 
-- [ ] **Track: 再来一单：invoke 表单与调用留痕展示**
+- [~] **Track: 再来一单：invoke 表单与调用留痕展示**
   *Link: [invoke-form_20260922](./tracks/invoke-form_20260922/index.md)*
 
 - [x] **Track: 输入契约与 invoke 触发面**
