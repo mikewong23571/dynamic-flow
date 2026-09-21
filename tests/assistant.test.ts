@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, rm, readFile, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { Type } from '@earendil-works/pi-ai';
 import { defineTool } from '@earendil-works/pi-coding-agent';
@@ -96,6 +96,8 @@ async function fixture(runner: SessionRunner) {
     id,
     assistant,
     finish,
+    root,
+    runner,
     clean: () => rm(root, { recursive: true, force: true }),
   };
 }
@@ -229,15 +231,12 @@ test('concurrent user edit keeps latest draft and records rejected proposal', as
   }
 });
 
-test('selected node cannot change unrelated node; text-only success is rejected', async () => {
-  for (const mode of ['unrelated', 'text-only', 'unchanged']) {
+test('selected node cannot change unrelated node; no-change turns complete honestly', async (t) => {
+  await t.test('unrelated change is rejected as failed', async () => {
     const f = await fixture(async (input) => {
-      if (mode === 'unrelated') {
-        const proposed = structuredClone(definition);
-        proposed.nodes[1].task = '不相关改动';
-        await save(input, proposed);
-      }
-      if (mode === 'unchanged') await save(input, structuredClone(definition));
+      const proposed = structuredClone(definition);
+      proposed.nodes[1].task = '不相关改动';
+      await save(input, proposed);
       return '已修改';
     });
     try {
@@ -251,6 +250,29 @@ test('selected node cannot change unrelated node; text-only success is rejected'
     } finally {
       await f.clean();
     }
+  });
+  // 纯说明或原样保存不产生变更：声称与事实一致，如实标 unchanged 完成，不误报失败。
+  for (const mode of ['text-only', 'unchanged']) {
+    await t.test(`${mode} completes with unchanged flag`, async () => {
+      const f = await fixture(async (input) => {
+        if (mode === 'unchanged') await save(input, structuredClone(definition));
+        return '这是对当前做法的说明，没有修改。';
+      });
+      try {
+        const id = await f.assistant.requestEdit(f.work.id, {
+          text: '改分类',
+          expectedDraftId: f.id,
+          nodeId: 'classify',
+        });
+        const message = await f.finish(id);
+        assert.equal(message.status, 'completed');
+        assert.equal(message.unchanged, true);
+        assert.equal(message.error, undefined);
+        assert.equal((await f.files.read(f.work.id)).draftId, f.id);
+      } finally {
+        await f.clean();
+      }
+    });
   }
 });
 
@@ -843,4 +865,81 @@ test('author prompt clips large material lists with an explicit marker', async (
   } finally {
     await f.clean();
   }
+});
+
+test('persistent session: bootstrap once, serialize per work, survive restart', async (t) => {
+  await t.test('first turn bootstraps recentMessages; later turns rely on session file', async () => {
+    const prompts: Record<string, unknown>[] = [];
+    const dirs: (string | undefined)[] = [];
+    const f = await fixture(async (input) => {
+      dirs.push(input.sessionDir);
+      prompts.push(JSON.parse(input.prompt));
+      // 模拟 Pi：持久会话以 JSONL 落盘
+      await mkdir(input.sessionDir!, { recursive: true });
+      await writeFile(join(input.sessionDir!, 'session.jsonl'), '{}\n');
+      return '说明';
+    });
+    try {
+      const first = await f.assistant.requestEdit(f.work.id, {
+        text: '先记住：分类阈值定为 0.8',
+        expectedDraftId: f.id,
+      });
+      assert.equal((await f.finish(first)).status, 'completed');
+      assert.ok(dirs[0]?.endsWith('assistant'));
+      assert.ok('recentMessages' in prompts[0]!, '首轮无会话文件，用消息文本引导');
+
+      const second = await f.assistant.requestEdit(f.work.id, {
+        text: '阈值是多少？',
+        expectedDraftId: f.id,
+      });
+      assert.equal((await f.finish(second)).status, 'completed');
+      assert.ok(
+        !('recentMessages' in prompts[1]!),
+        '有会话文件后不再注入消息文本',
+      );
+      assert.equal(dirs[1], dirs[0]);
+
+      // 进程重启等价物：同一 files 新建 assistant（内存队列清空），会话文件仍在
+      const restarted = createAssistant(f.files, f.flow, {
+        catalogPath: join(f.root, 'models.toml'),
+        settingsPath: join(f.root, 'model-settings.json'),
+        runSession: f.runner,
+      });
+      const third = await restarted.requestEdit(f.work.id, {
+        text: '再说一遍？',
+        expectedDraftId: f.id,
+      });
+      assert.equal((await f.finish(third)).status, 'completed');
+      assert.ok(!('recentMessages' in prompts[2]!), '重启后仍复用会话文件');
+    } finally {
+      await f.clean();
+    }
+  });
+
+  await t.test('same-work requests serialize session runs', async () => {
+    let running = 0,
+      max = 0;
+    const f = await fixture(async () => {
+      running++;
+      max = Math.max(max, running);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      running--;
+      return '好';
+    });
+    try {
+      const a = await f.assistant.requestEdit(f.work.id, {
+        text: '一',
+        expectedDraftId: f.id,
+      });
+      const b = await f.assistant.requestEdit(f.work.id, {
+        text: '二',
+        expectedDraftId: f.id,
+      });
+      await f.finish(a);
+      await f.finish(b);
+      assert.equal(max, 1, '同一 Work 的会话执行不得并发');
+    } finally {
+      await f.clean();
+    }
+  });
 });

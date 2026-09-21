@@ -188,7 +188,7 @@ const definitionSchema = Type.Object({
 });
 
 const authorInstructions = `你是工作流作者。初次生成流程时请在 update_flow 的 title 字段给出简短中文工作标题（建议 4–12 字），概括本次真实目标，不写 UUID。根据本次目标与材料创建或修改实际可执行的工作流，使用中文回答。
-必须调用 update_flow 保存实际定义才算完成编辑，不得只说已修改。工具失败要说明原因，不得声称已保存。不满足可运行条件的提案会被工具拒绝且不会写入草稿；收到校验错误应修正后再次保存，无法修正时说明未完成事项。
+修改类请求必须调用 update_flow 保存实际定义才算完成编辑，不得只说已修改；纯分析或问答可直接回复说明，不要为凑变更保存无关修改。工具失败要说明原因，不得声称已保存。不满足可运行条件的提案会被工具拒绝且不会写入草稿；收到校验错误应修正后再次保存，无法修正时说明未完成事项。
 工作流形状由工具 schema 定义，完整定义必须显式包含 schemaVersion:1。保持任务与输出结构简洁，只包含完成目标需要的字段，不为每个字段重复编写 description。面向用户的最终报告节点输出 Markdown 正文，expectedOutput 使用 {"type":"string"}，不为报告建立庞大的嵌套 JSON 结构。普通节点输入端口 input、输出 output；branch 输入 input、输出 matched/unmatched；旧 functionName=merge（无inputNames）节点输入 left/right；新集合函数的端口和schema见后述规则。file 来源节点（kind:file, file:{name}）引用工作 uploads 中的文件，无入边、输出 output，下游 agent 节点可在会话中用 Node 运行时（xlsx/mammoth/unpdf 已预装）读取该文件。不存在 $output 虚拟节点，不要向它连线；最终输出只能声明在 outputs 映射中，例如 outputs:{report:["实际节点id","output"]}。外部输入用 ['$input', '<inputs中的名字>']。edges 决定顺序；不允许回连。
 operation 明确计算组合：map 对每条输入调用一次，返回一个值（数组也保留为一个值）；flatMap 对每条输入调用一次并将返回数组展开一层；aggregate 一次处理集合。为兼容旧定义，map/flatMap 同时设 mode:each，aggregate 设 mode:all；concurrency 可设 1–8，默认1。inputSchema/expectedOutput 分别定义单次调用输入/输出，普通 aggregate 输入为数组；旧多端口 aggregate 的 schema 输入按端口顺序拼接为值数组；无inputNames的旧merge保留 left/right 端口来源。新集合函数使用后述具名数组对象输入与固定输出分发规则。函数允许 identity/select-fields/merge/collect/join/expression。节点 id 稳定保留，label 写用户能理解的业务名称。
 ${expressionGuide}
@@ -230,6 +230,28 @@ export function createAssistant(
     string,
     { workId: string; controller: AbortController }
   >();
+  /** 同一 Work 的作者请求串行：Pi 持久会话文件是追加式单写者，并发会交错损坏。 */
+  const sessionQueues = new Map<string, Promise<unknown>>();
+  const enqueueSession = (workId: string, run: () => Promise<void>) => {
+    const next = (sessionQueues.get(workId) ?? Promise.resolve())
+      .catch(() => {})
+      .then(run);
+    sessionQueues.set(workId, next);
+    void next
+      .finally(() => {
+        if (sessionQueues.get(workId) === next) sessionQueues.delete(workId);
+      })
+      .catch(() => {});
+    return next;
+  };
+  /** 已有 Pi 会话文件 = 历史已在会话内，无需再用消息文本引导。 */
+  const hasPiSession = async (dir: string) => {
+    try {
+      return (await readdir(dir)).some((file) => file.endsWith('.jsonl'));
+    } catch {
+      return false;
+    }
+  };
   const modelSettings = createModelSettings(
     options.settingsPath,
     options.catalogPath,
@@ -584,6 +606,9 @@ export function createAssistant(
               };
             },
           });
+          // 持久会话：历史由 Pi 会话文件提供；首轮（尚无会话文件）用既有消息文本引导。
+          const sessionDir = files.sessionDir(workId);
+          const bootstrap = !(await hasPiSession(sessionDir));
           const output = await runSession({
             config,
             systemPrompt: authorInstructions,
@@ -594,9 +619,16 @@ export function createAssistant(
               selectedNodeId: frozen.nodeId ?? null,
               selectedSampleIds: frozen.sampleIds ?? [],
               expectedDraftId: frozen.expectedDraftId ?? null,
-              recentMessages: work.messages
-                .slice(-12)
-                .map((message) => ({ role: message.role, text: message.text })),
+              ...(bootstrap
+                ? {
+                    recentMessages: work.messages
+                      .slice(-12)
+                      .map((message) => ({
+                        role: message.role,
+                        text: message.text,
+                      })),
+                  }
+                : {}),
               availableRuns: clipList(
                 work.runs.map((r) => ({
                   id: r.id,
@@ -622,6 +654,7 @@ export function createAssistant(
               instruction: frozen.text,
             }),
             tools: [update, updateStep, inspect, inspectRun, freezeExpansion],
+            sessionDir,
             signal: controller.signal,
             onText: async (delta) => {
               text += delta;
@@ -640,13 +673,15 @@ export function createAssistant(
           });
           throwIfAborted(controller.signal);
           if (toolError) throw new Error(toolError);
-          if (!saved)
-            throw new Error(
-              'Assistant 没有保存实际变更。请补充具体修改要求后重试；本轮回复不代表做法已经改变。',
-            );
+          // 无保存不等于失败：声称修改才需要兑现（见用户故事 B3）；
+          // 纯分析/说明类回复如实标 unchanged 完成，不误报错误。
           await patchMessage(workId, requestId, (message) => {
-            message.text = output || text || '做法已保存，可在画布检查。';
+            message.text =
+              output ||
+              text ||
+              (saved ? '做法已保存，可在画布检查。' : '本轮回复仅作说明。');
             message.status = 'completed';
+            if (!saved) message.unchanged = true;
           });
         } catch (error) {
           await patchMessage(workId, requestId, (message) => {
@@ -664,7 +699,7 @@ export function createAssistant(
           active.delete(requestId);
         }
       };
-      void run().catch((error) => {
+      void enqueueSession(workId, run).catch((error) => {
         console.error('Assistant 状态保存失败：', safeError(error, config));
       });
       return requestId;

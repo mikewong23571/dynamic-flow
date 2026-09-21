@@ -1,4 +1,4 @@
-import { mkdtemp, rm, symlink } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,6 +30,9 @@ export interface SessionInput {
   linkRuntime?: boolean;
   /** 会话成功结束后、临时目录清理前收割会话内产出的文件。 */
   collect?: (dir: string) => Promise<void>;
+  /** 持久会话目录：提供时在其中创建/恢复 Pi 会话（JSONL 落盘、启用自动 compaction），
+   * 目录保留；省略为一次性内存会话，临时目录用完即删。 */
+  sessionDir?: string;
   signal: AbortSignal;
   onText?: (delta: string) => Promise<void>;
   onActivity?: (activity: Activity) => Promise<void>;
@@ -44,7 +47,10 @@ export function throwIfAborted(signal: AbortSignal) {
 /** Pi owns the complete model/tool loop. This adapter only binds application events. */
 export const runPiSession: SessionRunner = async (input) => {
   throwIfAborted(input.signal);
-  const dir = await mkdtemp(join(tmpdir(), 'dynamic-flow-pi-'));
+  // 持久会话：目录固定、跨请求保留（含进程重启）；一次性会话：临时目录用完即删。
+  const persistent = !!input.sessionDir;
+  const dir = input.sessionDir ?? (await mkdtemp(join(tmpdir(), 'dynamic-flow-pi-')));
+  if (persistent) await mkdir(dir, { recursive: true });
   let session:
     Awaited<ReturnType<typeof createAgentSession>>['session'] | undefined;
   let events = Promise.resolve();
@@ -73,7 +79,8 @@ export const runPiSession: SessionRunner = async (input) => {
       );
     }
     const settingsManager = SettingsManager.inMemory({
-      compaction: { enabled: false },
+      // 持久会话启用 SDK 自动 compaction（上下文溢出时摘要旧轮次）；一次性会话不需要。
+      compaction: { enabled: persistent },
       // 网关会在长时间思考/长会话中断流（terminated）；模型调用级重试让循环续跑，
       // 已完成的工具调用不会重放。
       retry: { enabled: true, maxRetries: 3, baseDelayMs: 2000 },
@@ -193,7 +200,9 @@ export const runPiSession: SessionRunner = async (input) => {
       thinkingLevel: settings.reasoningEffort,
       resourceLoader,
       settingsManager,
-      sessionManager: SessionManager.inMemory(),
+      sessionManager: persistent
+        ? SessionManager.continueRecent(dir, dir)
+        : SessionManager.inMemory(),
       tools: [
         ...(input.builtinTools ?? []),
         ...input.tools.map((tool) => tool.name),
@@ -268,6 +277,6 @@ export const runPiSession: SessionRunner = async (input) => {
     input.signal.removeEventListener('abort', abort);
     session?.dispose();
     await events;
-    await rm(dir, { recursive: true, force: true });
+    if (!persistent) await rm(dir, { recursive: true, force: true });
   }
 };

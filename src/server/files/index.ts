@@ -20,6 +20,8 @@ export interface FileStore {
   saveUpload(workId: string, name: string, data: Buffer): Promise<string>;
   readUpload(workId: string, name: string): Promise<Buffer>;
   uploadPath(workId: string, name: string): string;
+  /** Assistant 持久会话目录（Pi JSONL 会话文件）；只派生路径，不创建。 */
+  sessionDir(workId: string): string;
   listUploads(workId: string): Promise<string[]>;
   onChange(listener: (workId: string) => void): () => void;
   onServerStart(): Promise<void>;
@@ -147,6 +149,9 @@ export function createFiles(root: string): FileStore {
     },
     uploadPath(workId, name) {
       return join(root, workId, 'uploads', uploadName(name));
+    },
+    sessionDir(workId) {
+      return join(root, workId, 'assistant');
     },
     async listUploads(workId) {
       try {

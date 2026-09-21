@@ -156,6 +156,8 @@ export interface ChatMessage {
   sampleIds?: string[];
   activities?: Activity[];
   error?: string;
+  /** 本轮对话正常完成但未保存实际变更（纯分析/说明类回复）；缺省按已变更处理。 */
+  unchanged?: boolean;
   proposedDefinition?: Definition;
   effectiveModel?: EffectiveModel;
 }
