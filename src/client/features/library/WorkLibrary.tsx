@@ -4,6 +4,8 @@ import {
   ArchiveRestore,
   MoreHorizontal,
   Pencil,
+  Pin,
+  PinOff,
   Plus,
   Workflow,
 } from 'lucide-react';
@@ -41,6 +43,7 @@ import {
   ListPagination,
   ListLoading,
 } from '../../components/Management';
+import { usePinnedWorks } from './usePinnedWorks';
 import './WorkLibrary.css';
 
 export default function WorkLibrary({
@@ -66,6 +69,31 @@ export default function WorkLibrary({
   const [revision, setRevision] = useState(0);
   const [renaming, setRenaming] = useState<WorkSummary>();
   const [title, setTitle] = useState('');
+  const { pinned, togglePin } = usePinnedWorks();
+  const [pinnedWorks, setPinnedWorks] = useState<WorkSummary[]>([]);
+  useEffect(() => {
+    if (archived || query || pinned.length === 0) {
+      setPinnedWorks([]);
+      return;
+    }
+    let current = true;
+    void api<WorkPage>('/api/works?page=1&pageSize=100&archived=false')
+      .then((result) => {
+        if (!current) return;
+        const byId = new Map(result.works.map((item) => [item.id, item]));
+        setPinnedWorks(
+          pinned
+            .map((id) => byId.get(id))
+            .filter((item): item is WorkSummary => Boolean(item)),
+        );
+      })
+      .catch(() => {
+        if (current) setPinnedWorks([]);
+      });
+    return () => {
+      current = false;
+    };
+  }, [pinned, archived, query, revision, refreshKey]);
   useEffect(() => {
     let current = true;
     setLoading(true);
@@ -121,6 +149,41 @@ export default function WorkLibrary({
           新建流水线
         </Button>
       </PageHeader>
+      {pinnedWorks.length > 0 && (
+        <div className="library-pinned" aria-label="已置顶的流水线">
+          {pinnedWorks.map((work) => {
+            const name = work.title || work.goal;
+            return (
+              <div className="library-pinned-row" key={work.id}>
+                <Pin size={14} />
+                <button
+                  className="management-title-button"
+                  aria-label={name}
+                  onClick={() => onOpen(work.id)}
+                  title={name}
+                >
+                  <strong>{name}</strong>
+                  <span className="management-secondary">
+                    {work.nodeCount
+                      ? `${work.nodeCount} 个节点`
+                      : '尚未编排节点'}{' '}
+                    · {dateTime(work.updatedAt)}
+                  </span>
+                </button>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={`取消置顶 ${name}`}
+                  title="取消置顶"
+                  onClick={() => togglePin(work.id)}
+                >
+                  <PinOff />
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      )}
       <Tabs
         className="library-body"
         value={archived ? 'archived' : 'active'}
@@ -216,6 +279,13 @@ export default function WorkLibrary({
                                   : '尚未编排节点'}
                               </span>
                             </button>
+                            {pinned.includes(work.id) && (
+                              <Pin
+                                size={13}
+                                className="library-pinned-mark"
+                                aria-label="已置顶"
+                              />
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -252,6 +322,20 @@ export default function WorkLibrary({
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
+                              {!archived && (
+                                <DropdownMenuItem
+                                  onSelect={() => togglePin(work.id)}
+                                >
+                                  {pinned.includes(work.id) ? (
+                                    <PinOff />
+                                  ) : (
+                                    <Pin />
+                                  )}
+                                  {pinned.includes(work.id)
+                                    ? '取消置顶'
+                                    : '置顶'}
+                                </DropdownMenuItem>
+                              )}
                               <DropdownMenuItem
                                 onSelect={() => {
                                   setRenaming(work);
