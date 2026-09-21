@@ -2330,12 +2330,23 @@ a:focus-visible {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
+  }
+  .catalog-provider > header > strong,
+  .catalog-provider > header > .badge {
+    flex-shrink: 0;
+  }
+  .catalog-provider-url {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .catalog-provider-actions {
     margin-left: auto;
     display: flex;
     gap: 4px;
+    flex-shrink: 0;
   }
   .catalog-model {
     display: flex;

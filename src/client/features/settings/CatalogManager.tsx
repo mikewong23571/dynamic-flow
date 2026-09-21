@@ -586,7 +586,10 @@ export function CatalogManager({
           <div className="catalog-provider" key={provider.name}>
             <header>
               <strong>{provider.name}</strong>
-              <span className="muted">
+              <span
+                className="muted catalog-provider-url"
+                title={provider.baseUrl}
+              >
                 {providerTypes[provider.type]} · {provider.baseUrl}
               </span>
               <Badge
