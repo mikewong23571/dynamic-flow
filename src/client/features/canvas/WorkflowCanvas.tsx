@@ -19,7 +19,7 @@ import { focusedEdges, canvasFitOptions, type PortFocus } from './canvas-view';
 import { useCanvasLayout } from './useCanvasLayout';
 import { inputPorts, outputPorts } from '../../core/inputs';
 import { nodeTotal } from '../../core/results';
-import { isFinalOutput, nodeLabel } from '../../core/definition';
+import { isFinalOutput, nodeLabel, hasBatchInputs } from '../../core/definition';
 import { portLabel } from '../../core/format';
 import { Button } from '../../components/ui';
 import './WorkflowCanvas.css';
@@ -83,17 +83,21 @@ function Canvas({
   );
   const makeNodes = useCallback(
     (): CanvasNode[] => [
-      {
-        id: '$input',
-        deletable: false,
-        type: 'workflow',
-        position: view.positions.$input || { x: 35, y: 35 },
-        data: {
-          label: '工作材料',
-          ports: definition.inputs,
-          onPortFocus: hoverPort,
-        },
-      },
+      ...(hasBatchInputs(definition)
+        ? [
+            {
+              id: '$input',
+              deletable: false,
+              type: 'workflow' as const,
+              position: view.positions.$input || { x: 35, y: 35 },
+              data: {
+                label: '工作材料',
+                ports: definition.inputs,
+                onPortFocus: hoverPort,
+              },
+            },
+          ]
+        : []),
       ...definition.nodes.map((node, index) => ({
         id: node.id,
         deletable: false,

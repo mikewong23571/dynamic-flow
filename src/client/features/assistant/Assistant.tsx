@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import {
   AssistantRuntimeProvider,
   ComposerPrimitive,
@@ -7,7 +7,7 @@ import {
   type AppendMessage,
   type ThreadMessageLike,
 } from '@assistant-ui/react';
-import { ArrowUp, Square, Sparkles, CornerDownLeft } from 'lucide-react';
+import { ArrowUp, Square, Sparkles } from 'lucide-react';
 import type {
   ChatMessage,
   Definition,
@@ -34,6 +34,8 @@ import {
   AssistantMessagesContext,
   UserMessage,
 } from './AssistantMessage';
+/** convertMessage 保持模块级稳定引用，避免 runtime store 身份随渲染变化。 */
+const convertMessageIdentity = (m: ThreadMessageLike) => m;
 export function Assistant({
   messages,
   nodeLabel,
@@ -104,42 +106,77 @@ export function Assistant({
       })),
     [messages],
   );
+  // 回调经 ref 读取最新值，runtime store 对象保持稳定引用：
+  // 每次渲染都换新对象会让 setAdapter 重建 converter 并通知全部订阅者，
+  // 在 IME composition 进行中打断组合输入（候选框随每次击键闪断）。
+  const composerLatest = useRef({
+    onSend,
+    onDraftChange,
+    onStop,
+    draftId,
+    nodeId,
+    sampleIds,
+    running,
+  });
+  composerLatest.current = {
+    onSend,
+    onDraftChange,
+    onStop,
+    draftId,
+    nodeId,
+    sampleIds,
+    running,
+  };
+  const runtimeRef = useRef<ReturnType<
+    typeof useExternalStoreRuntime
+  > | null>(null);
+  /** IME composition 进行中标记；期间不向父级同步草稿（避免重渲染打断组合）。 */
+  const composingRef = useRef(false);
   async function send(request: EditRequest) {
     return Boolean(
       await runAction(
         async () => {
-          await onSend(request);
+          await composerLatest.current.onSend(request);
           return true;
         },
         { setBusy: setSubmitting, setError },
       ),
     );
   }
-  const runtime = useExternalStoreRuntime({
-    messages: converted,
-    convertMessage: (m) => m,
-    isRunning: !!running || submitting,
-    onNew: async (message: AppendMessage) => {
-      const text = message.content
-        .filter((p) => p.type === 'text')
-        .map((p) => p.text)
-        .join('\n');
-      const request = {
-        text,
-        expectedDraftId: draftId,
-        nodeId,
-        sampleIds: [...sampleIds],
-      };
-      if (await send(request)) {
-        onDraftChange('');
-      } else {
-        runtime.thread.composer.setText(text);
-      }
-    },
-    onCancel: async () => {
-      if (running?.requestId) onStop(running.requestId);
-    },
-  });
+  const onNew = useCallback(async (message: AppendMessage) => {
+    const text = message.content
+      .filter((p) => p.type === 'text')
+      .map((p) => p.text)
+      .join('\n');
+    const c = composerLatest.current;
+    const request = {
+      text,
+      expectedDraftId: c.draftId,
+      nodeId: c.nodeId,
+      sampleIds: [...c.sampleIds],
+    };
+    if (await send(request)) {
+      c.onDraftChange('');
+    } else {
+      runtimeRef.current?.thread.composer.setText(text);
+    }
+  }, []);
+  const onCancel = useCallback(async () => {
+    const active = composerLatest.current.running;
+    if (active?.requestId) composerLatest.current.onStop(active.requestId);
+  }, []);
+  const store = useMemo(
+    () => ({
+      messages: converted,
+      convertMessage: convertMessageIdentity,
+      isRunning: !!running || submitting,
+      onNew,
+      onCancel,
+    }),
+    [converted, running, submitting, onNew, onCancel],
+  );
+  const runtime = useExternalStoreRuntime(store);
+  runtimeRef.current = runtime;
   useEffect(() => {
     runtime.thread.composer.setText(draftText);
   }, []);
@@ -288,7 +325,19 @@ export function Assistant({
           <ComposerPrimitive.Root className="composer">
             <ComposerPrimitive.Input
               aria-label="对话修改"
-              onChange={(event) => onDraftChange(event.target.value)}
+              // IME composition 期间父级 setState 的重渲染会被 Chromium
+              // 强制提交组合（候选框闪断）；组合结束才把草稿同步给父级。
+              onCompositionStart={() => {
+                composingRef.current = true;
+              }}
+              onCompositionEnd={(event) => {
+                composingRef.current = false;
+                onDraftChange(event.currentTarget.value);
+              }}
+              onChange={(event) => {
+                if (!composingRef.current)
+                  onDraftChange(event.target.value);
+              }}
               placeholder={
                 nodeLabel
                   ? `希望「${nodeLabel}」怎样改变？`
@@ -301,9 +350,7 @@ export function Assistant({
             />
             <div className="composer-footer">
               <span className="composer-meta">
-                <span>
-                  <CornerDownLeft size={11} />⌘ / Ctrl + Enter 发送
-                </span>
+                <span className="send-hint">⌘ / Ctrl + Enter 发送</span>
                 {!!catalog.length && (
                   <ModelSelectorRoot
                     models={modelOptions}

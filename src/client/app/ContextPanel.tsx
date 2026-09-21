@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { MessageSquare, Settings2 } from 'lucide-react';
 import type {
   ChatMessage,
@@ -15,7 +15,17 @@ import { Button } from '../components/ui';
 import { NodeInspector } from '../features/inspector/NodeInspector';
 import { Assistant } from '../features/assistant/Assistant';
 
-/** 右侧面板：步骤配置或 Assistant 对话。 */
+/** 面板宽度持久化键与边界；未拖过用 CSS 响应式默认宽度。 */
+const PANEL_WIDTH_KEY = 'dynamic-flow.panel-width';
+const MIN_PANEL_WIDTH = 260;
+const maxPanelWidth = () => Math.min(640, Math.round(window.innerWidth * 0.6));
+
+function savedPanelWidth(): number | null {
+  const saved = Number(localStorage.getItem(PANEL_WIDTH_KEY));
+  return Number.isFinite(saved) && saved >= MIN_PANEL_WIDTH ? saved : null;
+}
+
+/** 右侧面板：步骤配置或 Assistant 对话。左缘拖拽调宽，宽度存本浏览器。 */
 export function ContextPanel({
   panel,
   setPanel,
@@ -76,8 +86,45 @@ export function ContextPanel({
     () => Object.fromEntries(definition.nodes.map((n) => [n.id, n.label])),
     [definition],
   );
+  const [panelWidth, setPanelWidth] = useState<number | null>(savedPanelWidth);
+  function startResize(event: React.PointerEvent<HTMLDivElement>) {
+    event.preventDefault();
+    const aside = event.currentTarget.parentElement;
+    const startX = event.clientX;
+    const startWidth = aside?.getBoundingClientRect().width ?? 342;
+    const onMove = (move: PointerEvent) => {
+      const next = Math.min(
+        maxPanelWidth(),
+        Math.max(MIN_PANEL_WIDTH, startWidth + (startX - move.clientX)),
+      );
+      setPanelWidth(next);
+    };
+    const onUp = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.body.style.userSelect = '';
+      setPanelWidth((width) => {
+        if (width) localStorage.setItem(PANEL_WIDTH_KEY, String(width));
+        return width;
+      });
+    };
+    document.body.style.userSelect = 'none';
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+  }
   return (
-    <aside className="context-panel">
+    <aside
+      className="context-panel"
+      style={panelWidth ? { width: panelWidth } : undefined}
+    >
+      <div
+        className="panel-resize-handle"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="调整面板宽度"
+        title="拖拽调整面板宽度"
+        onPointerDown={startResize}
+      />
       <div className="panel-tabs">
         <button
           className={panel === 'inspector' ? 'selected' : ''}

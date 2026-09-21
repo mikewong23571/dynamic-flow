@@ -34,6 +34,10 @@ export function nodeLabel(definition: Definition, id: string): string {
     ? '工作材料'
     : definition.nodes.find((n) => n.id === id)?.label || id;
 }
+/** 批次输入节点只在有外部输入端口时出现在画布；file 来源流程 inputs 为空，不渲染孤立的 $input。 */
+export function hasBatchInputs(definition: Definition): boolean {
+  return definition.inputs.length > 0;
+}
 export function changeSummary(
   before: Definition | undefined,
   after: Definition | undefined,

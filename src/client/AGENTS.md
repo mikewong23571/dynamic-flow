@@ -10,7 +10,7 @@
 | --- | --- |
 | `app/App.tsx` | 工作项、流水线库、画布工作区的页面组合与导航接线 |
 | `app/controller.ts` | 组合域 hook、创建和打开工作；重新打开当前工作保留编辑与选择 |
-| `app/CanvasPane.tsx`、`ContextPanel.tsx` | 画布与配置/Assistant 面板组合；同目录 Header/Tabs/Notices/CandidateBar 负责工作区框架 |
+| `app/CanvasPane.tsx`、`ContextPanel.tsx` | 画布与配置/Assistant 面板组合；面板左缘拖拽调宽（260px–60vw≤640px），宽度存本浏览器 localStorage；同目录 Header/Tabs/Notices/CandidateBar 负责工作区框架 |
 | `state/useConnection.ts` | 本地有序打开列表、当前工作 ID、HTTP 快照、SSE 连接及元数据刷新 |
 | `state/useDraft.ts` | 未保存定义、dirty/baseId、变更摘要与放弃本地修改 |
 | `state/useSelection.ts` | 节点/运行/材料/结果选择，按工作恢复本地上下文与待保存草稿 |
@@ -29,7 +29,7 @@
 | `features/workspace/` | Sidebar 导航；WorkspaceDialogs 组合创建、添加材料、候选起点、试验、续做和只读 JS 对话框 | controller、state；`tests/browser/same-work-reopen.spec.ts` |
 | `features/canvas/` | WorkflowCanvas 编辑图与关系聚焦；WorkflowNode/Edge 展示；canvas-layout 做 ELK 几何计算，useCanvasLayout 管理测量/异步布局/保存，canvas-view 做展示辅助 | shared/node-ports、ViewState、flow.saveLayout；`tests/canvas-*.test.ts`、`tests/browser/canvas-layout.spec.ts` |
 | `features/inspector/` | NodeInspector 配置节点；ExpressionEditor/Fields、PatternEditor 编辑纯表达式；CollectionEditor 编辑 merge/collect/join | shared、flow 校验；`tests/multi-input-client.test.ts`、`tests/browser/functional-editor.spec.ts`、`tests/browser/multi-input.spec.ts` |
-| `features/assistant/` | Assistant、AssistantMessage：请求上下文、消息、工具活动与保存反馈 | assistant-ui、服务端 assistant；`tests/browser/workspace.spec.ts` 与真实作者证据 |
+| `features/assistant/` | Assistant、AssistantMessage：请求上下文、消息、工具活动与保存反馈。Composer 约束：IME composition 期间不得向父级 setState 同步草稿（重渲染会被 Chromium 强制提交组合、候选框闪断），组合结束才回写；`useExternalStoreRuntime` 的 store 对象须保持稳定引用（useMemo + 回调走 ref），否则每次渲染 setAdapter 通知全部订阅者 | assistant-ui、服务端 assistant；`tests/browser/workspace.spec.ts` 与真实作者证据 |
 | `features/results/` | Results 展示运行/实例/来源；Comparison 展示同输入两侧结果与有效性 | core/inputs、compare、results；`tests/client.test.ts`、`tests/trials.test.ts` |
 | `features/library/` | WorkLibrary：搜索、分页、重命名、归档恢复与打开流水线 | work.listWorks；`tests/browser/work-library.spec.ts` |
 | `features/work-items/` | WorkItems 总览、WorkItemDetail 详情、WorkItemDialogs 业务动作 | work-items、Run 关联；`tests/browser/workitems.spec.ts` |

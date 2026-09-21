@@ -18,6 +18,7 @@ import type { CanvasData } from './WorkflowNode';
 import type { LayoutNode } from './canvas-layout';
 import { routingSignature, canvasFitOptions } from './canvas-view';
 import { inputPorts, outputPorts } from '../../core/inputs';
+import { hasBatchInputs } from '../../core/definition';
 import { errorText } from '../../core/format';
 
 type CanvasNode = Node<CanvasData>;
@@ -220,7 +221,14 @@ function measurementsReady(
   geometry: LayoutNode[],
 ): boolean {
   const expected = new Map([
-    ['$input', { inputs: [] as string[], outputs: definition.inputs }],
+    ...(hasBatchInputs(definition)
+      ? [
+          [
+            '$input',
+            { inputs: [] as string[], outputs: definition.inputs },
+          ] as const,
+        ]
+      : []),
     ...definition.nodes.map(
       (node) =>
         [

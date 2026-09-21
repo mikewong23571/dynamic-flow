@@ -1,6 +1,7 @@
 import ELK from 'elkjs/lib/elk.bundled.js';
 import type { ElkNode, ElkPort } from 'elkjs/lib/elk-api';
 import type { Definition } from '../../../shared/records';
+import { hasBatchInputs } from '../../core/definition';
 
 export interface LayoutPort {
   id: string;
@@ -52,7 +53,11 @@ export async function layoutWorkflow(
   routes: Record<string, LayoutPoint[]>;
 }> {
   const measurements = new Map(nodes.map((node) => [node.id, node]));
-  for (const id of ['$input', ...definition.nodes.map((node) => node.id)]) {
+  const canvasIds = [
+    ...(hasBatchInputs(definition) ? ['$input'] : []),
+    ...definition.nodes.map((node) => node.id),
+  ];
+  for (const id of canvasIds) {
     if (!measurements.has(id)) throw new Error(`节点 ${id} 的尺寸尚未就绪`);
   }
   nodes.forEach(checkMeasurements);

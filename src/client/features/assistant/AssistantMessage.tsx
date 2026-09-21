@@ -266,16 +266,23 @@ export function AssistantMessage() {
             {message.error?.replace(/^Error:\s*/, '') ||
               '请求未完成，请检查当前做法后重试。'}
           </p>
-          {original && (
-            <Button disabled={disabled} onClick={() => onRetry(original)}>
-              <RotateCcw size={13} />
-              重试本次修改
+          <div className="failure-actions">
+            {original && (
+              <Button disabled={disabled} onClick={() => onRetry(original)}>
+                <RotateCcw size={13} />
+                重试本次修改
+              </Button>
+            )}
+            <Button variant="ghost" onClick={onOpenSettings}>
+              检查模型设置
             </Button>
-          )}
-          <Button variant="ghost" onClick={onOpenSettings}>
-            检查模型设置
-          </Button>
+          </div>
         </div>
+      )}
+      {message.status === 'completed' && message.unchanged && (
+        <p className="assistant-unchanged">
+          本轮未改动做法；以上回复仅作说明，画布与定义保持不变。
+        </p>
       )}
       {message.status === 'cancelled' && (
         <p className="assistant-stopped">
