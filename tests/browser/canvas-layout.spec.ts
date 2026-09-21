@@ -87,6 +87,14 @@ for (const [width, height] of [
         data: { action: 'saveDraft', definition },
       });
       const before = await snapshot();
+      // 侧栏只列显式打开的流水线（opened-pipelines 语义）；预置本浏览器的打开入口。
+      await page.addInitScript((workId) => {
+        localStorage.setItem(
+          'dynamic-flow.opened-works',
+          JSON.stringify([{ id: workId, goal: '', updatedAt: '' }]),
+        );
+        localStorage.setItem('dynamic-flow.work', workId);
+      }, id);
       await page.goto('/', { waitUntil: 'domcontentloaded' });
       await page
         .locator('.work-list')
@@ -269,6 +277,14 @@ export async function layoutWorkflow(...args) {
         view: { positions, viewport: { x: 0, y: 0, zoom: 0.65 } },
       },
     });
+    // 侧栏只列显式打开的流水线（opened-pipelines 语义）；预置本浏览器的打开入口。
+    await page.addInitScript((workId) => {
+      localStorage.setItem(
+        'dynamic-flow.opened-works',
+        JSON.stringify([{ id: workId, goal: '', updatedAt: '' }]),
+      );
+      localStorage.setItem('dynamic-flow.work', workId);
+    }, id);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page
       .locator('.work-list')

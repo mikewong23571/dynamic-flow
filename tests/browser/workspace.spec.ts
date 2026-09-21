@@ -141,6 +141,15 @@ for (const [width, height] of [
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     const work = await createWork(request, width);
+    // 侧栏只列显式打开的流水线（opened-pipelines 语义）；
+    // 预置本浏览器的打开入口，等价于用户此前已打开该工作。
+    await page.addInitScript((id) => {
+      localStorage.setItem(
+        'dynamic-flow.opened-works',
+        JSON.stringify([{ id, goal: '', updatedAt: '' }]),
+      );
+      localStorage.setItem('dynamic-flow.work', id);
+    }, work.id);
     await page.goto('/');
     await page
       .locator('.work-list')

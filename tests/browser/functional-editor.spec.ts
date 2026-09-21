@@ -40,6 +40,14 @@ for (const [width, height] of [
           })
         ).ok(),
       ).toBeTruthy();
+      // 侧栏只列显式打开的流水线（opened-pipelines 语义）；预置本浏览器的打开入口。
+      await page.addInitScript((workId) => {
+        localStorage.setItem(
+          'dynamic-flow.opened-works',
+          JSON.stringify([{ id: workId, goal: '', updatedAt: '' }]),
+        );
+        localStorage.setItem('dynamic-flow.work', workId);
+      }, id);
       await page.goto('/');
       await page
         .locator('.work-list')
