@@ -1,5 +1,13 @@
 # 本地保存、读取与重开
 
+## 快速定位
+
+- 入口：`index.ts` → FileStore / createFiles；serializeDefinition 写应用生成的 JS 字面量，readDefinition 读取该固定格式，不执行任意代码。
+- Work 元数据、材料、运行、比较、消息和 ViewState 位于 `<root>/<workId>/work.json`；不可变定义位于 definitions，原始文件与 cleaned- 制品位于 uploads。
+- change 是按工作串行的原子保存及通知入口；onServerStart 只做启动状态修复，等待调度由 runs.recover 负责。
+- 工作项文件由 work-items 自己管理，模型设置由 assistant/settings 管理；不要把它们误移进 work.json。
+- 验证入口：`tests/state.test.ts`、`tests/canvas-view-state.test.ts`、`tests/lifecycle-process.test.ts`、`tests/profile-import.test.ts`；文件测试使用临时目录，数据边界见 [data/AGENTS.md](../../../data/AGENTS.md)。
+
 适用本目录，继承上层约定。当前已实现本模块业务；域内证据与产品联测边界见文末实现交接。
 
 ## 职责与子问题
@@ -48,3 +56,5 @@
 ## 持久等待恢复（2026-09-20）
 
 waiting 不属于 onServerStart 的中断集合；其截止时间、事件及已完成结果完整保留，由 runs.recover 恢复调度。running/queued 的不确定执行仍标 interrupted，runs.resume 仅补未完成实例；已完成实例不可抹除。文件层不调用模型、不触发业务更新、不自行运行定时任务。
+
+Run.expansions 与逐轮 NodeResult 随原 work.json 原子保存，不新增展开文件仓库。原始不可变 Definition 与实际展开区分；恢复先读取保存的展开再继续相同运行。

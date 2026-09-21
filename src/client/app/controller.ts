@@ -28,7 +28,7 @@ export function useWorkspace() {
     draft.definition,
     draft,
   );
-  const panels = usePanels(!!localStorage.getItem('dynamic-flow.work'));
+  const panels = usePanels(!!connection.workId);
   const actions = useActions({
     setBusy,
     setError,
@@ -69,6 +69,19 @@ export function useWorkspace() {
     draft.resetDraft();
     selection.resetSelection();
     panels.setTab('canvas');
+  }
+  function closeWork(id: string) {
+    const index = connection.works.findIndex((item) => item.id === id);
+    if (index < 0) return;
+    connection.closeEntry(id);
+    if (id !== connection.workId) return;
+    const next = connection.works[index + 1] || connection.works[index - 1];
+    connection.switchTo(next?.id || '');
+    draft.resetDraft();
+    selection.resetSelection();
+    panels.setTab('canvas');
+    if (!next) panels.setLibraryOpen(true);
+    setError('');
   }
   async function create(file?: File): Promise<boolean> {
     const pasted = splitMaterials(panels.materialText);
@@ -115,6 +128,7 @@ export function useWorkspace() {
     ...panels,
     ...actions,
     openWork,
+    closeWork,
     create,
   };
 }

@@ -1,33 +1,52 @@
 # 单进程后端与模块组装
 
-适用本目录，子目录各有 AGENTS。当前为正式 Hono HTTP/SSE 与业务模块组装入口。
+继承根与 src 约定。`index.ts` 是正式 Hono HTTP/SSE 入口；`createApplication({dataRoot?, executeNode?})` 创建应用与模块，直接运行此文件才启动监听，默认端口 4321（可用 PORT/HOST 配置）。
 
-## 职责与目标
+## 模块装配地图
 
-本目录 index.ts 承担 Hono HTTP/SSE、具体函数接线与启动恢复。各功能目录分别实现其子问题，直接调用，不增加 controller/service/repository 套层。
+| 工厂 / 所在目录 | 负责的结果 | 依赖与交接 |
+| --- | --- | --- |
+| `createFiles` / [files](files/AGENTS.md) | 方法文件、定义、上传文件及保存通知 | Node 文件能力；不反向调业务 |
+| `createWorkService` / [work](work/AGENTS.md) | 流水线列表/维护、样例材料、保留结果及续做预览 | files；续做执行由入口交给 runs |
+| `createFlow` / [flow](flow/AGENTS.md) | 定义校验、草稿/候选/采用、布局与 Snapshot | files、shared、Ajv |
+| `createAssistant` / [assistant](assistant/AGENTS.md) | 作者请求、Agent 节点执行、Pi 会话和模型配置 | flow、files、Pi SDK |
+| `createWorkItems` / [work-items](work-items/AGENTS.md) | 独立业务身份、证据、条件依据、关联与结项重开 | 自己保存工作项文件，经 files 读取方法/运行；launch/signal 接收运行回调 |
+| `createRuns` / [runs](runs/AGENTS.md) | 固定输入执行、实例、停止/重试、等待与恢复 | files、flow；入口传入 executeNode、onMilestone、onFinish |
+| `createTrials` / [trials](trials/AGENTS.md) | 同样本两侧顺序比较和停止 | runs、files、flow 校验 |
 
-内部依赖：work → files；flow → files；runs → flow 校验/files；模型执行由入口传入 assistant.executeNode；assistant → flow/files；trials → runs/files；files 不反向依赖业务。该关系是当前避免循环的组织方式，不是永不可改的分层规则。
+不要为这些直接调用增加 controller/service/repository 套层、第二个 Agent loop、消息队列或通用路由框架。以上是当前组织方式，具体反例可推动边界调整。
 
-外部依赖：入口用 hono、@hono/node-server；Pi 只经 assistant 接入；文件 IO 在 files；普通逻辑使用 TypeScript。shared 提供少量共享记录。见 [完整依赖](../../spike/pi-canvas-dependencies.md)。
+## HTTP 路由与数据
 
-## 非目标
+| 路由 | 实际行为 |
+| --- | --- |
+| `GET /api/config`、`PUT /api/config/catalog`、`PUT /api/config/default`、`POST /api/config/test` | 读取公开目录、保存目录/默认选择、测试模型；不回传密钥 |
+| `POST /api/works/:id/model-selection` | 保存本工作 Assistant 模型覆盖 |
+| `GET/POST /api/works` | 分页搜索流水线 / 创建方法工作区 |
+| `GET /api/works/:id` | 返回 Snapshot：Work + 实际定义内容 + 校验问题 |
+| `POST /api/works/:id/actions` | switch 分派命名、归档、材料、草稿、运行、比较、作者等动作；完成分派后返回 Snapshot |
+| `POST /api/works/:id/preview-results` | 所选成功结果 → 带来源 Inputs，不执行续做 |
+| `GET/POST /api/works/:id/uploads` | 列出 / 保存上传文件；上传不等于登记为材料 |
+| `GET /api/works/:id/events` | SSE 完整 snapshot 与 ping；不是增量业务事件回放 |
+| `GET/POST /api/items`、`GET /api/items/:id` | 工作项查询 / 创建 / 详情 |
+| `POST /api/items/:id/actions` | 证据、条件、推进、事件、停止、恢复、方法切换、结项与重开 |
 
-不建独立服务集群、消息队列、通用路由/事件框架、第二个 Agent loop 或鉴权隔离平台。
+具体 action 字段以 index.ts 的 switch 和调用方为准，共享记录在 `../shared/records.ts`，生命周期例子见 [handoff](../../conductor/tracks/workitem-lifecycle_20260920/handoff.md)。长任务在后台推进，动作响应不代表执行完成。错误返回 error 与可选 issues；模型失败不回退模拟成功。
 
-## 接口与验收
+## 需要沿链路检查的行为
 
-- 按 [功能接口](../../spike/interfaces.md) 暴露直接操作；实际路径以 index.ts 为准：/api/config（含 catalog/default/test 与 works/:id/model-selection 的模型目录与选择）、/api/works、/api/works/:id/actions、preview-results 与 events。返回 Snapshot 含 Work、定义和校验问题；错误返回 error 和可选 issues。
-- 长任务返回 ID，SSE 发真实状态；业务保存成功后才生成含实际定义的工作快照，工具完成文本不能冒充图更新。
-- [x] 连入/重连取得完整定义和运行状态，操作回执不会倒灌旧快照（场景 P23/P31）。
-- [x] Pi → 工具 → 保存 → 快照 → Canvas 与节点活动链实际联通（场景 P29/P30）。
-- [x] 取消与启动恢复到达真正调用和保存状态，不只返回 HTTP 200（场景 P08/P21）。
+- **手工编辑**：client → actions/saveDraft → flow → files.change → Snapshot。**作者编辑**：assistant.update_flow → 同一 flow 保存路径 → 同一保存通知。只有真实保存才能更新画布。
+- **执行与业务进展**：runs → executeNode（默认 assistant.executeNode）；正式里程碑通过 `items.milestone` 写业务，运行完成不自动结项。
+- **保存与实时更新**：files.onChange 标记更新，SSE 每 50ms 合并通知、15s ping；发送带 revision 的完整快照。前端按版本接受并保留未提交草稿。工作项详情通过只读轮询读取，不通过 GET 推进运行。
+- **启动恢复**：`files.onServerStart` 标记不确定执行 → `items.reconcile` 补齐跨文件运行关联 → `runs.recover` 恢复持久等待。页面刷新不能调用这一启动路径。
+- **文件导入**：uploads 保存 → `importMaterials` → `canonicalProfileDefinition` / `seedProfileFlow` 取得并按文件实例化剖析定义 → `runs.start` → `onFinish: finishImportRun` 登记材料/洞见及消息。规范初值在 `assistant/profile-flow.ts`；已存在内建流水线时读取其采用版本。导入副本写入 definitionIds，不占调用方 draft/adopted。当前 importRuns 收尾映射在内存，不把运行等待恢复等同于导入收尾映射已持久化。
 
-服务入口实现者负责跨模块接线与集成证据；不得把“模块测试各自通过”当作该项通过。
+## 验证与修改边界
 
-## 假设与未知
+`tests/integration.test.ts` 检查 HTTP/SSE，`tests/lifecycle-integration.test.ts` 检查工作项接线，`tests/lifecycle-process.test.ts` 检查真实子进程重启，`tests/profile-import.test.ts` 检查导入分支与收尾。路径从仓库根目录计算；执行方式与证据分类见 [测试指南](../../tests/AGENTS.md)。
 
-单进程、小规模工作状态；SSE 保存通知合并 50ms，15s 心跳，按 revision 接受完整快照；已测断连重连与真实工具保存。大数据量性能尚未做压力测试。不为了原图成立而把断线、乱序或 SDK 不兼容隐藏到假的成功事件中。先复现最小问题，再修改必要交接。
+`createApplication` 默认 dataRoot 为 `data/`，集成测试传临时目录和 executeNode 替身；替身通过不表示 Pi 端点已验证。构建静态文件通过本入口的 dist 回退提供；开发前端由 Vite 4320 代理 /api 到 4321。
 
-产品级验证与边界见 [本轮验收证据](../../conductor/tracks/full-application_20260920/evidence.md)。
+变更路由/回调应同步 client、shared 和相邻模块，至少验证一个真实连接。当前为单进程本地原型；容量、多进程与未知端点兼容不能从单次 HTTP 200 推断。验收结论从 [track 注册表](../../conductor/tracks.md) 找对应 evidence。
 
-持续工作项：work-items → files，并由入口把 items.milestone 传给 runs。启动顺序为 files.onServerStart → items.reconcile（补齐运行与业务关联）→ runs.recover（恢复等待）。/api/items 独立暴露业务查询与操作；signal 通过 items.signal 对整项跨方法运行历史去重。详情轮询为只读，不推进运行。最新证据见 [生命周期 track](../../conductor/tracks/workitem-lifecycle_20260920/evidence.md)。
+`POST /api/works/:id/actions` 新增 `freezeExpansion`（expectedDraftId/runId/nodeId），委托 flow 写候选并返回同一 Snapshot；不采用、不提交业务进展。Dynamic 与 Repeat 由原 runs 执行，入口不增加第二个运行器。

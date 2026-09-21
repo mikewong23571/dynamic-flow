@@ -1,3 +1,5 @@
+import { materializeDefinition } from '../../shared/expansion.ts';
+import { checkProblem, checkSemantic } from './semantic.ts';
 import {
   nodeInputPorts,
   collectionFunction,
@@ -44,9 +46,15 @@ function assertShape(value: unknown): asserts value is Definition {
       !object(node) ||
       typeof node.id !== 'string' ||
       typeof node.label !== 'string' ||
-      !['agent', 'function', 'branch', 'wait', 'milestone', 'file'].includes(
-        node.kind as string,
-      ) ||
+      ![
+        'agent',
+        'function',
+        'branch',
+        'wait',
+        'milestone',
+        'file',
+        'dynamic',
+      ].includes(node.kind as string) ||
       !['each', 'all'].includes(node.mode as string)
     )
       throw new Error('节点结构无效：需要 id、label、支持的 kind 和 mode。');
@@ -101,11 +109,9 @@ export function checkDefinition(definition: Definition): Issue[] {
   } catch (error) {
     return [{ message: (error as Error).message, field: 'definition' }];
   }
-  const issues: Issue[] = [];
+  const issues: Issue[] = checkProblem(definition.problem);
   const nodes = new Map<string, FlowNode>();
-  if (
-    !definition.nodes.length
-  )
+  if (!definition.nodes.length)
     issues.push({ field: 'nodes', message: '请添加至少一个处理节点。' });
   const hasFileSource = definition.nodes.some((node) => node.kind === 'file');
   if (
@@ -126,6 +132,7 @@ export function checkDefinition(definition: Definition): Issue[] {
       issues.push({ field: 'inputs', message: '流程输入名称不能为空或重复。' });
   }
   for (const node of definition.nodes) {
+    issues.push(...checkSemantic(node));
     const add = (message: string, field?: string) =>
       issues.push({ nodeId: node.id, message, field });
     if (!node.id.trim() || node.id === '$input' || nodes.has(node.id))
@@ -419,6 +426,32 @@ export function createFlow(files: FileStore) {
         work.draftBaseId ??= id;
       });
       return id;
+    },
+    async freezeExpansion(
+      workId: string,
+      expectedDraftId: string | undefined,
+      runId: string,
+      nodeId: string,
+    ): Promise<string> {
+      const work = await files.read(workId);
+      if (work.draftId !== expectedDraftId)
+        throw Error('草稿已变化，展开未写入。');
+      const run = work.runs.find((r) => r.id === runId);
+      const expansion = run?.expansions?.find((e) => e.nodeId === nodeId);
+      if (!run || !expansion || run.nodeStates[nodeId] !== 'completed')
+        throw Error('请选择已经完成的局部展开。');
+      const currentId = work.draftId ?? work.adoptedId;
+      if (!currentId) throw Error('请先选择当前做法。');
+      const current = await known(workId, currentId);
+      const original = await known(workId, run.definitionId);
+      if (
+        canonical(current.nodes.find((n) => n.id === nodeId)) !==
+        canonical(original.nodes.find((n) => n.id === nodeId))
+      )
+        throw Error('动态步骤已修改，请先检查新旧责任差异。');
+      const candidate = materializeDefinition(current, [expansion]);
+      validateForRun(candidate);
+      return this.saveDraft(workId, expectedDraftId, candidate);
     },
     async beginCandidate(
       workId: string,

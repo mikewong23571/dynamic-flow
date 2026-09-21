@@ -1,0 +1,550 @@
+{
+  "work": {
+    "id": "b0afad3c-1d52-4417-bd35-be81b3a107ba",
+    "title": "动态调查订单失败原因",
+    "goal": "动态调查验收：基于公告与日志核实订单失败原因，形成有证据的短结论",
+    "createdAt": "2026-09-20T18:33:07.798Z",
+    "updatedAt": "2026-09-20T18:38:49.310Z",
+    "revision": 70,
+    "materials": [
+      {
+        "id": "M01",
+        "text": "公告：09:00 发布 v2，调整支付请求重试次数。"
+      },
+      {
+        "id": "M02",
+        "text": "日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。"
+      }
+    ],
+    "definitionIds": [
+      "856bae92-f2bc-405c-a555-f22d7ce4d211",
+      "d5c29677-3930-496e-be28-c953765f7ecb"
+    ],
+    "view": {
+      "positions": {}
+    },
+    "runs": [
+      {
+        "id": "747ba6f0-2ea8-43a3-9dd0-ace95c746064",
+        "definitionId": "856bae92-f2bc-405c-a555-f22d7ce4d211",
+        "scope": "full",
+        "inputs": {
+          "materials": [
+            {
+              "sampleId": "M01",
+              "value": "公告：09:00 发布 v2，调整支付请求重试次数。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M02",
+              "value": "日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。",
+              "materialIds": [
+                "M02"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "effectMode": "preview",
+        "status": "failed",
+        "stopRequested": false,
+        "nodeStates": {
+          "investigate": "failed"
+        },
+        "nodeTotals": {},
+        "results": [
+          {
+            "id": "10b7b81b-5544-4221-b6da-6fb13ad5ae40",
+            "runId": "747ba6f0-2ea8-43a3-9dd0-ace95c746064",
+            "definitionId": "856bae92-f2bc-405c-a555-f22d7ce4d211",
+            "nodeId": "investigate",
+            "instanceId": "investigate:planning",
+            "purpose": "planning",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": "公告：09:00 发布 v2，调整支付请求重试次数。",
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": []
+                },
+                {
+                  "sampleId": "M02",
+                  "value": "日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。",
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {},
+            "status": "failed",
+            "activities": [],
+            "startedAt": "2026-09-20T18:34:26.020Z",
+            "error": "输入不符合 schema：data/0 must be object；data/1 must be object",
+            "finishedAt": "2026-09-20T18:34:26.023Z"
+          }
+        ],
+        "waits": [],
+        "signals": [],
+        "startedAt": "2026-09-20T18:34:26.015Z",
+        "finishedAt": "2026-09-20T18:34:26.024Z"
+      },
+      {
+        "id": "9798aceb-4f6c-4eaa-8769-4ee08ccac12e",
+        "definitionId": "d5c29677-3930-496e-be28-c953765f7ecb",
+        "scope": "full",
+        "inputs": {
+          "materials": [
+            {
+              "sampleId": "M01",
+              "value": "公告：09:00 发布 v2，调整支付请求重试次数。",
+              "materialIds": [
+                "M01"
+              ],
+              "sourceResultIds": []
+            },
+            {
+              "sampleId": "M02",
+              "value": "日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。",
+              "materialIds": [
+                "M02"
+              ],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "effectMode": "preview",
+        "status": "failed",
+        "stopRequested": false,
+        "nodeStates": {
+          "investigate": "failed"
+        },
+        "nodeTotals": {},
+        "results": [
+          {
+            "id": "2ec9727d-05b1-4774-8863-8d6e21d2e876",
+            "runId": "9798aceb-4f6c-4eaa-8769-4ee08ccac12e",
+            "definitionId": "d5c29677-3930-496e-be28-c953765f7ecb",
+            "nodeId": "investigate",
+            "instanceId": "investigate:planning",
+            "purpose": "planning",
+            "input": {
+              "input": [
+                {
+                  "sampleId": "M01",
+                  "value": "公告：09:00 发布 v2，调整支付请求重试次数。",
+                  "materialIds": [
+                    "M01"
+                  ],
+                  "sourceResultIds": []
+                },
+                {
+                  "sampleId": "M02",
+                  "value": "日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。",
+                  "materialIds": [
+                    "M02"
+                  ],
+                  "sourceResultIds": []
+                }
+              ]
+            },
+            "outputs": {},
+            "status": "failed",
+            "activities": [
+              {
+                "id": "cb49fc75-a332-42bd-9e9a-bdd205719269",
+                "toolCallId": "call_a5c2aee4b811404a91068695",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M01\",\"text\":\"公告：09:00 发布 v2，调整支付请求重试次数。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M01",
+                    "text": "公告：09:00 发布 v2，调整支付请求重试次数。"
+                  }
+                }
+              },
+              {
+                "id": "15225a04-fc59-4667-88ba-6222d0b66c5b",
+                "toolCallId": "call_2051fbef9baf473f8a018b11",
+                "toolName": "inspect_material",
+                "status": "completed",
+                "result": {
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "{\"id\":\"M02\",\"text\":\"日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。\"}"
+                    }
+                  ],
+                  "details": {
+                    "id": "M02",
+                    "text": "日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。"
+                  }
+                }
+              }
+            ],
+            "startedAt": "2026-09-20T18:36:48.310Z",
+            "error": "节点需要结构化 JSON 输出，但模型返回的内容不是有效 JSON。",
+            "finishedAt": "2026-09-20T18:38:49.309Z"
+          }
+        ],
+        "waits": [],
+        "signals": [],
+        "startedAt": "2026-09-20T18:36:48.304Z",
+        "finishedAt": "2026-09-20T18:38:49.310Z"
+      }
+    ],
+    "comparisons": [],
+    "keptResultIds": [],
+    "messages": [
+      {
+        "id": "602be691-c1d9-447f-ba74-2933abc2083f",
+        "role": "user",
+        "text": "建立最小可用调查方法。先保留一个局部动态展开节点，运行到这里才根据本次证据选择1至2个具体调查步骤；边界是仅调查给定公告和日志、不做外部修改、不把时间先后冒充因果证明。填写问题认知、未知、约束、来源及步骤责任/完成条件/依据。dynamic 子图最终输出中文 Markdown 短结论，区分证据与未确认原因。只需要这个动态位置作为最终输出，不额外建立固定步骤。",
+        "requestId": "edcd364b-1198-4f7f-b79e-133a2cfa7632",
+        "sampleIds": []
+      },
+      {
+        "id": "c69211fa-051e-4b1c-b116-622f202daccb",
+        "role": "assistant",
+        "text": "已保存最小可用调查流程：仅一个动态展开节点「动态调查订单失败原因」，运行到该处时依据公告与日志实际证据选择 1–2 个具体步骤，边界限定为只查给定材料、不做外部修改、不把时间先后当作因果证明，最终输出区分证据与未确认原因的中文 Markdown 短结论。问题认知、未知、约束与 M01/M02 原文依据已写入问题定义。下一步可直接试运行该动态节点，查看实际展开的调查步骤是否符合预期。",
+        "requestId": "edcd364b-1198-4f7f-b79e-133a2cfa7632",
+        "sampleIds": [],
+        "status": "completed",
+        "activities": [
+          {
+            "id": "4ff4c646-9491-4fab-b035-fd3282f00bd3",
+            "toolCallId": "call_e7b5e69e34774b988ff66ec6",
+            "toolName": "update_flow",
+            "status": "completed",
+            "args": {
+              "definition": {
+                "edges": [
+                  {
+                    "from": [
+                      "$input",
+                      "materials"
+                    ],
+                    "to": [
+                      "investigate",
+                      "input"
+                    ]
+                  }
+                ],
+                "inputs": [
+                  "materials"
+                ],
+                "nodes": [
+                  {
+                    "contract": {
+                      "done": "子图最终输出一段中文Markdown短结论，包含已确认证据（引用M01/M02原文要点）与未确认原因的明确区分",
+                      "rationale": "具体调查步骤取决于运行时证据，先保留一个动态位置以最小成本按证据选择1至2个步骤",
+                      "responsibility": "运行到此处后，依据本次公告与日志证据选择并执行1至2个具体调查步骤，汇总为有证据的短结论",
+                      "semanticRole": "局部动态调查与结论"
+                    },
+                    "dynamic": {
+                      "boundary": "仅调查给定公告M01与日志M02；不做外部修改；不把时间先后冒充因果证明；子图只使用input输入与output输出",
+                      "maxNodes": 2
+                    },
+                    "expectedOutput": {
+                      "type": "string"
+                    },
+                    "id": "investigate",
+                    "inputSchema": {
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "text": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "kind": "dynamic",
+                    "label": "动态调查订单失败原因",
+                    "mode": "all",
+                    "operation": "aggregate",
+                    "task": "运行到此处时，依据本次公告与日志证据选择1至2个具体调查步骤（例如：梳理公告发布与失败日志的时间和内容对应关系；核对重试两次与订单失败记录的证据边界），每个步骤写明责任、完成条件与依据；子图最终输出中文Markdown短结论，区分已确认证据与未确认原因，不引入外部修改，不把时间先后冒充因果证明。"
+                  }
+                ],
+                "outputs": {
+                  "report": [
+                    "investigate",
+                    "output"
+                  ]
+                },
+                "problem": {
+                  "constraints": "仅调查给定公告M01与日志M02；不做外部修改；不把时间先后冒充因果证明；结论必须区分证据与未确认原因；动态子图最多2个步骤。",
+                  "evidence": "M01原文：\"公告：09:00 发布 v2，调整支付请求重试次数。\"；M02原文：\"日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。\"",
+                  "framing": "基于公告M01与日志M02核实09:05订单失败的原因，形成区分证据与未确认原因的中文Markdown短结论。",
+                  "known": "M01：09:00发布v2并调整支付请求重试次数；M02：09:05支付服务超时，重试两次后订单失败，未提供数据库错误证据。",
+                  "unknown": "v2发布调整与订单失败之间的具体因果机制；是否存在数据库错误；重试次数与失败记录的确切对应关系。"
+                },
+                "schemaVersion": 1
+              },
+              "title": "动态调查订单失败原因"
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\"saved\":true,\"changed\":true,\"definitionId\":\"856bae92-f2bc-405c-a555-f22d7ce4d211\",\"issues\":[]}"
+                }
+              ],
+              "details": {
+                "definitionId": "856bae92-f2bc-405c-a555-f22d7ce4d211"
+              }
+            }
+          }
+        ],
+        "effectiveModel": {
+          "source": "default",
+          "alias": "local-env/default",
+          "model": "glm-5.3-flash",
+          "effort": "medium"
+        },
+        "definitionId": "856bae92-f2bc-405c-a555-f22d7ce4d211"
+      },
+      {
+        "id": "9dc3112a-1a45-42bb-9f58-6dda648e64c5",
+        "role": "user",
+        "text": "请 inspect_run 检查最近的失败运行，输入 schema 误把材料 value 当成对象；实际批次是字符串值数组，来源元数据是另一层包装。使用 update_step 仅修复这个动态步骤的 inputSchema，保留其问题认知与其它配置。不要重新生成整份定义。",
+        "requestId": "24923649-55fe-4c47-bc8c-c7fa83d2a0c7",
+        "definitionId": "856bae92-f2bc-405c-a555-f22d7ce4d211",
+        "sampleIds": []
+      },
+      {
+        "id": "a1a1d456-b0c0-4f4a-90f1-1d0d4b68d433",
+        "role": "assistant",
+        "text": "已修复并保存：检查确认失败原因是 inputSchema 误将材料 value 校验为对象，而实际批次是字符串数组（M01/M02 的来源元数据在输入包装层），现改为 `items:{type:'string'}`，节点的问题认知、任务、边界与输出结构均保持不变。下一步可重新试运行该动态节点，确认调查步骤能按证据正常展开。",
+        "requestId": "24923649-55fe-4c47-bc8c-c7fa83d2a0c7",
+        "definitionId": "d5c29677-3930-496e-be28-c953765f7ecb",
+        "sampleIds": [],
+        "status": "completed",
+        "activities": [
+          {
+            "id": "df556e71-ce9b-4527-b3e4-dbd642d3f889",
+            "toolCallId": "call_f325726d6bbf40bfacb97f98",
+            "toolName": "inspect_run",
+            "status": "completed",
+            "args": {
+              "runId": "747ba6f0-2ea8-43a3-9dd0-ace95c746064"
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\"id\":\"747ba6f0-2ea8-43a3-9dd0-ace95c746064\",\"definitionId\":\"856bae92-f2bc-405c-a555-f22d7ce4d211\",\"scope\":\"full\",\"inputs\":{\"materials\":[{\"sampleId\":\"M01\",\"value\":\"公告：09:00 发布 v2，调整支付请求重试次数。\",\"materialIds\":[\"M01\"],\"sourceResultIds\":[]},{\"sampleId\":\"M02\",\"value\":\"日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。\",\"materialIds\":[\"M02\"],\"sourceResultIds\":[]}]},\"effectMode\":\"preview\",\"status\":\"failed\",\"stopRequested\":false,\"nodeStates\":{\"investigate\":\"failed\"},\"nodeTotals\":{},\"results\":[{\"id\":\"10b7b81b-5544-4221-b6da-6fb13ad5ae40\",\"runId\":\"747ba6f0-2ea8-43a3-9dd0-ace95c746064\",\"definitionId\":\"856bae92-f2bc-405c-a555-f22d7ce4d211\",\"nodeId\":\"investigate\",\"instanceId\":\"investigate:planning\",\"purpose\":\"planning\",\"input\":{\"input\":[{\"sampleId\":\"M01\",\"value\":\"公告：09:00 发布 v2，调整支付请求重试次数。\",\"materialIds\":[\"M01\"],\"sourceResultIds\":[]},{\"sampleId\":\"M02\",\"value\":\"日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。\",\"materialIds\":[\"M02\"],\"sourceResultIds\":[]}]},\"outputs\":{},\"status\":\"failed\",\"activities\":[],\"startedAt\":\"2026-09-20T18:34:26.020Z\",\"error\":\"输入不符合 schema：data/0 must be object；data/1 must be object\",\"finishedAt\":\"2026-09-20T18:34:26.023Z\"}],\"waits\":[],\"signals\":[],\"startedAt\":\"2026-09-20T18:34:26.015Z\",\"finishedAt\":\"2026-09-20T18:34:26.024Z\",\"problem\":{\"constraints\":\"仅调查给定公告M01与日志M02；不做外部修改；不把时间先后冒充因果证明；结论必须区分证据与未确认原因；动态子图最多2个步骤。\",\"evidence\":\"M01原文：\\\"公告：09:00 发布 v2，调整支付请求重试次数。\\\"；M02原文：\\\"日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。\\\"\",\"framing\":\"基于公告M01与日志M02核实09:05订单失败的原因，形成区分证据与未确认原因的中文Markdown短结论。\",\"known\":\"M01：09:00发布v2并调整支付请求重试次数；M02：09:05支付服务超时，重试两次后订单失败，未提供数据库错误证据。\",\"unknown\":\"v2发布调整与订单失败之间的具体因果机制；是否存在数据库错误；重试次数与失败记录的确切对应关系。\"}}"
+                }
+              ],
+              "details": {
+                "runId": "747ba6f0-2ea8-43a3-9dd0-ace95c746064"
+              }
+            }
+          },
+          {
+            "id": "72a23328-0d81-4840-8acf-9511bdadd56c",
+            "toolCallId": "call_2e719a1e09904aab9371b94f",
+            "toolName": "update_step",
+            "status": "completed",
+            "args": {
+              "node": {
+                "contract": {
+                  "done": "子图最终输出一段中文Markdown短结论，包含已确认证据（引用M01/M02原文要点）与未确认原因的明确区分",
+                  "rationale": "具体调查步骤取决于运行时证据，先保留一个动态位置以最小成本按证据选择1至2个步骤",
+                  "responsibility": "运行到此处后，依据本次公告与日志证据选择并执行1至2个具体调查步骤，汇总为有证据的短结论",
+                  "semanticRole": "局部动态调查与结论"
+                },
+                "dynamic": {
+                  "boundary": "仅调查给定公告M01与日志M02；不做外部修改；不把时间先后冒充因果证明；子图只使用input输入与output输出",
+                  "maxNodes": 2
+                },
+                "expectedOutput": {
+                  "type": "string"
+                },
+                "id": "investigate",
+                "inputSchema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "kind": "dynamic",
+                "label": "动态调查订单失败原因",
+                "mode": "all",
+                "operation": "aggregate",
+                "task": "运行到此处时，依据本次公告与日志证据选择1至2个具体调查步骤（例如：梳理公告发布与失败日志的时间和内容对应关系；核对重试两次与订单失败记录的证据边界），每个步骤写明责任、完成条件与依据；子图最终输出中文Markdown短结论，区分已确认证据与未确认原因，不引入外部修改，不把时间先后冒充因果证明。"
+              }
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\"saved\":true,\"changed\":true,\"definitionId\":\"d5c29677-3930-496e-be28-c953765f7ecb\",\"issues\":[]}"
+                }
+              ],
+              "details": {
+                "definitionId": "d5c29677-3930-496e-be28-c953765f7ecb"
+              }
+            }
+          }
+        ],
+        "effectiveModel": {
+          "source": "default",
+          "alias": "local-env/default",
+          "model": "glm-5.3-flash",
+          "effort": "medium"
+        }
+      }
+    ],
+    "draftId": "d5c29677-3930-496e-be28-c953765f7ecb",
+    "draftBaseId": "856bae92-f2bc-405c-a555-f22d7ce4d211"
+  },
+  "definitions": {
+    "856bae92-f2bc-405c-a555-f22d7ce4d211": {
+      "edges": [
+        {
+          "from": [
+            "$input",
+            "materials"
+          ],
+          "to": [
+            "investigate",
+            "input"
+          ]
+        }
+      ],
+      "inputs": [
+        "materials"
+      ],
+      "nodes": [
+        {
+          "contract": {
+            "done": "子图最终输出一段中文Markdown短结论，包含已确认证据（引用M01/M02原文要点）与未确认原因的明确区分",
+            "rationale": "具体调查步骤取决于运行时证据，先保留一个动态位置以最小成本按证据选择1至2个步骤",
+            "responsibility": "运行到此处后，依据本次公告与日志证据选择并执行1至2个具体调查步骤，汇总为有证据的短结论",
+            "semanticRole": "局部动态调查与结论"
+          },
+          "dynamic": {
+            "boundary": "仅调查给定公告M01与日志M02；不做外部修改；不把时间先后冒充因果证明；子图只使用input输入与output输出",
+            "maxNodes": 2
+          },
+          "expectedOutput": {
+            "type": "string"
+          },
+          "id": "investigate",
+          "inputSchema": {
+            "items": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "kind": "dynamic",
+          "label": "动态调查订单失败原因",
+          "mode": "all",
+          "operation": "aggregate",
+          "task": "运行到此处时，依据本次公告与日志证据选择1至2个具体调查步骤（例如：梳理公告发布与失败日志的时间和内容对应关系；核对重试两次与订单失败记录的证据边界），每个步骤写明责任、完成条件与依据；子图最终输出中文Markdown短结论，区分已确认证据与未确认原因，不引入外部修改，不把时间先后冒充因果证明。"
+        }
+      ],
+      "outputs": {
+        "report": [
+          "investigate",
+          "output"
+        ]
+      },
+      "problem": {
+        "constraints": "仅调查给定公告M01与日志M02；不做外部修改；不把时间先后冒充因果证明；结论必须区分证据与未确认原因；动态子图最多2个步骤。",
+        "evidence": "M01原文：\"公告：09:00 发布 v2，调整支付请求重试次数。\"；M02原文：\"日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。\"",
+        "framing": "基于公告M01与日志M02核实09:05订单失败的原因，形成区分证据与未确认原因的中文Markdown短结论。",
+        "known": "M01：09:00发布v2并调整支付请求重试次数；M02：09:05支付服务超时，重试两次后订单失败，未提供数据库错误证据。",
+        "unknown": "v2发布调整与订单失败之间的具体因果机制；是否存在数据库错误；重试次数与失败记录的确切对应关系。"
+      },
+      "schemaVersion": 1
+    },
+    "d5c29677-3930-496e-be28-c953765f7ecb": {
+      "edges": [
+        {
+          "from": [
+            "$input",
+            "materials"
+          ],
+          "to": [
+            "investigate",
+            "input"
+          ]
+        }
+      ],
+      "inputs": [
+        "materials"
+      ],
+      "nodes": [
+        {
+          "contract": {
+            "done": "子图最终输出一段中文Markdown短结论，包含已确认证据（引用M01/M02原文要点）与未确认原因的明确区分",
+            "rationale": "具体调查步骤取决于运行时证据，先保留一个动态位置以最小成本按证据选择1至2个步骤",
+            "responsibility": "运行到此处后，依据本次公告与日志证据选择并执行1至2个具体调查步骤，汇总为有证据的短结论",
+            "semanticRole": "局部动态调查与结论"
+          },
+          "dynamic": {
+            "boundary": "仅调查给定公告M01与日志M02；不做外部修改；不把时间先后冒充因果证明；子图只使用input输入与output输出",
+            "maxNodes": 2
+          },
+          "expectedOutput": {
+            "type": "string"
+          },
+          "id": "investigate",
+          "inputSchema": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "kind": "dynamic",
+          "label": "动态调查订单失败原因",
+          "mode": "all",
+          "operation": "aggregate",
+          "task": "运行到此处时，依据本次公告与日志证据选择1至2个具体调查步骤（例如：梳理公告发布与失败日志的时间和内容对应关系；核对重试两次与订单失败记录的证据边界），每个步骤写明责任、完成条件与依据；子图最终输出中文Markdown短结论，区分已确认证据与未确认原因，不引入外部修改，不把时间先后冒充因果证明。"
+        }
+      ],
+      "outputs": {
+        "report": [
+          "investigate",
+          "output"
+        ]
+      },
+      "problem": {
+        "constraints": "仅调查给定公告M01与日志M02；不做外部修改；不把时间先后冒充因果证明；结论必须区分证据与未确认原因；动态子图最多2个步骤。",
+        "evidence": "M01原文：\"公告：09:00 发布 v2，调整支付请求重试次数。\"；M02原文：\"日志：09:05 支付服务返回超时，重试两次后订单失败；未提供数据库错误证据。\"",
+        "framing": "基于公告M01与日志M02核实09:05订单失败的原因，形成区分证据与未确认原因的中文Markdown短结论。",
+        "known": "M01：09:00发布v2并调整支付请求重试次数；M02：09:05支付服务超时，重试两次后订单失败，未提供数据库错误证据。",
+        "unknown": "v2发布调整与订单失败之间的具体因果机制；是否存在数据库错误；重试次数与失败记录的确切对应关系。"
+      },
+      "schemaVersion": 1
+    }
+  },
+  "issues": []
+}

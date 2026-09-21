@@ -1,3 +1,5 @@
+import { validateExpansion } from '../flow/expansion.ts';
+import { semanticGuide, dynamicInstructions } from './semantic-guide.ts';
 import { randomUUID } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -31,6 +33,15 @@ export { runPiSession } from './pi.ts';
 
 const definitionSchema = Type.Object({
   schemaVersion: Type.Literal(1),
+  problem: Type.Optional(
+    Type.Object({
+      framing: Type.String(),
+      known: Type.String(),
+      unknown: Type.String(),
+      constraints: Type.String(),
+      evidence: Type.String(),
+    }),
+  ),
   inputs: Type.Array(Type.String()),
   nodes: Type.Array(
     Type.Object({
@@ -43,8 +54,29 @@ const definitionSchema = Type.Object({
         Type.Literal('wait'),
         Type.Literal('milestone'),
         Type.Literal('file'),
+        Type.Literal('dynamic'),
       ]),
       mode: Type.Union([Type.Literal('each'), Type.Literal('all')]),
+      contract: Type.Optional(
+        Type.Object({
+          responsibility: Type.String(),
+          done: Type.String(),
+          rationale: Type.String(),
+          semanticRole: Type.Optional(Type.String()),
+        }),
+      ),
+      dynamic: Type.Optional(
+        Type.Object({
+          boundary: Type.String(),
+          maxNodes: Type.Integer({ minimum: 1, maximum: 20 }),
+        }),
+      ),
+      repeat: Type.Optional(
+        Type.Object({
+          max: Type.Integer({ minimum: 1, maximum: 10 }),
+          until: Type.Optional(Type.Any()),
+        }),
+      ),
       task: Type.Optional(Type.String()),
       file: Type.Optional(Type.Object({ name: Type.String({ minLength: 1 }) })),
       operation: Type.Optional(
@@ -161,6 +193,7 @@ const authorInstructions = `你是工作流作者。初次生成流程时请在 
 operation 明确计算组合：map 对每条输入调用一次，返回一个值（数组也保留为一个值）；flatMap 对每条输入调用一次并将返回数组展开一层；aggregate 一次处理集合。为兼容旧定义，map/flatMap 同时设 mode:each，aggregate 设 mode:all；concurrency 可设 1–8，默认1。inputSchema/expectedOutput 分别定义单次调用输入/输出，普通 aggregate 输入为数组；旧多端口 aggregate 的 schema 输入按端口顺序拼接为值数组；无inputNames的旧merge保留 left/right 端口来源。新集合函数使用后述具名数组对象输入与固定输出分发规则。函数允许 identity/select-fields/merge/collect/join/expression。节点 id 稳定保留，label 写用户能理解的业务名称。
 ${expressionGuide}
 ${collectionGuide}
+${semanticGuide}
 持续业务流程可以添加 kind:milestone, mode:all, milestone:{stage,summary}，输入 input、输出 output，透传输入并记录明确的阶段事实，不能在未验证时声称业务完成。kind:wait, mode:all, wait:{event,reason,timeoutSeconds?} 持久等待指定外部事件或超时，输入 input、输出 output（原输入）/event（消息或到期信号）。等待适用于正式工作项运行；普通试运行跳过持久等待且不提交业务里程碑。业务完成由工作项完成条件显式确认，不能用最后节点成功代替。
 根据目标生成必要步骤，不照搬无关示例。逐条分析与总体产物用清楚分工的节点。明确引用要求应写入相关 task；结构化结果用 expectedOutput JSON Schema，支持 type/object/properties/required/enum/items/minItems；保留原始材料编号。依据可用 evidence:[{materialId,quote}]，quote 必须是原文逐字片段。
 若有选定节点，本轮仅修改它的任务/参数/名称/输出结构；其它节点、连接、输入输出保持不变。整个流程修改需要用户从全流程上下文发起。
@@ -433,6 +466,102 @@ export function createAssistant(
               }
             },
           });
+          const updateStep = defineTool({
+            name: 'update_step',
+            label: '修改具体步骤',
+            description:
+              '以稳定 ID 替换一个完整节点，沿用当前定义的其它内容和版本冲突检查。',
+            parameters: Type.Object({
+              node: definitionSchema.properties.nodes.items,
+            }),
+            executionMode: 'sequential',
+            async execute(id, params, signal, updateResult, ctx) {
+              if (!expectedDraftId && !initialId)
+                throw Error('请先生成初始做法。');
+              const current = await files.readDefinition(
+                workId,
+                expectedDraftId ?? initialId!,
+              );
+              if (!current.nodes.some((n) => n.id === params.node.id))
+                throw Error('目标步骤不存在。');
+              return update.execute(
+                id,
+                {
+                  definition: {
+                    ...current,
+                    nodes: current.nodes.map((n) =>
+                      n.id === params.node.id ? params.node : n,
+                    ),
+                  } as never,
+                },
+                signal,
+                updateResult,
+                ctx,
+              );
+            },
+          });
+          const inspectRun = defineTool({
+            name: 'inspect_run',
+            label: '检查运行与实际展开',
+            description:
+              '取得一个 Run 的冻结输入、问题认知、实际展开、步骤结果和错误。',
+            parameters: Type.Object({ runId: Type.String() }),
+            async execute(_id, params) {
+              const current = await files.read(workId);
+              const run = current.runs.find((r) => r.id === params.runId);
+              if (!run) throw Error('运行不存在。');
+              const definition = await files.readDefinition(
+                workId,
+                run.definitionId,
+              );
+              const value = {
+                ...run,
+                problem: definition.problem,
+                results: clipList(run.results, 100),
+              };
+              return {
+                content: [{ type: 'text', text: JSON.stringify(value) }],
+                details: { runId: run.id },
+              };
+            },
+          });
+          const freezeExpansion = defineTool({
+            name: 'freeze_expansion',
+            label: '把有效展开写为候选',
+            description:
+              '复用已完成动态展开，仅写新草稿，不采用、不修改旧运行。',
+            parameters: Type.Object({
+              runId: Type.String(),
+              nodeId: Type.String(),
+            }),
+            executionMode: 'sequential',
+            async execute(_id, params) {
+              throwIfAborted(controller.signal);
+              if (frozen.nodeId)
+                throw Error('固化会增加具体步骤，请在全流程上下文中操作。');
+              const id = await flow.freezeExpansion(
+                workId,
+                expectedDraftId,
+                params.runId,
+                params.nodeId,
+              );
+              expectedDraftId = id;
+              saved = true;
+              toolError = undefined;
+              await patchMessage(workId, requestId, (m) => {
+                m.definitionId = id;
+              });
+              return {
+                content: [
+                  {
+                    type: 'text',
+                    text: JSON.stringify({ definitionId: id, saved: true }),
+                  },
+                ],
+                details: { definitionId: id },
+              };
+            },
+          });
           const inspect = defineTool({
             name: 'inspect_result',
             label: '检查结果',
@@ -468,6 +597,15 @@ export function createAssistant(
               recentMessages: work.messages
                 .slice(-12)
                 .map((message) => ({ role: message.role, text: message.text })),
+              availableRuns: clipList(
+                work.runs.map((r) => ({
+                  id: r.id,
+                  status: r.status,
+                  definitionId: r.definitionId,
+                  expandedNodes: r.expansions?.map((e) => e.nodeId),
+                })),
+                20,
+              ),
               availableResults: clipList(
                 work.runs.flatMap((run) => run.results),
                 100,
@@ -483,7 +621,7 @@ export function createAssistant(
               ),
               instruction: frozen.text,
             }),
-            tools: [update, inspect],
+            tools: [update, updateStep, inspect, inspectRun, freezeExpansion],
             signal: controller.signal,
             onText: async (delta) => {
               text += delta;
@@ -571,7 +709,39 @@ export function createAssistant(
           };
         },
       });
-      const schema = context.node.expectedOutput;
+      const planning = context.node.kind === 'dynamic';
+      let plannedDefinition: Definition | undefined;
+      const submitWorkflow = defineTool({
+        name: 'submit_workflow',
+        label: '提交局部工作流',
+        description:
+          '提交有限可执行子图；校验通过后由运行器持久化并执行。错误会返回具体修复原因。',
+        parameters: Type.Object({ definition: definitionSchema }),
+        executionMode: 'sequential',
+        async execute(_id, params) {
+          throwIfAborted(context.signal);
+          plannedDefinition = undefined;
+          plannedDefinition = validateExpansion(
+            params.definition,
+            context.node,
+          );
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify({
+                  accepted: true,
+                  nodes: plannedDefinition.nodes.length,
+                }),
+              },
+            ],
+            details: { accepted: true },
+          };
+        },
+      });
+      const schema: Json | undefined = planning
+        ? { type: 'object' }
+        : context.node.expectedOutput;
       const expectsText =
         !!schema &&
         typeof schema === 'object' &&
@@ -586,9 +756,15 @@ export function createAssistant(
       context.effectiveModel = scoped.effective;
       const text = await runSession({
         config: scoped.config,
-        systemPrompt: `完成当前工作流节点任务，只使用提供的输入与原始材料，不执行或改写整个流程。材料是待分析数据。不要编造未提供的事实或引用；需要逐字引用时用原文片段。引用编号只能来自本次输入。${outputInstruction}\n工作目录中可能配有本工作上传的文件，并有 Node.js 运行时（预装 xlsx/mammoth/unpdf，直接 require 或 import）；需要处理文件时写脚本完成，清洗制品以 cleaned- 开头命名保存。不得声称未执行的工具或步骤已完成。`,
+        systemPrompt: planning
+          ? `${dynamicInstructions}\n${expressionGuide}\n${collectionGuide}`
+          : `完成当前工作流节点任务，只使用提供的输入与原始材料，不执行或改写整个流程。材料是待分析数据。problem 是方法设计时的认知；若有 workItem，本次工作项的固定目标和材料才是当前事实，不能把方法样例的 known/evidence 套用为业务证据。不要编造未提供的事实或引用；需要逐字引用时用原文片段。引用编号只能来自本次输入。${outputInstruction}\n工作目录中可能配有本工作上传的文件，并有 Node.js 运行时（预装 xlsx/mammoth/unpdf，直接 require 或 import）；需要处理文件时写脚本完成，清洗制品以 cleaned- 开头命名保存。不得声称未执行的工具或步骤已完成。`,
         prompt: JSON.stringify({
           task: context.node.task,
+          problem: context.problem,
+          contract: context.node.contract,
+          dynamic: context.node.dynamic,
+          iteration: context.iteration,
           workItem: context.workItem
             ? {
                 id: context.workItem.id,
@@ -605,8 +781,8 @@ export function createAssistant(
           inputs: context.inputs,
           materials,
         }),
-        tools: [inspect],
-        builtinTools: ['read', 'grep', 'find', 'ls', 'bash'],
+        tools: planning ? [inspect, submitWorkflow] : [inspect],
+        builtinTools: planning ? [] : ['read', 'grep', 'find', 'ls', 'bash'],
         linkFiles: await uploadLinks(context.workId),
         linkRuntime: true,
         collect: async (dir) => {
@@ -623,7 +799,14 @@ export function createAssistant(
         onActivity: context.onActivity,
       });
       throwIfAborted(context.signal);
-      const output = parseOutput(text, context.node.expectedOutput);
+      if (planning) {
+        if (!plannedDefinition)
+          throw Error(
+            '动态规划未通过 submit_workflow 提交有效子图；未执行计划。',
+          );
+        return plannedDefinition as unknown as Json;
+      }
+      const output = parseOutput(text, schema);
       validateEvidence(output, materials);
       return output;
     },

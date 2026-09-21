@@ -2,49 +2,127 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   ModelConfiguration,
   Snapshot,
-  WorkPage,
   WorkSummary,
 } from '../../shared/records';
 import { api } from '../core/api';
 import { acceptSnapshot } from '../core/definition';
 import { errorText } from '../core/format';
 
-export type WorkList = WorkSummary[];
+const openedKey = 'dynamic-flow.opened-works';
+const currentKey = 'dynamic-flow.work';
+const loadingWork = (id: string): WorkSummary => ({
+  id,
+  title: '加载中…',
+  goal: '',
+  updatedAt: '',
+});
 
-/** 工作库列表、当前工作快照与 SSE 连接。 */
+function restoreOpened() {
+  const current = localStorage.getItem(currentKey) || '';
+  const raw = localStorage.getItem(openedKey);
+  let works: WorkSummary[] = [];
+  try {
+    const saved: unknown = JSON.parse(raw || '[]');
+    if (Array.isArray(saved)) {
+      const seen = new Set<string>();
+      works = saved.filter((item): item is WorkSummary => {
+        if (
+          !item ||
+          typeof item.id !== 'string' ||
+          !item.id ||
+          seen.has(item.id) ||
+          (item.title !== undefined && typeof item.title !== 'string') ||
+          typeof item.goal !== 'string' ||
+          typeof item.updatedAt !== 'string'
+        )
+          return false;
+        seen.add(item.id);
+        return true;
+      });
+    }
+  } catch {
+    /* Invalid local navigation does not prevent opening the library. */
+  }
+  // Only the legacy current work was actually open; the old recent list was a library query.
+  if (raw === null && current) works = [loadingWork(current)];
+  return {
+    works,
+    workId: works.some((item) => item.id === current)
+      ? current
+      : works[0]?.id || '',
+  };
+}
+
+/** 本浏览器的有序打开入口、当前工作快照与 SSE 连接。 */
 export function useConnection(setError: (error: string) => void) {
-  const [works, setWorks] = useState<WorkList>([]);
+  const [initial] = useState(restoreOpened);
+  const [works, setWorks] = useState(initial.works);
+  const worksRef = useRef(works);
+  worksRef.current = works;
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const snapshotRef = useRef<Snapshot | null>(null);
-  const activeWorkId = useRef('');
-  const [workId, setWorkId] = useState(
-    () => localStorage.getItem('dynamic-flow.work') || '',
-  );
+  const [workId, setWorkId] = useState(initial.workId);
+  const activeWorkId = useRef(initial.workId);
   const [configuration, setConfiguration] = useState<ModelConfiguration | null>(
     null,
   );
   const [connected, setConnected] = useState(false);
   const work = snapshot?.work;
-  const receive = useCallback((next: Snapshot) => {
-    setSnapshot((prev) => {
-      const accepted = acceptSnapshot(prev, next);
-      snapshotRef.current = accepted;
-      return accepted;
-    });
+
+  const updateEntry = useCallback((next: Snapshot) => {
+    const { work } = next;
+    setWorks((prev) =>
+      work.archivedAt
+        ? prev.filter((item) => item.id !== work.id)
+        : prev.map((item) =>
+            item.id === work.id && item.updatedAt <= work.updatedAt
+              ? {
+                  id: work.id,
+                  title: work.title,
+                  goal: work.goal,
+                  updatedAt: work.updatedAt,
+                }
+              : item,
+          ),
+    );
   }, []);
+  const receive = useCallback(
+    (next: Snapshot) => {
+      if (activeWorkId.current !== next.work.id) return;
+      const accepted = acceptSnapshot(snapshotRef.current, next);
+      snapshotRef.current = accepted;
+      setSnapshot(accepted);
+      updateEntry(accepted);
+    },
+    [updateEntry],
+  );
+
   useEffect(() => {
-    void api<WorkPage>('/api/works?page=1&pageSize=12')
-      .then((r) => setWorks(r.works.slice(0, 12)))
-      .catch((e) => setError(errorText(e)));
+    localStorage.setItem(openedKey, JSON.stringify(works));
+  }, [works]);
+  const refreshWorks = useCallback(() => {
+    // Refresh only explicitly opened entries; never repopulate from a sorted library page.
+    for (const item of worksRef.current) {
+      void api<Snapshot>(`/api/works/${item.id}`)
+        .then((next) => {
+          if (activeWorkId.current === item.id) receive(next);
+          else updateEntry(next);
+        })
+        .catch((error) => setError(errorText(error)));
+    }
+  }, [receive, setError, updateEntry]);
+  useEffect(() => {
+    refreshWorks();
     void api<ModelConfiguration>('/api/config')
       .then(setConfiguration)
       .catch((e) => setError(errorText(e)));
-  }, [setError]);
+  }, [refreshWorks, setError]);
   useEffect(() => {
-    if (!workId) return;
-    activeWorkId.current = workId;
-    let alive = true;
     setConnected(false);
+    if (workId) localStorage.setItem(currentKey, workId);
+    else localStorage.removeItem(currentKey);
+    if (!workId) return;
+    let alive = true;
     void api<Snapshot>(`/api/works/${workId}`)
       .then((s) => {
         if (alive) receive(s);
@@ -63,51 +141,43 @@ export function useConnection(setError: (error: string) => void) {
         }
       }
     });
-    events.onopen = () => setConnected(true);
-    events.onerror = () => setConnected(false);
-    localStorage.setItem('dynamic-flow.work', workId);
+    events.onopen = () => {
+      if (alive) setConnected(true);
+    };
+    events.onerror = () => {
+      if (alive) setConnected(false);
+    };
     return () => {
       alive = false;
       events.close();
     };
   }, [workId, receive, setError]);
-  useEffect(() => {
-    if (!work) return;
-    setWorks((prev) =>
-      work.archivedAt
-        ? prev.filter((w) => w.id !== work.id)
-        : [
-            {
-              id: work.id,
-              title: work.title,
-              goal: work.goal,
-              updatedAt: work.updatedAt,
-            },
-            ...prev.filter((w) => w.id !== work.id),
-          ].slice(0, 12),
-    );
-  }, [snapshot]);
-  function refreshWorks() {
-    void api<WorkPage>('/api/works?page=1&pageSize=12')
-      .then((page) => setWorks(page.works.slice(0, 12)))
-      .catch((error) => setError(errorText(error)));
-  }
+
   /** 重新进入当前工作：保留快照与本地编辑，只刷新元数据。 */
   function refetch(id: string) {
+    ensureOpened(id);
     void api<Snapshot>(`/api/works/${id}`)
-      .then((next) => {
-        if (activeWorkId.current === id) receive(next);
-      })
+      .then(receive)
       .catch((error) => {
         if (activeWorkId.current === id) setError(errorText(error));
       });
   }
-  /** 切换到另一个工作；调用方负责重置草稿与选择状态。 */
+  function ensureOpened(id: string) {
+    if (id)
+      setWorks((prev) =>
+        prev.some((item) => item.id === id) ? prev : [...prev, loadingWork(id)],
+      );
+  }
+  /** 切换到另一个工作；调用方负责重置草稿与选择状态。空 ID 关闭当前连接。 */
   function switchTo(id: string) {
+    ensureOpened(id);
     activeWorkId.current = id;
     setWorkId(id);
     setSnapshot(null);
     snapshotRef.current = null;
+  }
+  function closeEntry(id: string) {
+    setWorks((prev) => prev.filter((item) => item.id !== id));
   }
   return {
     works,
@@ -123,5 +193,6 @@ export function useConnection(setError: (error: string) => void) {
     refreshWorks,
     refetch,
     switchTo,
+    closeEntry,
   };
 }

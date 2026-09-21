@@ -1,5 +1,11 @@
 # Tracks Registry
 
+- [x] **Track: 问题驱动的动态工作流优化**
+  *Link: [semantic-workflow_20260921](./tracks/semantic-workflow_20260921/index.md)*
+
+- [x] **Track: 已打开的流水线稳定导航**
+  *Link: [opened-pipelines_20260921](./tracks/opened-pipelines_20260921/index.md)*
+
 - [x] **Track: 模型目录与按 Work 的模型选择**
   *Link: [model-catalog_20260920](./tracks/model-catalog_20260920/index.md)*
 

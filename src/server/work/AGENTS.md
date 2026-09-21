@@ -1,5 +1,12 @@
 # 工作、材料与产物
 
+## 快速定位
+
+- 入口：`index.ts` → `createWorkService(files)`；createWork/listWorks/rename/archive 维护方法工作区，addMaterials/keepResults/previewResults 维护输入与成果选择。
+- `listWorks` 按 updatedAt 倒序；前端侧栏还有独立的列表更新逻辑，排查排序时同时读 `client/state/useConnection.ts`。
+- 只依赖 files；不直接依赖或调度 runs。previewResults 产出 Inputs，入口把用户确认的输入交给 runs.start。
+- 主要验证：`tests/state.test.ts`、`tests/browser/work-library.spec.ts`；命令见 [测试地图](../../../tests/AGENTS.md)。
+
 适用本目录，继承上层约定。当前已实现本模块业务；域内证据与产品联测边界见文末实现交接。
 
 ## 职责与子问题
@@ -8,7 +15,7 @@
 
 ## 目标
 
-- 缺目标/材料时保留输入并说明问题；追加材料不覆盖历史。
+- 目标缺失或提交空白材料条目时说明问题；允许只给目标创建，追加材料不覆盖历史。
 - 保留结果与采用做法独立；续做只使用明确选定的输入。
 - 报告说明材料范围、来源和完整性，前端可完整阅读与复制。
 
@@ -20,7 +27,7 @@
 
 提供 createWork/listWorks/rename/archive/addMaterials/keepResults/previewResults。输入为目标、材料、工作属性或所选结果；输出为 Work、WorkPage 或带来源的 Inputs。执行续做由 HTTP 将 previewResults 的明确结果交给 runs.start；报告直接显示对应 NodeResult。
 
-直接依赖 files、runs；无额外第三方业务框架，不直接调用 Pi。参考 [伪代码](../../../spike/src/server/work.pseudo.md)。函数和字段可随真实调用调整。
+直接依赖 files；与 runs 的续做交接在 server/index.ts。当前签名以本目录 index.ts 为准，历史伪代码只供背景查阅。
 
 ## 验收与证据
 

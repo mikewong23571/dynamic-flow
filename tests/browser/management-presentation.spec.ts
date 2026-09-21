@@ -138,7 +138,7 @@ for (const width of [1440, 1024])
       }),
       contentType: 'image/png',
     });
-    await page.getByRole('button', { name: '流水线', exact: true }).click();
+    await page.getByRole('button', { name: '全部流水线', exact: true }).click();
     const active = page.getByRole('tab', { name: '未归档', exact: true });
     await active.focus();
     await active.press('ArrowRight');

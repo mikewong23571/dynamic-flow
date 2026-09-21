@@ -110,7 +110,7 @@ function Canvas({
           status: run?.nodeStates[node.id],
           final: isFinalOutput(definition, node.id),
           progress: run?.results.some((r) => r.nodeId === node.id)
-            ? `${run.results.filter((r) => r.nodeId === node.id && r.status === 'completed').length} / ${nodeTotal(run, node.id)}`
+            ? `${run.results.filter((r) => r.nodeId === node.id && r.status === 'completed' && !r.intermediate && !r.purpose).length} / ${nodeTotal(run, node.id)}`
             : undefined,
         },
       })),

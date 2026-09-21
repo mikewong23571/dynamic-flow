@@ -1,5 +1,16 @@
 # 流程草稿、校验与采用
 
+## 快速定位
+
+| 文件 | 负责什么 | 主要验证（仓库根 tests/） |
+| --- | --- | --- |
+| `index.ts` | checkDefinition/validateForRun、createFlow；草稿、候选、布局、采用、Snapshot | state.test.ts、canvas-view-state.test.ts |
+| `schema.ts` | Ajv schema 编译、值校验及可确定的顶层类型冲突；runs/assistant 也复用 | lifecycle-runtime.test.ts、assistant.test.ts |
+| `expressions.ts` | 表达式形状/作用域检查与纯求值；求值由 runs 调用 | functional-ir.test.ts、functional-author.test.ts |
+| `collections.ts` | merge/collect/join 配置和端口 schema 检查；集合执行在 runs/collections.ts | multi-input.test.ts、multi-input-author.test.ts |
+
+共同端口规则在 `shared/node-ports.ts`。语义先读 [纯表达式](../../../docs/functional-ir.md) / [多路集合](../../../docs/multi-input.md)，再读相应实现；新增节点/运算须同步 shared、runs、作者工具与前端配置。
+
 适用本目录，继承上层约定。当前已实现本模块业务；域内证据与产品联测边界见文末实现交接。
 
 ## 职责与子问题
@@ -81,3 +92,7 @@ Schema 当前使用 Ajv 的 JSON Schema draft-07，允许基础类型 union；�
 ## 画布路由持久化（2026-09-20）
 
 saveLayout 接收 ViewState 的 positions、可选 viewport、showPorts 与 routing。routing 包含非空 signature 和按连线 ID 索引的 routes；路径至少两个有限坐标点。形状错误在文件修改前拒绝，不覆盖原布局、不通知保存成功。signature 是客户端的展示失效标记，flow 不推导布局或验证它与定义的匹配；客户端只使用匹配当前几何的路由。布局保存不创建定义、不改 draftId 或 comparisons。`tests/canvas-view-state.test.ts` 以真实临时文件验证重开、旧布局兼容和坏输入不覆盖；视觉质量与前端失效判断由画布联测验收。
+
+## 问题认知、步骤合同与展开候选
+
+`semantic.ts` 校验问题字段、合同、动态上限和迭代配置，`checkDefinition` 统一调用；手工可保存未完成草稿，运行与作者保存仍须通过完整校验。`freezeExpansion(workId,expectedDraftId,runId,nodeId)` 只复用已经完成且责任未变化的展开，生成新草稿，不自动采用、不改历史 Run。统一图投影在 shared/expansion.ts，动态提案校验在 flow/expansion.ts。测试：semantic-workflow.test.ts、semantic-author.test.ts。

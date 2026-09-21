@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type {
-  Definition,
-  Inputs,
-  Snapshot,
-  Work,
-} from '../../shared/records';
+import type { Definition, Inputs, Snapshot, Work } from '../../shared/records';
 import { localInputs, materialInputs, inputPorts } from '../core/inputs';
 
 interface LocalContext {
@@ -174,6 +169,8 @@ export function useSelection(
     flushContext,
   ]);
   function resetSelection() {
+    flushContext();
+    contextForWork.current = '';
     setSelectedNode(undefined);
     setSelectedRun(undefined);
     setSelectedResults([]);

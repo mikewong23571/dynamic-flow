@@ -167,32 +167,45 @@ export function useActions(deps: ActionDeps) {
       id: newId(),
       kind: addKind,
       label:
-        addKind === 'file'
-          ? '文件'
-          : addKind === 'agent'
-            ? '新的 Agent 步骤'
-            : addKind === 'branch'
-              ? '条件分流'
-              : addKind === 'wait'
-                ? '等待外部事件'
-                : addKind === 'milestone'
-                  ? '记录业务进展'
-                  : '整理数据',
+        addKind === 'dynamic'
+          ? '局部动态展开'
+          : addKind === 'file'
+            ? '文件'
+            : addKind === 'agent'
+              ? '新的 Agent 步骤'
+              : addKind === 'branch'
+                ? '条件分流'
+                : addKind === 'wait'
+                  ? '等待外部事件'
+                  : addKind === 'milestone'
+                    ? '记录业务进展'
+                    : '整理数据',
       mode: 'each',
-      ...(addKind === 'file'
-        ? { file: { name: '' } }
-        : addKind === 'agent'
-          ? { task: '' }
-          : addKind === 'function'
-            ? { functionName: 'identity' as const }
-            : addKind === 'wait'
-              ? {
-                  mode: 'all' as const,
-                  wait: { event: 'update', reason: '等待补充信息' },
-                }
-              : addKind === 'milestone'
-                ? { mode: 'all' as const, milestone: { stage: '', summary: '' } }
-                : { condition: { field: '', operator: 'equals' as const } }),
+      ...(addKind === 'dynamic'
+        ? {
+            mode: 'all' as const,
+            operation: 'aggregate' as const,
+            task: '',
+            contract: { responsibility: '', done: '', rationale: '' },
+            dynamic: { boundary: '', maxNodes: 5 },
+          }
+        : addKind === 'file'
+          ? { file: { name: '' } }
+          : addKind === 'agent'
+            ? { task: '' }
+            : addKind === 'function'
+              ? { functionName: 'identity' as const }
+              : addKind === 'wait'
+                ? {
+                    mode: 'all' as const,
+                    wait: { event: 'update', reason: '等待补充信息' },
+                  }
+                : addKind === 'milestone'
+                  ? {
+                      mode: 'all' as const,
+                      milestone: { stage: '', summary: '' },
+                    }
+                  : { condition: { field: '', operator: 'equals' as const } }),
     };
     editDefinition({ ...definition, nodes: [...definition.nodes, node] });
     setSelectedNode(node.id);

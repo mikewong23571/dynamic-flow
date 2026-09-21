@@ -41,6 +41,8 @@ export function changeSummary(
   if (!after) return [];
   if (!before) return ['新建流程'];
   const lines: string[] = [];
+  if (JSON.stringify(before.problem) !== JSON.stringify(after.problem))
+    lines.push('更新问题认知与依据');
   for (const n of after.nodes) {
     const old = before.nodes.find((x) => x.id === n.id);
     if (!old) lines.push(`新增「${n.label}」`);

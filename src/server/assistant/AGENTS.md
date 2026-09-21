@@ -1,5 +1,20 @@
 # Pi 会话、模型端点与业务工具
 
+## 快速定位
+
+| 文件 | 职责 / 调试入口 |
+| --- | --- |
+| `index.ts` | createAssistant、requestEdit/stopEdit、update_flow/inspect_result 工具、executeNode 的上下文与输出处理 |
+| `pi.ts` | runPiSession：Pi SDK 适配、会话、取消、工具活动、文件/运行库链接及 cleaned- 制品收集 |
+| `config.ts` / `settings.ts` | 协议配置类型、安全错误文本 / 参数与协议映射、目录选择、公开配置与默认选择保存 |
+| `catalog.ts` | models.toml 解析/校验/保存，公开目录脱敏；目录是模型配置唯一来源 |
+| `validation.ts` | 模型输出解析和材料引用/引文机械检查；不是完整事实审查 |
+| `expression-guide.ts` / `collection-guide.ts` | 作者工具看到的表达式/集合合同，须与 flow 校验、runs 执行同步 |
+| `profile-flow.ts` | 内建文件剖析 Definition 的构造、文件实例化及输出读取；实际启动/收尾在 server/index.ts |
+| `probe.ts` / `author-probe.ts` | 真实端点探针；历史结果在 probe-results.md，参数说明在 model-parameter-notes.md |
+
+主要测试：`tests/assistant.test.ts`、`tests/functional-author.test.ts`、`tests/multi-input-author.test.ts`、`tests/profile-import.test.ts`。这些替身/接线结果不代替真实端点验证；运行探针前核对其配置与输出，密钥不得进入证据。
+
 适用本目录，继承上层约定。已实现 Pi 会话、作者工具与节点执行；域内与真实模型证据见 [probe-results.md](./probe-results.md)，完整用户路线和浏览器通知仍由应用集成验收。
 
 ## 职责与子问题
@@ -45,7 +60,7 @@ Pi 如何根据当前工作生成/修改真实流程，并完成 Agent 节点任
 - G1 设置接口（2026-09-20 起目录为唯一来源）：createAssistant options.settingsPath 保存全局默认选择；configuration 返回非密钥目录与选择状态。手动配置与 .env 回退已按用户决定移除（原型不需要兼容性），请求内固定配置。Anthropic 预算语义与 Chat effort 必须区分，不能把保存成功当成任何模型都支持全部参数。
 - 模型目录（2026-09-20）：options.catalogPath 指向仓库根 models.toml（kimi-code schema：[providers.*] type/base_url/api_key/custom_headers + [models."provider/别名"] provider/model/max_context_size/support_efforts/default_effort；type anthropic/openai/openai-responses 映射三种协议，其它类型加载即报中文错误）。catalog.ts 负责解析/校验/原子重写（0600，空 apiKey 沿用旧值）；公开条目只有 apiKeyConfigured，密钥与请求头不出 API。思考级别词表 off/minimal/low/medium/high/xhigh/max（与 pi thinkingLevel 对齐）；support_efforts 显式空数组 = 不设置思考级别（解析为 off），省略字段 = 默认四档 low/medium/high/max；default_effort 可省略（取回退档）。解析链：assistant 的 Work 覆盖（Work.modelSelections.assistant）→ 全局默认（设置文件 defaultSelection）→ 未配置报错；目录别名失效时如实回退下一级并在 effectiveModel.source 与 requested 可见，不静默假装仍是所选模型。custom_headers 经 ModelConfig.headers 透传 pi-ai registerProvider。testCatalogEntry 跑一次最小真实会话（echo 工具回显，90s 超时），错误经 safeError 脱敏，不回退假模型。保存目录时被默认选择或任一 Work 覆盖引用的别名不得删除（服务端扫 works 拒绝）。
 - G2 作者工具可选 title 只在最新 work.titleEdited 不为 true 时写入，不覆盖手工命名。
-- 材料导入 = 内置**数据剖析 workflow**（profile-flow.ts）：file 来源节点引用上传文件 → probe 识别格式与规模 → branch 按 scale 分流；seed 按文件名实例化（withProfileFile）并与内建规范全等 → 小文件直接拆分登记、大文件剖析并把 schema 化洞见写入 cleaned-insight.json（六字段：overview/structure/stats/qualityIssues/artifacts/suggestions，structure/stats 可为嵌套对象）。server 入口 importMaterials 负责 seed（与 buildProfileDefinition() 全等才算命中，契约演进自动重 seed，不占 draft/adopted）、runs.start 与 onFinish 收尾：小文件登记拆分条目，大文件以 cleaned-insight.json 为准校验登记一条洞见材料。executeNode 的 agent 节点会话带 Pi 内置 read/grep/find/ls/bash、linkRuntime（node_modules 软链，预装 xlsx/mammoth/unpdf，新增库须同步节点提示词）、uploads 全量 linkFiles 与 cleaned- 制品 collect 收割；节点最终回复保持简短，结构化产物落文件，避免长 JSON 回复格式事故。披露给模型的材料/结果列表用 clipList 裁剪并附截断标记。模型调用级 retry 已开启（网关长会话断流续跑，工具调用不重放）。
+- 材料导入 = 内置**数据剖析 workflow**（profile-flow.ts）：file 来源节点引用上传文件 → probe 识别格式与规模 → branch 按 scale 分流 → 小文件直接拆分登记、大文件剖析并把 schema 化洞见写入 cleaned-insight.json（六字段：overview/structure/stats/qualityIssues/artifacts/suggestions，structure/stats 可为嵌套对象）。server 入口 importMaterials 负责 seed、runs.start 与 onFinish 收尾：canonicalProfileDefinition 优先读取已存在内建流水线的采用版本，否则使用 buildProfileDefinition 初值；seed 与按文件名实例化（withProfileFile）后的规范全等才复用，不占调用方 draft/adopted。小文件登记拆分条目，大文件以 cleaned-insight.json 为准校验登记一条洞见材料。executeNode 的 agent 节点会话带 Pi 内置 read/grep/find/ls/bash、linkRuntime（node_modules 软链，预装 xlsx/mammoth/unpdf，新增库须同步节点提示词）、uploads 全量 linkFiles 与 cleaned- 制品 collect 收割；节点最终回复保持简短，结构化产物落文件，避免长 JSON 回复格式事故。披露给模型的材料/结果列表用 clipList 裁剪并附截断标记。模型调用级 retry 已开启（网关长会话断流续跑，工具调用不重放）。
 
 产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
 
@@ -64,3 +79,9 @@ update_flow 接受 functionName=expression 与纯表达式树；根传输 schema
 ## 多路组合作者合同
 
 update_flow 接受 inputNames 与 join 配置，collection-guide.ts 提供具名数组输入、固定分发、四种关联、重复/缺键的明确规则。工具传输 schema 与 flow 语义检查共同生效，错误提案不写草稿；测试见 tests/multi-input-author.test.ts，真实模型证据见 multi-input_20260920 track。不要把普通 aggregate 扁平数组规则套到新集合函数上。
+
+## 问题驱动作者与局部规划
+
+`semantic-guide.ts` 定义最小有用 Plan、问题/方案分离、责任合同、Each 语义角色和局部动态边界。`update_step` 替换一个完整节点并委托同一 update_flow 校验/版本检查；`inspect_run` 返回固定输入、问题、展开和逐轮结果；`freeze_expansion` 复用 flow.freezeExpansion，只写候选。现有 inspect_result 仍用于精确读取。
+
+executeNode 接收固定 problem/contract/iteration。dynamic 会话必须通过 submit_workflow 提交 Definition，无内置执行工具；作者工具和 runtime 都复用 flow/expansion.ts 校验，不再解析最终聊天文本作为计划；节点 expectedOutput 约束展开的实际产物，不约束计划 JSON。其它 Agent 保留工具选择自由、材料和引用检查。真实模型与替身验证分列在 semantic-workflow track。

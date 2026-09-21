@@ -19,7 +19,7 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
   }
   try {
     await page.goto('/');
-    await page.getByRole('button', { name: '流水线', exact: true }).click();
+    await page.getByRole('button', { name: '全部流水线', exact: true }).click();
     const library = page.getByRole('region', {
       name: '流水线管理',
       exact: true,
@@ -72,7 +72,7 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
       page
         .locator('.work-list')
         .getByRole('button', { name: newTitle, exact: true }),
-    ).toBeVisible();
+    ).toHaveCount(0);
     const renamed = (await (
       await request.get(`/api/works/${target.id}`)
     ).json()) as Snapshot;

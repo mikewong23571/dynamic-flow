@@ -1,3 +1,4 @@
+import { SemanticFields, ProblemEditor } from './SemanticFields';
 import { useEffect, useState } from 'react';
 import { Trash2, ArrowRight } from 'lucide-react';
 import type {
@@ -9,7 +10,7 @@ import type {
 import { inputPorts, outputPorts } from '../../core/inputs';
 import { isFinalOutput, nodeLabel, removeNode } from '../../core/definition';
 import { portLabel } from '../../core/format';
-import { Button, Empty } from '../../components/ui';
+import { Button } from '../../components/ui';
 import { ExpressionEditor } from './ExpressionEditor';
 import { variable } from './expression-model';
 import { CollectionEditor } from './CollectionEditor';
@@ -48,7 +49,9 @@ function FileNodeConfig({
         ))}
       </NativeSelect>
       {node.file?.name && !files.includes(node.file.name) && (
-        <span className="inline-error">文件 {node.file.name} 不在工作文件中。</span>
+        <span className="inline-error">
+          文件 {node.file.name} 不在工作文件中。
+        </span>
       )}
     </label>
   );
@@ -70,11 +73,7 @@ export function NodeInspector({
 }) {
   const node = definition.nodes.find((n) => n.id === nodeId);
   if (!node)
-    return (
-      <Empty title="选择一个步骤">
-        <p>点击画布节点，查看任务、连接和参数。</p>
-      </Empty>
-    );
+    return <ProblemEditor definition={definition} onChange={onChange} />;
   const update = (patch: Partial<FlowNode>) =>
     onChange({
       ...definition,
@@ -102,6 +101,7 @@ export function NodeInspector({
           onChange={(e) => update({ label: e.target.value })}
         />
       </label>
+      <SemanticFields node={node} update={update} />
       {node.kind === 'file' && (
         <FileNodeConfig workId={workId} node={node} update={update} />
       )}
@@ -123,9 +123,9 @@ export function NodeInspector({
                 })
               }
             >
-              <option value="map">Map · 逐项处理</option>
-              <option value="flatMap">FlatMap · 逐项展开</option>
-              <option value="aggregate">Aggregate · 整批汇总</option>
+              <option value="map">逐项处理</option>
+              <option value="flatMap">逐项产生多项</option>
+              <option value="aggregate">整批处理</option>
             </select>
           </label>
           {(node.operation || node.mode) !== 'aggregate' &&

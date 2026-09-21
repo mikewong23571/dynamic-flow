@@ -1,5 +1,13 @@
 # 执行、停止与局部重试
 
+## 快速定位
+
+- `index.ts` → `createRuns(files, executeNode, hooks)`：DAG 就绪调度、固定输入与来源、实例与活动记录、停止/重试、等待/事件/恢复；底部返回对象是当前 RunService。
+- `collections.ts`：具名 merge/collect/join 的纯计算和参与行来源；表达式求值复用 flow/expressions.ts，schema 复用 flow/schema.ts。
+- executeNode 由入口传入（默认 assistant.executeNode），onMilestone 接 work-items，onFinish 接当前导入收尾；本模块不自行组装 Pi 或业务工作项服务。
+- 验证入口：`tests/runs.test.ts`、`tests/lifecycle-runtime.test.ts`、`tests/lifecycle-process.test.ts`；集合/表达式另跑 multi-input.test.ts / functional-ir.test.ts。测试与真实模型证据分开。
+- 有限并发、持久等待和显式 resume 已实现；不要把旧“始终顺序、重启只能另起运行”的推演当作当前约束。
+
 适用本目录，继承上层约定。有限节点执行已实现；产品级验收见整个应用 track。
 
 ## 职责与子问题
@@ -34,11 +42,11 @@
 
 ## 假设与未知
 
-顺序执行先服务小样本。SDK 中止与外部端点实际停止计算不同；必须测真实取消行为，不承诺尚未验证的时序或并发能力。真实任务若无法完成，再调整支持范围。本清单不穷尽未知。
+有限并发与等待恢复的当前合同见下文。SDK 中止与外部端点实际停止计算不同；必须测真实取消行为，不承诺尚未验证的时序或并发能力。真实任务若无法完成，再调整支持范围。本清单不穷尽未知。
 
 ## 当前交接与证据
 
-`createRuns(files, executeNode)` 直接组合文件与 Pi 节点函数，提供 start/stop/retry/wait；reserve/release 仅用于同工作比较链占用，不是通用队列。tests/runs.test.ts 验证失败保留与单项重试、停止迟到响应、空分支与汇合、固定版本/输入及工具身份。HTTP 接线见 server/index.ts，真实模型和浏览器验收单列，测试替身不代表模型质量。
+`createRuns(files, executeNode, hooks)` 直接组合文件、节点执行函数与生命周期回调，提供 start/stop/retry/wait；reserve/release 仅用于同工作比较链占用，不是通用队列。tests/runs.test.ts 验证失败保留与单项重试、停止迟到响应、空分支与汇合、固定版本/输入及工具身份。HTTP 接线见 server/index.ts，真实模型和浏览器验收单列，测试替身不代表模型质量。
 
 产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
 
@@ -74,3 +82,9 @@ functionName=expression 只走显式 operation 调用路径，不能落入旧函
 集合调用先校验具名输入对象、再校验整体输出。新 merge/join 校验整个数组后分发逐项输出，collect 保留对象单项。沿用 DAG 就绪/失败阻断、固定版本/上下文、节点 preview/retry 路径，不建额外调度器。
 
 每个输出的 materialIds 仅来自实际参与行；sourceResultIds 为当前集合实例 ID 加参与行的直接来源 ID。一次集合实例的 input 仍包含全部输入，不能宣称仅凭当前实例 ID 可逆推每行来源；输出包装的显式上游 ID 用于精确直接来源。重复键会自然令同一源行参与多个输出，不强制去重业务行。
+
+## 局部展开与有限迭代
+
+Dynamic 先创建 purpose=planning 实例，调用原 executeNode；提案经 `flow/expansion.ts` 与 flow 统一校验，保存到 Run.expansions 后才调度子图。子图只收 input、输出 output，最多 20 节点，所有节点须有合同并关联最终输出，不允许再 Dynamic。shared/expansion 将节点前缀为原节点 ID + `/`，原节点成为输出边界；等待、停止、来源、schema 与恢复继续走原 DAG 调度。恢复读取已保存展开，不重做成功规划。
+
+Agent/普通函数的 operation=map 可配 repeat（max 1–10，until 可选纯表达式）。每轮输出作为下一轮输入，实例有 iteration；中间轮标 intermediate，不进入下游。until 的 input 是本轮单值输出，必须为 boolean；达到上限仍 false 失败并保留末轮产物。恢复重用成功轮次，只重做未确定轮次。单节点试运行也可展开；生成子步骤暂不直接局部重试，先将成功展开固化或从动态位置重跑。测试 semantic-workflow.test.ts 使用真实临时文件，模型边界替身。

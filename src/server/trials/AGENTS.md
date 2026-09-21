@@ -1,5 +1,12 @@
 # 样本试验与候选比较
 
+## 快速定位
+
+- 入口：`index.ts` → `createTrials(files, runs)`，compare/stopComparison/wait；结果作为 Comparison 保存在 Work。
+- compare 固定两侧定义与同一 Inputs，使用 runs.reserve/release 协调占用并顺序调用公共 runs.start；没有独立执行器。
+- 前端：`client/features/results/Comparison.tsx`；`client/core/compare.ts` 根据当前 draftId、输入指纹和未保存修改派生过期状态。flow 保存语义版本，不额外持久化一个过期标记。
+- 验证入口：`tests/trials.test.ts`、`tests/client.test.ts`，结合 `tests/browser/workspace.spec.ts` 检查工作区；完整比较路线见 [用户故事 E1–E4](../../../docs/user-stories.md)。
+
 适用本目录，继承上层约定。同输入顺序比较已实现；产品级验收见整个应用 track。
 
 ## 职责与子问题

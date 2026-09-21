@@ -402,6 +402,15 @@ a:focus-visible {
     overflow: auto;
     max-height: 200px;
   }
+  .opened-work-row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .opened-work-row .work-item {
+    flex: 1;
+    min-width: 0;
+  }
   .work-item {
     display: flex;
     align-items: center;
@@ -1696,7 +1705,7 @@ a:focus-visible {
       padding-right: 8px;
     }
   }
-  .canvas-toolbar .inline-group:last-child .button:first-child {
+  .canvas-toolbar .view-code {
     font-size: 0;
     gap: 0;
   }

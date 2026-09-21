@@ -61,7 +61,8 @@ export function CanvasPane({
           >
             <option value="file">文件</option>
             <option value="function">普通处理</option>
-            <option value="agent">Agent</option>
+            <option value="agent">Agent 步骤</option>
+            <option value="dynamic">局部动态展开</option>
             <option value="branch">条件分流</option>
             <option value="wait">等待事件</option>
             <option value="milestone">业务里程碑</option>
@@ -72,7 +73,20 @@ export function CanvasPane({
           </Button>
         </div>
         <div className="inline-group">
-          <Button variant="ghost" onClick={() => setCodeOpen(true)}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setSelectedNode(undefined);
+              setPanel('inspector');
+            }}
+          >
+            问题与依据
+          </Button>
+          <Button
+            className="view-code"
+            variant="ghost"
+            onClick={() => setCodeOpen(true)}
+          >
             <Code size={15} />
             查看 JS
           </Button>

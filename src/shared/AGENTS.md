@@ -1,10 +1,20 @@
 # 少量共享记录
 
+## 快速定位
+
+| 文件 | 内容 | 主要消费者 |
+| --- | --- | --- |
+| `records.ts` | Work/WorkItem/Run/Definition/InputItem/NodeResult/Snapshot、模型配置与 ViewState | client 与 server 各业务模块 |
+| `expressions.ts` | 可序列化 Expression/Pattern/PureFunction 联合类型 | Inspector、作者工具、flow 检查与求值 |
+| `node-ports.ts` | nodeInputPorts/collectionFunction/expandedCollectionOutput 纯语义函数 | canvas/inspector、flow、runs |
+
+改字段时同时核对生产、消费与旧文件重开；单模块内部类型留在模块内。验证按字段所属域从 [测试地图](../../tests/AGENTS.md) 选择，不另造一套只有类型能通过的 shared 测试。下文是关键合同，历史验收记录不代表本次运行结论。
+
 适用本目录。records.ts 已定义正式应用共用的 Definition、Work、Run、NodeResult、Comparison、Snapshot 和模型设置记录。
 
 ## 职责与目标
 
-让前后端和功能文件对定义、运行、输入来源、结果、比较与事件身份有一致理解。以 [记录伪代码](../../spike/src/shared/records.pseudo.md) 为起点，在真实调用中只提取确需共享的类型。
+让前后端和功能文件对定义、运行、输入来源、结果、比较与事件身份有一致理解。以当前 records.ts、实际调用双方和保存文件为准，只提取确需共享的类型；历史伪代码不作为当前字段合同。
 
 ## 非目标
 
@@ -27,7 +37,7 @@ TypeScript 类型与少量跨调用方共享的纯语义函数，无外部运行
 
 Node/端口、逐项/汇总来源和活动字段在真实执行、比较、HTTP/SSE 与文件恢复中联测，后续仍可按反例调整。不要把所有伪代码字段一次性变成刚性接口，也不要用 any 掩盖真实调用中的歧义；保留反例并同步相邻模块修订。
 
-首次节点联测先使用记录伪代码中的“材料 → 分类值 → 报告输入”具体例子，对齐模型业务输出、应用校验和来源包装；不要让调用方猜测 expectedOutput 或 InputItem.value。
+节点联测使用“材料 → 分类值 → 报告输入”的具体例子，对齐模型业务输出、应用校验和来源包装；不要让调用方猜测 expectedOutput 或 InputItem.value。
 
 具体约定：InputItem 保存 sampleId、value、materialIds 和 sourceResultIds；NodeResult 绑定运行、版本、节点及实例；nodeTotals 是已知批次数。工作标题/归档与 ModelSettings/ModelConfiguration 支持 G1/G2；对外配置只返回 apiKeyConfigured，不返回 apiKey。测试见 tests/ 下模块及 integration。
 
@@ -56,3 +66,7 @@ node-ports.ts 集中 nodeInputPorts、collectionFunction、expandedCollectionOut
 ## 画布展示状态
 
 ViewState.positions / viewport 保存节点位置与视口；可选 showPorts 保存端口显示偏好，可选 routing 保存 `{signature, routes}`。routes 以 `edge-${index}` 标识连线，每条路径为至少两个绝对坐标点。signature 由客户端按图结构、实际几何与节点位置生成，只用于检测路由是否过期；路由与偏好都不是 IR，也不影响输入端口顺序、定义版本或比较有效性。旧数据缺少可选字段仍可读取和保存，后端在 saveLayout 校验路由形状后保存。
+
+## 问题驱动的动态工作流
+
+`Definition.problem` 保存当前 framing/known/unknown/constraints/evidence 文本，随定义版本冻结；`FlowNode.contract` 描述 responsibility/done/rationale/semanticRole，不把文本完成条件当机器证明。`repeat` 是 map 步骤的有限迭代配置，`dynamic` 是有限局部子图规划。`Run.expansions` 保存实际子图；`NodeResult.purpose/iteration/intermediate/repeatDone` 区分规划、逐轮和最终结果。`expansion.ts` 仅将已记录展开投影成同一执行图，原 Definition 不变。具体边界见 [本轮合同](../../docs/semantic-workflow.md)。

@@ -1,3 +1,5 @@
+import { materializeDefinition } from '../../shared/expansion.ts';
+import { validateExpansion } from '../flow/expansion.ts';
 import { collectionFunction, nodeInputPorts } from '../../shared/node-ports.ts';
 export { nodeInputPorts } from '../../shared/node-ports.ts';
 import { executeCollection, namedValues } from './collections.ts';
@@ -277,6 +279,25 @@ export function createRuns(
     definition: Definition,
     controller: AbortController,
   ) {
+    const sourceDefinition = definition;
+    const selected =
+      typeof run.scope === 'object'
+        ? definition.nodes.find(
+            (n) => n.id === (run.scope as { nodeId: string }).nodeId,
+          )
+        : undefined;
+    const expandedScope = selected?.kind === 'dynamic';
+    if (expandedScope)
+      definition = {
+        ...definition,
+        inputs: ['input'],
+        nodes: [selected!],
+        edges: [{ from: ['$input', 'input'], to: [selected!.id, 'input'] }],
+        outputs: { output: [selected!.id, 'output'] },
+      };
+    definition = materializeDefinition(definition, run.expansions ?? []);
+    const graphScope = run.scope === 'full' || expandedScope;
+    let expanded = false;
     const signal = controller.signal;
     const values: Record<string, Inputs> = { $input: copy(run.inputs) };
     const states = { ...run.nodeStates };
@@ -288,7 +309,13 @@ export function createRuns(
             ? { output: [], event: [] }
             : { output: [] };
       for (const result of run.results
-        .filter((r) => r.nodeId === node.id && r.status === 'completed')
+        .filter(
+          (r) =>
+            r.nodeId === node.id &&
+            r.status === 'completed' &&
+            !r.intermediate &&
+            !r.purpose,
+        )
         .sort(
           (a, b) =>
             Number(a.instanceId.split(':').at(-1)) -
@@ -302,7 +329,8 @@ export function createRuns(
       definition.nodes
         .filter(
           (n) =>
-            (run.scope === 'full' || n.id === run.scope.nodeId) &&
+            (graphScope ||
+              (typeof run.scope === 'object' && n.id === run.scope.nodeId)) &&
             states[n.id] !== 'completed' &&
             states[n.id] !== 'failed' &&
             states[n.id] !== 'blocked',
@@ -372,16 +400,104 @@ export function createRuns(
         return;
       }
       const edges = definition.edges.filter((e) => e.to[0] === nodeId);
-      const input: Inputs =
-        run.scope === 'full'
-          ? Object.fromEntries(
-              edges.map((e) => [
-                e.to[1],
-                copy(values[e.from[0]]?.[e.from[1]] ?? []),
-              ]),
-            )
-          : copy(run.inputs);
+      const input: Inputs = graphScope
+        ? Object.fromEntries(
+            edges.map((e) => [
+              e.to[1],
+              copy(values[e.from[0]]?.[e.from[1]] ?? []),
+            ]),
+          )
+        : copy(run.inputs);
       validateInputs(input, nodeInputPorts(node));
+      if (node.kind === 'dynamic') {
+        states[nodeId] = 'running';
+        const result: NodeResult = {
+          id: randomUUID(),
+          runId: run.id,
+          definitionId: run.definitionId,
+          nodeId,
+          instanceId: `${nodeId}:planning`,
+          purpose: 'planning',
+          input: copy(input),
+          outputs: {},
+          status: 'running',
+          activities: [],
+          startedAt: timestamp(),
+        };
+        await changeRun(workId, run.id, (r) => {
+          r.nodeStates[nodeId] = 'running';
+          r.results.push(result);
+        });
+        try {
+          validateValue(
+            node.inputSchema,
+            items(input).map((i) => i.value),
+            '输入',
+          );
+          const work = await files.read(workId);
+          const context: NodeExecution = {
+            workId,
+            runId: run.id,
+            definitionId: run.definitionId,
+            node,
+            instanceId: result.instanceId,
+            inputs: copy(input),
+            materials: copy(run.workItem?.materials ?? work.materials),
+            workItem: run.workItem,
+            problem: sourceDefinition.problem,
+            signal,
+            onActivity: async (activity) => {
+              if (signal.aborted || closed) return;
+              await changeRun(workId, run.id, (r) => {
+                const saved = r.results.find((x) => x.id === result.id)!;
+                const at = saved.activities.findIndex(
+                  (a) => a.toolCallId === activity.toolCallId,
+                );
+                if (at < 0) saved.activities.push(activity);
+                else saved.activities[at] = activity;
+              });
+            },
+          };
+          const proposal = await executeNode(context);
+          if (signal.aborted || closed) throw Error('运行已停止');
+          await changeRun(workId, run.id, (r) => {
+            r.results.find((x) => x.id === result.id)!.proposedDefinition =
+              proposal;
+          });
+          const subtree = validateExpansion(proposal, node);
+          const expansion = {
+            nodeId,
+            definition: subtree,
+            resultId: result.id,
+            createdAt: timestamp(),
+          };
+          // 在保存前检查与原图的 ID 冲突；失败不能部分物化。
+          materializeDefinition(definition, [expansion]);
+          await changeRun(workId, run.id, (r) => {
+            if (r.stopRequested) return;
+            (r.expansions ??= []).push(expansion);
+            const saved = r.results.find((x) => x.id === result.id)!;
+            saved.status = 'completed';
+            saved.finishedAt = timestamp();
+            saved.effectiveModel = context.effectiveModel;
+            r.nodeStates[nodeId] = 'queued';
+            for (const n of subtree.nodes)
+              r.nodeStates[`${nodeId}/${n.id}`] = 'queued';
+          });
+          states[nodeId] = 'queued';
+          expanded = true;
+        } catch (error) {
+          states[nodeId] = signal.aborted ? 'cancelled' : 'failed';
+          await changeRun(workId, run.id, (r) => {
+            const saved = r.results.find((x) => x.id === result.id)!;
+            saved.status = signal.aborted ? 'cancelled' : 'failed';
+            saved.error = message(error);
+            saved.finishedAt = timestamp();
+            r.nodeStates[nodeId] = states[nodeId];
+          });
+        }
+        return;
+      }
       if (node.kind === 'wait')
         validateValue(
           node.inputSchema,
@@ -451,241 +567,289 @@ export function createRuns(
       let failed = false,
         cursor = 0;
       async function instance(index: number) {
-        const batch = batches[index];
-        const instanceId = `${nodeId}:${aggregate ? 'all' : batch.input[0].sampleId}:${index}`;
-        const previous = run.results.find(
-          (r) => r.instanceId === instanceId && r.status === 'completed',
-        );
-        if (previous) {
-          producedByIndex[index] = copy(previous.outputs);
-          return;
-        }
-        const result: NodeResult = {
-          id: randomUUID(),
-          runId: run.id,
-          definitionId: run.definitionId,
-          nodeId,
-          instanceId,
-          input: copy(batch),
-          outputs: {},
-          status: 'running',
-          activities: [],
-          startedAt: timestamp(),
-        };
-        await changeRun(workId, run.id, (r) => {
-          r.results.push(result);
-        });
-        const wrap = (
-          value: Json,
-          source: InputItem[],
-          sampleId?: string,
-        ): InputItem => ({
-          value,
-          sampleId:
-            sampleId ?? (source.length === 1 ? source[0].sampleId : result.id),
-          materialIds: [...new Set(source.flatMap((i) => i.materialIds))],
-          sourceResultIds: [result.id],
-        });
-        let execution: NodeExecution | undefined;
-        try {
-          const source = items(batch);
-          validateValue(
-            node.inputSchema,
-            collectionFunction(node)
-              ? namedValues(node, batch)
-              : aggregate
-                ? source.map((i) => i.value)
-                : source[0].value,
-            '输入',
+        let batch = batches[index];
+        const baseInstanceId = `${nodeId}:${aggregate ? 'all' : batch.input[0].sampleId}:${index}`;
+        for (
+          let iteration = 1;
+          iteration <= (node.repeat?.max ?? 1);
+          iteration++
+        ) {
+          const instanceId = node.repeat
+            ? `${nodeId}:${batch.input[0].sampleId}:round:${iteration}:${index}`
+            : baseInstanceId;
+          const previous = run.results.find(
+            (r) => r.instanceId === instanceId && r.status === 'completed',
           );
-          let produced: Inputs;
-          if (collectionFunction(node)) {
-            const rows = executeCollection(node, batch);
-            validateValue(
-              node.expectedOutput,
-              node.functionName === 'collect'
-                ? rows[0].value
-                : rows.map((row) => row.value),
-              '输出',
-            );
-            produced = {
-              output: rows.map((row) => ({
-                ...wrap(row.value, row.sources, row.sampleId),
-                sourceResultIds: [
-                  ...new Set([
-                    result.id,
-                    ...row.sources.flatMap((item) => item.sourceResultIds),
-                  ]),
-                ],
-              })),
-            };
-          } else if (node.kind === 'branch') {
-            validateValue(
-              node.expectedOutput,
-              source.map((item) => item.value),
-              '输出',
-            );
-            produced = { matched: [], unmatched: [] };
-            for (const item of batch.input) {
-              const v = field(item.value, node.condition!.field),
-                c = node.condition!;
-              const matches =
-                c.operator === 'exists'
-                  ? v !== undefined && v !== null
-                  : c.operator === 'contains'
-                    ? String(v ?? '').includes(String(c.value ?? ''))
-                    : JSON.stringify(v) === JSON.stringify(c.value);
-              produced[matches ? 'matched' : 'unmatched'].push(
-                wrap(item.value, [item], item.sampleId),
-              );
+          if (previous) {
+            if (previous.intermediate) {
+              batch = { input: copy(previous.outputs.output) };
+              continue;
             }
-          } else if (node.kind === 'milestone' || node.kind === 'wait') {
-            validateValue(
-              node.expectedOutput,
-              source.map((i) => i.value),
-              '输出',
-            );
-            if (
-              node.kind === 'milestone' &&
-              run.workItem &&
-              run.effectMode === 'commit' &&
-              run.scope === 'full' &&
-              !signal.aborted &&
-              !closed
-            ) {
-              if (!hooks.onMilestone) throw Error('业务里程碑提交未接线');
-              await hooks.onMilestone(workId, run, node, copy(batch));
-            }
-            produced = {
-              output: source.map((i) => wrap(i.value, [i], i.sampleId)),
-            };
-            if (node.kind === 'wait') {
-              const latest = await readRun(workId, run.id),
-                w = latest.waits?.find((w) => w.nodeId === nodeId),
-                event = latest.signals?.find((s) => s.id === w?.signalId);
-              produced.event = [
-                wrap(
-                  event
-                    ? {
-                        type: 'event',
-                        id: event.id,
-                        name: event.name,
-                        payload: event.payload ?? null,
-                        receivedAt: event.receivedAt,
-                      }
-                    : {
-                        type: w?.releasedBy === 'timer' ? 'timer' : 'preview',
-                        name: node.wait!.event,
-                        dueAt: w?.dueAt ?? null,
-                      },
-                  source,
-                ),
-              ];
-            }
-          } else if (
-            node.kind === 'function' &&
-            !node.operation &&
-            node.functionName !== 'expression'
-          ) {
-            // Legacy collection functions preserve their established one-result-per-input behavior.
-            produced = {
-              output: source.map((i) => {
-                const value =
-                  node.functionName === 'select-fields'
-                    ? Object.fromEntries(
-                        (node.params?.fields ?? []).map((key) => [
-                          key,
-                          field(i.value, key) ?? null,
-                        ]),
-                      )
-                    : i.value;
-                validateValue(node.expectedOutput, value, '输出');
-                return wrap(value, [i], i.sampleId);
-              }),
-            };
-          } else {
-            let value: Json;
-            if (node.kind === 'function') {
-              const argument = aggregate
-                ? source.map((i) => i.value)
-                : source[0].value;
-              value =
-                node.functionName === 'expression'
-                  ? evaluateExpression(node.expression!, argument)
-                  : node.functionName === 'select-fields'
-                    ? Object.fromEntries(
-                        (node.params?.fields ?? []).map((key) => [
-                          key,
-                          field(argument, key) ?? null,
-                        ]),
-                      )
-                    : argument;
-            } else {
-              const work = await files.read(workId);
-              value = await executeNode(
-                (execution = {
-                  workId,
-                  runId: run.id,
-                  definitionId: run.definitionId,
-                  workItem: run.workItem,
-                  node,
-                  instanceId,
-                  inputs: copy(batch),
-                  materials: copy(run.workItem?.materials ?? work.materials),
-                  signal,
-                  onActivity: async (activity) => {
-                    if (closed || signal.aborted) return;
-                    await changeRun(workId, run.id, (r) => {
-                      const found = r.results.find((x) => x.id === result.id)!;
-                      if (found.status !== 'running' || r.stopRequested) return;
-                      const at = found.activities.findIndex(
-                        (a) => a.toolCallId === activity.toolCallId,
-                      );
-                      const scoped = {
-                        ...activity,
-                        id: `${run.id}:${instanceId}:${activity.toolCallId}`,
-                      };
-                      if (at < 0) found.activities.push(scoped);
-                      else found.activities[at] = scoped;
-                    });
-                  },
-                }),
-              );
-            }
-            validateValue(node.expectedOutput, value, '输出');
-            if (operation === 'flatMap' && !Array.isArray(value))
-              throw Error('flatMap 必须返回数组');
-            produced = {
-              output:
-                operation === 'flatMap'
-                  ? (value as Json[]).map((v, child) =>
-                      wrap(v, source, `${source[0].sampleId}:${child}`),
-                    )
-                  : [wrap(value, source)],
-            };
+            producedByIndex[index] = copy(previous.outputs);
+            return;
           }
-          if (closed) return;
-          if (signal.aborted) throw Error('运行已停止');
-          producedByIndex[index] = produced;
+          const result: NodeResult = {
+            id: randomUUID(),
+            runId: run.id,
+            definitionId: run.definitionId,
+            nodeId,
+            instanceId,
+            iteration: node.repeat ? iteration : undefined,
+            input: copy(batch),
+            outputs: {},
+            status: 'running',
+            activities: [],
+            startedAt: timestamp(),
+          };
           await changeRun(workId, run.id, (r) => {
-            const saved = r.results.find((x) => x.id === result.id)!;
-            if (r.stopRequested) return;
-            saved.outputs = produced;
-            saved.status = 'completed';
-            if (execution?.effectiveModel)
-              saved.effectiveModel = execution.effectiveModel;
-            saved.finishedAt = timestamp();
+            r.results.push(result);
           });
-        } catch (error) {
-          failed = true;
-          await changeRun(workId, run.id, (r) => {
-            const saved = r.results.find((x) => x.id === result.id)!;
-            saved.status = signal.aborted ? 'cancelled' : 'failed';
-            saved.error = signal.aborted ? '已停止' : message(error);
-            if (execution?.effectiveModel)
-              saved.effectiveModel = execution.effectiveModel;
-            saved.finishedAt = timestamp();
+          const wrap = (
+            value: Json,
+            source: InputItem[],
+            sampleId?: string,
+          ): InputItem => ({
+            value,
+            sampleId:
+              sampleId ??
+              (source.length === 1 ? source[0].sampleId : result.id),
+            materialIds: [...new Set(source.flatMap((i) => i.materialIds))],
+            sourceResultIds: [result.id],
           });
+          let execution: NodeExecution | undefined;
+          try {
+            const source = items(batch);
+            validateValue(
+              node.inputSchema,
+              collectionFunction(node)
+                ? namedValues(node, batch)
+                : aggregate
+                  ? source.map((i) => i.value)
+                  : source[0].value,
+              '输入',
+            );
+            let produced: Inputs;
+            if (collectionFunction(node)) {
+              const rows = executeCollection(node, batch);
+              validateValue(
+                node.expectedOutput,
+                node.functionName === 'collect'
+                  ? rows[0].value
+                  : rows.map((row) => row.value),
+                '输出',
+              );
+              produced = {
+                output: rows.map((row) => ({
+                  ...wrap(row.value, row.sources, row.sampleId),
+                  sourceResultIds: [
+                    ...new Set([
+                      result.id,
+                      ...row.sources.flatMap((item) => item.sourceResultIds),
+                    ]),
+                  ],
+                })),
+              };
+            } else if (node.kind === 'branch') {
+              validateValue(
+                node.expectedOutput,
+                source.map((item) => item.value),
+                '输出',
+              );
+              produced = { matched: [], unmatched: [] };
+              for (const item of batch.input) {
+                const v = field(item.value, node.condition!.field),
+                  c = node.condition!;
+                const matches =
+                  c.operator === 'exists'
+                    ? v !== undefined && v !== null
+                    : c.operator === 'contains'
+                      ? String(v ?? '').includes(String(c.value ?? ''))
+                      : JSON.stringify(v) === JSON.stringify(c.value);
+                produced[matches ? 'matched' : 'unmatched'].push(
+                  wrap(item.value, [item], item.sampleId),
+                );
+              }
+            } else if (node.kind === 'milestone' || node.kind === 'wait') {
+              validateValue(
+                node.expectedOutput,
+                source.map((i) => i.value),
+                '输出',
+              );
+              if (
+                node.kind === 'milestone' &&
+                run.workItem &&
+                run.effectMode === 'commit' &&
+                run.scope === 'full' &&
+                !signal.aborted &&
+                !closed
+              ) {
+                if (!hooks.onMilestone) throw Error('业务里程碑提交未接线');
+                await hooks.onMilestone(workId, run, node, copy(batch));
+              }
+              produced = {
+                output: source.map((i) => wrap(i.value, [i], i.sampleId)),
+              };
+              if (node.kind === 'wait') {
+                const latest = await readRun(workId, run.id),
+                  w = latest.waits?.find((w) => w.nodeId === nodeId),
+                  event = latest.signals?.find((s) => s.id === w?.signalId);
+                produced.event = [
+                  wrap(
+                    event
+                      ? {
+                          type: 'event',
+                          id: event.id,
+                          name: event.name,
+                          payload: event.payload ?? null,
+                          receivedAt: event.receivedAt,
+                        }
+                      : {
+                          type: w?.releasedBy === 'timer' ? 'timer' : 'preview',
+                          name: node.wait!.event,
+                          dueAt: w?.dueAt ?? null,
+                        },
+                    source,
+                  ),
+                ];
+              }
+            } else if (
+              node.kind === 'function' &&
+              !node.operation &&
+              node.functionName !== 'expression'
+            ) {
+              // Legacy collection functions preserve their established one-result-per-input behavior.
+              produced = {
+                output: source.map((i) => {
+                  const value =
+                    node.functionName === 'select-fields'
+                      ? Object.fromEntries(
+                          (node.params?.fields ?? []).map((key) => [
+                            key,
+                            field(i.value, key) ?? null,
+                          ]),
+                        )
+                      : i.value;
+                  validateValue(node.expectedOutput, value, '输出');
+                  return wrap(value, [i], i.sampleId);
+                }),
+              };
+            } else {
+              let value: Json;
+              if (node.kind === 'function') {
+                const argument = aggregate
+                  ? source.map((i) => i.value)
+                  : source[0].value;
+                value =
+                  node.functionName === 'expression'
+                    ? evaluateExpression(node.expression!, argument)
+                    : node.functionName === 'select-fields'
+                      ? Object.fromEntries(
+                          (node.params?.fields ?? []).map((key) => [
+                            key,
+                            field(argument, key) ?? null,
+                          ]),
+                        )
+                      : argument;
+              } else {
+                const work = await files.read(workId);
+                value = await executeNode(
+                  (execution = {
+                    workId,
+                    runId: run.id,
+                    definitionId: run.definitionId,
+                    workItem: run.workItem,
+                    problem: sourceDefinition.problem,
+                    iteration: node.repeat ? iteration : undefined,
+                    node,
+                    instanceId,
+                    inputs: copy(batch),
+                    materials: copy(run.workItem?.materials ?? work.materials),
+                    signal,
+                    onActivity: async (activity) => {
+                      if (closed || signal.aborted) return;
+                      await changeRun(workId, run.id, (r) => {
+                        const found = r.results.find(
+                          (x) => x.id === result.id,
+                        )!;
+                        if (found.status !== 'running' || r.stopRequested)
+                          return;
+                        const at = found.activities.findIndex(
+                          (a) => a.toolCallId === activity.toolCallId,
+                        );
+                        const scoped = {
+                          ...activity,
+                          id: `${run.id}:${instanceId}:${activity.toolCallId}`,
+                        };
+                        if (at < 0) found.activities.push(scoped);
+                        else found.activities[at] = scoped;
+                      });
+                    },
+                  }),
+                );
+              }
+              validateValue(node.expectedOutput, value, '输出');
+              if (operation === 'flatMap' && !Array.isArray(value))
+                throw Error('flatMap 必须返回数组');
+              produced = {
+                output:
+                  operation === 'flatMap'
+                    ? (value as Json[]).map((v, child) =>
+                        wrap(v, source, `${source[0].sampleId}:${child}`),
+                      )
+                    : [wrap(value, source)],
+              };
+            }
+            if (closed) return;
+            if (signal.aborted) throw Error('运行已停止');
+            let repeatDone = true;
+            if (node.repeat) {
+              const decision = node.repeat.until
+                ? evaluateExpression(
+                    node.repeat.until,
+                    produced.output[0].value,
+                  )
+                : iteration === node.repeat.max;
+              if (typeof decision !== 'boolean')
+                throw Error('迭代停止条件必须返回布尔值。');
+              repeatDone = decision;
+              if (!repeatDone && iteration === node.repeat.max) {
+                await changeRun(workId, run.id, (r) => {
+                  r.results.find((x) => x.id === result.id)!.outputs = produced;
+                });
+                throw Error(
+                  `已达到迭代上限 ${node.repeat.max}，仍未满足完成条件。`,
+                );
+              }
+            }
+            if (repeatDone) producedByIndex[index] = produced;
+            await changeRun(workId, run.id, (r) => {
+              const saved = r.results.find((x) => x.id === result.id)!;
+              if (r.stopRequested) return;
+              saved.outputs = produced;
+              saved.status = 'completed';
+              if (node.repeat) {
+                saved.repeatDone = repeatDone;
+                saved.intermediate = !repeatDone;
+              }
+              if (execution?.effectiveModel)
+                saved.effectiveModel = execution.effectiveModel;
+              saved.finishedAt = timestamp();
+            });
+            if (repeatDone) return;
+            batch = { input: copy(produced.output) };
+          } catch (error) {
+            failed = true;
+            await changeRun(workId, run.id, (r) => {
+              const saved = r.results.find((x) => x.id === result.id)!;
+              saved.status = signal.aborted ? 'cancelled' : 'failed';
+              saved.error = signal.aborted ? '已停止' : message(error);
+              if (execution?.effectiveModel)
+                saved.effectiveModel = execution.effectiveModel;
+              saved.finishedAt = timestamp();
+            });
+            return;
+          }
+          if (signal.aborted || closed) return;
         }
       }
       await Promise.all(
@@ -718,12 +882,11 @@ export function createRuns(
     while (remaining.size && !signal.aborted && !closed) {
       const ready: FlowNode[] = [];
       for (const [id, node] of remaining) {
-        const deps =
-          run.scope === 'full'
-            ? definition.edges
-                .filter((e) => e.to[0] === id && e.from[0] !== '$input')
-                .map((e) => states[e.from[0]])
-            : [];
+        const deps = graphScope
+          ? definition.edges
+              .filter((e) => e.to[0] === id && e.from[0] !== '$input')
+              .map((e) => states[e.from[0]])
+          : [];
         if (
           deps.some((s) =>
             ['failed', 'cancelled', 'blocked', 'interrupted'].includes(s),
@@ -755,6 +918,14 @@ export function createRuns(
           }
         }),
       );
+      if (expanded && !signal.aborted && !closed) {
+        return perform(
+          workId,
+          await readRun(workId, run.id),
+          sourceDefinition,
+          controller,
+        );
+      }
     }
     await changeRun(workId, run.id, (r) => {
       r.status =

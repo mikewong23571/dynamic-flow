@@ -14,8 +14,17 @@ export type Status =
 export interface FlowNode {
   id: string;
   label: string;
-  kind: 'agent' | 'function' | 'branch' | 'wait' | 'milestone' | 'file';
+  kind:
+    'agent' | 'function' | 'branch' | 'wait' | 'milestone' | 'file' | 'dynamic';
   mode: 'each' | 'all';
+  contract?: {
+    responsibility: string;
+    done: string;
+    rationale: string;
+    semanticRole?: string;
+  };
+  dynamic?: { boundary: string; maxNodes: number };
+  repeat?: { max: number; until?: Expression };
   task?: string;
   /** file 来源节点：指向工作 uploads 中的文件名，输出文件名供下游用运行时读取。 */
   file?: { name: string };
@@ -44,6 +53,13 @@ export interface FlowNode {
 }
 export interface Definition {
   schemaVersion: 1;
+  problem?: {
+    framing: string;
+    known: string;
+    unknown: string;
+    constraints: string;
+    evidence: string;
+  };
   inputs: string[];
   nodes: FlowNode[];
   edges: { from: [string, string]; to: [string, string] }[];
@@ -77,6 +93,11 @@ export interface NodeResult {
   definitionId: string;
   nodeId: string;
   instanceId: string;
+  iteration?: number;
+  repeatDone?: boolean;
+  intermediate?: boolean;
+  purpose?: 'planning';
+  proposedDefinition?: Json;
   input: Inputs;
   outputs: Inputs;
   status: Status;
@@ -101,6 +122,12 @@ export interface Run {
   nodeStates: Record<string, Status | 'blocked'>;
   nodeTotals?: Record<string, number>;
   results: NodeResult[];
+  expansions?: {
+    nodeId: string;
+    definition: Definition;
+    resultId: string;
+    createdAt: string;
+  }[];
   startedAt: string;
   finishedAt?: string;
   error?: string;
@@ -260,6 +287,8 @@ export interface ImportRequest {
   note?: string;
 }
 export interface NodeExecution {
+  problem?: Definition['problem'];
+  iteration?: number;
   workItem?: WorkItemInput;
   workId: string;
   runId: string;

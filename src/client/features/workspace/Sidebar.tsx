@@ -7,8 +7,10 @@ import {
   Files,
   ChevronRight,
   ListChecks,
+  X,
 } from 'lucide-react';
 import { Button } from '../../components/ui';
+import { Button as IconButton } from '../../components/ui/button';
 import { MaterialsDialog } from '../materials/MaterialsDialog';
 import { reasoningLabels } from '../settings/ModelSettingsDialog';
 import { workTitle } from '../../core/format';
@@ -39,6 +41,7 @@ export function Sidebar({
     selectedMaterials,
     work,
     openWork,
+    closeWork,
   } = controller;
   return (
     <>
@@ -66,7 +69,7 @@ export function Sidebar({
             }}
           >
             <Library size={16} />
-            流水线
+            全部流水线
           </button>
           <Button
             className="new-work"
@@ -80,28 +83,41 @@ export function Sidebar({
             新建流水线
           </Button>
         </div>
-        <div className="sidebar-label">最近流水线</div>
-        <nav className="work-list" aria-label="最近流水线">
-          {works.slice(0, 5).map((item) => (
-            <button
-              key={item.id}
-              title={workTitle(item)}
-              aria-current={
-                item.id === workId && !libraryOpen && !itemsOpen
-                  ? 'page'
-                  : undefined
-              }
-              className={`work-item ${item.id === workId && !libraryOpen && !itemsOpen ? 'selected' : ''}`}
-              onClick={() => {
-                onMethods();
-                openWork(item.id);
-              }}
-            >
-              <span className="work-indicator" />
-              <span>{workTitle(item)}</span>
-            </button>
+        <div className="sidebar-label">已打开的流水线</div>
+        <nav className="work-list" aria-label="已打开的流水线">
+          {works.map((item) => (
+            <div className="opened-work-row" key={item.id}>
+              <button
+                title={workTitle(item)}
+                aria-current={
+                  item.id === workId && !libraryOpen && !itemsOpen
+                    ? 'page'
+                    : undefined
+                }
+                className={`work-item ${item.id === workId && !libraryOpen && !itemsOpen ? 'selected' : ''}`}
+                onClick={() => {
+                  onMethods();
+                  openWork(item.id);
+                }}
+              >
+                <span className="work-indicator" />
+                <span>{workTitle(item)}</span>
+              </button>
+              <IconButton
+                variant="ghost"
+                size="icon-xs"
+                className="text-muted-foreground hover:text-foreground"
+                aria-label={`关闭流水线 ${workTitle(item)}`}
+                title="关闭入口，保留流水线"
+                onClick={() => closeWork(item.id)}
+              >
+                <X />
+              </IconButton>
+            </div>
           ))}
-          {works.length === 0 && <p className="sidebar-empty">暂无流水线</p>}
+          {works.length === 0 && (
+            <p className="sidebar-empty">尚未打开流水线</p>
+          )}
         </nav>
         {work && !libraryOpen && !itemsOpen && (
           <div className="work-resources">

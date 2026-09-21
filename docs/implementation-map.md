@@ -155,3 +155,5 @@ shared/node-ports.ts 统一前端、flow、runs 的实际端口与集合分发�
 | 保留手动位置和显示设置，运行不重排 | useCanvasLayout、shared/ViewState、flow.saveLayout | canvas-view-state.test、浏览器拖动/重开/迟到请求 |
 
 这些为展示子问题，不改动 runtime、业务工作项或 IR 组合语义。具体边界见 [本轮设计](../conductor/tracks/canvas-layout_20260920/spec.md)。
+
+本轮问题驱动优化的 S1–S4 由 shared/flow → runs/assistant → client 贯穿：类型与图投影见 shared/records.ts、expansion.ts；语义检查见 flow/semantic.ts；动态提案检查见 flow/expansion.ts；作者合同见 assistant/semantic-guide.ts；前端入口见 inspector/SemanticFields.tsx 与 Results。均复用现有 HTTP/文件/运行路径，见 [方案](semantic-workflow.md)。

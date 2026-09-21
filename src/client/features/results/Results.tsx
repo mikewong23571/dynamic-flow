@@ -1,3 +1,4 @@
+import { materializeDefinition } from '../../../shared/expansion';
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -126,7 +127,10 @@ export function Results({
         <p>选择材料，运行流程后将在这里看到逐条进展。</p>
       </Empty>
     );
-  const def = definitions[run.definitionId];
+  const original = definitions[run.definitionId];
+  const def = original
+    ? materializeDefinition(original, run.expansions ?? [])
+    : undefined;
   const toggle = (id: string) =>
     onSelectResults(
       selectedResults.includes(id)
@@ -229,6 +233,63 @@ export function Results({
             ))}
           </details>
         )}
+        {original?.problem && (
+          <details className="details">
+            <summary>本次固定的问题认知</summary>
+            <Value
+              value={{
+                当前问题: original.problem.framing,
+                已知事实: original.problem.known,
+                仍待确认: original.problem.unknown,
+                约束: original.problem.constraints,
+                依据与来源: original.problem.evidence,
+              }}
+            />
+          </details>
+        )}
+        {run.expansions?.map((expansion) => (
+          <details className="details" key={expansion.nodeId} open>
+            <summary>
+              实际展开 ·{' '}
+              {original?.nodes.find((n) => n.id === expansion.nodeId)?.label}
+            </summary>
+            <ol>
+              {expansion.definition.nodes.map((node) => (
+                <li key={node.id}>
+                  <strong>{node.label}</strong>
+                  <p>{node.contract?.responsibility}</p>
+                  <p className="muted">完成：{node.contract?.done}</p>
+                  <p className="muted">依据：{node.contract?.rationale}</p>
+                </li>
+              ))}
+            </ol>
+            <p className="muted">
+              {expansion.definition.edges
+                .map(
+                  (e) =>
+                    `${e.from[0] === '$input' ? '输入' : expansion.definition.nodes.find((n) => n.id === e.from[0])?.label} → ${expansion.definition.nodes.find((n) => n.id === e.to[0])?.label}`,
+                )
+                .join('；')}
+            </p>
+            <Button
+              disabled={
+                run.nodeStates[expansion.nodeId] !== 'completed' ||
+                !definitions[work.draftId ?? work.adoptedId ?? '']?.nodes.some(
+                  (n) => n.id === expansion.nodeId && n.kind === 'dynamic',
+                )
+              }
+              onClick={() =>
+                void onAction('freezeExpansion', {
+                  expectedDraftId: work.draftId,
+                  runId: run.id,
+                  nodeId: expansion.nodeId,
+                })
+              }
+            >
+              把展开写为候选
+            </Button>
+          </details>
+        ))}
         {Object.entries(run.nodeStates).map(([id, state]) => (
           <div className="step-progress" key={id}>
             <span>{def?.nodes.find((n) => n.id === id)?.label || id}</span>
@@ -236,7 +297,11 @@ export function Results({
             <span>
               {
                 run.results.filter(
-                  (r) => r.nodeId === id && r.status === 'completed',
+                  (r) =>
+                    r.nodeId === id &&
+                    r.status === 'completed' &&
+                    !r.intermediate &&
+                    !r.purpose,
                 ).length
               }{' '}
               / {nodeTotal(run, id)} 个实例
@@ -244,7 +309,13 @@ export function Results({
           </div>
         ))}
         {run.results.map((result) => {
-          const final = isFinalOutput(def, result.nodeId);
+          const parentDynamic = run.expansions?.find((e) =>
+            result.nodeId.startsWith(`${e.nodeId}/`),
+          )?.nodeId;
+          const final =
+            !result.intermediate &&
+            !result.purpose &&
+            isFinalOutput(def, result.nodeId);
           return (
             <article
               className={`result-card ${final ? 'final-result' : ''}`}
@@ -255,7 +326,7 @@ export function Results({
                   <input
                     type="checkbox"
                     checked={selectedResults.includes(result.id)}
-                    disabled={result.status !== 'completed'}
+                    disabled={result.status !== 'completed' || !!result.purpose}
                     onChange={() => toggle(result.id)}
                   />
                   <strong>
@@ -263,6 +334,13 @@ export function Results({
                       result.nodeId}
                   </strong>
                 </label>
+                {result.purpose && <Badge>生成计划</Badge>}
+                {result.iteration && (
+                  <Badge>
+                    第 {result.iteration} 轮
+                    {result.intermediate ? ' · 中间结果' : ''}
+                  </Badge>
+                )}
                 {final && <Badge>最终产物</Badge>}
                 <Badge status={result.status} />
                 <span className="muted">
@@ -270,6 +348,14 @@ export function Results({
                 </span>
               </header>
               {result.error && <p className="inline-error">{result.error}</p>}
+              {result.purpose && result.proposedDefinition && (
+                <details className="details">
+                  <summary>生成的提案</summary>
+                  <pre>
+                    {JSON.stringify(result.proposedDefinition, null, 2)}
+                  </pre>
+                </details>
+              )}
               {result.effectiveModel && (
                 <p className="muted result-model">
                   {effectiveModelLabel(
@@ -307,31 +393,41 @@ export function Results({
                   />
                   输入与来源
                 </Button>
-                <Button variant="ghost" onClick={() => onCandidate(result)}>
-                  从此结果改进
+                <Button
+                  variant="ghost"
+                  onClick={() =>
+                    onCandidate(
+                      parentDynamic
+                        ? { ...result, nodeId: parentDynamic }
+                        : result,
+                    )
+                  }
+                >
+                  {parentDynamic ? '改进所属动态步骤' : '从此结果改进'}
                 </Button>
-                {result.status === 'failed' && (
-                  <>
-                    <Button
-                      onClick={() =>
-                        void onAction('retry', {
-                          runId: run.id,
-                          resultIds: [result.id],
-                          definitionId:
-                            selectedDefinitionId || run.definitionId,
-                        })
-                      }
-                    >
-                      用所选做法重试此输入
-                    </Button>
-                    {result.effectiveModel && onOpenSettings && (
-                      <Button variant="ghost" onClick={onOpenSettings}>
-                        检查模型设置
+                {result.status === 'failed' &&
+                  original?.nodes.some((n) => n.id === result.nodeId) && (
+                    <>
+                      <Button
+                        onClick={() =>
+                          void onAction('retry', {
+                            runId: run.id,
+                            resultIds: [result.id],
+                            definitionId:
+                              selectedDefinitionId || run.definitionId,
+                          })
+                        }
+                      >
+                        用所选做法重试此输入
                       </Button>
-                    )}
-                  </>
-                )}
-                {result.status === 'completed' && (
+                      {result.effectiveModel && onOpenSettings && (
+                        <Button variant="ghost" onClick={onOpenSettings}>
+                          检查模型设置
+                        </Button>
+                      )}
+                    </>
+                  )}
+                {result.status === 'completed' && !result.purpose && (
                   <>
                     <Button
                       variant="ghost"

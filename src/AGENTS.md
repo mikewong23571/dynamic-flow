@@ -1,37 +1,26 @@
 # 应用源码约定
 
-适用 src 下所有代码，模块 AGENTS 补充具体职责。正式应用已实现；各模块的测试与产品证据见当前 Conductor track。先读 [用户故事](../docs/user-stories.md)、[模块与验收地图](../docs/implementation-map.md)，再读要修改目录的 AGENTS。
+继承根 AGENTS.md。这里是正式实现；`spike/` 和 `examples/component-spike/` 均不属于当前产品入口。
 
-## 目标与非目标
+## 源码边界
 
-目标是让用户故事能在真实产品中闭环，并能按具体子问题实现和验收。目录是工作分解，不是必须维持的架构形式；必要时可以合并文件或移动职责。
+| 目录 | 职责 | 指南 |
+| --- | --- | --- |
+| `client/` | 页面组装、编辑状态、业务组件和控件；HTTP/SSE 消费方 | [前端模块地图](client/AGENTS.md) |
+| `server/` | 单进程 HTTP/SSE、业务模块组装、执行与保存 | [服务调用地图](server/AGENTS.md) |
+| `shared/` | 共用记录、表达式联合类型与端口纯函数 | [共享合同](shared/AGENTS.md) |
 
-采用清晰职责、最小接口、共享类型、必要复用、错误处理和测试；普通函数传参以隔离测试依赖是合理实践。暂不建设无具体需求的通用基类、依赖注入框架、命令总线、插件平台或多包架构。安全、权限、隔离与生产治理仍不在范围内。
+客户端入口 `client/main.tsx` → `client/app/App.tsx`，状态组合根 `client/app/controller.ts`。后端入口 `server/index.ts` 的 `createApplication` 组装 work、work-items、flow、runs、assistant、trials、files。共享记录从 `shared/records.ts` 开始查。
 
-## 当前源码状态
+前端不 import 后端执行代码；shared 不 import client/server。后端各模块直接调用，模型执行和里程碑回调由入口传给 runs。方法保存集中在 files，工作项文件在 work-items，模型配置文件在 assistant/settings；不要误把 files 当作全部 IO 的统一仓库。
 
-- client 是一个共享上下文的工作区。
-- server 是一个进程，work/flow/runs/assistant/trials/files 按功能直接调用。
-- shared 只放多个调用方真实需要共享的字段类型。
-- `.ts`/`.tsx` 是正式实现；`spike/` 保留历史伪代码。实际共享记录在 `shared/records.ts`，HTTP 动作在 `server/index.ts`，客户端操作组合根在 `client/app/controller.ts`（域 hook 在 `client/state/`）。变更前仍需确认输入、输出、错误和双方调用。
+## 修改约定
 
-## 如何处理一个子问题
+- 先明确本次故事、输入、输出、错误和具体例子，读就近 AGENTS、调用双方及对应测试，再修改。
+- 类型/端口/状态含义变化时，同步生产者、消费者和保存/重开路径；TypeScript 相容不证明业务含义一致。
+- 保持 Work、WorkItem、Run、Definition 与 ViewState 的边界；详细规则见根指南和对应模块，不另造同义业务状态。
+- 合理使用函数参数、纯函数与职责拆分；不预建通用基类、依赖注入框架、命令总线、插件平台或多包架构。
+- 先接通真实纵向路径，再扩展能力。模块边界可根据具体反例调整，不为保留原骨架削弱用户故事或硬编码模型结果。
+- 页面渲染、类型检查、fixture、真实模型与用户验收分别提供证据；UI 修改需要实际操作和截图。
 
-1. 指出目标用户故事、预期输入/结果、涉及的调用方和被调用方。
-2. 从本模块验收场景选最小失败案例；实现具体函数，尽早接入真实相邻模块。
-3. 记录实际证据、发现的反例和未完成部分，随后更新模块验收状态。
-4. 跨模块改变字段/返回值时，同步调用方、共享类型、相关 AGENTS 和测试；不能各自发明不兼容协议。
-
-## 防止方案失真
-
-- 把用户目标与当前实现假设分开。节点/端口字段、文件布局、界面面板、Pi 调用参数可以被真实证据修订。
-- 每个模块的未知清单都不穷尽未知。发现新问题时，用输入、实际/预期行为和受影响故事记录最小反例；先改最小范围，不先加平台。
-- 不能为了适配已有骨架而削弱故事、硬编码模型结果或屏蔽错误。范围需要改变时明确说明影响；目录内部的常规修正直接处理。
-- 模块测试通过不等于闭环通过；要求相邻模块真实联测和最终用户路线。类型检查、fixture、真实模型、浏览器体验分别报告。
-- 先完成一个真实纵向路径，再扩展模块能力；不要把每个模块分别“做满”后才尝试集成。
-
-## 基础检查
-
-`pnpm typecheck:app` 检查新源码；`pnpm typecheck` 同时检查旧实验和新源码。`pnpm test` 验证模块与 HTTP/SSE 联测；`pnpm test:browser` 验证正式入口。UI 变更需要实际操作和截图，真实模型证据与确定性测试分开记录。
-
-产品级验证与边界见 [本轮验收证据](../conductor/tracks/full-application_20260920/evidence.md)。
+验证命令、测试映射与数据边界见 [tests/AGENTS.md](../tests/AGENTS.md)。实现/验收状态见 [track 注册表](../conductor/tracks.md) 中对应任务，历史通过记录不能代替当前验证。移动入口或改变交接时更新就近 AGENTS，避免下一位 agent 按旧路径工作。

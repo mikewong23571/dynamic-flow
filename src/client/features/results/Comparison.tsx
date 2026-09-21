@@ -1,3 +1,4 @@
+import { comparisonResult } from '../../core/results';
 import type {
   Comparison as ComparisonRecord,
   Definition,
@@ -55,12 +56,6 @@ export function Comparison({
   );
   const items = Object.values(comparison.frozenInputs).flat();
   const ids = [...new Set(items.map((i) => i.sampleId))];
-  const find = (results: NodeResult[] | undefined, id: string) =>
-    results?.find((r) =>
-      Object.values(r.input)
-        .flat()
-        .some((i) => i.sampleId === id),
-    );
   return (
     <div className="comparison-view scroll">
       <div className="section-heading">
@@ -117,8 +112,10 @@ export function Comparison({
             <span className="sample-id">{id}</span>
             <Value value={items.find((i) => i.sampleId === id)!.value} />
           </div>
-          <div>{output(find(baseline?.results, id))}</div>
-          <div>{output(find(candidate?.results, id))}</div>
+          <div>{output(comparisonResult(baseline, comparison.nodeId, id))}</div>
+          <div>
+            {output(comparisonResult(candidate, comparison.nodeId, id))}
+          </div>
         </div>
       ))}
     </div>

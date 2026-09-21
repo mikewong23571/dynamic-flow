@@ -76,15 +76,17 @@ export function WorkflowNode({
               ? '输入'
               : node.kind === 'file'
                 ? '文件'
-                : node.kind === 'agent'
-                ? 'Agent'
-                : node.kind === 'branch'
-                  ? '条件分流'
-                  : node.kind === 'wait'
-                    ? '持久等待'
-                    : node.kind === 'milestone'
-                      ? '业务里程碑'
-                      : '数据处理'}
+                : node.kind === 'dynamic'
+                  ? '局部动态展开'
+                  : node.kind === 'agent'
+                    ? 'Agent'
+                    : node.kind === 'branch'
+                      ? '条件分流'
+                      : node.kind === 'wait'
+                        ? '持久等待'
+                        : node.kind === 'milestone'
+                          ? '业务里程碑'
+                          : '数据处理'}
           </span>
           <strong title={data.label}>{data.label}</strong>
         </div>
@@ -114,18 +116,23 @@ export function WorkflowNode({
       <div className="node-summary">
         <span>
           {node
-            ? collectionSummary(node) ||
+            ? (node.kind === 'dynamic'
+                ? `最多 ${node.dynamic?.maxNodes ?? 5} 步`
+                : node.repeat
+                  ? `最多 ${node.repeat.max} 轮`
+                  : '') ||
+              collectionSummary(node) ||
               (node.kind === 'file'
                 ? node.file?.name || '未选择文件'
                 : node.kind === 'wait'
-                ? node.wait?.event || '等待事件'
-                : node.kind === 'milestone'
-                  ? node.milestone?.stage || '记录进展'
-                  : node.operation === 'flatMap'
-                    ? 'FlatMap · 展开'
-                    : node.mode === 'each'
-                      ? `Map · 并发 ${node.concurrency || 1}`
-                      : '整批汇总')
+                  ? node.wait?.event || '等待事件'
+                  : node.kind === 'milestone'
+                    ? node.milestone?.stage || '记录进展'
+                    : node.operation === 'flatMap'
+                      ? '逐项产生多项'
+                      : node.mode === 'each'
+                        ? node.contract?.semanticRole || '逐项处理'
+                        : '整批汇总')
             : '原始材料'}
           {data.final && <span className="node-final">最终产物</span>}
         </span>

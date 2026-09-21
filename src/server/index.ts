@@ -395,6 +395,14 @@ export async function createApplication(
           b.definition as Definition,
         );
         break;
+      case 'freezeExpansion':
+        await flow.freezeExpansion(
+          id,
+          b.expectedDraftId as string | undefined,
+          b.runId as string,
+          b.nodeId as string,
+        );
+        break;
       case 'beginCandidate':
         await flow.beginCandidate(
           id,
