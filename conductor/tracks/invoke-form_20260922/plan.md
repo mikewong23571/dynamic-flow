@@ -31,3 +31,14 @@
 - [x] `pnpm typecheck:app`、`pnpm format:check:app`、`tests/invoke.test.ts` 及相关模块测试、相关浏览器用例回归
 - [x] 同步 `src/client/AGENTS.md` 功能地图与交接段落
 - [x] 记录 evidence.md（实际命令结果、截图、未测边界），更新注册表勾选
+
+## Phase 5：Review Fixes（2026-09-22 review）
+
+- [x] 契约违约响应带结构化 `code: contract_violation`（含修复失败变体），前端按 code 显示豁免按钮，弃文案前缀匹配
+- [x] 202 超时经全局 notice 显示「仍在运行」并跳转跟踪
+- [x] invokeWork 的 setSelectedRun/setTab 收进 activeWorkId 守卫
+- [x] 数字预校验只收十进制，拒绝 Infinity/0x/NaN（补单测）
+- [x] InvokeDialog 零端口空态说明（file 来源节点定义提示）
+- [x] 「直接输入」提升为头部主按钮（最高频入口显眼化）；结果空态同步
+- [x] 命名决定：概念名「一件事」入术语表，按钮保持白描「直接输入」
+- 提交：`a1f2bf4`（review 修复）、`12e9707`（入口显眼化）、`b95d93b`（侧边栏新建入口收敛）

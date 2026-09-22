@@ -7,6 +7,7 @@
 - 接线：`usePanels.invokeOpen`、`useActions.invokeWork`（invoke wait 后 GET 快照 receive，选中新 Run 切结果页）、`WorkspaceHeader` 次级按钮「直接输入」、Results 空态同一入口、WorkspaceDialogs 组合。
 - 留痕展示（`Results.tsx`）：运行记录下拉选项与 run-meta 显示「宽松调用（豁免入口契约）」「端口 X 经自动修复」；输入来源 materialIds 与 sourceResultIds 均空时显示「直接输入 · sampleId」。
 - `src/client/styles.css`：`.invoke-port` 等对话框样式（@layer components）。
+- 补充（09-22 复验）：`InvokeDialog` 空态说明——定义无输入端口时不再只显示禁用按钮；入口为 file 来源节点（`inputs` 为空合法，见 shared/AGENTS）时提示改用「输入材料 + 运行流程」。浏览器实测：空态文案出现；有端口的定义端到端跑通。
 
 ## 验证
 
@@ -31,3 +32,11 @@
 - `feat(client): invoke 表单模型与解析纯函数`
 - `feat(workspace): 直接输入调用表单与 invoke 留痕展示`
 - 另含 AGENTS 同步（见收尾提交）。
+
+## Review Fixes 验证（2026-09-22）
+
+- `pnpm exec tsx --test tests/invoke-form.test.ts tests/invoke.test.ts tests/client.test.ts`：19 项通过（新增数字格式、违约 code 断言）。
+- `pnpm test:browser tests/browser/workspace.spec.ts`：2 项通过（1440/1024 回归）。
+- `pnpm typecheck:app` 通过。
+- 浏览器实测：头部「直接输入」为实心主按钮、比「运行流程」更大更醒目（1440/1024 均无溢出）；演示工作端到端直接输入运行成功、无 pageerror。
+- 提交：`a1f2bf4` 修复、`12e9707` 入口显眼化、`b95d93b` 侧边栏收敛；track 更名为「直接输入」（原「再来一单」）。

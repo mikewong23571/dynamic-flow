@@ -1,4 +1,4 @@
-# 再来一单：invoke 表单与调用留痕展示
+# 直接输入：invoke 表单与调用留痕展示
 
 [规格](spec.md) · [计划](plan.md) · [证据](evidence.md)
 
