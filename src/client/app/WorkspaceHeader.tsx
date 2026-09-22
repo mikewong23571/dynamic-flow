@@ -69,7 +69,8 @@ export function WorkspaceHeader({
           {work.draftId && <option value="draft">候选草稿</option>}
         </select>
         <Button
-          variant="secondary"
+          variant="primary"
+          className="invoke-trigger"
           aria-label="直接输入运行"
           disabled={!selectedDefinitionId || busy}
           onClick={openInvoke}
@@ -78,7 +79,7 @@ export function WorkspaceHeader({
           直接输入
         </Button>
         <Button
-          variant="primary"
+          variant="secondary"
           disabled={
             !selectedDefinitionId ||
             work.runs.some((r) => active(r.status)) ||

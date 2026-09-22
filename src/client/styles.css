@@ -1741,6 +1741,12 @@ a:focus-visible {
     font-size: 11px;
     padding: 8px;
   }
+  /* 最高频入口：直接输入比头部其他按钮更大更实 */
+  .header-actions .button.invoke-trigger {
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 10px 16px;
+  }
   @layer components {
     .canvas-toolbar .inline-group:first-child select {
       width: 82px;

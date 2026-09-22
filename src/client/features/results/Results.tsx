@@ -131,7 +131,7 @@ export function Results({
       <Empty title="还没有运行结果">
         <p>选择材料，运行流程后将在这里看到逐条进展。</p>
         {onInvoke && (
-          <Button variant="secondary" onClick={onInvoke}>
+          <Button variant="primary" onClick={onInvoke}>
             直接输入运行
           </Button>
         )}
