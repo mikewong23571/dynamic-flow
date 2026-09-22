@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  Plus,
   Workflow,
   Library,
   Settings2,
@@ -9,7 +8,6 @@ import {
   ListChecks,
   X,
 } from 'lucide-react';
-import { Button } from '../../components/ui';
 import { Button as IconButton } from '../../components/ui/button';
 import { MaterialsDialog } from '../materials/MaterialsDialog';
 import { reasoningLabels } from '../settings/ModelSettingsDialog';
@@ -36,8 +34,6 @@ export function Sidebar({
     workId,
     configuration,
     connected,
-    setError,
-    setCreateOpen,
     selectedMaterials,
     work,
     openWork,
@@ -71,17 +67,6 @@ export function Sidebar({
             <Library size={16} />
             全部流水线
           </button>
-          <Button
-            className="new-work"
-            onClick={() => {
-              onMethods();
-              setError('');
-              setCreateOpen(true);
-            }}
-          >
-            <Plus size={16} />
-            新建流水线
-          </Button>
         </div>
         <div className="sidebar-label">已打开的流水线</div>
         <nav className="work-list" aria-label="已打开的流水线">
