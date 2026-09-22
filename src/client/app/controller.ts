@@ -15,6 +15,7 @@ import { useActions } from '../state/useActions';
  */
 export function useWorkspace() {
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const connection = useConnection(setError);
   const draft = useDraft(
@@ -32,6 +33,7 @@ export function useWorkspace() {
   const actions = useActions({
     setBusy,
     setError,
+    setNotice,
     workId: connection.workId,
     activeWorkId: connection.activeWorkId,
     receive: connection.receive,
@@ -61,6 +63,7 @@ export function useWorkspace() {
   function openWork(id: string) {
     panels.setLibraryOpen(false);
     setError('');
+    setNotice('');
     if (id === connection.workId) {
       connection.refetch(id);
       return;
@@ -82,6 +85,7 @@ export function useWorkspace() {
     panels.setTab('canvas');
     if (!next) panels.setLibraryOpen(true);
     setError('');
+    setNotice('');
   }
   async function create(file?: File): Promise<boolean> {
     const pasted = splitMaterials(panels.materialText);
@@ -121,6 +125,8 @@ export function useWorkspace() {
   return {
     error,
     setError,
+    notice,
+    setNotice,
     busy,
     ...connection,
     ...draft,

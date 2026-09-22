@@ -14,6 +14,7 @@ import { materialInputs } from '../core/inputs';
 interface ActionDeps {
   setBusy: (busy: boolean) => void;
   setError: (error: string) => void;
+  setNotice: (notice: string) => void;
   workId: string;
   activeWorkId: React.RefObject<string>;
   receive: (snapshot: Snapshot) => void;
@@ -46,6 +47,7 @@ export function useActions(deps: ActionDeps) {
   const {
     setBusy,
     setError,
+    setNotice,
     workId,
     activeWorkId,
     receive,
@@ -135,9 +137,13 @@ export function useActions(deps: ActionDeps) {
       ...(loose ? { mode: 'loose' } : {}),
     });
     const next = await api<Snapshot>(`/api/works/${workId}`, undefined, 'GET');
-    if (activeWorkId.current === workId) receive(next);
-    setSelectedRun(result.runId);
-    setTab('results');
+    if (activeWorkId.current === workId) {
+      receive(next);
+      setSelectedRun(result.runId);
+      setTab('results');
+      if (result.status === 'running')
+        setNotice('仍在运行：已切到运行结果页，进展会实时更新。');
+    }
     return result;
   }
   function prepareResultInputs() {

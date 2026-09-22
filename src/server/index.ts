@@ -197,7 +197,15 @@ export async function createApplication(
   const app = new Hono();
   app.onError((error, c) => {
     const issues = 'issues' in error ? error.issues : undefined;
-    return c.json({ error: error.message, ...(issues ? { issues } : {}) }, 400);
+    const code = 'code' in error ? error.code : undefined;
+    return c.json(
+      {
+        error: error.message,
+        ...(code ? { code } : {}),
+        ...(issues ? { issues } : {}),
+      },
+      400,
+    );
   });
   app.get('/api/config', (c) => c.json(assistant.configuration()));
   app.put('/api/config/catalog', async (c) =>
@@ -505,6 +513,10 @@ export async function createApplication(
           .flatMap((r) => (r.outputs[port] ?? []).map((i) => i.value)),
       ]),
     );
+  /** 契约违约：带结构化 code，前端据此提供显式豁免入口，不靠文案前缀匹配。 */
+  function contractViolation(message: string): Error {
+    return Object.assign(new Error(message), { code: 'contract_violation' });
+  }
   /** 一次性触发：裸值进、InputItem 服务端包装；契约违约默认门口拒绝，loose/interpret 显式留痕。 */
   app.post('/api/works/:id/invoke', async (c) => {
     const id = c.req.param('id');
@@ -550,7 +562,7 @@ export async function createApplication(
         );
         const hard = issues.filter((issue) => !interpretPorts.has(issue.port));
         if (hard.length)
-          throw new Error(
+          throw contractViolation(
             `输入不符合契约：${hard.map((issue) => issue.message).join('；')}`,
           );
         // interpret 修复环：违约细节喂回 agent 修复，复检仍失败如实拒绝。
@@ -566,7 +578,7 @@ export async function createApplication(
               values: rawInputs[port] ?? [],
             })
             .catch((error) => {
-              throw new Error(
+              throw contractViolation(
                 `输入不符合契约且修复失败：${error instanceof Error ? error.message : String(error)}`,
               );
             });
@@ -575,7 +587,7 @@ export async function createApplication(
             [port]: repaired,
           }).filter((issue) => issue.port === port);
           if (still.length)
-            throw new Error(
+            throw contractViolation(
               `输入不符合契约且修复失败：${still.map((issue) => issue.message).join('；')}`,
             );
           rawInputs[port] = repaired;

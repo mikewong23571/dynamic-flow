@@ -41,6 +41,8 @@ export default function Workspace() {
     configuration,
     error,
     setError,
+    notice,
+    setNotice,
     busy,
     work,
     workId,
@@ -158,6 +160,8 @@ export default function Workspace() {
             <WorkspaceNotices
               error={error}
               setError={setError}
+              notice={notice}
+              setNotice={setNotice}
               configuration={configuration}
               dirty={dirty}
               draftId={work.draftId}

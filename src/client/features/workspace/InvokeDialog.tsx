@@ -6,7 +6,7 @@ import {
   parseInvokeInputs,
   type InvokeField,
 } from '../../core/invoke-form';
-import { errorText } from '../../core/format';
+import { errorCode, errorText } from '../../core/format';
 import { Button, Modal } from '../../components/ui';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
@@ -79,6 +79,7 @@ export function InvokeDialog({
   ) => Promise<{ status: string }>;
 }) {
   const fields = buildInvokeFields(definition);
+  const hasFileSource = definition.nodes.some((n) => n.kind === 'file');
   const [raw, setRaw] = useState<Record<string, string[]>>(() =>
     blankEntries(fields),
   );
@@ -117,7 +118,7 @@ export function InvokeDialog({
     } catch (reason) {
       const message = errorText(reason);
       setErrors([message]);
-      if (!loose) setContractBlocked(message.startsWith('输入不符合契约：'));
+      if (!loose) setContractBlocked(errorCode(reason) === 'contract_violation');
     } finally {
       setSubmitting(false);
     }
@@ -131,6 +132,13 @@ export function InvokeDialog({
       description="按输入端口直接提供内容，不经过材料选择；输入随本次运行固定保存。"
     >
       <div className="stack">
+        {!fields.length && (
+          <p className="muted">
+            {hasFileSource
+              ? '当前做法没有批次输入端口，入口是上传文件节点：请在「输入材料」上传文件后用「运行流程」。'
+              : '当前做法没有声明输入端口，无法用直接输入运行。'}
+          </p>
+        )}
         {fields.map((field) => (
           <div className="invoke-port" key={field.port}>
             <div className="invoke-port-head">

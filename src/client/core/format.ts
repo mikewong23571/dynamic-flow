@@ -27,6 +27,11 @@ export const dateTime = (value?: string) =>
 /** 统一的错误串化：Error 取 message，其余取 String。 */
 export const errorText = (reason: unknown) =>
   reason instanceof Error ? reason.message : String(reason);
+/** 服务端结构化错误码（api() 透传响应里的 code 字段），用于按语义分支而不是匹配文案。 */
+export const errorCode = (reason: unknown): string | undefined =>
+  reason instanceof Error && 'code' in reason
+    ? (reason as { code?: string }).code
+    : undefined;
 // crypto.randomUUID 仅在安全上下文（HTTPS 或 localhost）可用；
 // 局域网 HTTP 访问时退回同形随机 UUID，保持服务端校验兼容。
 export const newId = (): string => {

@@ -39,10 +39,10 @@ function parseEntry(
   const where = `端口「${field.port}」第 ${index + 1} 条`;
   if (field.kind === 'text') return { value: text };
   if (field.kind === 'number') {
-    const value = Number(text);
-    if (text.trim() === '' || Number.isNaN(value))
+    // 与服务端 JSON 数字对齐：只收十进制（含小数与科学计数），拒绝 Infinity、0x 十六进制等 Number() 的额外语法
+    if (!/^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(text.trim()))
       return { error: `${where}不是数字。` };
-    return { value };
+    return { value: Number(text) };
   }
   if (field.kind === 'boolean') return { value: text === 'true' };
   try {

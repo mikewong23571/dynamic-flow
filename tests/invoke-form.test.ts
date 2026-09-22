@@ -100,6 +100,21 @@ test('parseInvokeInputs：必填端口为空与非法值给出中文错误', () 
   assert.match(errors[2], /端口「payload」第 1 条不是合法 JSON/);
 });
 
+test('parseInvokeInputs：数字只收十进制，拒绝 Infinity 与十六进制', () => {
+  const fields = buildInvokeFields({
+    ...base,
+    inputs: ['count'],
+    inputContracts: { count: { item: { type: 'number' } } },
+  });
+  const ok = parseInvokeInputs(fields, { count: ['-2.5', '1e5', '.5'] });
+  assert.deepEqual(ok, { inputs: { count: [-2.5, 100000, 0.5] } });
+  for (const text of ['Infinity', '-Infinity', '0x1F', 'NaN']) {
+    const result = parseInvokeInputs(fields, { count: [text] });
+    assert.ok('errors' in result, text);
+    assert.match((result as { errors: string[] }).errors[0], /不是数字/);
+  }
+});
+
 test('parseInvokeInputs：非必填端口留空则不出现', () => {
   const fields = buildInvokeFields({
     ...base,

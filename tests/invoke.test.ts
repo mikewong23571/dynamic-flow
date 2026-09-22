@@ -113,6 +113,7 @@ test('invoke: 契约违约门口拒绝，不产生运行；显式 loose 豁免�
     });
     assert.equal(bad.status, 400);
     assert.match(bad.body.error, /不符合契约/);
+    assert.equal(bad.body.code, 'contract_violation');
     let snap = await (
       await f.server.app.request(`/api/works/${work.id}`)
     ).json();
@@ -179,6 +180,7 @@ test('invoke: interpret 修复环真实修复违约输入并留痕；修不出�
     });
     assert.equal(res.status, 400);
     assert.match(res.body.error, /修复失败/);
+    assert.equal(res.body.code, 'contract_violation');
     const snap = await (
       await failing.server.app.request(`/api/works/${work.id}`)
     ).json();
@@ -203,6 +205,7 @@ test('invoke: 未采用版本/未知端口/无 wait 异步', async () => {
     });
     assert.equal(none.status, 400);
     assert.match(none.body.error, /已采用/);
+    assert.equal(none.body.code, undefined);
     await f.adoptCurrent(work.id);
     // 未知端口 → 拒绝
     const unknown = await f.send(`/api/works/${work.id}/invoke`, {

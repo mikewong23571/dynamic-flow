@@ -2,10 +2,12 @@ import type { RefObject } from 'react';
 import type { ModelConfiguration } from '../../shared/records';
 import { Button } from '../components/ui';
 
-/** 工作区横幅：错误、模型未配置与保存版本冲突。 */
+/** 工作区横幅：错误、一般提示、模型未配置与保存版本冲突。 */
 export function WorkspaceNotices({
   error,
   setError,
+  notice,
+  setNotice,
   configuration,
   dirty,
   draftId,
@@ -14,6 +16,8 @@ export function WorkspaceNotices({
 }: {
   error: string;
   setError: (error: string) => void;
+  notice: string;
+  setNotice: (notice: string) => void;
   configuration: ModelConfiguration | null;
   dirty: boolean;
   draftId?: string;
@@ -26,6 +30,12 @@ export function WorkspaceNotices({
         <div className="error-banner" role="alert">
           {error}
           <button onClick={() => setError('')}>关闭</button>
+        </div>
+      )}
+      {notice && (
+        <div className="notice" role="status">
+          {notice}
+          <button onClick={() => setNotice('')}>关闭</button>
         </div>
       )}
       {configuration && !configuration.ready && (

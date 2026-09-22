@@ -14,8 +14,11 @@ export async function api<T>(
         },
   );
   const data = await response.json();
-  if (!response.ok)
-    throw new Error(data.error || `请求失败 (${response.status})`);
+  if (!response.ok) {
+    const error = new Error(data.error || `请求失败 (${response.status})`);
+    if (typeof data.code === 'string') Object.assign(error, { code: data.code });
+    throw error;
+  }
   return data as T;
 }
 export async function upload(workId: string, file: File): Promise<string> {
