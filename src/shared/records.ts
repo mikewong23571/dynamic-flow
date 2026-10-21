@@ -79,7 +79,8 @@ export interface InputContract {
 export interface InputItem {
   sampleId: string;
   value: Json;
-  materialIds: string[];  sourceResultIds: string[];
+  materialIds: string[];
+  sourceResultIds: string[];
 }
 export type Inputs = Record<string, InputItem[]>;
 export interface Issue {
@@ -304,6 +305,9 @@ export interface NodeExecution {
   problem?: Definition['problem'];
   iteration?: number;
   workItem?: WorkItemInput;
+  /** Only a full commit execution may expose business reporting. */
+  effectMode?: 'commit' | 'preview';
+  scope?: Run['scope'];
   workId: string;
   runId: string;
   definitionId: string;
@@ -345,13 +349,20 @@ export interface ItemHistory {
     | 'created'
     | 'evidence'
     | 'milestone'
+    | 'progress'
     | 'criteria'
     | 'completed'
     | 'reopened'
     | 'method'
     | 'run';
   summary: string;
-  source?: ItemRunRef & { nodeId?: string; resultIds?: string[] };
+  source?: ItemRunRef & {
+    nodeId?: string;
+    instanceId?: string;
+    resultIds?: string[];
+  };
+  origin?: 'agent' | 'external';
+  progress?: { stage: string; nextAction?: string; blocker?: string };
   materialIds?: string[];
   criteria?: CompletionCriterion[];
 }
@@ -360,6 +371,8 @@ export interface WorkItem extends WorkItemInput {
   status: 'open' | 'completed';
   stage: string;
   summary: string;
+  nextAction?: string;
+  blocker?: string;
   criteria: CompletionCriterion[];
   runs: ItemRunRef[];
   history: ItemHistory[];
@@ -389,11 +402,37 @@ export interface WorkItemView extends WorkItem {
     waits: RunWait[];
     error?: string;
     inputRevision?: number;
+    activeNodes: {
+      id: string;
+      label: string;
+      responsibility?: string;
+      parentLabel?: string;
+    }[];
   };
+}
+export interface WorkItemSummary {
+  total: number;
+  pending: number;
+  open: number;
+  running: number;
+  waiting: number;
+  attention: number;
+  completed: number;
 }
 export interface WorkItemPage {
   items: WorkItemView[];
   total: number;
+  summary: WorkItemSummary;
+}
+export interface WorkItemProgressReport {
+  id: string;
+  stage: string;
+  summary: string;
+  nextAction?: string;
+  blocker?: string;
+  materialIds?: string[];
+  expectedRevision?: number;
+  source?: ItemRunRef & { nodeId: string; instanceId: string };
 }
 export interface CreateWorkItem {
   key: string;

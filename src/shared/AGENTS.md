@@ -74,3 +74,10 @@ ViewState.positions / viewport 保存节点位置与视口；可选 showPorts �
 ## 输入契约与 invoke 留痕（2026-09-21）
 
 Definition.inputContracts（端口 → InputContract{item?, required?, onInvalid?}）是严格入口的声明；未声明端口保持宽松。Run.invocation 记录 invoke 留痕（loose 豁免 / repairedPorts 修复）。旧数据无字段正常读取。
+
+
+## 工作项推进视图
+
+WorkItem.nextAction/blocker 可选，旧记录无需迁移。ItemHistory.kind=progress 保存 stage/nextAction/blocker、原 summary、材料和来源；origin 区分 agent/external，source.instanceId 关联普通执行实例。WorkItemProgressReport 是工作项动作与正式 Agent 回调共用输入，无来源的外部报告必须携带 expectedRevision。报告不等于验证或结项。
+
+WorkItemPage.summary 为筛选前全部工作项的 total/pending 与五种 effectiveStatus 数量；pending 不是持久状态。WorkItemView.execution.activeNodes 是固定 Run 定义与保存展开的只读摘要，含 id/label/responsibility?/parentLabel?。NodeExecution.scope/effectMode 从实际 Run 传入，限定普通 full/commit 工作项执行的报告工具范围；规划、比较和 preview 不授予写入。具体业务校验与验证在 work-items/assistant/runs。

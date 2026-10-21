@@ -18,10 +18,7 @@ import {
   profileOutputs,
   withProfileFile,
 } from './assistant/profile-flow.ts';
-import {
-  invalidPolicy,
-  validateInvocation,
-} from './flow/contracts.ts';
+import { invalidPolicy, validateInvocation } from './flow/contracts.ts';
 import { validateForRun } from './flow/index.ts';
 import type { SessionRunner } from './assistant/pi.ts';
 import type {
@@ -36,6 +33,7 @@ import type {
   ModelSelection,
   CreateWorkItem,
   CompletionCriterion,
+  WorkItemProgressReport,
 } from '../shared/records.ts';
 import type { CatalogInput } from './assistant/catalog.ts';
 
@@ -53,9 +51,11 @@ export async function createApplication(
   const dataRoot = options.dataRoot ?? resolve('data');
   const files = createFiles(dataRoot);
   await files.onServerStart();
+  const items = createWorkItems(dataRoot, files);
   const flow = createFlow(files),
     work = createWorkService(files),
     assistant = createAssistant(files, flow, {
+      reportProgress: items.reportProgress,
       settingsPath: resolve(dataRoot, 'model-settings.json'),
       // 未显式给数据目录时用仓库根 models.toml；测试数据目录下目录随之隔离。
       catalogPath: options.dataRoot
@@ -63,7 +63,6 @@ export async function createApplication(
         : resolve('models.toml'),
       ...(options.runSession ? { runSession: options.runSession } : {}),
     });
-  const items = createWorkItems(dataRoot, files);
   /** 剖析运行 ID → 导入消息 requestId，用于收尾更新。 */
   const importRuns = new Map<string, string>();
   /** invoke 同步等待：runId → 终态通知；onFinish 到达时兑现。 */
@@ -238,6 +237,13 @@ export async function createApplication(
     const id = c.req.param('id'),
       body = await c.req.json<Record<string, unknown>>();
     switch (body.action) {
+      case 'reportProgress':
+        return c.json(
+          await items.reportProgress(
+            id,
+            body as unknown as WorkItemProgressReport,
+          ),
+        );
       case 'addEvidence':
         return c.json(await items.addEvidence(id, body.materials as string[]));
       case 'criteria':

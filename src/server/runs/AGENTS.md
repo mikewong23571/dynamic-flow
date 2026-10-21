@@ -88,3 +88,8 @@ functionName=expression 只走显式 operation 调用路径，不能落入旧函
 Dynamic 先创建 purpose=planning 实例，调用原 executeNode；提案经 `flow/expansion.ts` 与 flow 统一校验，保存到 Run.expansions 后才调度子图。子图只收 input、输出 output，最多 20 节点，所有节点须有合同并关联最终输出，不允许再 Dynamic。shared/expansion 将节点前缀为原节点 ID + `/`，原节点成为输出边界；等待、停止、来源、schema 与恢复继续走原 DAG 调度。恢复读取已保存展开，不重做成功规划。
 
 Agent/普通函数的 operation=map 可配 repeat（max 1–10，until 可选纯表达式）。每轮输出作为下一轮输入，实例有 iteration；中间轮标 intermediate，不进入下游。until 的 input 是本轮单值输出，必须为 boolean；达到上限仍 false 失败并保留末轮产物。恢复重用成功轮次，只重做未确定轮次。单节点试运行也可展开；生成子步骤暂不直接局部重试，先将成功展开固化或从动态位置重跑。测试 semantic-workflow.test.ts 使用真实临时文件，模型边界替身。
+
+
+## 工作项报告交接
+
+普通 Agent 的 NodeExecution 传递实际 Run.scope/effectMode，full/commit 工作项由 assistant 提供受限 report_progress 工具，入口直接连接 items.reportProgress。动态规划不提供报告，展开后普通子节点继续使用同一执行路径和绑定身份。带 comparisonId 的运行强制 preview，即使调用方请求 commit；单节点与试运行同样不授予业务报告。停止前后的工具信号与 work-items 对当前 Run/实例复查共同拒绝迟到写入，不改调度/恢复算法。`tests/workitem-progress.test.ts` 覆盖实际 Pi 替身、并行展开、两项共享方法、输出失败、比较与预览边界。

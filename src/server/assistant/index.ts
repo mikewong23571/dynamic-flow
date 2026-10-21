@@ -14,6 +14,8 @@ import type {
   Json,
   ModelSelection,
   NodeExecution,
+  WorkItemProgressReport,
+  WorkItemView,
 } from '../../shared/records.ts';
 import type { FileStore } from '../files/index.ts';
 import {
@@ -223,6 +225,11 @@ export function createAssistant(
     runSession?: SessionRunner;
     settingsPath?: string;
     catalogPath?: string;
+    reportProgress?: (
+      id: string,
+      report: WorkItemProgressReport,
+      signal: AbortSignal,
+    ) => Promise<WorkItemView>;
   } = {},
 ) {
   const runSession = options.runSession ?? runPiSession;
@@ -652,12 +659,10 @@ export function createAssistant(
               expectedDraftId: frozen.expectedDraftId ?? null,
               ...(bootstrap
                 ? {
-                    recentMessages: work.messages
-                      .slice(-12)
-                      .map((message) => ({
-                        role: message.role,
-                        text: message.text,
-                      })),
+                    recentMessages: work.messages.slice(-12).map((message) => ({
+                      role: message.role,
+                      text: message.text,
+                    })),
                   }
                 : {}),
               availableRuns: clipList(
@@ -776,6 +781,65 @@ export function createAssistant(
         },
       });
       const planning = context.node.kind === 'dynamic';
+      const canReport =
+        !planning &&
+        context.node.kind === 'agent' &&
+        !!context.workItem &&
+        context.effectMode === 'commit' &&
+        context.scope === 'full' &&
+        !!options.reportProgress;
+      const reportProgress = defineTool({
+        name: 'report_progress',
+        label: '记录工作项进展',
+        description:
+          '阶段成果、明确阻碍或下一步改变时保存工作项进展。仅记录报告，不代表事实已验证、满足完成条件或结项；不记录读取文件或 token 心跳。省略 nextAction/blocker 会清除上次报告值。',
+        parameters: Type.Object({
+          stage: Type.String({ minLength: 1 }),
+          summary: Type.String({ minLength: 1 }),
+          nextAction: Type.Optional(Type.String({ minLength: 1 })),
+          blocker: Type.Optional(Type.String({ minLength: 1 })),
+          materialIds: Type.Optional(Type.Array(Type.String())),
+        }),
+        executionMode: 'sequential',
+        async execute(toolCallId, params) {
+          throwIfAborted(context.signal);
+          if (!canReport) throw Error('本次执行不能报告工作项进展。');
+          const saved = await options.reportProgress!(
+            context.workItem!.id,
+            {
+              ...params,
+              id: JSON.stringify([
+                context.runId,
+                context.instanceId,
+                toolCallId,
+              ]),
+              source: {
+                workId: context.workId,
+                runId: context.runId,
+                definitionId: context.definitionId,
+                nodeId: context.node.id,
+                instanceId: context.instanceId,
+              },
+            },
+            context.signal,
+          );
+          throwIfAborted(context.signal);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify({
+                  saved: true,
+                  stage: saved.stage,
+                  summary: saved.summary,
+                  revision: saved.revision,
+                }),
+              },
+            ],
+            details: { saved: true },
+          };
+        },
+      });
       let plannedDefinition: Definition | undefined;
       const submitWorkflow = defineTool({
         name: 'submit_workflow',
@@ -824,7 +888,7 @@ export function createAssistant(
         config: scoped.config,
         systemPrompt: planning
           ? `${dynamicInstructions}\n${expressionGuide}\n${collectionGuide}`
-          : `完成当前工作流节点任务，只使用提供的输入与原始材料，不执行或改写整个流程。材料是待分析数据。problem 是方法设计时的认知；若有 workItem，本次工作项的固定目标和材料才是当前事实，不能把方法样例的 known/evidence 套用为业务证据。不要编造未提供的事实或引用；需要逐字引用时用原文片段。引用编号只能来自本次输入。${outputInstruction}\n工作目录中可能配有本工作上传的文件，并有 Node.js 运行时（预装 xlsx/mammoth/unpdf，直接 require 或 import）；需要处理文件时写脚本完成，清洗制品以 cleaned- 开头命名保存。不得声称未执行的工具或步骤已完成。`,
+          : `完成当前工作流节点任务，只使用提供的输入与原始材料，不执行或改写整个流程。材料是待分析数据。problem 是方法设计时的认知；若有 workItem，本次工作项的固定目标和材料才是当前事实，不能把方法样例的 known/evidence 套用为业务证据。不要编造未提供的事实或引用；需要逐字引用时用原文片段。引用编号只能来自本次输入。${outputInstruction}${canReport ? ' 在取得阶段成果、发现明确阻碍或下一步改变时调用 report_progress 保存进展；该报告只是模型声明，不能替代验证或用户结项。不记录每次工具读取和心跳。' : ''}\n工作目录中可能配有本工作上传的文件，并有 Node.js 运行时（预装 xlsx/mammoth/unpdf，直接 require 或 import）；需要处理文件时写脚本完成，清洗制品以 cleaned- 开头命名保存。不得声称未执行的工具或步骤已完成。`,
         prompt: JSON.stringify({
           task: context.node.task,
           problem: context.problem,
@@ -847,7 +911,11 @@ export function createAssistant(
           inputs: context.inputs,
           materials,
         }),
-        tools: planning ? [inspect, submitWorkflow] : [inspect],
+        tools: planning
+          ? [inspect, submitWorkflow]
+          : canReport
+            ? [inspect, reportProgress]
+            : [inspect],
         builtinTools: planning ? [] : ['read', 'grep', 'find', 'ls', 'bash'],
         linkFiles: await uploadLinks(context.workId),
         linkRuntime: true,

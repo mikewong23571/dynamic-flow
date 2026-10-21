@@ -11,7 +11,10 @@ import { createFiles } from '../src/server/files/index.ts';
 import { createFlow } from '../src/server/flow/index.ts';
 import { createWorkService } from '../src/server/work/index.ts';
 import { createAssistant } from '../src/server/assistant/index.ts';
-import { loadConfig, type ModelConfig } from '../src/server/assistant/config.ts';
+import {
+  loadConfig,
+  type ModelConfig,
+} from '../src/server/assistant/config.ts';
 import { seedCatalog } from './catalog-fixture.ts';
 import {
   parseOutput,
@@ -255,7 +258,8 @@ test('selected node cannot change unrelated node; no-change turns complete hones
   for (const mode of ['text-only', 'unchanged']) {
     await t.test(`${mode} completes with unchanged flag`, async () => {
       const f = await fixture(async (input) => {
-        if (mode === 'unchanged') await save(input, structuredClone(definition));
+        if (mode === 'unchanged')
+          await save(input, structuredClone(definition));
         return '这是对当前做法的说明，没有修改。';
       });
       try {
@@ -388,7 +392,13 @@ test('node executor sees only selected source materials and rejects fabricated r
     });
     assert.equal(JSON.parse(input!.prompt).materials.length, 1);
     // agent 节点会话带运行时与文件访问
-    assert.deepEqual(input!.builtinTools, ['read', 'grep', 'find', 'ls', 'bash']);
+    assert.deepEqual(input!.builtinTools, [
+      'read',
+      'grep',
+      'find',
+      'ls',
+      'bash',
+    ]);
     assert.equal(input!.linkRuntime, true);
     assert.equal(typeof input!.collect, 'function');
     context.node = {
@@ -444,7 +454,10 @@ test('node session links work uploads and collects only cleaned artifacts', asyn
       await readFile(f.files.uploadPath(f.work.id, 'cleaned-out.csv'), 'utf8'),
       'x\n',
     );
-    await assert.rejects(readFile(f.files.uploadPath(f.work.id, 'scratch.mjs')), /ENOENT/);
+    await assert.rejects(
+      readFile(f.files.uploadPath(f.work.id, 'scratch.mjs')),
+      /ENOENT/,
+    );
     await rm(stage, { recursive: true, force: true });
   } finally {
     await f.clean();
@@ -633,7 +646,10 @@ test('active author requests keep their captured catalog settings when the defau
     });
     await entered.promise;
     // 请求开始后改默认选择，不影响本次已固定的配置
-    await f.assistant.saveDefaultSelection({ alias: 'test/test', effort: 'max' });
+    await f.assistant.saveDefaultSelection({
+      alias: 'test/test',
+      effort: 'max',
+    });
     assert.equal(captured!.config.model, 'test');
     assert.equal(captured!.config.apiKey, 'test-secret');
     assert.equal(captured!.config.reasoningEffort, 'medium');
@@ -868,53 +884,59 @@ test('author prompt clips large material lists with an explicit marker', async (
 });
 
 test('persistent session: bootstrap once, serialize per work, survive restart', async (t) => {
-  await t.test('first turn bootstraps recentMessages; later turns rely on session file', async () => {
-    const prompts: Record<string, unknown>[] = [];
-    const dirs: (string | undefined)[] = [];
-    const f = await fixture(async (input) => {
-      dirs.push(input.sessionDir);
-      prompts.push(JSON.parse(input.prompt));
-      // 模拟 Pi：持久会话以 JSONL 落盘
-      await mkdir(input.sessionDir!, { recursive: true });
-      await writeFile(join(input.sessionDir!, 'session.jsonl'), '{}\n');
-      return '说明';
-    });
-    try {
-      const first = await f.assistant.requestEdit(f.work.id, {
-        text: '先记住：分类阈值定为 0.8',
-        expectedDraftId: f.id,
+  await t.test(
+    'first turn bootstraps recentMessages; later turns rely on session file',
+    async () => {
+      const prompts: Record<string, unknown>[] = [];
+      const dirs: (string | undefined)[] = [];
+      const f = await fixture(async (input) => {
+        dirs.push(input.sessionDir);
+        prompts.push(JSON.parse(input.prompt));
+        // 模拟 Pi：持久会话以 JSONL 落盘
+        await mkdir(input.sessionDir!, { recursive: true });
+        await writeFile(join(input.sessionDir!, 'session.jsonl'), '{}\n');
+        return '说明';
       });
-      assert.equal((await f.finish(first)).status, 'completed');
-      assert.ok(dirs[0]?.endsWith('assistant'));
-      assert.ok('recentMessages' in prompts[0]!, '首轮无会话文件，用消息文本引导');
+      try {
+        const first = await f.assistant.requestEdit(f.work.id, {
+          text: '先记住：分类阈值定为 0.8',
+          expectedDraftId: f.id,
+        });
+        assert.equal((await f.finish(first)).status, 'completed');
+        assert.ok(dirs[0]?.endsWith('assistant'));
+        assert.ok(
+          'recentMessages' in prompts[0]!,
+          '首轮无会话文件，用消息文本引导',
+        );
 
-      const second = await f.assistant.requestEdit(f.work.id, {
-        text: '阈值是多少？',
-        expectedDraftId: f.id,
-      });
-      assert.equal((await f.finish(second)).status, 'completed');
-      assert.ok(
-        !('recentMessages' in prompts[1]!),
-        '有会话文件后不再注入消息文本',
-      );
-      assert.equal(dirs[1], dirs[0]);
+        const second = await f.assistant.requestEdit(f.work.id, {
+          text: '阈值是多少？',
+          expectedDraftId: f.id,
+        });
+        assert.equal((await f.finish(second)).status, 'completed');
+        assert.ok(
+          !('recentMessages' in prompts[1]!),
+          '有会话文件后不再注入消息文本',
+        );
+        assert.equal(dirs[1], dirs[0]);
 
-      // 进程重启等价物：同一 files 新建 assistant（内存队列清空），会话文件仍在
-      const restarted = createAssistant(f.files, f.flow, {
-        catalogPath: join(f.root, 'models.toml'),
-        settingsPath: join(f.root, 'model-settings.json'),
-        runSession: f.runner,
-      });
-      const third = await restarted.requestEdit(f.work.id, {
-        text: '再说一遍？',
-        expectedDraftId: f.id,
-      });
-      assert.equal((await f.finish(third)).status, 'completed');
-      assert.ok(!('recentMessages' in prompts[2]!), '重启后仍复用会话文件');
-    } finally {
-      await f.clean();
-    }
-  });
+        // 进程重启等价物：同一 files 新建 assistant（内存队列清空），会话文件仍在
+        const restarted = createAssistant(f.files, f.flow, {
+          catalogPath: join(f.root, 'models.toml'),
+          settingsPath: join(f.root, 'model-settings.json'),
+          runSession: f.runner,
+        });
+        const third = await restarted.requestEdit(f.work.id, {
+          text: '再说一遍？',
+          expectedDraftId: f.id,
+        });
+        assert.equal((await f.finish(third)).status, 'completed');
+        assert.ok(!('recentMessages' in prompts[2]!), '重启后仍复用会话文件');
+      } finally {
+        await f.clean();
+      }
+    },
+  );
 
   await t.test('same-work requests serialize session runs', async () => {
     let running = 0,
@@ -942,4 +964,130 @@ test('persistent session: bootstrap once, serialize per work, survive restart', 
       await f.clean();
     }
   });
+});
+
+test('report_progress is scoped to ordinary full/commit item execution and binds identities before saving', async () => {
+  let expected = false;
+  let inspect: ((input: SessionInput) => Promise<void>) | undefined;
+  const f = await fixture(async (input) => {
+    assert.equal(
+      input.tools.some((t) => t.name === 'report_progress'),
+      expected,
+    );
+    await inspect?.(input);
+    return '{}';
+  });
+  try {
+    const captured: {
+      id: string;
+      report: import('../src/shared/records.ts').WorkItemProgressReport;
+    }[] = [];
+    const assistant = createAssistant(f.files, f.flow, {
+      catalogPath: join(f.root, 'models.toml'),
+      settingsPath: join(f.root, 'model-settings.json'),
+      runSession: f.runner,
+      reportProgress: async (id, report) => {
+        captured.push({ id, report });
+        return {
+          stage: report.stage,
+          summary: report.summary,
+          revision: 1,
+        } as import('../src/shared/records.ts').WorkItemView;
+      },
+    });
+    const material = f.work.materials[0];
+    const controller = new AbortController();
+    const context: NodeExecution = {
+      workId: f.work.id,
+      runId: 'formal-run',
+      definitionId: f.id,
+      node: definition.nodes[0],
+      instanceId: 'ordinary-instance',
+      inputs: {
+        input: [
+          {
+            sampleId: material.id,
+            value: material.text,
+            materialIds: [material.id],
+            sourceResultIds: [],
+          },
+        ],
+      },
+      materials: f.work.materials,
+      signal: controller.signal,
+      onActivity: async () => {},
+      workItem: {
+        id: 'ITEM',
+        key: 'CASE',
+        title: '事项',
+        goal: '查清',
+        revision: 0,
+        data: {},
+        materials: f.work.materials,
+      },
+      scope: 'full',
+      effectMode: 'commit',
+    };
+    await assistant.executeNode({ ...context, workItem: undefined });
+    await assistant.executeNode({ ...context, effectMode: 'preview' });
+    await assistant.executeNode({
+      ...context,
+      scope: { nodeId: context.node.id },
+    });
+    await assistant.executeNode({ ...context, scope: undefined });
+    await assert.rejects(
+      assistant.executeNode({
+        ...context,
+        node: {
+          ...context.node,
+          kind: 'dynamic',
+          dynamic: { boundary: '范围', maxNodes: 3 },
+        },
+      }),
+      /submit_workflow|提交/,
+    );
+    const author = await assistant.requestEdit(f.work.id, {
+      text: '解释方法',
+      expectedDraftId: f.id,
+    });
+    assert.equal((await f.finish(author)).status, 'completed');
+    expected = true;
+    inspect = async (input) => {
+      const tool = input.tools.find((t) => t.name === 'report_progress')!;
+      await tool.execute(
+        'call-id',
+        { stage: '调查', summary: '已整理', nextAction: '补材料' },
+        input.signal,
+        undefined,
+        {} as never,
+      );
+      assert.equal(captured.length, 1);
+      assert.equal(captured[0].id, 'ITEM');
+      assert.deepEqual(captured[0].report.source, {
+        workId: f.work.id,
+        runId: 'formal-run',
+        definitionId: f.id,
+        nodeId: context.node.id,
+        instanceId: 'ordinary-instance',
+      });
+      assert.equal(
+        captured[0].report.id,
+        JSON.stringify(['formal-run', 'ordinary-instance', 'call-id']),
+      );
+      controller.abort();
+      await assert.rejects(
+        tool.execute(
+          'late',
+          { stage: '调查', summary: '迟到' },
+          input.signal,
+          undefined,
+          {} as never,
+        ),
+      );
+      assert.equal(captured.length, 1);
+    };
+    await assert.rejects(assistant.executeNode(context));
+  } finally {
+    await f.clean();
+  }
 });

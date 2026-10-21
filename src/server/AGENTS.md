@@ -29,15 +29,15 @@
 | `POST /api/works/:id/preview-results` | 所选成功结果 → 带来源 Inputs，不执行续做 |
 | `GET/POST /api/works/:id/uploads` | 列出 / 保存上传文件；上传不等于登记为材料 |
 | `GET /api/works/:id/events` | SSE 完整 snapshot 与 ping；不是增量业务事件回放 |
-| `GET/POST /api/items`、`GET /api/items/:id` | 工作项查询 / 创建 / 详情 |
-| `POST /api/items/:id/actions` | 证据、条件、推进、事件、停止、恢复、方法切换、结项与重开 |
+| `GET/POST /api/items`、`GET /api/items/:id` | 工作项查询（含全局 summary 和 pending 筛选） / 创建 / 详情 |
+| `POST /api/items/:id/actions` | 证据、条件、推进、reportProgress 报告、事件、停止、恢复、方法切换、结项与重开 |
 
 具体 action 字段以 index.ts 的 switch 和调用方为准，共享记录在 `../shared/records.ts`，生命周期例子见 [handoff](../../conductor/tracks/workitem-lifecycle_20260920/handoff.md)。长任务在后台推进，动作响应不代表执行完成。错误返回 error 与可选 issues；模型失败不回退模拟成功。
 
 ## 需要沿链路检查的行为
 
 - **手工编辑**：client → actions/saveDraft → flow → files.change → Snapshot。**作者编辑**：assistant.update_flow → 同一 flow 保存路径 → 同一保存通知。只有真实保存才能更新画布。
-- **执行与业务进展**：runs → executeNode（默认 assistant.executeNode）；正式里程碑通过 `items.milestone` 写业务，运行完成不自动结项。
+- **执行与业务进展**：runs → executeNode（默认 assistant.executeNode）；正式里程碑通过 `items.milestone` 写阶段，普通 full/commit Agent 的 `report_progress` 通过注入的 `items.reportProgress` 写模型报告；运行完成不自动结项。
 - **保存与实时更新**：files.onChange 标记更新，SSE 每 50ms 合并通知、15s ping；发送带 revision 的完整快照。前端按版本接受并保留未提交草稿。工作项详情通过只读轮询读取，不通过 GET 推进运行。
 - **启动恢复**：`files.onServerStart` 标记不确定执行 → `items.reconcile` 补齐跨文件运行关联 → `runs.recover` 恢复持久等待。页面刷新不能调用这一启动路径。
 - **文件导入**：uploads 保存 → `importMaterials` → `canonicalProfileDefinition` / `seedProfileFlow` 取得并按文件实例化剖析定义 → `runs.start` → `onFinish: finishImportRun` 登记材料/洞见及消息。规范初值在 `assistant/profile-flow.ts`；已存在内建流水线时读取其采用版本。导入副本写入 definitionIds，不占调用方 draft/adopted。当前 importRuns 收尾映射在内存，不把运行等待恢复等同于导入收尾映射已持久化。

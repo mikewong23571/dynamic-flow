@@ -1,3 +1,4 @@
+import { materializeDefinition } from '../../shared/expansion.ts';
 import { randomUUID } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import {
@@ -22,6 +23,8 @@ import type {
   WorkItem,
   WorkItemInput,
   WorkItemPage,
+  WorkItemProgressReport,
+  WorkItemSummary,
   WorkItemView,
 } from '../../shared/records.ts';
 
@@ -98,7 +101,38 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
     const work = await files.read(ref.workId);
     const run = work.runs.find((r) => r.id === ref.runId);
     if (!run) throw Error('工作项关联的运行不存在，请检查保存记录。');
-    return { ref, run };
+    return { ref, run, work };
+  }
+  async function activeNodes(
+    current: NonNullable<Awaited<ReturnType<typeof execution>>>,
+  ) {
+    const { run, ref, work } = current;
+    if (!['queued', 'running', 'waiting', 'stopping'].includes(run.status))
+      return [];
+    // Legacy records may reference an unavailable definition; no invented node labels.
+    if (!work.definitionIds.includes(ref.definitionId)) return [];
+    const fixed = await files.readDefinition(ref.workId, ref.definitionId);
+    const definition = materializeDefinition(fixed, run.expansions ?? []);
+    return definition.nodes
+      .filter((node) =>
+        ['running', 'waiting', 'stopping'].includes(run.nodeStates[node.id]),
+      )
+      .map((node) => {
+        const parent = run.expansions?.find((e) =>
+          node.id.startsWith(`${e.nodeId}/`),
+        );
+        const parentLabel = parent
+          ? fixed.nodes.find((n) => n.id === parent.nodeId)?.label
+          : undefined;
+        return {
+          id: node.id,
+          label: node.label,
+          ...(node.contract?.responsibility
+            ? { responsibility: node.contract.responsibility }
+            : {}),
+          ...(parentLabel ? { parentLabel } : {}),
+        };
+      });
   }
   async function view(item: WorkItem): Promise<WorkItemView> {
     const current = await execution(item);
@@ -112,7 +146,9 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
             ? 'running'
             : status && ['failed', 'interrupted', 'cancelled'].includes(status)
               ? 'attention'
-              : 'open';
+              : item.blocker?.trim()
+                ? 'attention'
+                : 'open';
     return {
       ...item,
       effectiveStatus,
@@ -124,8 +160,19 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
               waits: (current.run.waits ?? []).filter(
                 (w) => w.status === 'pending',
               ),
-              error: current.run.error,
+              error:
+                current.run.error ||
+                [
+                  ...new Set(
+                    current.run.results
+                      .filter((r) => r.status === 'failed')
+                      .map((r) => r.error)
+                      .filter(Boolean),
+                  ),
+                ].join('；') ||
+                undefined,
               inputRevision: current.run.workItem?.revision,
+              activeNodes: await activeNodes(current),
             },
           }
         : {}),
@@ -168,6 +215,8 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
               definitionId: run.definitionId,
             };
             saved.runs.push(source);
+            delete saved.nextAction;
+            delete saved.blocker;
             record(saved, 'run', '恢复已保存的正式运行关联', { source });
           });
         }
@@ -212,6 +261,19 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
     ): Promise<WorkItemPage> {
       const query = options.query?.trim().toLocaleLowerCase();
       let items = await Promise.all((await all()).map(view));
+      const summary: WorkItemSummary = {
+        total: items.length,
+        pending: 0,
+        open: 0,
+        running: 0,
+        waiting: 0,
+        attention: 0,
+        completed: 0,
+      };
+      for (const item of items) {
+        summary[item.effectiveStatus]++;
+        if (item.status !== 'completed') summary.pending++;
+      }
       if (query)
         items = items.filter((i) =>
           `${i.key} ${i.title} ${i.goal} ${i.stage}`
@@ -219,13 +281,17 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
             .includes(query),
         );
       if (options.status && options.status !== 'all')
-        items = items.filter((i) => i.effectiveStatus === options.status);
+        items = items.filter((i) =>
+          options.status === 'pending'
+            ? i.status !== 'completed'
+            : i.effectiveStatus === options.status,
+        );
       items.sort(
         (a, b) =>
           b.progressAt.localeCompare(a.progressAt) ||
           b.createdAt.localeCompare(a.createdAt),
       );
-      return { items, total: items.length };
+      return { items, total: items.length, summary };
     },
     async create(input: CreateWorkItem): Promise<WorkItemView> {
       return serial('$create', async () => {
@@ -338,6 +404,8 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
         )
           throw Error('仍有未满足或缺少依据的完成条件。');
         item.status = 'completed';
+        delete item.nextAction;
+        delete item.blocker;
         item.stage = '已结项';
         item.summary = '所有完成条件已确认并记录依据。';
         record(item, 'completed', item.summary, {
@@ -350,6 +418,8 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
       return change(id, (item) => {
         if (item.status !== 'completed') throw Error('工作项尚未结项。');
         item.status = 'open';
+        delete item.nextAction;
+        delete item.blocker;
         item.stage = '待重新评估';
         item.summary = text;
         item.criteria = item.criteria.map((c) => ({ ...c, met: false }));
@@ -363,6 +433,8 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
         const method = await files.read(required(workflowId, '处理方法'));
         if (item.workflowId === workflowId) return;
         item.workflowId = workflowId;
+        delete item.nextAction;
+        delete item.blocker;
         record(item, 'method', `切换处理方法：${method.title || method.goal}`);
       });
     },
@@ -385,7 +457,155 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
         };
         const ref = await start(input, item.workflowId);
         item.runs.push(ref);
+        delete item.nextAction;
+        delete item.blocker;
         record(item, 'run', '发起正式推进', { source: ref });
+      });
+    },
+    reportProgress(
+      id: string,
+      report: WorkItemProgressReport,
+      signal?: AbortSignal,
+    ) {
+      return serial(id, async () => {
+        signal?.throwIfAborted();
+        const item = await read(id);
+        const reportId = required(report.id, '报告 ID');
+        const stage = required(report.stage, '阶段');
+        const summary = required(report.summary, '进展摘要');
+        const optionalText = (value: unknown, label: string) =>
+          value === undefined ? undefined : required(value, label);
+        const nextAction = optionalText(report.nextAction, '下一步');
+        const blocker = optionalText(report.blocker, '业务阻碍');
+        const materialIds = [
+          ...new Set(texts(report.materialIds ?? [], '材料引用')),
+        ].sort();
+        let source: WorkItemProgressReport['source'];
+        if (report.source !== undefined) {
+          if (!report.source || typeof report.source !== 'object')
+            throw Error('报告来源不完整。');
+          source = {
+            workId: required(report.source.workId, '来源方法'),
+            runId: required(report.source.runId, '来源运行'),
+            definitionId: required(report.source.definitionId, '来源版本'),
+            nodeId: required(report.source.nodeId, '来源步骤'),
+            instanceId: required(report.source.instanceId, '来源实例'),
+          };
+        }
+        const origin = source ? ('agent' as const) : ('external' as const);
+        const progress = {
+          stage,
+          ...(nextAction ? { nextAction } : {}),
+          ...(blocker ? { blocker } : {}),
+        };
+        const previous = item.history.find(
+          (h) => h.id === `progress:${reportId}`,
+        );
+        if (previous) {
+          if (
+            previous.kind !== 'progress' ||
+            previous.summary !== summary ||
+            previous.origin !== origin ||
+            !isDeepStrictEqual(previous.progress, progress) ||
+            !isDeepStrictEqual(previous.source, source) ||
+            !isDeepStrictEqual(previous.materialIds ?? [], materialIds)
+          )
+            throw Error('报告 ID 已用于不同内容，请使用新的报告 ID。');
+          return view(item);
+        }
+        assertOpen(item);
+        let allowedMaterials = item.materials;
+        if (source) {
+          const current = await execution(item);
+          if (
+            !current ||
+            current.ref.workId !== source.workId ||
+            current.ref.runId !== source.runId ||
+            current.ref.definitionId !== source.definitionId ||
+            current.run.workItem?.id !== item.id
+          )
+            throw Error('报告来源不属于本工作项当前正式运行。');
+          const run = current.run;
+          if (
+            run.stopRequested ||
+            !['queued', 'running', 'waiting'].includes(run.status)
+          )
+            throw Error('运行已停止或结束，不能报告进展。');
+          if (
+            run.scope !== 'full' ||
+            run.effectMode !== 'commit' ||
+            run.comparisonId
+          )
+            throw Error('只有正式工作项全量执行可以报告进展。');
+          const instance = run.results.find(
+            (r) =>
+              r.nodeId === source!.nodeId &&
+              r.instanceId === source!.instanceId &&
+              r.definitionId === source!.definitionId &&
+              r.runId === source!.runId &&
+              r.status === 'running' &&
+              r.purpose !== 'planning',
+          );
+          const fixed = await files.readDefinition(
+            source.workId,
+            source.definitionId,
+          );
+          const node = materializeDefinition(
+            fixed,
+            run.expansions ?? [],
+          ).nodes.find((n) => n.id === source!.nodeId);
+          if (!instance || node?.kind !== 'agent')
+            throw Error('报告来源不是当前活动的普通 Agent 实例。');
+          allowedMaterials = run.workItem!.materials;
+        } else {
+          await assertIdle(item);
+          if (
+            !Number.isInteger(report.expectedRevision) ||
+            report.expectedRevision !== item.revision
+          )
+            throw Error('工作项版本已变化，请重新读取后报告。');
+        }
+        if (
+          materialIds.some((mid) => !allowedMaterials.some((m) => m.id === mid))
+        )
+          throw Error('报告材料不属于本工作项的本次输入。');
+        // Definition reads may yield while stop/finish updates the Run; reject that late write too.
+        if (source) {
+          const latest = (await files.read(source.workId)).runs.find(
+            (r) => r.id === source!.runId,
+          );
+          if (
+            !latest ||
+            latest.stopRequested ||
+            !['queued', 'running', 'waiting'].includes(latest.status) ||
+            !latest.results.some(
+              (r) =>
+                r.nodeId === source!.nodeId &&
+                r.instanceId === source!.instanceId &&
+                r.status === 'running' &&
+                r.purpose !== 'planning',
+            )
+          )
+            throw Error('运行已停止或结束，不能报告进展。');
+        }
+        item.stage = stage;
+        item.summary = summary;
+        if (nextAction) item.nextAction = nextAction;
+        else delete item.nextAction;
+        if (blocker) item.blocker = blocker;
+        else delete item.blocker;
+        record(item, 'progress', summary, {
+          id: `progress:${reportId}`,
+          origin,
+          progress,
+          ...(source ? { source } : {}),
+          materialIds,
+        });
+        item.revision++;
+        item.updatedAt = timestamp();
+        signal?.throwIfAborted();
+        await save(item);
+        return view(item);
       });
     },
     async milestone(workId: string, run: Run, node: FlowNode, inputs: Inputs) {
@@ -396,6 +616,8 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
         if (item.history.some((h) => h.id === effectId)) return;
         assertOpen(item);
         if (!node.milestone) throw Error('业务里程碑缺少阶段与摘要。');
+        delete item.nextAction;
+        delete item.blocker;
         item.stage = node.milestone.stage;
         item.summary = node.milestone.summary;
         const values = Object.values(inputs).flat();

@@ -86,3 +86,12 @@ update_flow 接受 inputNames 与 join 配置，collection-guide.ts 提供具名
 `semantic-guide.ts` 定义最小有用 Plan、问题/方案分离、责任合同、Each 语义角色和局部动态边界。`update_step` 替换一个完整节点并委托同一 update_flow 校验/版本检查；`inspect_run` 返回固定输入、问题、展开和逐轮结果；`freeze_expansion` 复用 flow.freezeExpansion，只写候选。现有 inspect_result 仍用于精确读取。
 
 executeNode 接收固定 problem/contract/iteration。dynamic 会话必须通过 submit_workflow 提交 Definition，无内置执行工具；作者工具和 runtime 都复用 flow/expansion.ts 校验，不再解析最终聊天文本作为计划；节点 expectedOutput 约束展开的实际产物，不约束计划 JSON。其它 Agent 保留工具选择自由、材料和引用检查。真实模型与替身验证分列在 semantic-workflow track。
+
+
+## 正式工作项进展报告
+
+应用入口通过 createAssistant options.reportProgress 注入 work-items 的直接保存回调。只有携带 workItem、scope=full、effectMode=commit 的普通 agent 节点提供 `report_progress`；作者、dynamic 规划、节点试验、比较和 preview 均无该工具。运行器按真实 Run 固定 scope/effectMode，比较强制 preview。
+
+工具输入仅 stage/summary/nextAction?/blocker?/materialIds?，服务端绑定工作项及 workId/runId/definitionId/nodeId/instanceId，以 `[runId,instanceId,toolCallId]` 构成可重试报告 ID。调用前后检查停止信号，业务服务复查当前运行与实例、冻结材料及停止状态；不直接写业务文件。说明要求阶段成果、阻碍、下一步改变时报告，禁止把保存报告当成事实验证、条件确认或结项。节点稍后输出校验失败仍保留先前报告及失败事实。
+
+`tests/assistant.test.ts` 覆盖工具范围、固定身份及中止；`tests/workitem-progress.test.ts` 用真实应用/文件/调度与 Pi 会话替身覆盖报告、重试、并行展开、两工作项隔离、失败和 preview。真实模型行为另记 track evidence。

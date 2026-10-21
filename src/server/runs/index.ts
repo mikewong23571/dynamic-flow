@@ -244,6 +244,7 @@ export function createRuns(
         workItem: copy(workItem),
         effectMode:
           options.workItem &&
+          !options.comparisonId &&
           scope === 'full' &&
           options.effectMode === 'commit'
             ? 'commit'
@@ -758,6 +759,8 @@ export function createRuns(
                     runId: run.id,
                     definitionId: run.definitionId,
                     workItem: run.workItem,
+                    effectMode: run.effectMode,
+                    scope: run.scope,
                     problem: sourceDefinition.problem,
                     iteration: node.repeat ? iteration : undefined,
                     node,
