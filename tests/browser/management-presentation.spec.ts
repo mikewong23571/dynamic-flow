@@ -54,6 +54,7 @@ function rows(): WorkItemView[] {
               workId: 'presentation-method',
               runId: `run-${index}`,
               definitionId: 'definition',
+              activeNodes: [],
               status:
                 effectiveStatus === 'attention'
                   ? 'failed'
@@ -95,7 +96,19 @@ for (const width of [1440, 1024])
           (!status || row.effectiveStatus === status) &&
           (!query || `${row.key} ${row.title}`.includes(query)),
       );
-      await route.fulfill({ json: { items, total: items.length } });
+      const summary = {
+        total: fixture.length,
+        pending: fixture.filter((row) => row.status !== 'completed').length,
+        open: fixture.filter((row) => row.effectiveStatus === 'open').length,
+        running: fixture.filter((row) => row.effectiveStatus === 'running')
+          .length,
+        waiting: fixture.filter((row) => row.effectiveStatus === 'waiting')
+          .length,
+        attention: fixture.filter((row) => row.effectiveStatus === 'attention')
+          .length,
+        completed: fixture.filter((row) => row.status === 'completed').length,
+      };
+      await route.fulfill({ json: { items, total: items.length, summary } });
     });
     await page.goto('/');
     await page.getByRole('button', { name: '工作项', exact: true }).click();
