@@ -557,3 +557,95 @@ for (const width of [1440, 1024])
     await page.unroute('**/api/items?**');
     await expect(page.getByRole('alert')).toHaveCount(0);
   });
+
+for (const width of [1440, 1024])
+  test(`已打开流水线的侧栏样式、切换与关闭 ${width}`, async ({
+    page,
+    request,
+  }) => {
+    await page.setViewportSize({ width, height: width === 1440 ? 900 : 768 });
+    const titles = [
+      '影响调查：核对多份产品公告与完整版本范围的长期处理方法',
+      '厂商公告复核',
+      '独立证据整理',
+    ];
+    const methods: Snapshot['work'][] = [];
+    for (const title of titles) {
+      const id = await method(request, identity);
+      const renamed = await api<Snapshot>(request, `/api/works/${id}/actions`, {
+        action: 'rename',
+        title,
+      });
+      methods.push(renamed.work);
+    }
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto(url);
+    const opened = page.getByRole('navigation', { name: '已打开的流水线' });
+    const entries = opened.locator('.work-item');
+    for (const title of titles) {
+      await page
+        .getByRole('button', { name: '全部流水线', exact: true })
+        .click();
+      await page
+        .getByRole('region', { name: '流水线管理' })
+        .getByRole('button', { name: title, exact: true })
+        .click();
+      await expect(
+        page.getByRole('heading', { name: title, exact: true }),
+      ).toBeVisible();
+    }
+    await expect(entries).toHaveText(titles);
+    await expect(page.locator('.sidebar')).toHaveCSS(
+      'width',
+      width === 1440 ? '216px' : '192px',
+    );
+    // Global layer registration must precede feature CSS. Otherwise base button
+    // defaults win here and add 1px borders, 13px white text to every opened row.
+    for (const entry of await entries.all()) {
+      await expect(entry).toHaveCSS('font-size', '12px');
+      await expect(entry).toHaveCSS('font-weight', '500');
+      await expect(entry).toHaveCSS('border-top-width', '0px');
+      await expect(entry).toHaveCSS('border-right-width', '0px');
+      await expect(entry).toHaveCSS('border-bottom-width', '0px');
+      await expect(entry).toHaveCSS('border-left-width', '0px');
+    }
+    await expect(entries.nth(0)).toHaveCSS('color', 'rgb(161, 161, 161)');
+    await expect(entries.nth(1)).toHaveCSS('color', 'rgb(161, 161, 161)');
+    await expect(entries.nth(2)).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(entries.nth(2)).toHaveAttribute('aria-current', 'page');
+    const close = opened.getByRole('button', {
+      name: `关闭流水线 ${titles[0]}`,
+      exact: true,
+    });
+    await expect(close).toHaveCSS('color', 'rgb(161, 161, 161)');
+    const longTitle = entries.nth(0).locator('span').last();
+    expect(
+      await longTitle.evaluate(
+        (element) => element.scrollWidth > element.clientWidth,
+      ),
+    ).toBeTruthy();
+    await entries.nth(0).click();
+    await expect(entries.nth(0)).toHaveAttribute('aria-current', 'page');
+    await expect(entries.nth(0)).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(entries.nth(2)).toHaveCSS('color', 'rgb(161, 161, 161)');
+    await screenshot(page, 'sidebar-opened', width);
+    await opened
+      .getByRole('button', { name: `关闭流水线 ${titles[1]}`, exact: true })
+      .click();
+    await expect(entries).toHaveText([titles[0], titles[2]]);
+    await expect(entries.nth(0)).toHaveAttribute('aria-current', 'page');
+    await close.click();
+    await expect(entries).toHaveText([titles[2]]);
+    await expect(entries.nth(0)).toHaveAttribute('aria-current', 'page');
+    await page.reload();
+    await expect(entries).toHaveText([titles[2]]);
+    await expect(entries.nth(0)).toHaveAttribute('aria-current', 'page');
+    for (const work of methods) {
+      const saved = await api<Snapshot>(request, `/api/works/${work.id}`);
+      expect(saved.work.archivedAt).toBeUndefined();
+      expect(saved.work.materials).toEqual(work.materials);
+      expect(saved.work.draftId).toBe(work.draftId);
+    }
+    expect(errors).toEqual([]);
+  });
