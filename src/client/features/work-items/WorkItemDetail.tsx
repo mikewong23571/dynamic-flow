@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -56,8 +56,15 @@ export function WorkItemDetail({
   const [eventName, setEventName] = useState('');
   const [eventId, setEventId] = useState('');
   const criteriaKey = JSON.stringify(item.criteria);
+  const criteriaBase = useRef({ id: item.id, key: criteriaKey });
   useEffect(() => {
-    setCriteria(item.criteria);
+    const previous = criteriaBase.current;
+    criteriaBase.current = { id: item.id, key: criteriaKey };
+    setCriteria((local) =>
+      previous.id !== item.id || JSON.stringify(local) === previous.key
+        ? item.criteria
+        : local,
+    );
   }, [item.id, criteriaKey]);
   const execution = item.execution;
   const unresolved =
@@ -83,6 +90,7 @@ export function WorkItemDetail({
               ...fields,
             },
           );
+          if (name === 'criteria') setCriteria(next.criteria);
           onChange(next);
           return true;
         },

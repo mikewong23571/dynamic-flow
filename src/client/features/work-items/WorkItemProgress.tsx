@@ -12,6 +12,11 @@ export function progressSource(entry: ItemHistory) {
 }
 
 export function completionHint(item: WorkItemView) {
+  const lastAction = [...item.history]
+    .reverse()
+    .find((entry) => ['run', 'reopened', 'method'].includes(entry.kind));
+  if (lastAction?.kind === 'reopened') return '重开后尚未再次推进';
+  if (lastAction?.kind === 'method') return '尚未使用当前方法推进';
   return item.criteria.length > 0 &&
     item.criteria.every(
       (criterion) => criterion.met && criterion.evidence.trim(),
@@ -29,26 +34,39 @@ export function WorkItemProgress({ item }: { item: WorkItemView }) {
   const latestReport = latestHistory.find(
     (entry) => entry.kind === 'progress' || entry.kind === 'milestone',
   );
+  const lastAction = latestHistory.find((entry) =>
+    ['run', 'reopened', 'method'].includes(entry.kind),
+  );
   const confirmed = item.criteria.filter((criterion) => criterion.met).length;
-  const nextAction =
-    item.status === 'completed'
-      ? '已结项；如有新证据，可重新打开工作项。'
-      : item.nextAction ||
-        (execution?.status === 'completed'
-          ? completionHint(item) === '待结项确认'
-            ? '完成条件与依据已齐全，请确认结项。'
-            : '请检查本轮结果，确认完成条件并补充依据。'
-          : execution?.status === 'waiting'
-            ? '查看等待事件与到期时间，收到所需信息后发送事件。'
-            : execution?.status === 'interrupted'
-              ? '检查中断原因后继续执行，或停止本轮执行。'
-              : execution?.status === 'failed' ||
-                  execution?.status === 'cancelled'
-                ? '检查本轮执行记录，处理问题后再次推进。'
-                : execution &&
-                    ['queued', 'running', 'stopping'].includes(execution.status)
-                  ? '尚未记录下一步；当前执行状态见上方。'
-                  : '尚未记录下一步；可使用当前方法推进工作项。');
+  let nextAction = item.nextAction;
+  if (item.status === 'completed') {
+    nextAction = '已结项；如有新证据，可重新打开工作项。';
+  } else if (!nextAction) {
+    if (lastAction?.kind === 'reopened')
+      nextAction = '请根据重开原因重新评估，确认材料后再次推进。';
+    else if (lastAction?.kind === 'method')
+      nextAction = '尚未使用当前方法推进；请确认材料后再次执行。';
+    else if (execution?.status === 'completed')
+      nextAction =
+        completionHint(item) === '待结项确认'
+          ? '完成条件与依据已齐全，请确认结项。'
+          : '请检查本轮结果，确认完成条件并补充依据。';
+    else if (execution?.status === 'waiting')
+      nextAction = '查看等待事件与到期时间，收到所需信息后发送事件。';
+    else if (execution?.status === 'interrupted')
+      nextAction = '检查中断原因后继续执行，或停止本轮执行。';
+    else if (
+      execution?.status === 'failed' ||
+      execution?.status === 'cancelled'
+    )
+      nextAction = '检查本轮执行记录，处理问题后再次推进。';
+    else if (
+      execution &&
+      ['queued', 'running', 'stopping'].includes(execution.status)
+    )
+      nextAction = '尚未记录下一步；当前执行状态见上方。';
+    else nextAction = '尚未记录下一步；可使用当前方法推进工作项。';
+  }
   return (
     <div className="item-current-progress">
       <div className="item-progress">

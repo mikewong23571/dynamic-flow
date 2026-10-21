@@ -59,6 +59,7 @@ export function WorkItems({
   const [methods, setMethods] = useState<WorkSummary[]>([]);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
+  const [methodsError, setMethodsError] = useState('');
   const [loading, setLoading] = useState(true);
   const lastFilter = useRef<string | undefined>(undefined);
   useEffect(() => {
@@ -90,7 +91,14 @@ export function WorkItems({
             });
             return { ...next, items: [...existing, ...byId.values()] };
           });
-          setItem(selected);
+          setItem((previous) =>
+            previous &&
+            selected &&
+            previous.id === selected.id &&
+            previous.revision > selected.revision
+              ? previous
+              : selected,
+          );
           setError('');
         }
       } catch (reason) {
@@ -110,23 +118,37 @@ export function WorkItems({
   }, [query, status, itemId]);
   useEffect(() => {
     void api<WorkPage>('/api/works?pageSize=100')
-      .then((page) => setMethods(page.works))
-      .catch((reason) => setError(errorText(reason)));
+      .then((page) => {
+        setMethods(page.works);
+        setMethodsError('');
+      })
+      .catch((reason) => setMethodsError(errorText(reason)));
   }, [creating]);
   function select(next: WorkItemView) {
-    setItem(next);
+    setItem((previous) =>
+      previous?.id === next.id && previous.revision > next.revision
+        ? previous
+        : next,
+    );
     setItemId(next.id);
   }
   const currentPage = Math.min(
     page,
     Math.max(1, Math.ceil((data?.total ?? 0) / pageSize)),
   );
+  const previousFilter =
+    !!data && lastFilter.current !== JSON.stringify([query, status]);
   return (
     <section className="management-page items-page" aria-label="工作项管理">
       {error && (
         <div role="alert" className="error-banner">
           读取失败：{error}
           {data && ' · 当前保留上次读取的内容，将自动重试。'}
+        </div>
+      )}
+      {methodsError && (
+        <div role="alert" className="error-banner">
+          处理方法读取失败：{methodsError}
         </div>
       )}
       {itemId ? (
@@ -235,7 +257,11 @@ export function WorkItems({
             </NativeSelect>
           </ListToolbar>
           {data && !loading && (
-            <p className="items-match-count">当前匹配 {data.total} 项</p>
+            <p className="items-match-count">
+              {previousFilter
+                ? `上次读取 ${data.total} 项 · 当前筛选尚未读取成功`
+                : `当前匹配 ${data.total} 项`}
+            </p>
           )}
           {loading ? (
             <ListLoading />
@@ -243,7 +269,13 @@ export function WorkItems({
             <Empty title="暂时无法读取工作项" />
           ) : !data.items.length ? (
             <Empty
-              title={query || status ? '没有符合条件的工作项' : '还没有工作项'}
+              title={
+                previousFilter
+                  ? '上次读取没有工作项，当前筛选尚未读取成功'
+                  : query || status
+                    ? '没有符合条件的工作项'
+                    : '还没有工作项'
+              }
             >
               {!query && !status && (
                 <Button variant="outline" onClick={() => setCreating(true)}>
