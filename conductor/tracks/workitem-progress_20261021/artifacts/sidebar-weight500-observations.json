@@ -1,0 +1,36 @@
+[
+  {
+    "width": 1440,
+    "errors": [],
+    "normal": {
+      "fontSize": "12px",
+      "fontWeight": "500",
+      "color": "rgb(161, 161, 161)",
+      "borderWidth": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    "active": {
+      "fontWeight": "500",
+      "color": "rgb(255, 255, 255)",
+      "borderWidth": "0px"
+    },
+    "pageOverflow": false
+  },
+  {
+    "width": 1024,
+    "errors": [],
+    "normal": {
+      "fontSize": "12px",
+      "fontWeight": "500",
+      "color": "rgb(161, 161, 161)",
+      "borderWidth": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    "active": {
+      "fontWeight": "500",
+      "color": "rgb(255, 255, 255)",
+      "borderWidth": "0px"
+    },
+    "pageOverflow": false
+  }
+]

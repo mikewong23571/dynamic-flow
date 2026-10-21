@@ -12,6 +12,7 @@
 | 作者工具、模型设置、节点上下文 | `assistant.test.ts` |
 | HTTP/SSE 与模块接线 | `integration.test.ts` |
 | 工作项证据、完成条件与关联 | `work-items.test.ts`、`lifecycle-integration.test.ts` |
+| 工作项全局汇总、活动步骤与进展报告 | `workitem-progress.test.ts`；报告工具边界另见 `assistant.test.ts` |
 | 等待、并发、schema、恢复与跨进程行为 | `lifecycle-runtime.test.ts`、`lifecycle-process.test.ts` |
 | 纯表达式及作者接线 | `functional-ir.test.ts`、`functional-author.test.ts` |
 | 多路集合与前端端口编辑 | `multi-input.test.ts`、`multi-input-author.test.ts`、`multi-input-client.test.ts` |
@@ -19,6 +20,7 @@
 | 上传剖析工作流与导入收尾 | `profile-import.test.ts` |
 | 工作区编辑、运行、重开与同工作上下文 | `browser/workspace.spec.ts`、`browser/same-work-reopen.spec.ts`、`browser/opened-pipelines.spec.ts` |
 | 管理页与工作项 UI | `browser/work-library.spec.ts`、`browser/workitems.spec.ts`、`browser/management-presentation.spec.ts` |
+| 工作项进度总览与单项推进 | `browser/workitem-progress.spec.ts`，使用临时数据与私有 HTTP 服务，先 `pnpm build` |
 | 画布、表达式、多路集合 UI | `browser/canvas-layout.spec.ts`、`browser/functional-editor.spec.ts`、`browser/multi-input.spec.ts` |
 
 ## 命令与运行环境

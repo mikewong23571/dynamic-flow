@@ -1,0 +1,27 @@
+{
+  "test": "real-agent-progress-without-milestone",
+  "model": "glm-5.3-flash",
+  "data": "temporary directory, removed after probe",
+  "ok": true,
+  "runStatus": "completed",
+  "itemStatus": "open",
+  "effectiveStatus": "attention",
+  "stage": "公告材料核对（进行中）",
+  "summary": "核对工作项 REAL-PROGRESS-20261021（公告版本范围核对）的输入材料：仅有 M01 一条，其原文为\"收到供应商公告，公告未列出受影响的产品版本范围。\"材料仅说明已收到供应商公告且公告本身缺失受影响产品版本范围；未提供公告标题、编号、发布日期、供应商/产品名称，也未附公告原文或版本列表。工作目录中除预装依赖外未发现公告附件文件。目标\"确认公告中受影响的产品版本范围\"因材料信息不足尚未完成，版本范围未确认，工作项保持进行中。",
+  "nextAction": "向需求方或上游环节索取公告原文/附件（PDF、网页链接或截图），或补充公告的供应商名称、公告编号、产品型号及版本信息，再重新进入版本范围核对。",
+  "blocker": "唯一材料 M01 明确表示公告未列出受影响的产品版本范围，且工作目录中未发现公告原文或附件文件，缺少供应商/公告编号/产品型号/版本区间等任何可核对的具体信息，版本范围确认工作被阻断。",
+  "reportCount": 1,
+  "reportOrigin": "agent",
+  "reportMaterialIds": [
+    "M01"
+  ],
+  "criteriaConfirmed": 0,
+  "activities": [
+    {
+      "tool": "report_progress",
+      "status": "completed"
+    }
+  ],
+  "elapsedSeconds": 59,
+  "reopenedFromDisk": true
+}

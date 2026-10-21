@@ -1,8 +1,8 @@
 # Tracks Registry
 
-- [~] **Track: 工作项进度总览与单项推进状态**
+- [x] **Track: 工作项进度总览与单项推进状态**
   *Link: [workitem-progress_20261021](./tracks/workitem-progress_20261021/index.md)*
-  状态：实施中；范围：整体数量与筛选、单项进展、正式 Agent 进展报告。
+  状态：已实现并完成本轮验证；范围：整体数量与筛选、单项进展、正式 Agent 进展报告，含侧栏样式反馈修复。
 
 - [x] **Track: 直接输入：invoke 表单与调用留痕展示**
   *Link: [invoke-form_20260922](./tracks/invoke-form_20260922/index.md)*

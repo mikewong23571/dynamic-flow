@@ -78,14 +78,14 @@
 
 | 业务故事                 | 牵头与相邻模块                        | 必须观察的结果                                                    |
 | ------------------------ | ------------------------------------- | ----------------------------------------------------------------- |
-| H1/H2 身份与总览         | work-items → HTTP → client            | 两项共用方法但材料/进展独立，阶段/等待/最近业务进展真实           |
-| H3/H4 固定执行与业务影响 | runs → work-items、flow、trials       | 固定工作项快照，只有 full/commit 里程碑写业务，重复回调不重复历史 |
+| H1/H2 身份与总览         | work-items → HTTP → client            | 共用方法不串材料/进展；全局数量与筛选一致，阶段/活动步骤/阻碍/下一步来源真实 |
+| H3/H4 固定执行与业务影响 | runs → assistant/work-items、flow、trials | 固定工作项快照，只有 full/commit 里程碑或普通执行 Agent 报告写进展；来源可查，重复不重复历史，报告不等于条件确认 |
 | H5 并发与契约            | flow/schema → runs → assistant/client | map/flatMap/aggregate、有限并发、顺序/来源；坏结果阻断依赖        |
 | H6/H7 事件/到期与重启    | runs → files → server → client        | 等待落盘，原 Run 跨重启继续，已成功调用不重复                     |
 | H8 停止与中断            | runs → files/server/client            | 迟到事件不能推进；不确定调用需显式恢复，不伪称恰好一次            |
 | H9 方法演进              | work-items → work/flow/runs/client    | 同一业务 ID 换方法/补证据继续，旧版本/输入/历史不变               |
 | H10 结项重开             | work-items → client                   | 条件及依据齐全才结项，Run 完成不等于业务完成，重开保留记录        |
-| H11 外部观察             | server → work-items/runs              | HTTP 查询与页面状态一致，显式消息动作才推动等待                   |
+| H11 外部观察             | server → work-items/runs              | HTTP 汇总/详情与页面一致；外部报告需版本与来源检查，只有显式消息动作才推动等待 |
 
 本表只声明实现责任，不提前勾选产品通过。字段见 shared/records.ts，模块域内测试与真实产品证据分开记录。
 
