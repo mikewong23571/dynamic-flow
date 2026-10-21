@@ -32,7 +32,7 @@
 | `features/assistant/` | Assistant、AssistantMessage：请求上下文、消息、工具活动与保存反馈。Composer 约束：IME composition 期间不得向父级 setState 同步草稿（重渲染会被 Chromium 强制提交组合、候选框闪断），组合结束才回写；`useExternalStoreRuntime` 的 store 对象须保持稳定引用（useMemo + 回调走 ref），否则每次渲染 setAdapter 通知全部订阅者 | assistant-ui、服务端 assistant；`tests/browser/workspace.spec.ts` 与真实作者证据 |
 | `features/results/` | Results 展示运行/实例/来源；Comparison 展示同输入两侧结果与有效性 | core/inputs、compare、results；`tests/client.test.ts`、`tests/trials.test.ts` |
 | `features/library/` | WorkLibrary：搜索、分页、重命名、归档恢复与打开流水线 | work.listWorks；`tests/browser/work-library.spec.ts` |
-| `features/work-items/` | WorkItems 总览、WorkItemDetail 详情、WorkItemDialogs 业务动作 | work-items、Run 关联；`tests/browser/workitems.spec.ts` |
+| `features/work-items/` | WorkItems 全局状态汇总/筛选、WorkItemDetail 详情、WorkItemProgress 当前进展与报告来源、WorkItemDialogs 业务动作 | work-items、Run 关联；`tests/browser/workitems.spec.ts`、`tests/browser/workitem-progress.spec.ts` |
 | `features/materials/` | MaterialsDialog：材料全文与样本选择 | Work 材料、useSelection |
 | `features/settings/` | ModelSettingsDialog / CatalogManager：模型目录管理、全局默认与工作覆盖 | assistant/settings、`/api/config` |
 | `components/` | Management 管理页骨架、MarkdownTable、ui.tsx 兼容层与 ui/ 控件 | [控件约定](components/ui/README.md)、`tests/browser/management-presentation.spec.ts` |
@@ -50,6 +50,8 @@
 - 前端不 import server 执行代码、不运行 Pi、不复制求值器。`expression-model` / `collection-model` 是编辑辅助；复用 `shared/node-ports.ts` 的端口语义。
 - 改名/删除集合端口同步连接和具名 schema 的顶层 properties/required（collect 也同步输出 schema），不自动改写任意嵌套 schema 或下游表达式。
 - 工作项列表轮询更新已有行而不自动重排；新行追加，显式搜索/筛选重新排序。业务进展显示 `progressAt`，不能用心跳替代。
+- 工作项汇总来自 `/api/items` 的全局 `summary`，不随搜索/筛选/分页缩小；`pending` 是全部未结项，不是新增持久状态。列表单独显示当前匹配数，读取失败保留上次内容并提示；尚未加载不显示假的 0。
+- 详情分开呈现业务阶段、固定运行的活动步骤、报告成果与来源、业务阻碍和下一步。Agent/外部报告是声明，里程碑是运行记录，完成条件仍需用户确认；报告阻碍不展示成等待事件。历史保留每次报告的完整阶段、下一步、阻碍和来源，当前成功运行不等于结项。
 - 模型密钥不放 localStorage、列表或响应展示；设置保存不代表端点验证成功。
 
 ## 画布与视觉约定

@@ -22,11 +22,11 @@ import {
   newId,
   short,
   splitMaterials,
-  statusNames,
   workTitle,
 } from '../../core/format';
 import { Badge, Button, Modal } from '../../components/ui';
 import { itemStatusNames } from './WorkItems';
+import { WorkItemProgress, progressSource } from './WorkItemProgress';
 
 export function WorkItemDetail({
   item,
@@ -66,7 +66,10 @@ export function WorkItemDetail({
       execution.status,
     );
   const waiting =
-    execution?.waits.filter((wait) => wait.status === 'pending') || [];
+    execution &&
+    ['queued', 'running', 'waiting', 'stopping'].includes(execution.status)
+      ? execution.waits.filter((wait) => wait.status === 'pending')
+      : [];
   const completed = item.status === 'completed';
   const changedCriteria = JSON.stringify(criteria) !== criteriaKey;
   async function action(name: string, fields: Record<string, unknown> = {}) {
@@ -194,18 +197,19 @@ export function WorkItemDetail({
       <div className="item-body">
         <div className="item-main-column">
           <section className="item-section">
-            <h2>当前进展</h2>
-            <p className="item-goal">{item.goal}</p>
-            <div className="item-progress">
-              <strong>{item.stage || '尚未开始'}</strong>
-              <p>{item.summary || '尚无已确认的业务进展'}</p>
-              <small>最近业务进展 · {dateTime(item.progressAt)}</small>
+            <div className="section-heading">
+              <h2>当前进展</h2>
+              <span className="item-progress-updated">
+                最近业务进展 · {dateTime(item.progressAt)}
+              </span>
             </div>
+            <p className="item-goal">{item.goal}</p>
+            <WorkItemProgress item={item} />
             {waiting.map((wait) => (
               <div className="item-wait" key={wait.nodeId}>
                 <Clock3 size={17} />
                 <div>
-                  <strong>{wait.reason}</strong>
+                  <strong>等待事件 · {wait.reason}</strong>
                   <p>
                     事件：{wait.event}
                     {wait.dueAt ? ` · 或到期 ${dateTime(wait.dueAt)}` : ''}
@@ -304,11 +308,30 @@ export function WorkItemDetail({
                 <li key={entry.id}>
                   <span className="history-point" />
                   <div>
+                    {(entry.kind === 'progress' ||
+                      entry.kind === 'milestone') && (
+                      <strong className="item-history-origin">
+                        {progressSource(entry)}
+                      </strong>
+                    )}
                     <p>{entry.summary}</p>
+                    {entry.progress && (
+                      <dl className="item-history-progress">
+                        <dt>业务阶段</dt>
+                        <dd>{entry.progress.stage}</dd>
+                        <dt>下一步</dt>
+                        <dd>{entry.progress.nextAction || '未报告'}</dd>
+                        <dt>业务阻碍</dt>
+                        <dd>{entry.progress.blocker || '未报告'}</dd>
+                      </dl>
+                    )}
                     <small>
                       {dateTime(entry.at)}
                       {entry.materialIds?.length
                         ? ` · 证据 ${entry.materialIds.join('、')}`
+                        : ''}
+                      {entry.source?.nodeId
+                        ? ` · 步骤 ${entry.source.nodeId}`
                         : ''}
                     </small>
                     {!!entry.criteria?.length && (
@@ -360,12 +383,7 @@ export function WorkItemDetail({
             </Button>
           </section>
           <section className="item-section">
-            <h2>当前执行</h2>
-            <Badge status={execution?.status}>
-              {execution
-                ? statusNames[execution.status] || execution.status
-                : '未运行'}
-            </Badge>
+            <h2>运行来源</h2>
             {execution && (
               <>
                 <dl className="item-metadata">
@@ -377,9 +395,6 @@ export function WorkItemDetail({
                 <Button onClick={() => onRun(execution)}>
                   查看运行详情 <ArrowUpRight size={14} />
                 </Button>
-                {execution.error && (
-                  <p className="inline-error">{execution.error}</p>
-                )}
               </>
             )}
           </section>

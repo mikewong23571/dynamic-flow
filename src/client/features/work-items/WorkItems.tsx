@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus } from 'lucide-react';
 import type {
   ItemRunRef,
@@ -31,6 +31,7 @@ import {
 } from '../../components/Management';
 import { CreateItemDialog } from './WorkItemDialogs';
 import { WorkItemDetail } from './WorkItemDetail';
+import { completionHint } from './WorkItemProgress';
 import './WorkItems.css';
 
 export const itemStatusNames = {
@@ -58,9 +59,12 @@ export function WorkItems({
   const [methods, setMethods] = useState<WorkSummary[]>([]);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const lastFilter = useRef<string | undefined>(undefined);
   useEffect(() => {
     let live = true;
-    let first = true;
+    const filterKey = JSON.stringify([query, status]);
+    setLoading(true);
     let timer: ReturnType<typeof setTimeout>;
     async function refresh() {
       try {
@@ -73,8 +77,8 @@ export function WorkItems({
             : Promise.resolve(undefined),
         ]);
         if (live) {
-          const replace = first;
-          first = false;
+          const replace = lastFilter.current !== filterKey;
+          lastFilter.current = filterKey;
           setData((previous) => {
             if (replace || !previous) return next;
             const byId = new Map(next.items.map((row) => [row.id, row]));
@@ -92,7 +96,10 @@ export function WorkItems({
       } catch (reason) {
         if (live) setError(errorText(reason));
       } finally {
-        if (live) timer = setTimeout(() => void refresh(), 2000);
+        if (live) {
+          setLoading(false);
+          timer = setTimeout(() => void refresh(), 2000);
+        }
       }
     }
     void refresh();
@@ -118,7 +125,8 @@ export function WorkItems({
     <section className="management-page items-page" aria-label="工作项管理">
       {error && (
         <div role="alert" className="error-banner">
-          {error}
+          读取失败：{error}
+          {data && ' · 当前保留上次读取的内容，将自动重试。'}
         </div>
       )}
       {itemId ? (
@@ -139,12 +147,52 @@ export function WorkItems({
         )
       ) : (
         <>
-          <PageHeader title="工作项" count={data?.total}>
+          <PageHeader title="工作项" count={data?.summary.total}>
             <Button size="sm" onClick={() => setCreating(true)}>
               <Plus />
               新建工作项
             </Button>
           </PageHeader>
+          <div className="items-overview" role="group" aria-label="全部工作项">
+            <span className="items-overview-label">全部工作项</span>
+            <div className="items-overview-filters">
+              {[
+                { value: '', label: '全部', count: data?.summary.total },
+                {
+                  value: 'pending',
+                  label: '未完成',
+                  count: data?.summary.pending,
+                },
+                {
+                  value: 'completed',
+                  label: '已结项',
+                  count: data?.summary.completed,
+                },
+                ...Object.entries(itemStatusNames)
+                  .filter(([key]) => key !== 'completed')
+                  .map(([value, label]) => ({
+                    value,
+                    label,
+                    count:
+                      data?.summary[value as keyof WorkItemPage['summary']],
+                  })),
+              ].map(({ value, label, count }) => (
+                <Button
+                  key={value}
+                  size="sm"
+                  variant={status === value ? 'secondary' : 'ghost'}
+                  aria-pressed={status === value}
+                  onClick={() => {
+                    setStatus(value);
+                    setPage(1);
+                  }}
+                >
+                  {label}{' '}
+                  <span className="items-overview-count">{count ?? '—'}</span>
+                </Button>
+              ))}
+            </div>
+          </div>
           <ListToolbar
             label="搜索工作项"
             placeholder="搜索编号、标题或目标"
@@ -155,6 +203,19 @@ export function WorkItems({
               setPage(1);
             }}
           >
+            {(searchText || query) && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setSearchText('');
+                  setQuery('');
+                  setPage(1);
+                }}
+              >
+                清除搜索
+              </Button>
+            )}
             <NativeSelect
               size="sm"
               aria-label="工作项状态"
@@ -165,6 +226,7 @@ export function WorkItems({
               }}
             >
               <NativeSelectOption value="">全部状态</NativeSelectOption>
+              <NativeSelectOption value="pending">未完成</NativeSelectOption>
               {Object.entries(itemStatusNames).map(([key, name]) => (
                 <NativeSelectOption key={key} value={key}>
                   {name}
@@ -172,8 +234,13 @@ export function WorkItems({
               ))}
             </NativeSelect>
           </ListToolbar>
-          {!data ? (
+          {data && !loading && (
+            <p className="items-match-count">当前匹配 {data.total} 项</p>
+          )}
+          {loading ? (
             <ListLoading />
+          ) : !data ? (
+            <Empty title="暂时无法读取工作项" />
           ) : !data.items.length ? (
             <Empty
               title={query || status ? '没有符合条件的工作项' : '还没有工作项'}
@@ -199,9 +266,15 @@ export function WorkItems({
                   {data.items
                     .slice((currentPage - 1) * pageSize, currentPage * pageSize)
                     .map((row) => {
-                      const wait = row.execution?.waits.find(
-                        (value) => value.status === 'pending',
-                      );
+                      const wait =
+                        row.execution &&
+                        ['queued', 'running', 'waiting', 'stopping'].includes(
+                          row.execution.status,
+                        )
+                          ? row.execution.waits.find(
+                              (value) => value.status === 'pending',
+                            )
+                          : undefined;
                       const stage =
                         row.stage &&
                         row.stage !== itemStatusNames[row.effectiveStatus]
@@ -213,7 +286,7 @@ export function WorkItems({
                           : undefined;
                       const attention =
                         row.execution &&
-                        ['failed', 'interrupted'].includes(
+                        ['failed', 'interrupted', 'cancelled'].includes(
                           row.execution.status,
                         );
                       return (
@@ -233,11 +306,9 @@ export function WorkItems({
                           </TableCell>
                           <TableCell>
                             <div className="item-progress-line">
-                              {(row.effectiveStatus !== 'open' || !stage) && (
-                                <Badge status={row.effectiveStatus}>
-                                  {itemStatusNames[row.effectiveStatus]}
-                                </Badge>
-                              )}
+                              <Badge status={row.effectiveStatus}>
+                                {itemStatusNames[row.effectiveStatus]}
+                              </Badge>
                               {stage && (
                                 <span className="item-stage" title={stage}>
                                   {stage}
@@ -259,11 +330,23 @@ export function WorkItems({
                               title={wait?.reason}
                             >
                               {wait?.reason ||
+                                row.execution?.error ||
                                 (row.execution
-                                  ? statusNames[row.execution.status] ||
-                                    row.execution.status
+                                  ? row.execution.status === 'completed' &&
+                                    row.status !== 'completed'
+                                    ? completionHint(row)
+                                    : statusNames[row.execution.status] ||
+                                      row.execution.status
                                   : '尚未执行')}
                             </span>
+                            {row.blocker && (
+                              <span
+                                className="management-secondary"
+                                title={row.blocker}
+                              >
+                                业务阻碍：{row.blocker}
+                              </span>
+                            )}
                             {wait && (
                               <span className="management-secondary">
                                 {wait.dueAt
@@ -282,16 +365,19 @@ export function WorkItems({
               </Table>
             </div>
           )}
-          <ListPagination
-            page={currentPage}
-            pageSize={pageSize}
-            total={data?.total ?? 0}
-            onPage={setPage}
-            onPageSize={(size) => {
-              setPageSize(size);
-              setPage(1);
-            }}
-          />
+          {data && (
+            <ListPagination
+              page={currentPage}
+              pageSize={pageSize}
+              total={data?.total ?? 0}
+              loading={loading}
+              onPage={setPage}
+              onPageSize={(size) => {
+                setPageSize(size);
+                setPage(1);
+              }}
+            />
+          )}
         </>
       )}
       <CreateItemDialog
