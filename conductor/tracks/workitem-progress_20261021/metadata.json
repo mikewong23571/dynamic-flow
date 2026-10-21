@@ -1,0 +1,14 @@
+{
+  "track_id": "workitem-progress_20261021",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-10-21",
+  "updated_at": "2026-10-21",
+  "description": "工作项进度总览、单项推进状态与 Agent 进展报告",
+  "planning_status": "drafted",
+  "implementation_started": false,
+  "related_tracks": [
+    "workitem-lifecycle_20260920",
+    "semantic-workflow_20260921"
+  ]
+}
