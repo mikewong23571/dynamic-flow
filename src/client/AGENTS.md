@@ -64,6 +64,8 @@
 
 styles.css 的业务布局在 `@layer components`，原生默认在 `@layer base`；存量 `.muted/.field/.button/.badge/.modal` 及第三方覆盖仍有未分层规则，原因见文件头。不可仅为整理把它们包进 layer 而改变层叠优先级。Geist 经 Fontsource 本地打包；Vite 忽略 data、conductor、测试报告目录，避免写证据造成刷新循环。
 
+`main.tsx` 必须先导入 `styles.css`，再导入 App；全局 `theme/base/components/utilities` 层顺序需在任何功能 CSS 注册 `components` 之前确定，否则原生控件默认会覆盖侧栏等组件样式。侧栏视觉回归需包含实际打开条目，不能只检查空列表。
+
 ## 验证入口
 
 从 [测试地图](../../tests/AGENTS.md) 选择相关域与浏览器用例；UI 变更必须实际操作并检查两尺寸截图，编译不能替代体验。真实模型、fixture 和用户视觉判断分别记录。
