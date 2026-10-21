@@ -6,6 +6,8 @@ export function progressSource(entry: ItemHistory) {
   if (entry.kind === 'milestone') return '里程碑';
   if (entry.kind === 'progress')
     return entry.origin === 'agent' ? 'Agent 报告' : '外部报告';
+  if (entry.kind === 'completed') return '用户结项确认';
+  if (entry.kind === 'reopened') return '用户重开';
   return '业务记录';
 }
 
@@ -20,29 +22,33 @@ export function completionHint(item: WorkItemView) {
 
 export function WorkItemProgress({ item }: { item: WorkItemView }) {
   const execution = item.execution;
-  const latestReport = [...item.history]
-    .reverse()
-    .find((entry) => entry.kind === 'progress' || entry.kind === 'milestone');
+  const latestHistory = [...item.history].reverse();
+  const latestSummary = latestHistory.find((entry) =>
+    ['progress', 'milestone', 'completed', 'reopened'].includes(entry.kind),
+  );
+  const latestReport = latestHistory.find(
+    (entry) => entry.kind === 'progress' || entry.kind === 'milestone',
+  );
   const confirmed = item.criteria.filter((criterion) => criterion.met).length;
   const nextAction =
-    item.nextAction ||
-    (item.status === 'completed'
+    item.status === 'completed'
       ? '已结项；如有新证据，可重新打开工作项。'
-      : execution?.status === 'completed'
-        ? completionHint(item) === '待结项确认'
-          ? '完成条件与依据已齐全，请确认结项。'
-          : '请检查本轮结果，确认完成条件并补充依据。'
-        : execution?.status === 'waiting'
-          ? '查看等待事件与到期时间，收到所需信息后发送事件。'
-          : execution?.status === 'interrupted'
-            ? '检查中断原因后继续执行，或停止本轮执行。'
-            : execution?.status === 'failed' ||
-                execution?.status === 'cancelled'
-              ? '检查本轮执行记录，处理问题后再次推进。'
-              : execution &&
-                  ['queued', 'running', 'stopping'].includes(execution.status)
-                ? '尚未记录下一步；当前执行状态见上方。'
-                : '尚未记录下一步；可使用当前方法推进工作项。');
+      : item.nextAction ||
+        (execution?.status === 'completed'
+          ? completionHint(item) === '待结项确认'
+            ? '完成条件与依据已齐全，请确认结项。'
+            : '请检查本轮结果，确认完成条件并补充依据。'
+          : execution?.status === 'waiting'
+            ? '查看等待事件与到期时间，收到所需信息后发送事件。'
+            : execution?.status === 'interrupted'
+              ? '检查中断原因后继续执行，或停止本轮执行。'
+              : execution?.status === 'failed' ||
+                  execution?.status === 'cancelled'
+                ? '检查本轮执行记录，处理问题后再次推进。'
+                : execution &&
+                    ['queued', 'running', 'stopping'].includes(execution.status)
+                  ? '尚未记录下一步；当前执行状态见上方。'
+                  : '尚未记录下一步；可使用当前方法推进工作项。');
   return (
     <div className="item-current-progress">
       <div className="item-progress">
@@ -88,8 +94,8 @@ export function WorkItemProgress({ item }: { item: WorkItemView }) {
         <p>{item.summary || '尚无已记录的业务进展'}</p>
         {item.summary && (
           <small>
-            {latestReport ? progressSource(latestReport) : '业务记录'} ·{' '}
-            {dateTime(latestReport?.at || item.progressAt)}
+            {latestSummary ? progressSource(latestSummary) : '业务记录'} ·{' '}
+            {dateTime(latestSummary?.at || item.progressAt)}
           </small>
         )}
       </div>
