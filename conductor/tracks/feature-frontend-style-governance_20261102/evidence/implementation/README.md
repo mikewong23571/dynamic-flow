@@ -46,3 +46,7 @@
 - final-typecheck.txt / final-build.txt / final-style-check.txt：最终类型、构建、守卫通过；构建仍提示既有bundle大小警告，未扩展为拆包优化。
 
 全部浏览器测试使用fixtures.ts创建的临时dataRoot、随机端口及独立--output，不接触4320/4321与用户模型。模型设置截图中的密码为未提交的合成字符串，取消/重开断言为空；没有保存密钥或复制models.toml。两尺寸工作区、任务、材料和设置截图已实际查看，新矩阵字段组左右与普通字段对齐。真实模型、用户业务数据、完整原型所有长尾路线与用户主观视觉确认未执行；69条测试也不表示所有行为均穷尽。
+
+## 持续预览
+
+[打开合成样例](http://10.134.94.200:4336/items/78abd2d8-cad5-42b5-9567-2d93938dd392)。独立worktree的`.flowcraft-preview-data/`持久保存预览数据和preview-server.log；监听PID1709160，pnpm启动PID1709113。完整backend+正式dist，0.0.0.0:4336；不占用4335或托管端口。preview-seed.json/preview-verification.json明确合成身份和真实纯函数运行completed；preview-*两尺寸工作表面/任务截图已实看，页面无运行时错误。未保存真实模型配置或自动调用模型。预览启动/数据说明见documentation.md。

@@ -77,3 +77,11 @@
 单一控件API及全部正式入口迁移、26个自有CSS文件分层/拥有者、共享字段组UA reset、最小静态守卫与稳定截图基线已落实。Phase 1本地提交6ebd59bdd34a85a83256a51a0ed6265cea7f83b4；后续治理为第二逻辑单元，交付diff相对99cef65快照。当前14条治理与8条受影响导航回归22/22通过，无update-snapshots；冻结构建的55条既有浏览器路线及24条模块测试通过。55条与最终重跑分轮保留，不把重复测试累加。没有执行真实模型/用户数据验收，未push或部署托管实例。
 
 材料Portal反例已用明确flow→inputs的真实SPA历史重新验证：去除可见性约束后，在底层flow已选中的前提下旧Dialog仍存在，恢复约束后通过。旧的裸URL回退前提不确定，未作为产品缺陷证据；当前evidence/implementation/material-visibility-red.txt仅保留有效红测。Fieldset默认padding造成的组内缩进已由FormFields自身reset并补bounding断言，更新golden后实看。详细验收映射、迁移残余和分轮产物见evidence/implementation/README.md。
+
+## 持续预览与提交
+
+第二逻辑实现提交为 `c3b52e3`（样式拥有者、交接边界、守卫、回归/证据及计划回写），首个为 `6ebd59b`。相对 `99cef65` 审查这两个提交即可得到治理变化，不包含之前用户工作区快照的基线实现。当前全部授权实施已完成，最后交付项仍保留执行中等待父会话独立review，不归档track。
+
+持续预览： http://10.134.94.200:4336/items/78abd2d8-cad5-42b5-9567-2d93938dd392 ，完整后端与正式dist在0.0.0.0:4336；监听进程1709160、启动pnpm进程1709113。持久数据及日志在本worktree `.flowcraft-preview-data/`（preview-server.log、preview-process.json、preview-seed.json）。启动命令：`HOST=0.0.0.0 FLOWCRAFT_API_PORT=4336 FLOWCRAFT_DATA_ROOT=$PWD/.flowcraft-preview-data pnpm preview`；保持运行供查看，4335及托管端口/服务未触碰。
+
+样例标题明确为“UI治理演示（合成样例）”，含2条合成材料及2行合成反馈，使用function/expression/aggregate/literal的真实运行（completed）并发布工作表面。它证明真实运行及UI展示接线，不声称模型或业务质量验收。没有models.toml/密钥/自动模型调用，没有复制用户数据。1440/1024实际打开表面与任务并Escape关闭，无pageerror，4张截图已实看并归档。预览可变业务状态不进入Git；归档只含合成seed说明、验证结果和截图。
