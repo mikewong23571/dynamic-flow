@@ -12,3 +12,7 @@
 - [规范适用范围](standards/scope.md)
 
 当前已完成控件/组合接口、层叠与实际样式拥有者迁移、响应式与浮层交接修复，并以回归和稳定截图验证。主要方向为统一样式所有权和层叠、控件尺寸/API、组合间距、骨架响应式和任务浮层交接，并建立小范围有效的防回归检查；沿用既有组件库和业务合同。
+
+[最终独立审查](review.md) · [实施证据与分轮边界](evidence/implementation/README.md) · [持续预览](http://10.134.94.200:4336/items/78abd2d8-cad5-42b5-9567-2d93938dd392)
+
+产品改动位于 `/home/mike/projs/fork/dynamic-flow-style-governance`，原仓托管源码保持。

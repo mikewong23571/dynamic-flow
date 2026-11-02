@@ -1,0 +1,20 @@
+{
+  "reviewed_at": "2026-11-02T09:11:41.758694+00:00",
+  "reviewed_source_head": "ccc4ff083de944e574bf70c305a97ae671d112a6",
+  "baseline": "99cef65b63155322a3f6f3ac684daaadcc760a25",
+  "blocking_findings": 0,
+  "plan_tasks_completed": 21,
+  "original_source_hashes_unchanged": 242,
+  "original_source_changes": [],
+  "independent_typecheck": "passed",
+  "independent_style_check": "passed",
+  "source_docs_diff_check": "passed",
+  "raw_console_logs": "preserved including tool whitespace",
+  "module_cases": 24,
+  "distinct_browser_cases_across_rounds": 70,
+  "latest_complete_governance_cases": 15,
+  "preview": "http://10.134.94.200:4336/items/78abd2d8-cad5-42b5-9567-2d93938dd392",
+  "managed_instance_actions": false,
+  "real_model_acceptance": false,
+  "human_visual_acceptance_claimed": false
+}
