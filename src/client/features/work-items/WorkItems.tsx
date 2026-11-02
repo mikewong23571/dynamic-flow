@@ -432,7 +432,6 @@ export function WorkItems({
                         <TableHead>编号</TableHead>
                         <TableHead>状态</TableHead>
                         <TableHead className="text-right">最近进展</TableHead>
-                        <TableHead />
                       </TableRow>
                     </TableHeader>
                   )}
@@ -476,9 +475,6 @@ export function WorkItems({
                         </TableCell>
                         <TableCell className="work-home-date">
                           {dateTime(row.progressAt)}
-                        </TableCell>
-                        <TableCell className="work-home-chevron">
-                          <ChevronRight size={14} />
                         </TableCell>
                       </TableRow>
                     ))}

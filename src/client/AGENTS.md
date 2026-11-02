@@ -38,7 +38,7 @@ source编辑使用SDK声明和merge；完整保存必须通过正式校验，par
 
 ## 状态与导航
 
-首页/工作项/流水线是固定入口；/items/:id和/methods/:id由URL恢复对象与Tab，固定Run带run参数。导航不启动模型/上传/运行。ObjectLink保留href及修饰键语义；返回原项的链接不改变Run归属。根列表请求summary=true&view=roots，不在分页后前端隐藏子项。
+首页/工作项/流水线是固定入口；/items/:id和/methods/:id由URL恢复对象与Tab，固定Run带run参数。导航不启动模型/上传/运行。ObjectLink保留href及修饰键语义；返回原项的链接不改变Run归属。工作项列表与首页最近处理仅标题区域提供详情入口，悬停/焦点可辨；不增加重复箭头入口或无操作的末尾导航列。根列表请求summary=true&view=roots，不在分页后前端隐藏子项。
 
 WorkItems保留已访问详情实例，隐藏时停止轮询并隐藏Portal。ContentVisibility/DeferredContent保证隐藏内容实际不可见且不创建长正文。200快照整体接纳；304无正文不解析；旧请求按generation/revision丢弃。读取失败成功恢复后只清读取错误，动作错误留到明确重试/关闭。
 

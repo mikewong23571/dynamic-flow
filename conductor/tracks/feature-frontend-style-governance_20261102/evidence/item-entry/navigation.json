@@ -1,0 +1,21 @@
+{
+  "findings": [
+    {
+      "width": 1440,
+      "singleNavigationEntry": true,
+      "decorativeArrowRemoved": true,
+      "keyboardEnter": true,
+      "pointerClick": true,
+      "newTab": "native middle click passed"
+    },
+    {
+      "width": 1024,
+      "singleNavigationEntry": true,
+      "decorativeArrowRemoved": true,
+      "keyboardEnter": true,
+      "pointerClick": true,
+      "newTab": "not run at this width"
+    }
+  ],
+  "priorDiagnostic": "Control-click popup-event collection timed out; no code change made to ObjectLink. Rechecked native new-tab via middle click with context page event."
+}
