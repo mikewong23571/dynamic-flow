@@ -1,0 +1,25 @@
+{
+  "productCommit": "0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148",
+  "assets": [
+    {
+      "path": "dist/index.html",
+      "sha256": "609553cfa6d170a640a66bf6d00ee62611257b614abc3bb7298f44ce645c592a"
+    },
+    {
+      "path": "dist/assets/index-D7JsZWIv.css",
+      "sha256": "bfa6ce530108bb06d2bfa83fcbc4d8f92b2ec0f4dabea125fd4b8057dbc878fd"
+    },
+    {
+      "path": "dist/assets/canvas-layout-QMbPN9sz.js",
+      "sha256": "605e791f93a05ad156ca09051090db496b913b116f991649adb57d74459d651b"
+    },
+    {
+      "path": "dist/assets/ci-info-SFjix9mD.js",
+      "sha256": "87df83cc846c1271c6cde3805b025eaaaa7143167ac7333c202689cd1d03e8fc"
+    },
+    {
+      "path": "dist/assets/index-sLoSVSMO.js",
+      "sha256": "3f09a5660da9cd1e50a31dd0e5549c471aaffb20576b4e926adf3e2438c0b49b"
+    }
+  ]
+}

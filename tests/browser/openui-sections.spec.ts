@@ -182,10 +182,19 @@ for (const width of [1440, 1024]) {
       .toEqual({ scope: '本次合成范围' });
     await expect(selected).toBeChecked();
     ws = await application.composition.snapshot(item.id);
-    const legacy = source.replace(
-      '[handling, supplement, plain]',
-      '[table, form, actions, editor, plain]',
-    );
+    const legacy = source
+      .replace(
+        '[handling, supplement, plain]',
+        '[table, form, actions, editor, plain]',
+      )
+      .replace(
+        'Dialog("补充范围任务", $editing, [Section("任务范围", [form])])',
+        'Dialog("补充范围任务", $editing, [form])',
+      )
+      .split('\n')
+      .filter((line) => !/^(handling|supplement|nested|deep) = /.test(line))
+      .join('\n');
+    expect(legacy).not.toContain('Section(');
     ws = await application.composition.saveUiProgram(
       item.id,
       ws.item.revision,
