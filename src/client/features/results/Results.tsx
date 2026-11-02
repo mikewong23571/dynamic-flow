@@ -1,3 +1,4 @@
+import './Results.css';
 import { useEffect, useMemo, useState, type ComponentProps } from 'react';
 import type { WorkItemSummaryPage } from '../../../shared/records';
 import type { ResultView } from '../../app/navigation';
@@ -10,7 +11,7 @@ import {
   short,
   statusNames,
 } from '../../core/format';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { NativeSelect } from '../../components/ui/native-select';
 import {
   Tabs,
@@ -168,6 +169,7 @@ export function Results(
         </TabsList>
         <div className="results-navigation-selection">
           <NativeSelect
+            layout="fit"
             aria-label="运行记录"
             value={selectedId || ''}
             onChange={(event) =>
@@ -193,6 +195,8 @@ export function Results(
           </NativeSelect>
           {selected && running(selected.status) && (
             <Button
+              variant="outline"
+              size="sm"
               disabled={selected.stopRequested}
               onClick={() =>
                 void props.onAction('stopRun', { runId: selected.id })
@@ -244,7 +248,9 @@ export function Results(
             }
           />
           {!work.runs.length && props.onInvoke && (
-            <Button onClick={props.onInvoke}>直接输入运行</Button>
+            <Button variant="outline" size="sm" onClick={props.onInvoke}>
+              直接输入运行
+            </Button>
           )}
         </TabsContent>
         <TabsContent

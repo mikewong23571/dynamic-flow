@@ -95,3 +95,26 @@ submit = Mutation("submit_input", {inputPort: "supplement", value: $draft})`;
   assert.equal(parsed.mutations.length, 1);
   assert.deepEqual(parsed.outputs, []);
 });
+
+test('explicit business sections preserve data, input and mutation contracts without rewriting legacy programs', () => {
+  const grouped = source.replace(
+    '[records, form]',
+    '[Section("处理事项", [records, Stack([continueButton], "horizontal")]), Section("补充资料", [form, Section("核对依据", [TextContent("必要依据")])])]',
+  );
+  const before = parseOpenUIProgram(source);
+  const after = parseOpenUIProgram(grouped);
+  assert.deepEqual(after.records, before.records);
+  assert.deepEqual(after.inputs, before.inputs);
+  assert.deepEqual(after.outputs, before.outputs);
+  assert.deepEqual(after.mutations, before.mutations);
+  const renamed = mergeOpenUIProgram(
+    grouped,
+    'root = Workspace("事项处理", [Section("实际事项", [records]), Section("补充资料", [form])])',
+  );
+  assert.deepEqual(parseOpenUIProgram(renamed).records, before.records);
+  assert.doesNotThrow(() =>
+    parseOpenUIProgram(
+      'root = Workspace("旧程序", [Section("", [Stack([TextContent("保留布局")])])])',
+    ),
+  );
+});

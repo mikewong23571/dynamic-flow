@@ -189,7 +189,7 @@ export function CompositionFlow({
                 </Button>
               </>
             ) : (
-              <span className="muted">已保存</span>
+              <span className="meta-text">已保存</span>
             )}
           </div>
         </div>

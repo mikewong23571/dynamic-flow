@@ -37,3 +37,6 @@ Task2验证与证据提交：`3e8379241bd8ff7792dafa781f8132f0dcde857c`；Task1�
 编排者review与独立预览证据提交b616ab3；检查了真实调用双方、diff和两尺寸主区/子组/任务截图。4336预览通过正式保存合同更新合成程序revision5→6，固定delivery身份保留；选择、草稿、Escape焦点和窄屏动作命中通过。原仓src聚合hash前后不变。详细证据/边界见review.md。
 
 按项目单仓workflow完成本地交付；不适用通用模板多仓push/MR/check-complete/archive要求，不自动发布托管实例。0f56951为实现，3e83792为测试证据，b7f635f为SHA回写，b616ab3为独立审查。本次清空会话导航字段并删除heartbeat；仅同步本track与原仓registry新条目，不改原仓产品。
+
+## 2026-11-02 全量合并
+用户新授权后，完整开发分支合入master，当前未提交现场保存在e367c44和backup/pre-full-governance-merge_20261102。仅索引文档冲突已解决；产品树与已验收开发分支一致。主工作区类型/样式/OpenUI6项重验通过，依赖按锁离线安装通过。详细过程与边界见integration.md；历史未发布/未写原仓描述为此前状态，不代表本次合并后状态。无远端push或主动托管重启。

@@ -1,3 +1,4 @@
+import { Field } from '../../components/ui/field';
 import { MaterialDialog } from '../../components/MaterialDialog';
 import { useEffect, useState } from 'react';
 import type {
@@ -8,7 +9,8 @@ import type {
 } from '../../../shared/records';
 import { api } from '../../core/api';
 import { dateTime, errorText, statusNames } from '../../core/format';
-import { Badge, Button } from '../../components/ui';
+import { Badge } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { NativeSelect } from '../../components/ui/native-select';
 import './ChildStageChoices.css';
 
@@ -108,6 +110,7 @@ export function ChildStageChoices({
           {children.length - chosenChildren.length} 项
         </span>
         <Button
+          size="sm"
           type="button"
           variant="ghost"
           disabled={busy}
@@ -148,7 +151,7 @@ export function ChildStageChoices({
                   </button>
                 );
               })}
-              {!children.length && <p className="muted">暂无范围内子项</p>}
+              {!children.length && <p className="meta-text">暂无范围内子项</p>}
             </nav>
             <div className="child-stage-runs" aria-label="子项来源运行">
               {child && (
@@ -164,7 +167,7 @@ export function ChildStageChoices({
                       显示中间成果
                     </label>
                   </div>
-                  <p className="muted">
+                  <p className="meta-text">
                     选择具体运行的产物。续做仅覆盖部分目标时，可同时选择旧轮次中的有效成果。
                   </p>
                   {child.issues.map((issue) => (
@@ -198,7 +201,7 @@ export function ChildStageChoices({
                           </Badge>
                           <span>{dateTime(run.startedAt)}</span>
                         </header>
-                        <label className="field">
+                        <Field>
                           使用本轮的哪组产物
                           <NativeSelect
                             value={
@@ -233,9 +236,9 @@ export function ChildStageChoices({
                               </option>
                             ))}
                           </NativeSelect>
-                        </label>
+                        </Field>
                         {!groups.length && (
-                          <p className="muted">
+                          <p className="meta-text">
                             本轮没有方法最终输出；可显示中间成果，选择已完成的部分。
                           </p>
                         )}
@@ -274,6 +277,7 @@ export function ChildStageChoices({
                                   </span>
                                 </label>
                                 <Button
+                                  size="sm"
                                   type="button"
                                   variant="ghost"
                                   disabled={previewing}
@@ -289,7 +293,7 @@ export function ChildStageChoices({
                     );
                   })}
                   {!child.runs.length && (
-                    <p className="muted">暂无已完成的正式运行产物</p>
+                    <p className="meta-text">暂无已完成的正式运行产物</p>
                   )}
                 </>
               )}

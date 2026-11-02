@@ -1,4 +1,5 @@
 import type { OpenUIFocus } from '../../../../shared/openui';
+import { X } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Bot, Settings2 } from 'lucide-react';
 import type {
@@ -154,13 +155,15 @@ export function CompositionAssistant({
             </strong>
           )}
           {uiLabel && expanded && (
-            <button
+            <Button
+              variant="ghost"
+              size="icon-sm"
               className="composition-clear-focus"
               aria-label="清除界面关注"
               onClick={onClearUiFocus}
             >
-              ×
-            </button>
+              <X size={14} />
+            </Button>
           )}
           {!inspecting && (
             <ConversationMenu
@@ -199,9 +202,14 @@ export function CompositionAssistant({
           {uiLabel && !expanded && (
             <div className="composition-ui-focus">
               <span>界面 · {uiLabel}</span>
-              <button aria-label="清除界面关注" onClick={onClearUiFocus}>
-                ×
-              </button>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="清除界面关注"
+                onClick={onClearUiFocus}
+              >
+                <X size={14} />
+              </Button>
             </div>
           )}
           <Assistant

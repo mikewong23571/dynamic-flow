@@ -1,5 +1,5 @@
 import { Plus, Workflow } from 'lucide-react';
-import { Button } from '../components/ui';
+import { Button } from '../components/ui/button';
 
 /** 没有打开工作时的工作区首屏。 */
 export function Welcome({
@@ -21,7 +21,7 @@ export function Welcome({
         一步步变清楚。
       </h1>
       <p>带上材料，形成流程。检查结果，试验更好的方法。</p>
-      <Button variant="primary" onClick={onCreate}>
+      <Button size="sm" variant="default" onClick={onCreate}>
         <Plus size={17} />
         创建第一项工作
       </Button>

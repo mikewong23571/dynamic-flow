@@ -44,7 +44,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--space-group);
     margin-bottom: 16px;
   }
   .composition-process-panel .composition-section-heading select {
@@ -58,10 +58,10 @@
     flex: none;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-group);
     justify-content: space-between;
     padding: 8px 24px;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .composition-inline-error {
     color: var(--danger);
@@ -76,13 +76,13 @@
     margin: 0;
     padding: 10px 20px;
     color: var(--danger);
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .composition-flow-toolbar {
     flex: none;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-inline);
     padding: 10px 18px;
     border-bottom: 1px solid var(--line);
   }
@@ -98,7 +98,7 @@
   .composition-flow-tools {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-inline);
     flex-wrap: wrap;
     padding: 10px 18px;
     border-bottom: 1px solid var(--line);
@@ -109,7 +109,7 @@
   }
   .composition-flow-save {
     margin-left: auto;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .composition-flow-editor {
     flex: 1;
@@ -126,25 +126,25 @@
     color: var(--warning);
     background: var(--warning-soft);
     display: flex;
-    gap: 12px;
+    gap: var(--space-group);
     flex-wrap: wrap;
     flex: none;
   }
   .composition-flow-issues > button {
     background: none;
     color: inherit;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .composition-waits {
     padding: 8px 20px;
     color: var(--warning);
     background: var(--warning-soft);
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .composition-waits > div {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-group);
   }
   .composition-waits time {
     margin-left: auto;
@@ -153,19 +153,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-field);
     margin-bottom: 20px;
     flex-wrap: wrap;
   }
   .composition-section-heading h2,
   .composition-task-heading {
-    font-size: 15px;
+    font-size: var(--text-section);
     font-weight: 550;
     margin: 0;
   }
-  .composition-section-heading .muted {
+  .composition-section-heading .meta-text {
     display: block;
-    font-size: 12px;
+    font-size: var(--text-small);
     margin-top: 5px;
   }
   .composition-task-heading {
@@ -178,7 +178,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-field);
     padding: 36px;
     text-align: center;
     color: var(--muted);
@@ -194,7 +194,7 @@
   .composition-empty-task p {
     margin: 0;
     max-width: 60ch;
-    font-size: 13px;
+    font-size: var(--text-control);
     line-height: 1.7;
   }
   .composition-initial-task {
@@ -203,16 +203,15 @@
   .composition-delivery-nav {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-group);
     margin-bottom: 20px;
   }
   .composition-delivery-nav select {
     max-width: 300px;
-    font-weight: 500;
   }
   .composition-delivery-nav time {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .composition-delivery-nav > [data-slot='button']:last-child {
     margin-left: auto;
@@ -220,15 +219,15 @@
   .composition-table-tools {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-group);
     flex-wrap: wrap;
     margin-bottom: 16px;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .composition-search {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-inline);
     min-width: 160px;
     max-width: 260px;
     flex: 1;
@@ -256,7 +255,7 @@
   }
   .composition-column-sort {
     display: flex;
-    gap: 6px;
+    gap: var(--space-control);
     align-items: center;
     color: inherit;
     background: none;
@@ -272,7 +271,7 @@
     border-top: 1px solid var(--line);
     padding-top: 16px;
     margin-top: 20px;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--muted);
   }
   .delivery-source-step {
@@ -297,7 +296,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: var(--space-inline);
   }
   .delivery-source-card-actions > span {
     color: var(--muted);
@@ -338,11 +337,11 @@
     padding-left: 26px;
   }
   .composition-inputs table {
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .composition-inputs th {
     color: var(--muted);
-    font-size: 11px;
+    font-size: var(--text-meta);
     font-weight: 500;
   }
   .composition-inputs td {
@@ -355,7 +354,7 @@
   .composition-confirmation-row {
     display: grid;
     grid-template-columns: 20px minmax(0, 1fr) 32px;
-    gap: 8px;
+    gap: var(--space-inline);
     margin-bottom: 20px;
     align-items: start;
   }
@@ -383,75 +382,75 @@
     }
   }
 }
-/* Existing shared .composer/.modal rules are unlayered; only sizing is scoped here. */
-.composition-delivery .management-pagination {
-  padding: 16px 0;
-}
-.modal.composition-create-dialog,
-.modal.composition-acceptance-dialog {
-  width: min(640px, calc(100vw - 48px));
-  max-width: min(640px, calc(100vw - 48px));
-}
-.modal.composition-children-dialog {
-  width: min(920px, calc(100vw - 48px));
-  max-width: min(920px, calc(100vw - 48px));
-}
-.modal.composition-record-dialog {
-  width: min(860px, calc(100vw - 48px));
-  max-width: min(860px, calc(100vw - 48px));
-}
-.modal.composition-method-preview {
-  width: min(1040px, calc(100vw - 48px));
-  max-width: min(1040px, calc(100vw - 48px));
-}
-.composition-method-preview-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-.composition-method-preview-canvas {
-  display: flex;
-  height: min(56vh, 500px);
-  min-height: 280px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-}
-.modal.composition-input-dialog .stack,
-.modal.composition-create-dialog .stack {
-  gap: 16px;
-}
-.modal.composition-input-dialog .modal-actions,
-.modal.composition-create-dialog .modal-actions {
-  position: sticky;
-  bottom: -27px;
-  padding: 14px 2px 0;
-  margin: 4px -2px -2px;
-  background: var(--paper);
-  border-top: 1px solid var(--line);
-}
-.composition-children-dialog .item-section {
-  padding: 0;
-  margin: 0;
-  border: 0;
-}
-.composition-children-dialog .item-relations > .section-heading {
-  margin-bottom: 16px;
-}
-.composition-confirmations > .inline-group {
-  position: sticky;
-  bottom: -27px;
-  background: var(--paper);
-  padding: 14px 0 0;
-  border-top: 1px solid var(--line);
-}
+/* Task-specific composition sizes; shared patterns belong to the component layer. */
 @layer components {
+  .composition-delivery .management-pagination {
+    padding: 16px 0;
+  }
+  .modal.composition-create-dialog,
+  .modal.composition-acceptance-dialog {
+    width: min(640px, calc(100vw - 48px));
+    max-width: min(640px, calc(100vw - 48px));
+  }
+  .modal.composition-children-dialog {
+    width: min(920px, calc(100vw - 48px));
+    max-width: min(920px, calc(100vw - 48px));
+  }
+  .modal.composition-record-dialog {
+    width: min(860px, calc(100vw - 48px));
+    max-width: min(860px, calc(100vw - 48px));
+  }
+  .modal.composition-method-preview {
+    width: min(1040px, calc(100vw - 48px));
+    max-width: min(1040px, calc(100vw - 48px));
+  }
+  .composition-method-preview-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-field);
+  }
+  .composition-method-preview-canvas {
+    display: flex;
+    height: min(56vh, 500px);
+    min-height: 280px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+  }
+  .modal.composition-input-dialog .stack,
+  .modal.composition-create-dialog .stack {
+    gap: var(--space-field);
+  }
+  .modal.composition-input-dialog .form-actions,
+  .modal.composition-create-dialog .form-actions {
+    position: sticky;
+    bottom: 0;
+    padding: 14px 2px 0;
+    margin: 0;
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+  }
+  .composition-children-dialog .item-section {
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+  .composition-children-dialog .item-relations > .section-heading {
+    margin-bottom: 16px;
+  }
+  .composition-confirmations > .inline-group {
+    position: sticky;
+    bottom: 0;
+    background: var(--paper);
+    padding: 14px 0 0;
+    border-top: 1px solid var(--line);
+  }
   .composition-flow-progress {
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .children-task-toolbar {
     display: flex;
@@ -460,31 +459,31 @@
     margin-bottom: 16px;
   }
   .children-task-toolbar > span {
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .children-empty {
     display: flex;
     align-items: center;
     flex-direction: column;
     padding: 36px 12px 20px;
-    gap: 12px;
+    gap: var(--space-group);
     color: var(--muted);
   }
   .children-empty h3 {
     margin: 7px 0 0;
-    font-size: 15px;
+    font-size: var(--text-section);
     font-weight: 500;
     color: var(--ink);
   }
   .children-empty p {
     margin: 0 0 10px;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .children-empty > svg {
     margin-bottom: 4px;
   }
   .children-empty > button:last-child {
-    font-size: 11px;
+    font-size: var(--text-meta);
     margin-top: 4px;
   }
   .children-no-match {
@@ -501,7 +500,7 @@
   .work-timeline h2 {
     margin: 0 0 22px 40px;
     padding-top: 8px;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--muted);
     font-weight: 400;
   }
@@ -538,9 +537,9 @@
   .work-event-heading {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-group);
     min-height: 26px;
-    font-size: 13px;
+    font-size: var(--text-control);
   }
   .work-event-heading > span:first-child {
     min-width: 0;
@@ -549,7 +548,7 @@
   .work-event-heading time {
     margin-left: auto;
     color: var(--muted);
-    font-size: 11px;
+    font-size: var(--text-meta);
     white-space: nowrap;
   }
   .work-event-heading > button {
@@ -557,25 +556,23 @@
   }
   .work-event-content p {
     margin: 7px 0 0;
-    font-size: 12px;
+    font-size: var(--text-small);
     line-height: 1.7;
     color: var(--muted);
     overflow-wrap: anywhere;
   }
   .work-event-content details {
     margin-top: 12px;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--muted);
   }
-}
-.modal.composition-children-dialog:has(.children-empty) {
-  width: min(640px, calc(100vw - 48px));
-  max-width: min(640px, calc(100vw - 48px));
-}
-.delivery-panel[hidden] {
-  display: none;
-}
-@layer components {
+  .modal.composition-children-dialog:has(.children-empty) {
+    width: min(640px, calc(100vw - 48px));
+    max-width: min(640px, calc(100vw - 48px));
+  }
+  .delivery-panel[hidden] {
+    display: none;
+  }
   .composition-view-navigation {
     flex: 1;
     min-width: 0;
@@ -598,15 +595,9 @@
   .composition-delivery-nav > [data-slot='button']:last-child {
     margin-left: 0;
   }
-}
-
-@layer components {
   .composition-confirmations > .inline-group > button:last-child {
     margin-left: auto;
   }
-}
-
-@layer components {
   .composition-plan {
     padding: 14px 24px 16px;
     border-bottom: 1px solid var(--line);
@@ -616,12 +607,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: var(--text-meta);
     min-height: 24px;
     margin-bottom: 4px;
   }
   .composition-plan > p {
-    font-size: 13px;
+    font-size: var(--text-control);
     line-height: 1.7;
     margin: 0;
     display: -webkit-box;
@@ -635,7 +626,7 @@
     gap: 6px 14px;
     margin-top: 10px;
     color: var(--muted);
-    font-size: 11px;
+    font-size: var(--text-meta);
   }
   .composition-plan-outputs > span {
     display: inline-flex;
@@ -645,18 +636,18 @@
   .composition-plan-details {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: var(--space-section);
     margin: 0;
     padding-top: 8px;
   }
   .composition-plan-details dt {
-    font-size: 11px;
+    font-size: var(--text-meta);
     color: var(--muted);
     margin-bottom: 8px;
   }
   .composition-plan-details dd {
     margin: 0;
-    font-size: 13px;
+    font-size: var(--text-control);
     line-height: 1.8;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -664,7 +655,7 @@
   .composition-step-handoff {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: var(--space-section);
     border-block: 1px solid var(--line);
     padding: 16px 0;
   }
@@ -686,14 +677,11 @@
       padding: 12px 20px;
     }
   }
-}
-
-@layer components {
   .declared-action-bar {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 8px;
+    gap: var(--space-inline);
     flex-wrap: wrap;
   }
   .table-business-actions {
@@ -715,10 +703,10 @@
   .declared-record-detail > div {
     display: grid;
     grid-template-columns: 132px minmax(0, 1fr);
-    gap: 16px;
+    gap: var(--space-field);
   }
   .declared-record-detail dt {
-    font-size: 11px;
+    font-size: var(--text-meta);
     color: var(--muted);
   }
   .declared-record-detail .prose > :first-child {
@@ -730,7 +718,7 @@
   .declared-record-detail dd {
     margin: 0;
     min-width: 0;
-    font-size: 13px;
+    font-size: var(--text-control);
     line-height: 1.7;
     overflow-wrap: anywhere;
   }
@@ -751,37 +739,22 @@
       flex-wrap: wrap;
     }
   }
-}
-
-@layer components {
   .composition-ui-focus {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: var(--space-inline);
     margin: 12px 16px 0;
     border: 1px solid var(--line-strong);
-    border-radius: 5px;
+    border-radius: var(--radius-small);
     padding: 7px 10px;
-    font-size: 11px;
-    color: var(--muted);
-  }
-  .composition-ui-focus button {
-    padding: 0;
-    border: 0;
-    background: transparent;
+    font-size: var(--text-meta);
     color: var(--muted);
   }
   @media (max-width: 1200px) {
   }
-}
-@layer components {
   .composition-clear-focus {
     margin-left: auto;
-    background: transparent;
-    border: 0;
-    color: var(--muted);
-    font-size: 16px;
   }
   .composition-conversation-controls {
     display: flex;
@@ -805,7 +778,7 @@
     gap: 5px;
   }
   .composition-conversation-option strong {
-    font-size: 12px;
+    font-size: var(--text-small);
     font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -813,17 +786,14 @@
   }
   .composition-conversation-option > span {
     color: var(--muted);
-    font-size: 11px;
+    font-size: var(--text-meta);
   }
-}
-
-@layer components {
   .composition-record-actions {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--space-group);
     border-top: 1px solid var(--line);
     padding-top: 16px;
     margin-top: 20px;
@@ -839,9 +809,6 @@
   .composition-record-dialog .declared-record-detail .value-list {
     gap: 2px;
   }
-}
-
-@layer components {
   .ui-arrangement > .composition-section-heading {
     position: sticky;
     top: -24px;
@@ -871,15 +838,15 @@
   .ui-arrangement-editor {
     min-width: 0;
   }
-  .ui-arrangement-editor textarea {
+  .ui-arrangement-source {
     height: 420px;
     width: 100%;
     font-family: var(--font-mono, monospace);
-    font-size: 12px;
+    font-size: var(--text-small);
     line-height: 1.6;
     resize: vertical;
   }
-}
-.ui-arrangement .field {
-  margin: 0 0 12px;
+  .ui-arrangement .form-field {
+    margin: 0 0 12px;
+  }
 }

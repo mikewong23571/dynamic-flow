@@ -1,7 +1,8 @@
 import { itemStatusLabel } from '../work-items/item-status';
 import { useMemo, useState } from 'react';
 import type { Run } from '../../../shared/records';
-import { Button, Badge } from '../../components/ui';
+import { Badge } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { Button as ObjectButton } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { NativeSelect } from '../../components/ui/native-select';
@@ -96,6 +97,7 @@ export function ResultsOverview({
       <div className="results-overview-tools">
         <div className="inline-group" aria-label="结果视图">
           <Button
+            size="sm"
             variant={mode === 'runs' ? 'secondary' : 'ghost'}
             aria-pressed={mode === 'runs'}
             onClick={() => {
@@ -107,6 +109,7 @@ export function ResultsOverview({
             运行记录
           </Button>
           <Button
+            size="sm"
             variant={mode === 'artifacts' ? 'secondary' : 'ghost'}
             aria-pressed={mode === 'artifacts'}
             onClick={() => {
@@ -158,7 +161,10 @@ export function ResultsOverview({
       </div>
       {error && (
         <div className="error-banner" role="alert">
-          业务状态读取失败：{error} <Button onClick={onRetry}>重新读取</Button>
+          业务状态读取失败：{error}{' '}
+          <Button variant="outline" size="sm" onClick={onRetry}>
+            重新读取
+          </Button>
         </div>
       )}
       <div className="results-overview-table">
@@ -206,7 +212,7 @@ export function ResultsOverview({
                               {relatedTitle}
                             </strong>
                             <small>{key}</small>
-                            <span className="muted">
+                            <span className="meta-text">
                               业务：
                               {item ? (
                                 <Badge status={item.effectiveStatus}>
@@ -220,7 +226,7 @@ export function ResultsOverview({
                             </span>
                           </>
                         ) : (
-                          <span className="muted block py-1.5 leading-5">
+                          <span className="meta-text block py-1.5 leading-5">
                             无关联工作项
                           </span>
                         )}
@@ -306,7 +312,7 @@ export function ResultsOverview({
           )}
         </Table>
         {!total && (
-          <p className="muted results-empty">
+          <p className="meta-text results-empty">
             {rows.length ? '没有匹配结果' : '尚无运行记录'}
           </p>
         )}

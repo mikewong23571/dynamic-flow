@@ -3,6 +3,21 @@ import { TabsList, TabsTrigger } from './ui/tabs';
 import { cn } from '../lib/utils';
 import './WorkspaceFrame.css';
 
+/** Preserve user panel preference while adapting its physical placement to the viewport. */
+function useNarrowWorkspace() {
+  const [narrow, setNarrow] = useState(
+    () => window.matchMedia('(max-width: 1279px)').matches,
+  );
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 1279px)');
+    const update = () => setNarrow(query.matches);
+    query.addEventListener('change', update);
+    update();
+    return () => query.removeEventListener('change', update);
+  }, []);
+  return narrow;
+}
+
 export function WorkspaceHeading({
   title,
   eyebrow,
@@ -95,10 +110,11 @@ export function WorkspaceContent({
   panel?: ReactNode;
   docked?: boolean;
 }) {
+  const narrow = useNarrowWorkspace();
   return (
     <div
       className="workspace-content"
-      data-panel-layout={docked ? 'dock' : 'side'}
+      data-panel-layout={docked || narrow ? 'dock' : 'side'}
     >
       <section className="main-content">{children}</section>
       {panel}
@@ -133,6 +149,8 @@ export function WorkspaceSidePanel({
   mode?: 'side' | 'dock';
   label?: string;
 }) {
+  const narrow = useNarrowWorkspace();
+  const effectiveMode = narrow ? 'dock' : mode;
   const [width, setWidth] = useState<number | null>(readWidth);
   const panel = useRef<HTMLElement>(null);
   const drag = useRef<{
@@ -175,11 +193,12 @@ export function WorkspaceSidePanel({
     <aside
       ref={panel}
       className="context-panel"
-      data-mode={mode}
+      data-mode={effectiveMode}
+      data-preferred-mode={mode}
       aria-label={label}
-      style={mode === 'side' && width ? { width } : undefined}
+      style={effectiveMode === 'side' && width ? { width } : undefined}
     >
-      {mode === 'side' && (
+      {effectiveMode === 'side' && (
         <div
           className="panel-resize-handle"
           role="separator"

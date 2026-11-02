@@ -9,10 +9,11 @@ import type {
 import { changeSummary } from '../../core/definition';
 import { comparisonStale } from '../../core/compare';
 import { active, short } from '../../core/format';
-import { Badge, Button, Empty } from '../../components/ui';
+import { Badge, Empty } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { ArtifactValue } from './ArtifactValue';
 function output(result: NodeResult | undefined) {
-  if (!result) return <span className="muted">等待结果</span>;
+  if (!result) return <span className="meta-text">等待结果</span>;
   return (
     <>
       <Badge status={result.status} />
@@ -65,7 +66,7 @@ export function Comparison({
       <div className="section-heading">
         <div>
           <h2>同输入比较做法</h2>
-          <p className="muted">
+          <p className="meta-text">
             {
               definitions[comparison.candidateId]?.nodes.find(
                 (n) => n.id === comparison.nodeId,
@@ -77,6 +78,8 @@ export function Comparison({
         <Badge status={comparison.status} />
         {active(comparison.status) && (
           <Button
+            variant="outline"
+            size="sm"
             onClick={() =>
               void onAction('stopComparison', { comparisonId: comparison.id })
             }

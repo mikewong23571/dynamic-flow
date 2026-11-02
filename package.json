@@ -27,7 +27,8 @@
     "spike:format": "prettier --write \"examples/component-spike/**/*.{ts,tsx,css,html}\" package.json tsconfig.json components.json",
     "spike:format:check": "prettier --check \"examples/component-spike/**/*.{ts,tsx,css,html}\" package.json tsconfig.json components.json",
     "dev:services": "concurrently -k -n api,web \"pnpm dev:api\" \"pnpm dev:web\"",
-    "dev:managed": "FLOWCRAFT_WEB_PORT=4320 FLOWCRAFT_API_PORT=4321 PORT=4321 HOST=0.0.0.0 FLOWCRAFT_DATA_ROOT=data pnpm dev:services"
+    "dev:managed": "FLOWCRAFT_WEB_PORT=4320 FLOWCRAFT_API_PORT=4321 PORT=4321 HOST=0.0.0.0 FLOWCRAFT_DATA_ROOT=data pnpm dev:services",
+    "check:styles": "node scripts/check-client-styles.mjs"
   },
   "dependencies": {
     "@assistant-ui/react": "0.15.21",
@@ -74,6 +75,7 @@
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.1",
     "concurrently": "10.0.5",
+    "postcss": "8.5.28",
     "prettier": "3.9.8",
     "tailwindcss": "4.3.3",
     "tsx": "4.23.13",

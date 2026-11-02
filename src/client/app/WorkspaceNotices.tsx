@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import type { ModelConfiguration } from '../../shared/records';
-import { Button } from '../components/ui';
+import { Button } from '../components/ui/button';
 
 /** 工作区横幅：错误、一般提示、模型未配置与保存版本冲突。 */
 export function WorkspaceNotices({
@@ -29,13 +29,17 @@ export function WorkspaceNotices({
       {error && (
         <div className="error-banner" role="alert">
           {error}
-          <button onClick={() => setError('')}>关闭</button>
+          <Button variant="ghost" size="sm" onClick={() => setError('')}>
+            关闭
+          </Button>
         </div>
       )}
       {notice && (
         <div className="notice" role="status">
           {notice}
-          <button onClick={() => setNotice('')}>关闭</button>
+          <Button variant="ghost" size="sm" onClick={() => setNotice('')}>
+            关闭
+          </Button>
         </div>
       )}
       {configuration && !configuration.ready && (
@@ -47,7 +51,7 @@ export function WorkspaceNotices({
       {dirty && draftId !== baseId.current && (
         <div className="notice">
           保存版本已被其他编辑更新。你的未提交内容已保留；请先检查新版本。
-          <Button onClick={discardLocalChanges}>
+          <Button variant="outline" size="sm" onClick={discardLocalChanges}>
             放弃本地修改并载入新版本
           </Button>
         </div>

@@ -1,0 +1,104 @@
+@layer components {
+  .materials-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 16px;
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+  .materials-toolbar > span {
+    margin-right: auto;
+  }
+  .materials-list {
+    max-height: 48vh;
+    overflow: auto;
+    border-top: 1px solid var(--line);
+  }
+  .material-row {
+    display: grid;
+    grid-template-columns: 16px 36px minmax(0, 1fr);
+    gap: var(--space-group);
+    padding: 16px 4px;
+    align-items: start;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    font-size: var(--text-control);
+    line-height: 1.75;
+  }
+  .material-row b {
+    font-size: var(--text-meta);
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .material-row input {
+    margin-top: 4px;
+  }
+  .material-row > span {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .material-row:hover {
+    background: var(--surface);
+  }
+  .invoke-port {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-inline);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 10px 12px;
+  }
+  .invoke-port-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-inline);
+  }
+  .invoke-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-inline);
+  }
+  .invoke-entry > :first-child {
+    flex: 1;
+    min-width: 0;
+  }
+  .invoke-port > [data-slot='button'],
+  .invoke-port > button {
+    align-self: flex-start;
+  }
+  .material-preview {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 13px 16px;
+    max-height: 180px;
+    overflow: auto;
+    font-size: var(--text-small);
+    line-height: 1.8;
+  }
+  .material-preview > strong {
+    font-size: var(--text-meta);
+    color: var(--muted);
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .material-preview p {
+    display: flex;
+    gap: 14px;
+    margin: 7px 0;
+  }
+  .material-preview p span {
+    color: var(--muted);
+    font-size: 10px;
+  }
+  .code-view {
+    font-size: var(--text-small);
+    line-height: 1.7;
+    background: var(--canvas);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    overflow: auto;
+  }
+}

@@ -57,16 +57,17 @@ Flowcraft 是本地工作流原型：用户在画布或 Assistant 中编辑处�
 
 此后开发调试和浏览器测试必须另起独立实例，默认使用前端 `4330`、后端 `4331`（被占用时另选空闲端口），调试前端的 `/api` 代理必须指向调试后端。不得占用或复用托管实例的 `4320/4321`，不得把调试进程并入 `flowcraft.service`，也不得为调试停止或重启该服务。调试使用独立工作目录或 worktree 与测试数据，避免托管实例的 watch 进程加载调试改动或测试修改用户数据。
 
-下表保留现有命令的实际默认行为；`pnpm dev` 默认使用托管端口，根 `playwright.config.ts` 也仍会复用 `4320/4321`。调试前必须先为独立实例配置端口、代理、测试 baseURL / webServer 和数据目录，不能直接运行这些默认命令连接托管实例。
+`pnpm dev` 默认使用独立 `4330/4331` 与 `.flowcraft-dev-data/`，前端代理指向调试后端；仍须从独立工作目录/worktree运行。根 Playwright 配置不启动托管服务，各 fixture 使用临时数据与随机私有端口。`pnpm dev:managed` 才显式使用托管端口与 `data/`，不得用于调试。
 
 | 命令 | 用途 |
 | --- | --- |
 | `pnpm install --frozen-lockfile` | 按锁文件安装依赖 |
-| `pnpm dev` | 正式前端 4320 + 后端 4321，前端代理 `/api` |
-| `pnpm build` | 正式客户端输出到 `dist/`；后端 `pnpm dev:api` 可在 4321 提供构建文件 |
+| `pnpm dev` | 独立前端 4330 + 后端 4331，前端代理 `/api`，使用独立数据目录 |
+| `pnpm dev:managed` | 显式使用托管 4320/4321 与 data，仅供既有托管配置 |
+| `pnpm build` | 正式客户端输出到 `dist/`；独立预览由 `pnpm preview` 提供完整前后端 |
 | `pnpm typecheck:app` | 正式源码类型检查 |
 | `pnpm test` | `tests/*.test.ts` 正式模块及集成测试 |
-| `pnpm test:browser` | 正式 Playwright 浏览器测试；数据与服务复用边界见测试指南 |
+| `pnpm test:browser` | 正式 Playwright 浏览器测试；fixture 使用临时数据与随机私有端口，见测试指南 |
 | `pnpm typecheck` / `pnpm spike:*` | 前者同时检查旧实验与正式源码；后者只运行历史实验 |
 
 模型目录来自根 `models.toml`（参考 `models.example.toml`），全局默认选择保存到 `data/model-settings.json`，工作对话覆盖保存在 Work；手动/env 回退已移除；不要在输出、提交或快照里暴露密钥。运行数据见 `data/AGENTS.md`。不要把已有用户数据当作可清空的测试夹具。

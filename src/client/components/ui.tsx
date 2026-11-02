@@ -14,9 +14,9 @@ import {
   CheckCheck,
   type LucideIcon,
 } from 'lucide-react';
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { useTaskDialogFocus } from './useTaskDialogFocus';
 import { statusNames } from '../core/format';
-import { Button as PrimitiveButton } from './ui/button';
 import { Badge as PrimitiveBadge } from './ui/badge';
 import {
   Dialog,
@@ -26,29 +26,6 @@ import {
   DialogTitle,
 } from './ui/dialog';
 
-// Compatibility for existing workspace consumers; variants are owned by shadcn.
-export const Button = forwardRef<
-  HTMLButtonElement,
-  ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
-  }
->(function Button({ variant = 'secondary', className = '', ...props }, ref) {
-  const mapped = {
-    primary: 'default',
-    secondary: 'outline',
-    ghost: 'ghost',
-    danger: 'outline',
-  } as const;
-  return (
-    <PrimitiveButton
-      ref={ref}
-      size="sm"
-      variant={mapped[variant]}
-      className={`button ${variant} ${variant === 'danger' ? 'text-destructive' : ''} ${className}`}
-      {...props}
-    />
-  );
-});
 const statusIcons: Record<string, LucideIcon> = {
   review: ListChecks,
   queued: Clock3,
@@ -127,21 +104,25 @@ export function Modal({
   children: ReactNode;
 }) {
   const visible = useContentVisibility();
+  const focus = useTaskDialogFocus(onCloseAutoFocus);
   return (
     <Dialog open={open && visible} onOpenChange={onOpenChange}>
       <DialogContent
-        onCloseAutoFocus={onCloseAutoFocus}
+        layout="application"
+        {...focus}
         aria-label={title}
         aria-labelledby={undefined}
         className={['modal', className].filter(Boolean).join(' ')}
       >
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className={description ? 'muted' : 'sr-only'}>
+          <DialogTitle className="text-[length:var(--text-heading)] font-medium">
+            {title}
+          </DialogTitle>
+          <DialogDescription className={description ? 'meta-text' : 'sr-only'}>
             {description || title}
           </DialogDescription>
         </DialogHeader>
-        {children}
+        <div className="modal-body">{children}</div>
       </DialogContent>
     </Dialog>
   );

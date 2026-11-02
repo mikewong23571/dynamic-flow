@@ -1,3 +1,4 @@
+import { NativeSelect } from '../../components/ui/native-select';
 import { OpenUIPreviewContext } from '../openui/OpenUIPreviewContext';
 import type { DeliveryBrowserState } from './composition/delivery-browser-state';
 import { parseOpenUIProgram, type OpenUIFocus } from '../../../shared/openui';
@@ -517,7 +518,7 @@ export function WorkItemDetail({
             <>
               <Button variant="ghost" size="sm" onClick={openAcceptance}>
                 完成条件{' '}
-                <span className="muted">
+                <span className="meta-text">
                   {item.criteria.filter((c) => c.met).length}/
                   {item.criteria.length}
                 </span>
@@ -823,7 +824,7 @@ export function WorkItemDetail({
                     <div className="composition-section-heading">
                       <h2>处理过程</h2>
                       {work && work.runs.length > 0 && (
-                        <select
+                        <NativeSelect
                           aria-label="选择处理执行"
                           value={inspectedRun?.id || ''}
                           onChange={(event) => {
@@ -844,7 +845,7 @@ export function WorkItemDetail({
                               {run.status}
                             </option>
                           ))}
-                        </select>
+                        </NativeSelect>
                       )}
                     </div>
                     {snapshot && work && inspectedRun ? (
@@ -929,7 +930,7 @@ export function WorkItemDetail({
                         }}
                       />
                     ) : (
-                      <p className="muted">
+                      <p className="meta-text">
                         尚未执行。处理定义、方法版本及输入可在上方检查。
                       </p>
                     )}
@@ -1042,7 +1043,7 @@ export function WorkItemDetail({
         onOpenChange={setDetails}
         title="工作项目标"
       >
-        <p className="muted">{item.key}</p>
+        <p className="meta-text">{item.key}</p>
         <p className="composition-goal-detail">{item.goal}</p>
         {item.summary && <p>{item.summary}</p>}
         {item.nextAction && <p>下一步：{item.nextAction}</p>}

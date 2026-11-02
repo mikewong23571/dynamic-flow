@@ -1,56 +1,50 @@
-# 正式 shadcn/ui 控件
+# 正式 UI 控件与组合合同
 
-本目录于 2026-09-20 从 shadcn 官方 `new-york-v4` registry 获取 Radix 组件源码（MIT），例如 [Tabs registry](https://ui.shadcn.com/r/styles/new-york-v4/tabs.json)。接入方式参考 [官方文档](https://ui.shadcn.com/docs)、[主题变量](https://ui.shadcn.com/docs/theming)。源码纳入仓库是 shadcn 的使用方式。
+本目录由 shadcn 官方 new-york-v4 registry（MIT）源码接入，结合现有 Geist 暗色实现。继续使用 Radix/Lucide/assistant-ui、React Flow 和 OpenUI；不引入第二套控件或页面 DSL。
 
-- `components.json` 指向正式 `src/client/styles.css`，`@/` 在 TypeScript 与 Vite 中均指向 `src/`。
-- 官方 `cn` 导入改为本项目 `client/lib/utils.ts`（clsx + tailwind-merge）；组件之间的 registry 路径改为正式路径；Dialog 关闭文本本地化。
-- 主题 token 对应现有 Geist 暗色。Tailwind 的主题与工具类作用于正式代码；不全局引入 preflight，以免重置尚未迁移的画布和编辑器。原生控件旧样式放在 `@layer base` 并保持低优先级 `:where(...:not([data-slot]))`，不会争夺这些组件的样式。
-- 层叠约定见 `styles.css` 顶部：业务布局在 `@layer components`（低于 Tailwind utilities，工具类可覆盖）；少量未分层规则是需要压过工具类的存量共享外观（`.muted`、`.field`、`button:disabled`）与 `.button`/`.badge`/`.modal` 兼容层覆盖，以及第三方（react-flow、assistant、markdown）覆盖。给 primitives 加样式时用工具类或 variant，不要再往未分层里叠；要覆盖未分层规则只能同样未分层，并知会本轮的分层边界。
-- `main.tsx` 在 App 之前导入全局 `styles.css`，先注册 `theme/base/components/utilities` 的层顺序。功能 CSS 可声明 `@layer components`，但不能抢在全局顺序之前注册，否则 `base` 会覆盖组件，已打开流水线等原生按钮会退回边框、白字与默认字号；管理页视觉验证需包含非空侧栏。
-- `../ui.tsx` 仅兼容原有业务 `primary/secondary/ghost/danger` 和 `Modal`、业务状态 Badge API，底层使用这里的 Button/Badge/Dialog；新页面直接使用 primitives。
-- `../Management.tsx` 只组合两页已重复的页头、搜索、分页、载入状态；列、请求和业务动作留在各页面。
-- NativeSelect 是官方样式的原生选择控件，键盘选择由浏览器提供；Tabs、Dialog、DropdownMenu 的焦点及键盘行为由 Radix 提供。简单列表用 Table，不引入通用数据表配置平台。
-- 下拉框使用不透明 `bg-background` 与 `text-foreground`，选项和分组使用 popover 色；`styles.css` 的 base 默认值同时覆盖普通 `<option>` / `<optgroup>`，禁用项保留 `GrayText`。HTML 提前声明暗色 `color-scheme`，与根主题一致；原生选中高亮和键盘交互交给浏览器，不用 `selection:*` 模拟选项高亮。
-- 控件边界统一使用 `--control-border`（Tailwind `border-input`），页面结构线及卡片边界继续使用 `--line` / `--line-strong`。侧栏小字使用提亮后的 `--subtle`。禁用按钮由既有未分层 `button:disabled` 规则统一使用中性背景和清晰灰字，不降低整体透明度；保留原生 disabled 行为。画布关系聚焦仅轻微淡化其它节点和连线，保持文字及关系可辨认。
-- popover.tsx / command.tsx 随 `../assistant-ui/model-selector.tsx`（vendor 自 @assistant-ui/model-selector registry）一同接入，command 依赖 cmdk；仅服务于模型切换器与后续同类受控 popover。
+## 样式层次与入口
 
-`../DeferredContent.tsx` 提供首次访问后保留状态的内容挂载，以及首次展开才创建正文的 details。隐藏标签页、工具记录和大材料用函数子元素延迟构建，避免隐藏正文仍解析 Markdown/递归生成集合。
+| 层次 | 入口 | 职责 |
+| --- | --- | --- |
+| 主题/reset | styles.css，main.tsx 先导入 | 14px 根字号、语义 token、最小继承和原生行为 |
+| 第三方 | styles.css 的 vendor 层 | React Flow 官方样式，低于本项目适配 |
+| 基础控件 | components/ui/ | 控件内部尺寸、状态、变体和原生/ref/asChild 合同 |
+| 应用组合 | ui.tsx、field.tsx、WorkspaceFrame、Management、Material* | 业务状态、任务浮层、字段/动作分组、公共构图 |
+| 业务呈现 | 各 features 的实际 CSS | 业务内容、SDK 适配、专业几何、局部排列 |
 
-旧 Spike 保留自己的 `tsconfig.spike.json` 别名，不能据旧样式修改正式控件。全项目剩余原生编辑控件尚未全部迁移；此次范围是两个管理页、共享按钮/弹窗以及函数式编辑使用的新控件。
+层顺序是 theme → base → vendor → components → utilities。自有规则必须在明确层中；禁止无层覆盖区和 components 内重复嵌套 components。className 是明确的公开覆盖入口；业务后代选择器不改基础控件内部字号、padding、高度、颜色、边框。结构排列可通过容器 gap、align-self、宽度约束表达。
 
-2026-10-22：工作项详情对话框、完成条件和集合搜索直接复用Input/Textarea/NativeSelect；复选框保留原生语义，轮次/环节保留业务导航布局，不为复用强行套Button。`--color-input`统一指向`--line-strong`。详情页头仅由WorkItemWorkspace.css负责，已移除WorkItems.css中冲突的旧页头规则；Tabs宽度/伸缩用组件className工具类明确指定。旧兼容层未做全仓迁移。Management.css仍是两种管理列表的布局入口；本次不新增通用页模板。
+App.css、Assistant.css、NodeInspector.css、ModelSettings.css、Results.css、WorkflowCanvas.css、WorkspaceDialogs.css 等由实际组件导入，styles.css 仅保留主题、reset 与少量共享组合；共享 Markdown 在 components/Prose.css。
 
-状态Badge追加约定：已知执行、业务、做法状态使用集中Lucide映射和无边框status-label；紧凑iconOnly保留title及sr-only状态文字。普通元信息标签同为中性无框，勿在页面再复制状态圆点/彩色pill。完成执行与业务结项沿用各自明确文本，不能仅以图标推断结项。
+## 控件
 
-运行依据复用现有Dialog并在打开时创建真实字段；环节要求复用DeferredDetails，归入既有输入与依据。信息需要独立查看时提供明确动作，不在主内容前堆说明段落或为每段说明新增工具栏。普通标签/错误/真实报告按实际用途保留。
+- Button 统一从 ui/button 导入。default 是主动作，outline 是次动作，ghost 是轻动作，danger 是描边危险动作；destructive 为明确实色破坏动作。ui.tsx 不再导出兼容 Button。
+- 控件标准高32px，紧凑28px，大尺寸40px；Button 使用 size=default/sm/lg 和对应 icon 尺寸。Input 使用 controlSize，NativeSelect 使用 size，均保留原生属性与 ref。根字号14px，因此不把 h-8 误当32px。
+- 输入控件的值使用 text-control=13px、font-normal；Field 标签权重不会传播到控件值。边界用 control-border，结构线用 line/line-strong。
+- NativeSelect 默认 layout=fill，包装和内部控件一起填满字段；工具栏/分页显式 layout=fit。wrapperClassName 是必要时的包装层布局接口。option/optgroup 始终不透明暗色，原生键盘与选中高亮交给浏览器。
+- Textarea 默认 fixed 字段高度、保留 rows 与原生内部滚动/resize。首页需求、source 编辑器、Composer 各有明确增长/滚动用途；不要通过全局 textarea 规则改变它们。
+- 状态使用同一焦点/禁用/invalid 语义。业务状态 Badge 仍在 ui.tsx，Lucide 图标和文字区分执行完成与业务结项；普通元信息不冒充状态。
 
-整页空状态使用 `empty-state` 类，状态标签可使用 `empty` 业务状态；两者不共享布局选择器，避免未定义流水线的标签套上空页面高度。
+## 共享组合
 
+- Field 管标签/控件/帮助/错误的内部间距，不带页面 margin。FormFields 明确组合 native fieldset，保留整组 disabled；不全局布局所有 fieldset。
+- FormActions 只管动作对齐与换行，外部间距由父容器 gap 管理。meta-text 是明确的辅助文字角色；text-muted-foreground 只选择颜色。
+- Modal 组合 DialogContent 的 application 布局：应用 CSS 管既有640/860/920/1040等任务尺寸，不被原语默认 sm:max-w-lg/grid/p-6 压住。MaterialDialog 继续直接用 Dialog 原语和自己的阅读尺寸。
+- 受控 Modal 打开时记录触发对象及任务范围；关闭/成功后返回有效触发对象，失效、禁用、inert、body/焦点guard等目标回到当前可见任务标题，再回 main。外部 onCloseAutoFocus 明确接管时优先。
+- ContentVisibility 控制已保留页面和 body Portal 是否实际可见，不清草稿或业务状态；DeferredContent/Details 按需创建长正文。
 
-2026-10-28：`../WorkspaceFrame.tsx` 与对应CSS是工作项和流水线实际共用的页面构图，仅组合页头、导航、主区和辅助侧栏；Tab/菜单/按钮/对话框继续使用本目录控件。侧栏拖拽、键盘调宽和宽度记忆由同一个WorkspaceSidePanel负责，Inspector与Assistant占用同一位置。业务数据和命令留在各features，不把此组件扩成通用页面DSL。首页复用创建/上传函数，成果导航来自声明；子项真空态不渲染搜索及零项分页。当前详情由CompositionWorkspace.css负责内容布局、WorkspaceFrame.css负责公共骨架，旧WorkItemWorkspace构图不再是当前基线。
+## 页面与 OpenUI
 
+WorkspaceFrame 统一页头、导航、主区和共享侧栏。展开偏好和拖拽宽度保留；1279px以下物理停靠，1440并排，1024冷打开默认底部Composer，按内容定高；data-preferred-mode保留展开意图，preferred side在窄屏effective dock使用有界高度，收起回preferred dock不保留空白。缩窗不会让side覆盖主要动作。业务数据和动作保留在features。
 
-2026-10-29：首页/工作项/流水线为Sidebar中的真实页面链接，带href与aria-current，保留Ctrl/Command点击及新标签语义；不再做页内Tab。详情内容继续复用原Radix Tabs。列表公共布局在Management.css的management-content，工作项和方法目录实际共用；页头使用WorkspaceHeading，创建动作归所属页面负责。首页居中输入区不规定列表宽度。
+OpenUIWorkspace.css 与正式 SDK 适配器共同定义：Workspace/View主区块24px，Section标题到内容12px，同组Stack16px，导航到内容16px。父容器拥有直接子项间距，内容无页面外 margin。Records/InputForm/Report复用现成表格/字段/产物；模型不写CSS补间距。横向组合由明确Stack声明，不按子组件类型猜测。
 
-工作项原生OpenUI适配位于features/openui：Records复用RecordTable的表格与分页；InputForm复用InputFields、Input/Textarea/NativeSelect，ActionButton复用Button，详情复用Modal。官方Renderer处理程序与原生绑定，不定义第二套控件或解释器。模态中的field要使用composition-input-dialog局部样式，避免未分层.modal .field覆盖组件层间距；详情的Markdown首尾段落不额外增加外边距。
+原生 checkbox/file、表头排序、业务步骤与结构入口按实际语义保留；动态面板宽度、列宽、连线与节点几何不是待清除的硬编码。
 
-界面安排编辑复用本目录Tabs、Input、Textarea、NativeSelect、Button及现有WorkspaceFrame。Textarea显式field-sizing-fixed及有限高度，具名声明定位在其内部滚动；NativeSelect的w-fit包装仅在.ui-arrangement作用域改为填满字段列，未改变全局原语。结构树使用普通受控按钮及业务标题，不引入新的树组件库或第三栏。
+## 验证与维护
 
+pnpm check:styles 检查明确层、语义颜色、退役入口和基础控件外观归属；不禁止所有数字、几何或原生标签。实现修改后运行 typecheck/build、相关业务路线，并在1440×900/1024×768实际操作看图。
 
-来源使用既有材料卡片外观及Button/DeferredContent/ArtifactPreview组合：多份页内展开，真实编号与业务字段摘要可并排阅读；单份直达。低频动作不平铺成编号按钮，也不为缩小面积一律塞入菜单。来源卡片沿主内容滚动，复用material-cards响应式列宽，不新增通用Card组件或独立布局系统。
+style-governance.spec.ts 对间距、尺寸/字体、缩窗命中、保存/关闭/失效触发的焦点以及稳定字段/任务弹窗截图作回归。截图变化必须实际看图后再更新，不以采集脚本通过或自动更新golden代替视觉判断。
 
-
-共享Modal透传Radix的onCloseAutoFocus；由外部节点触发而未包DialogTrigger的固定流水线预览显式恢复原按钮焦点。节点引用复用Button，固定定义预览复用Modal及WorkflowCanvas，不新增节点组件库、第二画布或编辑器。
-
-
-工作项call节点直接用既有Button呈现方法标题链接、进度实例入口，避免在节点内再嵌套整张应用卡片。IR原语文字和具名端口属于稳定图形语义；使用Lucide Workflow/FileOutput等现有图标表明应用及交付绑定，不引入新节点库或独立渲染规则。
-
-工作项会话入口复用DropdownMenu + RadioItem和现有Button，在Assistant标题栏呈现当前会话及新建图标；历史行只含标题、消息数/时间/回复状态。继续使用既有Composer和可拖侧栏，不新建会话导航栏。实际处理状态和固定过程入口由应用骨架呈现；历史成果保持固定来源，不将按钮适用记录数冒充业务待办。
-
-原生ViewNavigation复用Tabs/NativeSelect，navigation显式决定，不能按数量更换控件。Records详情复用Modal，记录ID单独描述；ActionButton复用原有Button。来源、完成依据、子项与方法入口是应用工具，位于真实过程检查的RecordTools更多菜单，与模型安排的业务动作分开。
-
-任务导航复用ObjectLink真实链接行为与既有外观。ContentVisibility表示保留内容当前是否实际可见，DeferredContent按Tab传播、Modal及菜单/Popover内容读取后控制Portal；父页面hidden不能单独隐藏body中的Dialog。此上下文只决定显示，不清表单、不改变业务状态，不作为新导航/布局DSL。方法对话框所属id由usePanels/WorkspaceDialogs固定，不能无提示随当前controller重绑其它对象。
-
-2026-11-02：动态工作面增加Stack/Disclosure/Dialog的原生OpenUI适配，Dialog复用既有Modal和局部composition-input-dialog样式，错误显示在打开的任务内。动作emphasis映射现有Button的default/outline/ghost；表格搜索与勾选由明确声明开启。工作项固定操作放在既有更多菜单，不额外建立工具栏。正式业务数据和动作语义仍由原服务承担。
-
-动态界面的排版由组件承担，不交给业务程序补margin。`features/openui/OpenUIWorkspace.css`是这些组合构件的样式入口：ViewNavigation负责导航到内容16px，Workspace/View负责主要区块24px，Section负责标题到内容12px，Section正文和Stack负责同组内容16px。Section子项默认纵向；需要横向组合时显式使用Stack，不根据Metric等子组件类型猜布局。表格/报告/详情/表单复用openui-content组织自身标题与内容，表单无页面外边距；标题和段落不再额外堆margin。共享Tabs的其它使用方保持原约定。
+历史取舍和本轮证据见 conductor/tracks/feature-frontend-style-governance_20261102；文档中的旧阶段记录不表示当前提交已重验。

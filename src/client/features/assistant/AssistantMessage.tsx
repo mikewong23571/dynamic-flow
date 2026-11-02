@@ -27,7 +27,8 @@ import type {
 } from '../../../shared/records';
 import { changeSummary } from '../../core/definition';
 import { active, short, statusNames } from '../../core/format';
-import { Badge, Button } from '../../components/ui';
+import { Badge } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { effectiveModelLabel } from '../settings/catalog-model';
 export const AssistantMessagesContext = createContext<{
   messages: ChatMessage[];
@@ -153,7 +154,7 @@ export function AssistantMessage() {
         Assistant
       </span>
       {message.effectiveModel && (
-        <div className="message-model muted">
+        <div className="message-model meta-text">
           {effectiveModelLabel(
             message.effectiveModel,
             configuration?.catalog ?? [],
@@ -213,6 +214,7 @@ export function AssistantMessage() {
           </div>
           {message.requestId && (
             <Button
+              size="sm"
               variant="ghost"
               aria-label="停止本次修改"
               disabled={message.status === 'stopping'}
@@ -235,6 +237,7 @@ export function AssistantMessage() {
               {changes.length > 2 ? `，另有 ${changes.length - 2} 项变化` : ''}
             </p>
             <Button
+              size="sm"
               variant="ghost"
               onClick={() => onShowCanvas(message.nodeId)}
             >
@@ -321,12 +324,17 @@ export function AssistantMessage() {
           </p>
           <div className="failure-actions">
             {original && (
-              <Button disabled={disabled} onClick={() => onRetry(original)}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={disabled}
+                onClick={() => onRetry(original)}
+              >
                 <RotateCcw size={13} />
                 重试本次修改
               </Button>
             )}
-            <Button variant="ghost" onClick={onOpenSettings}>
+            <Button size="sm" variant="ghost" onClick={onOpenSettings}>
               检查模型设置
             </Button>
           </div>

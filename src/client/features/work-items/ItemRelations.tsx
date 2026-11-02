@@ -147,7 +147,7 @@ export function ItemRelations({
     <section className="item-section item-relations" aria-label="子项与待办">
       {data && !empty && (
         <div className="children-task-toolbar">
-          <span className="muted">{data.total} 项</span>
+          <span className="meta-text">{data.total} 项</span>
           <div className="inline-group">
             <Button
               size="sm"
@@ -205,7 +205,9 @@ export function ItemRelations({
               aria-label="子项筛选"
             >
               <NativeSelect
-                className="h-[32px] min-w-32 py-1"
+                layout="fit"
+                size="sm"
+                className="min-w-32"
                 aria-label="子项视图"
                 value={location.view}
                 onChange={(e) =>
@@ -240,7 +242,9 @@ export function ItemRelations({
               )}
               {location.view === 'todo' && (
                 <NativeSelect
-                  className="h-[32px] min-w-32 py-1"
+                  layout="fit"
+                  size="sm"
+                  className="min-w-32"
                   aria-label="待办类型"
                   value={location.todo}
                   onChange={(e) => update({ todo: e.target.value, page: 1 })}

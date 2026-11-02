@@ -1,8 +1,10 @@
+import { FormActions, FormFields } from '../../components/ui/field';
 import {
   createContext,
   useContext,
   useEffect,
   useMemo,
+  useId,
   useRef,
   useState,
   type ReactNode,
@@ -88,6 +90,7 @@ function ActionRenderer({ props }: ComponentRenderProps) {
     trigger = useTriggerAction();
   return (
     <Button
+      className="self-start"
       variant={
         props.emphasis === 'primary'
           ? 'default'
@@ -191,14 +194,14 @@ function DataTableRenderer({ props, renderNode }: ComponentRenderProps) {
               <ArtifactValue value={inspection.value} />
             )}
             {inspection.source && (
-              <div className="modal-actions">
+              <FormActions>
                 <Button
                   variant="outline"
                   onClick={() => env.onSource(inspection.source!)}
                 >
                   查看来源
                 </Button>
-              </div>
+              </FormActions>
             )}
           </>
         )}
@@ -232,7 +235,7 @@ function RecordsRenderer({ props, renderNode }: ComponentRenderProps) {
     return (
       <section className="composition-records openui-content">
         {props.title ? <h2>{String(props.title)}</h2> : null}
-        <p className="muted">尚未绑定此项成果。</p>
+        <p className="meta-text">尚未绑定此项成果。</p>
       </section>
     );
   if (delivery.error) return <p role="alert">{delivery.error}</p>;
@@ -319,7 +322,7 @@ function RecordsRenderer({ props, renderNode }: ComponentRenderProps) {
             ) : (
               <ArtifactValue value={inspection.value} />
             )}
-            <div className="modal-actions">
+            <FormActions>
               {inspection.source && (
                 <Button
                   variant="outline"
@@ -339,7 +342,7 @@ function RecordsRenderer({ props, renderNode }: ComponentRenderProps) {
                   用此记录继续
                 </Button>
               )}
-            </div>
+            </FormActions>
           </>
         )}
       </Modal>
@@ -367,7 +370,7 @@ function ReportRenderer({ props }: ComponentRenderProps) {
           <DeliverySources delivery={delivery} onSource={env.onSource} />
         </>
       ) : (
-        <p className="muted">尚未绑定此项成果。</p>
+        <p className="meta-text">尚未绑定此项成果。</p>
       )}
     </section>
   );
@@ -429,10 +432,7 @@ function InputRenderer({ props, renderNode }: ComponentRenderProps) {
     <section className="declared-input-form openui-content">
       {props.title ? <h2>{String(props.title)}</h2> : null}
       {schema ? (
-        <fieldset
-          className="border-0 p-0 min-w-0"
-          disabled={env.readonly || env.busy}
-        >
+        <FormFields disabled={env.readonly || env.busy}>
           <InputFields
             schema={schema}
             value={input.value || {}}
@@ -443,7 +443,7 @@ function InputRenderer({ props, renderNode }: ComponentRenderProps) {
           />
           {env.formRevision?.(formKey) !== undefined &&
             env.formRevision(formKey) !== env.workspace.item.revision && (
-              <div role="status" className="muted">
+              <div role="status" className="meta-text">
                 工作项已变化，当前输入仍基于编辑开始时的版本。
                 <Button
                   type="button"
@@ -454,10 +454,10 @@ function InputRenderer({ props, renderNode }: ComponentRenderProps) {
                 </Button>
               </div>
             )}
-          <div className="modal-actions">{renderNode(props.submit)}</div>
-        </fieldset>
+          <FormActions>{renderNode(props.submit)}</FormActions>
+        </FormFields>
       ) : (
-        <p role="status" className="muted">
+        <p role="status" className="meta-text">
           当前方法尚未声明此输入合同，请让Assistant补齐。
         </p>
       )}
@@ -513,6 +513,31 @@ function NavigationRenderer({ props, renderNode }: ComponentRenderProps) {
     </Tabs>
   );
 }
+const SectionDepth = createContext(0);
+function SectionRenderer({ props, renderNode }: ComponentRenderProps) {
+  const depth = useContext(SectionDepth);
+  const headingId = useId();
+  const title = String(props.title || '').trim();
+  const headings = ['h2', 'h3', 'h4', 'h5', 'h6'] as const;
+  const Heading = headings[Math.min(depth, headings.length - 1)];
+  return (
+    <section
+      className="composition-section openui-section"
+      aria-labelledby={title ? headingId : undefined}
+      data-section-depth={depth}
+    >
+      {title && (
+        <Heading id={headingId} className="openui-section-heading">
+          {title}
+        </Heading>
+      )}
+      <SectionDepth.Provider value={depth + (title ? 1 : 0)}>
+        <div className="openui-stack">{renderNode(props.children)}</div>
+      </SectionDepth.Provider>
+    </section>
+  );
+}
+
 function DialogRenderer({ props, renderNode }: ComponentRenderProps) {
   const env = useEnvironment();
   const open = useStateField<boolean>(
@@ -531,7 +556,10 @@ function DialogRenderer({ props, renderNode }: ComponentRenderProps) {
           {env.error}
         </p>
       )}
-      {renderNode(props.children)}
+      {/* The task title starts a new outline, independent of the opener's nesting. */}
+      <SectionDepth.Provider value={1}>
+        {renderNode(props.children)}
+      </SectionDepth.Provider>
     </Modal>
   );
 }
@@ -557,12 +585,7 @@ const adapters: Record<string, (props: ComponentRenderProps) => ReactNode> = {
     </DeferredDetails>
   ),
   Dialog: DialogRenderer,
-  Section: ({ props, renderNode }) => (
-    <section className="composition-section openui-section">
-      {props.title ? <h2>{String(props.title)}</h2> : null}
-      <div className="openui-stack">{renderNode(props.children)}</div>
-    </section>
-  ),
+  Section: SectionRenderer,
   View: ({ props, renderNode }) => (
     <div className="openui-view">{renderNode(props.children)}</div>
   ),

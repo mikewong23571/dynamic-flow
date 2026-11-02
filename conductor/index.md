@@ -1,6 +1,8 @@
 # Project Context
 
-- [前端样式与组件层次治理](tracks/feature-frontend-style-governance_20261102/index.md)（2026-11-02：Phase 1–5 完成，独立审查通过；代码与持续预览在独立worktree/4336，原仓托管未部署；证据与交付边界见track）。
+- [前端样式与组件层次治理](tracks/feature-frontend-style-governance_20261102/index.md)（2026-11-02：Phase1–5完成、已合并master；实际验证与两尺寸证据见track）。
+
+- [OpenUI业务分组语义与默认边界](tracks/feature-openui-business-sections_20261102/index.md)（2026-11-02：Section/Stack合同与默认层次已实现并合并master；合并验证见track的integration.md）。
 
 - [唯一工作项流程、OpenUI正式框架与中间过程可见性](tracks/overall-design-workitem-openui_20261030/index.md)（2026-10-30：设计及实施计划已落地，代码/数据清理未开始；允许删除退役业务数据，不保留双轨兼容）。
 

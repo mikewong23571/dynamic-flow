@@ -53,6 +53,8 @@ export function ListToolbar({
         <div className="management-search-field">
           <Search size={15} aria-hidden="true" />
           <Input
+            controlSize="sm"
+            className="pl-[32px]"
             aria-label={label}
             placeholder={placeholder}
             value={value}
@@ -89,6 +91,7 @@ export function ListPagination({
       <label>
         每页
         <NativeSelect
+          layout="fit"
           size="sm"
           aria-label="每页条目数"
           value={pageSize}

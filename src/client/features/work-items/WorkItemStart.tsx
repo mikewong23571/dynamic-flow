@@ -73,7 +73,7 @@ export function WorkItemStart({
         }}
       >
         <Textarea
-          className="min-h-[88px] resize-y border-0 bg-transparent p-0 text-sm shadow-none outline-none focus-visible:ring-0 dark:bg-transparent"
+          className="min-h-[88px] resize-y border-0 bg-transparent p-0 text-[length:var(--text-body)] shadow-none outline-none focus-visible:ring-0 dark:bg-transparent"
           aria-label="工作需求"
           placeholder="描述你想完成的事情，带上已有材料…"
           rows={3}

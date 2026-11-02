@@ -25,4 +25,4 @@ OpenUI source是唯一当前可写界面。库schema/prompt和记录索引只读
 
 业务可见性纠偏：动态界面贯穿处理过程。read_inputs复用resolveItemInputs；read_children复用已有summary；read_output以本项明确Run和Definition读取阶段产物，与正式Delivery分开。Details/Metric/DataTable只组织真实数据，字段/标签由Assistant安排；现有Records/Report保留固定交付与业务动作。新验证入口tests/workitem-visibility.test.ts、tests/browser/workitem-visibility.spec.ts，实际模型质量与视觉边界见当前track。
 
-页面组合合同：Stack、Disclosure、Dialog与ActionButton的主次/禁用属性同源声明；@Each/数据函数使用官方SDK。组件的空title省略重复标题，表格selection与searchable显式开启工具。字段与对象身份仍来自实际数据及业务服务；详情/表单/布局组合不建立新的业务状态或领域页面。
+页面组合合同：Section显式声明业务组，名称/内容由作者决定，默认边界与嵌套可访问标题由Renderer负责；相关数据、文字、表单及本组动作可混排，Stack仅布局，不推断分组。空Section标题继续兼容。Stack、Disclosure、Dialog与ActionButton的主次/禁用属性同源声明；@Each/数据函数使用官方SDK。组件的空title省略重复标题，表格selection与searchable显式开启工具。字段与对象身份仍来自实际数据及业务服务；详情/表单/布局组合不建立新的业务状态或领域页面。

@@ -1,5 +1,7 @@
 # 前端设计与域内验证
 
+2026-11-02当前实现补充：控件/组合/层叠/响应式已按[治理track](../../conductor/tracks/feature-frontend-style-governance_20261102/index.md)收敛；当前合同以components/ui/README为准。下文带日期段落为历史取舍，旧未分层覆盖和窄桌面覆盖侧栏不再是当前实现。
+
 2026-09-20。正式客户端实现；用户最终视觉判断及 T1–T8 由完整应用 track 验收，本文不以截图代替接受。
 
 2026-10-29访问规范更新：[任务访问与导航合同](../../docs/task-navigation-contract.md)取代下文“每个详情保留返回入口”“返回靠页头左侧”的旧取舍。这些布局是历史/现有实现记录；新合同已在独立预览实施；代表设计、实际两尺寸画面与审查差距见[导航track](../../conductor/tracks/feature-task-navigation_20261029/index.md)。

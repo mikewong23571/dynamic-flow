@@ -6,12 +6,12 @@
   }
   .run-reference-fields dt {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--text-small);
     margin-bottom: 6px;
   }
   .run-reference-fields dd {
     margin: 0;
-    font-size: 13px;
+    font-size: var(--text-control);
     line-height: 1.8;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
@@ -31,7 +31,7 @@
   .item-retained-artifact {
     padding: 24px;
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: var(--radius-card);
     background: var(--surface);
   }
   .item-steps {
@@ -46,7 +46,7 @@
   .item-steps button {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-inline);
     flex: 0 0 auto;
     max-width: 260px;
     min-height: 38px;
@@ -58,7 +58,7 @@
     color: var(--muted);
     cursor: pointer;
     text-align: left;
-    font-size: 13px;
+    font-size: var(--text-control);
   }
   .item-steps button[aria-current='step'] {
     border-bottom-color: var(--accent);
@@ -91,10 +91,10 @@
   }
   .run-instance-option-heading {
     display: flex;
-    gap: 12px;
+    gap: var(--space-group);
     align-items: center;
     flex-wrap: wrap;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .item-result-heading {
     display: flex;
@@ -105,7 +105,7 @@
   }
   .item-result-heading h3 {
     margin: 6px 0;
-    font-size: 15px;
+    font-size: var(--text-section);
     font-weight: 500;
   }
   .item-artifact-tabs {
@@ -119,13 +119,13 @@
   }
   .item-source-links {
     display: flex;
-    gap: 8px;
+    gap: var(--space-inline);
     flex-wrap: wrap;
     margin: 12px 0;
   }
   .item-artifact-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--space-inline);
     flex-wrap: wrap;
     align-items: center;
   }
@@ -134,7 +134,7 @@
   .item-tool-record {
     padding: 12px 0;
     border-bottom: 1px solid var(--line);
-    font-size: 12px;
+    font-size: var(--text-small);
     min-width: 0;
   }
   .item-output-entry summary,
@@ -149,13 +149,13 @@
   }
   .item-history-round > .item-source-links {
     align-items: center;
-    font-size: 11px;
+    font-size: var(--text-meta);
   }
   .item-artifact-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-group);
     margin-bottom: 12px;
     flex-wrap: wrap;
   }
@@ -174,7 +174,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 24px;
+    gap: var(--space-section);
     margin-bottom: 16px;
     flex-wrap: wrap;
   }
@@ -188,14 +188,7 @@
     .item-retained-artifact {
       padding: 20px;
     }
-    .item-artifact-actions .button {
-      font-size: 11px;
-      padding-inline: 8px;
-    }
   }
-}
-
-@layer components {
   .run-source-instances {
     list-style: none;
     padding: 0;
@@ -210,26 +203,20 @@
   .run-source-instances .artifact-choice-preview {
     margin-top: 8px;
   }
-}
-
-@layer components {
   .item-instance-select {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-inline);
     flex-wrap: wrap;
   }
-}
-
-@layer components {
   .run-source-trail {
     display: flex;
-    gap: 6px;
+    gap: var(--space-control);
     align-items: center;
     flex-wrap: wrap;
     border-bottom: 1px solid var(--line);
     padding: 6px 0 10px;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--muted);
   }
   .run-source-trail > span {
@@ -241,7 +228,7 @@
     align-items: center;
     gap: 8px 14px;
     padding: 14px 0;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--muted);
   }
   .run-inspection-identity strong {

@@ -1,7 +1,8 @@
+import { NativeSelect } from '../components/ui/native-select';
 import { Check, Keyboard, Play, Save } from 'lucide-react';
 import type { Work } from '../../shared/records';
 import { active, short, workTitle } from '../core/format';
-import { Button } from '../components/ui';
+import { Button } from '../components/ui/button';
 import { WorkspaceHeading } from '../components/WorkspaceFrame';
 import type { ReactNode } from 'react';
 
@@ -54,13 +55,19 @@ export function WorkspaceHeader({
           {dirty ? (
             <>
               <Button
+                size="sm"
                 variant="ghost"
                 onClick={discardLocalChanges}
                 disabled={busy}
               >
                 放弃修改
               </Button>
-              <Button onClick={() => void saveDefinition()} disabled={busy}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void saveDefinition()}
+                disabled={busy}
+              >
                 <Save size={15} />
                 保存修改
               </Button>
@@ -71,7 +78,9 @@ export function WorkspaceHeader({
               已保存
             </span>
           )}
-          <select
+          <NativeSelect
+            size="sm"
+            layout="fit"
             aria-label="运行使用的做法"
             value={runDefinition}
             onChange={(e) =>
@@ -82,9 +91,10 @@ export function WorkspaceHeader({
               {work.adoptedId ? '采用的做法' : '当前草稿'}
             </option>
             {work.draftId && <option value="draft">候选草稿</option>}
-          </select>
+          </NativeSelect>
           <Button
-            variant="primary"
+            size="sm"
+            variant="default"
             className="invoke-trigger"
             aria-label="直接输入运行"
             disabled={!selectedDefinitionId || busy}
@@ -94,7 +104,8 @@ export function WorkspaceHeader({
             直接输入
           </Button>
           <Button
-            variant="secondary"
+            size="sm"
+            variant="outline"
             disabled={
               !selectedDefinitionId ||
               work.runs.some((r) => active(r.status)) ||

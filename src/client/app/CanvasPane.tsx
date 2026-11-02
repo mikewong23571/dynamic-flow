@@ -1,3 +1,4 @@
+import { NativeSelect } from '../components/ui/native-select';
 import { ArrowRight, Check, Code, Files, Plus, Sparkles } from 'lucide-react';
 import type {
   Definition,
@@ -9,7 +10,8 @@ import type {
 } from '../../shared/records';
 import { inputPorts } from '../core/inputs';
 import { active, errorText } from '../core/format';
-import { Button, Empty } from '../components/ui';
+import { Empty } from '../components/ui';
+import { Button } from '../components/ui/button';
 import { WorkflowCanvas } from '../features/canvas/WorkflowCanvas';
 
 /** 流程页签：添加步骤、查看 JS、画布或空状态，以及需要修正的输入。 */
@@ -54,7 +56,9 @@ export function CanvasPane({
     <>
       <div className="canvas-toolbar">
         <div className="inline-group">
-          <select
+          <NativeSelect
+            size="sm"
+            layout="fit"
             aria-label="新步骤类型"
             value={addKind}
             onChange={(e) => setAddKind(e.target.value as FlowNode['kind'])}
@@ -67,14 +71,15 @@ export function CanvasPane({
             <option value="wait">等待事件</option>
             <option value="create-items">建立子项</option>
             <option value="milestone">业务里程碑</option>
-          </select>
-          <Button onClick={addNode}>
+          </NativeSelect>
+          <Button variant="outline" size="sm" onClick={addNode}>
             <Plus size={15} />
             添加步骤
           </Button>
         </div>
         <div className="inline-group">
           <Button
+            size="sm"
             variant="ghost"
             onClick={() => {
               setSelectedNode(undefined);
@@ -84,6 +89,7 @@ export function CanvasPane({
             问题与依据
           </Button>
           <Button
+            size="sm"
             className="view-code"
             variant="ghost"
             onClick={() => setCodeOpen(true)}
@@ -92,6 +98,8 @@ export function CanvasPane({
             查看 JS
           </Button>
           <Button
+            variant="outline"
+            size="sm"
             onClick={() => {
               setSelectedNode(undefined);
               setPanel('assistant');
@@ -146,7 +154,8 @@ export function CanvasPane({
             </span>
           </div>
           <Button
-            variant="primary"
+            size="sm"
+            variant="default"
             onClick={() => void generate()}
             disabled={busy || work.messages.some((m) => active(m.status))}
           >

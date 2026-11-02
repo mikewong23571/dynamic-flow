@@ -1,3 +1,5 @@
+import { FormActions } from '../../../components/ui/field';
+import { Field } from '../../../components/ui/field';
 import { useEffect, useRef, useState } from 'react';
 import type {
   CompletionCriterion,
@@ -114,7 +116,7 @@ export function CompositionAcceptanceTask({
           </p>
         )}
         {!!childCounts?.total && (
-          <p className="muted">
+          <p className="meta-text">
             范围内子项已结项 {childCounts.completed}/{childCounts.total}
             <Button variant="ghost" onClick={onChildren}>
               检查子项
@@ -165,14 +167,14 @@ export function CompositionAcceptanceTask({
             attempt(() => reopen());
           }}
         >
-          <label className="field">
+          <Field>
             重开原因
             <Textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               required
             />
-          </label>
+          </Field>
           {error && (
             <p role="alert" className="inline-error">
               {error}
@@ -193,11 +195,11 @@ export function CompositionAcceptanceTask({
               </Button>
             </div>
           )}
-          <div className="modal-actions">
+          <FormActions>
             <Button variant="default" disabled={busy}>
               重新打开
             </Button>
-          </div>
+          </FormActions>
         </form>
       </Modal>
     </>

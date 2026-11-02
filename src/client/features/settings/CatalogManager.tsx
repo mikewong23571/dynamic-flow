@@ -1,3 +1,7 @@
+import { NativeSelect } from '../../components/ui/native-select';
+import { Input } from '../../components/ui/input';
+import { FormActions } from '../../components/ui/field';
+import { Field } from '../../components/ui/field';
 import { useEffect, useState } from 'react';
 import {
   Check,
@@ -15,7 +19,8 @@ import type {
 import { api } from '../../core/api';
 import { runAction } from '../../core/action';
 import { errorText } from '../../core/format';
-import { Badge, Button } from '../../components/ui';
+import { Badge } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import {
   effortLabels,
   efforts,
@@ -203,9 +208,9 @@ export function CatalogManager({
           <strong>{title}</strong>
         </header>
         <div className="settings-grid">
-          <label className="field">
+          <Field>
             Provider 名称
-            <input
+            <Input
               required
               aria-label="Provider 名称"
               value={provider.name}
@@ -213,10 +218,10 @@ export function CatalogManager({
               onChange={(e) => updateProvider({ name: e.target.value.trim() })}
               placeholder="例如 acme"
             />
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             协议类型
-            <select
+            <NativeSelect
               aria-label="协议类型"
               value={provider.type}
               onChange={(e) =>
@@ -230,13 +235,13 @@ export function CatalogManager({
                   {label}
                 </option>
               ))}
-            </select>
-          </label>
+            </NativeSelect>
+          </Field>
         </div>
         <div className="settings-row">
-          <label className="field">
+          <Field>
             服务地址
-            <input
+            <Input
               type="url"
               required
               aria-label="服务地址"
@@ -244,17 +249,17 @@ export function CatalogManager({
               onChange={(e) => updateProvider({ baseUrl: e.target.value })}
               placeholder="https://api.example.com"
             />
-          </label>
+          </Field>
         </div>
         <div className="settings-row">
-          <label className="field">
+          <Field>
             <span>
               API 密钥{' '}
               <span className="field-note">
                 {provider.isNew ? '必填' : '留空沿用'}
               </span>
             </span>
-            <input
+            <Input
               type="password"
               aria-label="API 密钥"
               autoComplete="new-password"
@@ -265,11 +270,12 @@ export function CatalogManager({
                 provider.isNew ? '输入 API 密钥' : '输入新密钥以替换'
               }
             />
-          </label>
+          </Field>
         </div>
         <div className="settings-divider">
           自定义请求头（custom_headers）
           <Button
+            size="sm"
             type="button"
             variant="ghost"
             onClick={() =>
@@ -285,9 +291,9 @@ export function CatalogManager({
         </div>
         {provider.headers.map((row, index) => (
           <div className="settings-grid settings-grid-headers" key={index}>
-            <label className="field">
+            <Field>
               请求头名称
-              <input
+              <Input
                 aria-label={`请求头名称 ${index + 1}`}
                 value={row.key}
                 onChange={(e) =>
@@ -300,10 +306,10 @@ export function CatalogManager({
                 }
                 placeholder="X-Custom-Header"
               />
-            </label>
-            <label className="field">
+            </Field>
+            <Field>
               请求头内容
-              <input
+              <Input
                 aria-label={`请求头内容 ${index + 1}`}
                 value={row.value}
                 onChange={(e) =>
@@ -315,9 +321,10 @@ export function CatalogManager({
                   })
                 }
               />
-            </label>
+            </Field>
             <div className="settings-grid-action">
               <Button
+                size="sm"
                 type="button"
                 variant="ghost"
                 aria-label={`移除请求头 ${index + 1}`}
@@ -336,6 +343,7 @@ export function CatalogManager({
         <div className="settings-divider">
           模型
           <Button
+            size="sm"
             type="button"
             variant="ghost"
             onClick={() =>
@@ -359,6 +367,7 @@ export function CatalogManager({
             <div className="catalog-model-editor" key={index}>
               <div className="catalog-model-editor-head">
                 <Button
+                  size="sm"
                   type="button"
                   variant="ghost"
                   aria-label={`切换模型展开 ${index + 1}`}
@@ -375,10 +384,11 @@ export function CatalogManager({
                 <span className="catalog-model-editor-title">
                   <strong>{title}</strong>{' '}
                   {model.displayName && (
-                    <span className="muted">{model.displayName}</span>
+                    <span className="meta-text">{model.displayName}</span>
                   )}
                 </span>
                 <Button
+                  size="sm"
                   type="button"
                   variant="ghost"
                   aria-label={`移除模型 ${index + 1}`}
@@ -399,9 +409,9 @@ export function CatalogManager({
               {!model.collapsed && (
                 <>
                   <div className="settings-grid">
-                    <label className="field">
+                    <Field>
                       别名
-                      <input
+                      <Input
                         required
                         aria-label={`模型别名 ${index + 1}`}
                         value={model.alias}
@@ -411,10 +421,10 @@ export function CatalogManager({
                         }
                         placeholder="provider/模型"
                       />
-                    </label>
-                    <label className="field">
+                    </Field>
+                    <Field>
                       模型 ID
-                      <input
+                      <Input
                         required
                         aria-label={`模型 ID ${index + 1}`}
                         value={model.model}
@@ -423,12 +433,12 @@ export function CatalogManager({
                         }
                         placeholder="发给服务的模型名"
                       />
-                    </label>
+                    </Field>
                   </div>
                   <div className="settings-grid">
-                    <label className="field">
+                    <Field>
                       显示名
-                      <input
+                      <Input
                         aria-label={`显示名 ${index + 1}`}
                         value={model.displayName}
                         onChange={(e) =>
@@ -436,10 +446,10 @@ export function CatalogManager({
                         }
                         placeholder="留空用模型 ID"
                       />
-                    </label>
-                    <label className="field">
+                    </Field>
+                    <Field>
                       上下文窗口
-                      <input
+                      <Input
                         type="number"
                         required
                         min="8192"
@@ -453,7 +463,7 @@ export function CatalogManager({
                           })
                         }
                       />
-                    </label>
+                    </Field>
                   </div>
                   <div className="settings-row">
                     <div className="field">
@@ -495,9 +505,9 @@ export function CatalogManager({
                     </div>
                   </div>
                   <div className="settings-row">
-                    <label className="field">
+                    <Field>
                       Default effort
-                      <select
+                      <NativeSelect
                         aria-label={`Default effort ${index + 1}`}
                         value={model.defaultEffort}
                         disabled={!model.supportedEfforts.length}
@@ -521,8 +531,8 @@ export function CatalogManager({
                             {effortLabels[effort]}
                           </option>
                         ))}
-                      </select>
-                    </label>
+                      </NativeSelect>
+                    </Field>
                   </div>
                 </>
               )}
@@ -534,11 +544,16 @@ export function CatalogManager({
             {error}
           </p>
         )}
-        <div className="modal-actions">
-          <Button type="button" onClick={() => setEditing(null)}>
+        <FormActions>
+          <Button
+            variant="outline"
+            size="sm"
+            type="button"
+            onClick={() => setEditing(null)}
+          >
             取消
           </Button>
-          <Button type="submit" variant="primary" disabled={busy}>
+          <Button size="sm" type="submit" variant="default" disabled={busy}>
             {busy ? (
               <LoaderCircle size={15} className="spin" />
             ) : (
@@ -546,7 +561,7 @@ export function CatalogManager({
             )}
             保存目录
           </Button>
-        </div>
+        </FormActions>
       </form>
     );
   }
@@ -556,6 +571,7 @@ export function CatalogManager({
       <div className="settings-divider">
         Provider 与模型
         <Button
+          size="sm"
           variant="ghost"
           disabled={!!editing}
           onClick={() => openEditor(null)}
@@ -565,7 +581,7 @@ export function CatalogManager({
         </Button>
       </div>
       {providers.length === 0 && !editing && (
-        <p className="muted">
+        <p className="meta-text">
           还没有模型目录。新增 Provider 后可在默认模型和对话中选择。
         </p>
       )}
@@ -587,7 +603,7 @@ export function CatalogManager({
             <header>
               <strong>{provider.name}</strong>
               <span
-                className="muted catalog-provider-url"
+                className="meta-text catalog-provider-url"
                 title={provider.baseUrl}
               >
                 {providerTypes[provider.type]} · {provider.baseUrl}
@@ -602,6 +618,7 @@ export function CatalogManager({
               {serverProvider?.headersConfigured && <Badge>自定义请求头</Badge>}
               <span className="catalog-provider-actions">
                 <Button
+                  size="sm"
                   variant="ghost"
                   disabled={!!editing}
                   onClick={() => openEditor(provider.name)}
@@ -610,6 +627,7 @@ export function CatalogManager({
                 </Button>
                 {confirming === `provider:${provider.name}` ? (
                   <Button
+                    size="sm"
                     variant="ghost"
                     disabled={busy}
                     onClick={() => void removeProvider(provider.name)}
@@ -618,6 +636,7 @@ export function CatalogManager({
                   </Button>
                 ) : (
                   <Button
+                    size="sm"
                     variant="ghost"
                     disabled={busy || !!editing}
                     onClick={() => setConfirming(`provider:${provider.name}`)}
@@ -631,13 +650,13 @@ export function CatalogManager({
               <div className="catalog-model" key={entry.alias}>
                 <span>
                   <strong>{entry.displayName}</strong>{' '}
-                  <span className="muted">
+                  <span className="meta-text">
                     {entry.alias} · {entry.model}
                   </span>
                 </span>
                 <span className="catalog-model-actions">
                   {tests[entry.alias] === 'running' ? (
-                    <span className="muted">
+                    <span className="meta-text">
                       <LoaderCircle size={13} className="spin" /> 测试中…
                     </span>
                   ) : tests[entry.alias] ? (
@@ -657,6 +676,7 @@ export function CatalogManager({
                     )
                   ) : null}
                   <Button
+                    size="sm"
                     variant="ghost"
                     aria-label={`测试 ${entry.alias}`}
                     disabled={busy || tests[entry.alias] === 'running' || dirty}
@@ -667,6 +687,7 @@ export function CatalogManager({
                   </Button>
                   {confirming === `model:${entry.alias}` ? (
                     <Button
+                      size="sm"
                       variant="ghost"
                       disabled={busy}
                       onClick={() => void removeModel(entry.alias)}
@@ -675,6 +696,7 @@ export function CatalogManager({
                     </Button>
                   ) : (
                     <Button
+                      size="sm"
                       variant="ghost"
                       disabled={busy || !!editing}
                       onClick={() => setConfirming(`model:${entry.alias}`)}
@@ -690,7 +712,7 @@ export function CatalogManager({
       })}
       {editing?.original === '' && providerEditor('新增 Provider')}
       {dirty && !editing && (
-        <p className="muted">有未保存的目录修改；保存后才能测试连接。</p>
+        <p className="meta-text">有未保存的目录修改；保存后才能测试连接。</p>
       )}
       {error && !editing && (
         <p className="inline-error" role="alert">

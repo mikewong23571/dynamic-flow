@@ -11,7 +11,7 @@ import type {
 } from '../../shared/records';
 import { inputPorts } from '../core/inputs';
 import { short } from '../core/format';
-import { Button } from '../components/ui';
+import { Button } from '../components/ui/button';
 import { NodeInspector } from '../features/inspector/NodeInspector';
 import { Assistant } from '../features/assistant/Assistant';
 import { WorkspaceSidePanel } from '../components/WorkspaceFrame';
@@ -112,11 +112,12 @@ export function ContextPanel({
           />
           {selected && (
             <div className="panel-bottom">
-              <span className="muted">
+              <span className="meta-text">
                 {selected.label} · 候选 {short(draftId)}
               </span>
               <Button
-                variant="primary"
+                size="sm"
+                variant="default"
                 disabled={dirty || !draftId}
                 onClick={() => {
                   setTrialOpen(true);

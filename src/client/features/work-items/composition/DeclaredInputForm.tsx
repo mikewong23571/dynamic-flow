@@ -1,3 +1,5 @@
+import { FormActions } from '../../../components/ui/field';
+import { Field } from '../../../components/ui/field';
 import { useMemo, useState } from 'react';
 import Ajv from 'ajv';
 import type {
@@ -53,7 +55,7 @@ export function InputFields({
   const label = String(schema.title || prefix || '输入内容');
   const choices = Array.isArray(schema.enum) ? schema.enum : undefined;
   return (
-    <label className="field">
+    <Field>
       {label}
       {choices ? (
         <NativeSelect
@@ -126,7 +128,7 @@ export function InputFields({
           }
         />
       )}
-    </label>
+    </Field>
   );
 }
 export function DeclaredInputForm({
@@ -201,7 +203,7 @@ export function DeclaredInputForm({
             .catch((reason) => setError(errorText(reason)));
         }}
       >
-        <label className="field">
+        <Field>
           输入用途
           <NativeSelect
             value={port}
@@ -217,11 +219,11 @@ export function DeclaredInputForm({
               </option>
             ))}
           </NativeSelect>
-        </label>
+        </Field>
         {schema ? (
           <InputFields schema={schema} value={value} onChange={setValue} />
         ) : (
-          <label className="field">
+          <Field>
             输入内容
             <Textarea
               aria-label="输入内容"
@@ -229,21 +231,21 @@ export function DeclaredInputForm({
               onChange={(event) => setValue(event.target.value)}
               rows={5}
             />
-          </label>
+          </Field>
         )}
         {error && (
           <p className="inline-error" role="alert">
             {error}
           </p>
         )}
-        <div className="modal-actions">
+        <FormActions>
           <Button variant="outline" type="button" onClick={onClose}>
             取消
           </Button>
           <Button variant="default" disabled={busy}>
             保存本轮输入
           </Button>
-        </div>
+        </FormActions>
       </form>
     </Modal>
   );

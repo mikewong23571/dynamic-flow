@@ -50,7 +50,7 @@ export function CompositionFlowTask({
       {(hasFlow || editing) && (
         <div className="composition-flow-toolbar">
           {!run && hasFlow && (
-            <span className="muted">
+            <span className="meta-text">
               {planning
                 ? '正在完善规划'
                 : dirty

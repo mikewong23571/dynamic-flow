@@ -9,11 +9,11 @@
   .material-card {
     display: grid;
     grid-template-rows: 36px minmax(40px, 1fr) auto;
-    gap: 8px;
+    gap: var(--space-inline);
     min-width: 0;
     padding: 14px;
     border: 1px solid var(--line-strong);
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     background: var(--surface);
   }
   .material-card-heading {
@@ -35,7 +35,7 @@
     flex: 1;
     min-width: 0;
     overflow-wrap: anywhere;
-    font-size: 13px;
+    font-size: var(--text-control);
     font-weight: 500;
     line-height: 18px;
     display: -webkit-box;
@@ -47,12 +47,12 @@
   .material-card-heading > code {
     flex: none;
     color: var(--muted);
-    font-size: 11px;
+    font-size: var(--text-meta);
   }
   .material-card-summary {
     margin: 0;
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--text-small);
     line-height: 1.7;
     overflow-wrap: anywhere;
     display: -webkit-box;
@@ -63,11 +63,11 @@
   .material-card-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--space-inline);
   }
   .material-history-materials {
     margin: 12px 0;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .material-history-materials > summary {
     cursor: pointer;

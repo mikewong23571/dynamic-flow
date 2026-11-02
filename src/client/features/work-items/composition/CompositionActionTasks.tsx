@@ -1,3 +1,5 @@
+import { FormActions } from '../../../components/ui/field';
+import { Field } from '../../../components/ui/field';
 import { useState } from 'react';
 import type {
   ItemWorkspace,
@@ -45,7 +47,7 @@ export function ContinueItemRecords({
     >
       <div className="stack">
         <strong>{selection.recordIds.length} 条记录</strong>
-        <label className="field">
+        <Field>
           接下来使用的方法
           <NativeSelect
             aria-label="后续处理方法"
@@ -70,9 +72,9 @@ export function ContinueItemRecords({
               </option>
             ))}
           </NativeSelect>
-        </label>
+        </Field>
         {chosen && chosen.inputs.length > 1 && (
-          <label className="field">
+          <Field>
             接收所选记录
             <NativeSelect
               value={inputPort}
@@ -84,14 +86,14 @@ export function ContinueItemRecords({
                 </option>
               ))}
             </NativeSelect>
-          </label>
+          </Field>
         )}
         {error && (
           <p role="alert" className="inline-error">
             {error}
           </p>
         )}
-        <div className="modal-actions">
+        <FormActions>
           <Button variant="outline" onClick={onClose}>
             取消
           </Button>
@@ -116,7 +118,7 @@ export function ContinueItemRecords({
           >
             准备本轮输入
           </Button>
-        </div>
+        </FormActions>
       </div>
     </Modal>
   );
@@ -152,27 +154,27 @@ export function SaveItemMethod({
             .catch((e) => setError(errorText(e)));
         }}
       >
-        <label className="field">
+        <Field>
           方法名称
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
-        </label>
+        </Field>
         {error && (
           <p role="alert" className="inline-error">
             {error}
           </p>
         )}
-        <div className="modal-actions">
+        <FormActions>
           <Button variant="outline" type="button" onClick={onClose}>
             取消
           </Button>
           <Button variant="default" disabled={busy}>
             保存方法
           </Button>
-        </div>
+        </FormActions>
       </form>
     </Modal>
   );
@@ -220,32 +222,32 @@ export function SubmitItemEvent({
             .finally(() => setBusy(false));
         }}
       >
-        <label className="field">
+        <Field>
           事件
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
-        </label>
-        <label className="field">
+        </Field>
+        <Field>
           补充内容
           <Textarea
             value={payload}
             onChange={(e) => setPayload(e.target.value)}
             rows={3}
           />
-        </label>
+        </Field>
         {error && (
           <p role="alert" className="inline-error">
             {error}
           </p>
         )}
-        <div className="modal-actions">
+        <FormActions>
           <Button variant="default" disabled={busy}>
             提交事件
           </Button>
-        </div>
+        </FormActions>
       </form>
     </Modal>
   );
@@ -274,7 +276,7 @@ export function CiteItemDelivery({
       }}
       title="加入完成依据"
     >
-      <label className="field">
+      <Field>
         完成条件
         <NativeSelect
           value={criterionId}
@@ -287,7 +289,7 @@ export function CiteItemDelivery({
             </option>
           ))}
         </NativeSelect>
-      </label>
+      </Field>
       {!item.criteria.length && (
         <Button variant="outline" onClick={onConfigure}>
           设置完成条件
@@ -298,7 +300,7 @@ export function CiteItemDelivery({
           {error}
         </p>
       )}
-      <div className="modal-actions">
+      <FormActions>
         <Button
           disabled={busy || !criterionId}
           variant="default"
@@ -332,7 +334,7 @@ export function CiteItemDelivery({
         >
           加入依据
         </Button>
-      </div>
+      </FormActions>
     </Modal>
   );
 }

@@ -1,3 +1,5 @@
+import { FormActions } from '../../components/ui/field';
+import { Field } from '../../components/ui/field';
 import { useMemo, useState, type FormEvent } from 'react';
 import type {
   CreateWorkItem,
@@ -139,7 +141,7 @@ export function CreateItemDialog({
       className="composition-create-dialog"
     >
       <form className="stack" onSubmit={submit}>
-        <label className="field">
+        <Field>
           标题
           <Input
             required
@@ -148,8 +150,8 @@ export function CreateItemDialog({
             disabled={!!created}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
           />
-        </label>
-        <label className="field">
+        </Field>
+        <Field>
           目标
           <Textarea
             required
@@ -159,8 +161,8 @@ export function CreateItemDialog({
             disabled={!!created}
             onChange={(e) => setForm({ ...form, goal: e.target.value })}
           />
-        </label>
-        <label className="field">
+        </Field>
+        <Field>
           文件
           <Input
             type="file"
@@ -168,11 +170,11 @@ export function CreateItemDialog({
             aria-label="初始文件"
             onChange={(e) => setFiles(Array.from(e.target.files || []))}
           />
-        </label>
+        </Field>
         {!!files.length && (
-          <p className="muted">{files.map((f) => f.name).join('、')}</p>
+          <p className="meta-text">{files.map((f) => f.name).join('、')}</p>
         )}
-        <label className="field">
+        <Field>
           材料
           <Textarea
             rows={2}
@@ -181,9 +183,9 @@ export function CreateItemDialog({
             disabled={!!created}
             onChange={(e) => setForm({ ...form, materials: e.target.value })}
           />
-        </label>
+        </Field>
         {initialInput && (
-          <p className="muted">将带入所选成果：{initialInput.label}</p>
+          <p className="meta-text">将带入所选成果：{initialInput.label}</p>
         )}
         {parent &&
           !!(parent.materials.length || currentReceived(parent).length) && (
@@ -228,7 +230,7 @@ export function CreateItemDialog({
         <details>
           <summary>编号、方法与完成条件</summary>
           <div className="stack composition-create-options">
-            <label className="field">
+            <Field>
               业务编号
               <Input
                 placeholder="自动生成"
@@ -236,8 +238,8 @@ export function CreateItemDialog({
                 disabled={!!created}
                 onChange={(e) => setForm({ ...form, key: e.target.value })}
               />
-            </label>
-            <label className="field">
+            </Field>
+            <Field>
               处理方法
               <NativeSelect
                 value={form.methodId}
@@ -251,8 +253,8 @@ export function CreateItemDialog({
                   </option>
                 ))}
               </NativeSelect>
-            </label>
-            <label className="field">
+            </Field>
+            <Field>
               完成条件（每行一项）
               <Textarea
                 rows={2}
@@ -260,7 +262,7 @@ export function CreateItemDialog({
                 disabled={!!created}
                 onChange={(e) => setForm({ ...form, criteria: e.target.value })}
               />
-            </label>
+            </Field>
           </div>
         </details>
         {!!ancestors.length && (
@@ -283,7 +285,7 @@ export function CreateItemDialog({
             {error}
           </p>
         )}
-        <div className="modal-actions">
+        <FormActions>
           <Button
             variant="outline"
             type="button"
@@ -300,7 +302,7 @@ export function CreateItemDialog({
                   ? '建立子项'
                   : '创建工作项'}
           </Button>
-        </div>
+        </FormActions>
       </form>
     </Modal>
   );

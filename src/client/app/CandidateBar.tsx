@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react';
 import type { Snapshot } from '../../shared/records';
-import { Button } from '../components/ui';
+import { Button } from '../components/ui/button';
 
 /** 候选底栏：候选做法的变化摘要与采用/放弃。 */
 export function CandidateBar({
@@ -28,6 +28,7 @@ export function CandidateBar({
       </div>
       <div>
         <Button
+          size="sm"
           variant="ghost"
           disabled={busy || dirty}
           onClick={() => void perform('discardDraft')}
@@ -35,6 +36,8 @@ export function CandidateBar({
           放弃候选
         </Button>
         <Button
+          variant="outline"
+          size="sm"
           disabled={busy || dirty}
           onClick={() => void perform('adopt', { definitionId: draftId })}
         >

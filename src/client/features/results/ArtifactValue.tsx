@@ -3,7 +3,7 @@ import { memo, useMemo, useState } from 'react';
 import type { Json } from '../../../shared/records';
 import { Value } from './Value';
 import { Input } from '../../components/ui/input';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import {
   Table,
   TableBody,
@@ -41,6 +41,7 @@ export const ArtifactValue = memo(function ArtifactValue({
       {!view && (
         <div className="artifact-value-mode">
           <Button
+            size="sm"
             variant="ghost"
             aria-pressed={!raw}
             onClick={() => setRaw(false)}
@@ -48,6 +49,7 @@ export const ArtifactValue = memo(function ArtifactValue({
             查看内容
           </Button>
           <Button
+            size="sm"
             variant="ghost"
             aria-pressed={raw}
             onClick={() => setRaw(true)}
@@ -71,9 +73,9 @@ const StructuredValue = memo(function StructuredValue({
 }: {
   value: Json;
 }) {
-  if (value === '') return <p className="muted">空文本</p>;
+  if (value === '') return <p className="meta-text">空文本</p>;
   if (record(value) && !Object.keys(value).length)
-    return <p className="muted">空对象</p>;
+    return <p className="meta-text">空对象</p>;
   if (Array.isArray(value)) return <Collection value={value} />;
   if (record(value))
     return (
@@ -183,7 +185,11 @@ function Collection({ value }: { value: Json[] }) {
           {rows.length} / {value.length} 项
         </span>
         {selected !== undefined && (
-          <Button variant="ghost" onClick={() => setSelected(undefined)}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setSelected(undefined)}
+          >
             关闭条目
           </Button>
         )}
@@ -228,6 +234,7 @@ function Collection({ value }: { value: Json[] }) {
               >
                 <TableCell>
                   <Button
+                    size="sm"
                     variant="ghost"
                     aria-label={`打开条目 ${index + 1}`}
                     onClick={() => setSelected(index)}
@@ -264,6 +271,8 @@ function Collection({ value }: { value: Json[] }) {
       {rows.length > pageSize && (
         <div className="artifact-collection-tools">
           <Button
+            variant="outline"
+            size="sm"
             disabled={currentPage === 0}
             onClick={() => setPage(currentPage - 1)}
           >
@@ -273,6 +282,8 @@ function Collection({ value }: { value: Json[] }) {
             {currentPage + 1} / {Math.ceil(rows.length / pageSize)} 页
           </span>
           <Button
+            variant="outline"
+            size="sm"
             disabled={(currentPage + 1) * pageSize >= rows.length}
             onClick={() => setPage(currentPage + 1)}
           >
@@ -281,7 +292,7 @@ function Collection({ value }: { value: Json[] }) {
         </div>
       )}
       {!rows.length && (
-        <p className="muted">{value.length ? '没有匹配内容' : '空集合'}</p>
+        <p className="meta-text">{value.length ? '没有匹配内容' : '空集合'}</p>
       )}
     </div>
   );
@@ -368,7 +379,7 @@ export function ArtifactComparison({
 }
 function ComparisonCell({ text }: { text?: string }) {
   return text === undefined ? (
-    <span className="muted">无此字段</span>
+    <span className="meta-text">无此字段</span>
   ) : (
     <details>
       <summary>{text.length > 100 ? `${text.slice(0, 100)}…` : text}</summary>

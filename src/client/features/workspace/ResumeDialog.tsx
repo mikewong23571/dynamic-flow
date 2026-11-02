@@ -1,7 +1,10 @@
+import { NativeSelect } from '../../components/ui/native-select';
+import { Field } from '../../components/ui/field';
 import type { Definition, Inputs, Snapshot } from '../../../shared/records';
 import { localInputs, inputPorts } from '../../core/inputs';
 import { short } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 
 import { InputContent } from '../results/Results';
 
@@ -45,9 +48,9 @@ export function ResumeDialog({
       title="用指定结果继续工作"
       description="确认以下来源后创建新的单节点运行。保留结果与采用做法互不替代。"
     >
-      <label className="field">
+      <Field>
         后续步骤
-        <select
+        <NativeSelect
           value={continueNode}
           onChange={(e) => setContinueNode(e.target.value)}
         >
@@ -56,9 +59,9 @@ export function ResumeDialog({
               {n.label}
             </option>
           ))}
-        </select>
-      </label>
-      <p className="muted">使用做法 {short(selectedDefinitionId)}</p>
+        </NativeSelect>
+      </Field>
+      <p className="meta-text">使用做法 {short(selectedDefinitionId)}</p>
       {previewInputs ? (
         <InputContent inputs={previewInputs} />
       ) : (
@@ -66,7 +69,8 @@ export function ResumeDialog({
       )}
       {error && <p className="inline-error">{error}</p>}
       <Button
-        variant="primary"
+        size="sm"
+        variant="default"
         disabled={busy || !previewInputs || !continueNode || dirty}
         onClick={async () => {
           const next = await perform('run', {

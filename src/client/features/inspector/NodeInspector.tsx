@@ -1,3 +1,7 @@
+import './NodeInspector.css';
+import { Textarea } from '../../components/ui/textarea';
+import { Input } from '../../components/ui/input';
+import { Field } from '../../components/ui/field';
 import type { MethodCapability } from '../../../shared/workitem-composition';
 import { runResultSummarySchema } from '../../../shared/result-summary';
 import { SemanticFields, ProblemEditor } from './SemanticFields';
@@ -12,7 +16,7 @@ import type {
 import { inputPorts, outputPorts } from '../../core/inputs';
 import { isFinalOutput, nodeLabel, removeNode } from '../../core/definition';
 import { portLabel } from '../../core/format';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { ExpressionEditor } from './ExpressionEditor';
 import { variable } from './expression-model';
 import { CollectionEditor } from './CollectionEditor';
@@ -37,7 +41,7 @@ function FileNodeConfig({
       .catch(() => setFiles([]));
   }, [workId]);
   return (
-    <label className="field">
+    <Field>
       工作文件
       <NativeSelect
         value={node.file?.name ?? ''}
@@ -55,7 +59,7 @@ function FileNodeConfig({
           文件 {node.file.name} 不在工作文件中。
         </span>
       )}
-    </label>
+    </Field>
   );
 }
 export function NodeInspector({
@@ -90,6 +94,7 @@ export function NodeInspector({
       <div className="section-heading">
         <h2>{node.label}</h2>
         <Button
+          size="sm"
           variant="ghost"
           onClick={() => onChange(removeNode(definition, node.id))}
           title="删除节点"
@@ -98,17 +103,17 @@ export function NodeInspector({
           <Trash2 size={16} />
         </Button>
       </div>
-      <label className="field">
+      <Field>
         步骤名称
-        <input
+        <Input
           value={node.label}
           onChange={(e) => update({ label: e.target.value })}
         />
-      </label>
+      </Field>
       <SemanticFields node={node} update={update} />
       {node.kind === 'call' && (
         <section className="stack" aria-label="方法调用配置">
-          <label className="field">
+          <Field>
             调用的方法
             <NativeSelect
               value={
@@ -158,8 +163,8 @@ export function NodeInspector({
                   </option>
                 ))}
             </NativeSelect>
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             处理范围
             <NativeSelect
               value={node.operation || 'aggregate'}
@@ -179,9 +184,9 @@ export function NodeInspector({
               <option value="aggregate">整批调用一次</option>
               <option value="map">逐项调用</option>
             </NativeSelect>
-          </label>
+          </Field>
           {node.operation === 'map' && (
-            <label className="field">
+            <Field>
               逐项处理的输入
               <NativeSelect
                 value={node.call?.eachPort || node.call?.inputNames[0] || ''}
@@ -198,9 +203,9 @@ export function NodeInspector({
                   </option>
                 ))}
               </NativeSelect>
-            </label>
+            </Field>
           )}
-          <small className="muted">
+          <small className="meta-text">
             固定版本 {node.call?.definitionId.slice(0, 8)}
           </small>
         </section>
@@ -213,9 +218,9 @@ export function NodeInspector({
           !collectionFunction(node) &&
           node.functionName !== 'merge')) && (
         <>
-          <label className="field">
+          <Field>
             处理方式
-            <select
+            <NativeSelect
               value={node.operation || 'map'}
               onChange={(e) =>
                 update({
@@ -226,12 +231,12 @@ export function NodeInspector({
               <option value="map">逐项处理</option>
               <option value="flatMap">逐项产生多项</option>
               <option value="aggregate">整批处理</option>
-            </select>
-          </label>
+            </NativeSelect>
+          </Field>
           {node.operation !== 'aggregate' && (
-            <label className="field">
+            <Field>
               并发数
-              <input
+              <Input
                 type="number"
                 min={1}
                 max={8}
@@ -240,15 +245,15 @@ export function NodeInspector({
                   update({ concurrency: Number(e.target.value) })
                 }
               />
-            </label>
+            </Field>
           )}
         </>
       )}
       {node.kind === 'wait' && (
         <>
-          <label className="field">
+          <Field>
             等待事件名称
-            <input
+            <Input
               value={node.wait?.event || ''}
               onChange={(e) =>
                 update({
@@ -260,10 +265,10 @@ export function NodeInspector({
                 })
               }
             />
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             等待原因
-            <textarea
+            <Textarea
               rows={3}
               value={node.wait?.reason || ''}
               onChange={(e) =>
@@ -276,10 +281,10 @@ export function NodeInspector({
                 })
               }
             />
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             到期时间（秒，可选）
-            <input
+            <Input
               type="number"
               min={1}
               value={node.wait?.timeoutSeconds ?? ''}
@@ -295,14 +300,14 @@ export function NodeInspector({
                 })
               }
             />
-          </label>
+          </Field>
         </>
       )}
       {node.kind === 'milestone' && (
         <>
-          <label className="field">
+          <Field>
             业务阶段
-            <input
+            <Input
               value={node.milestone?.stage || ''}
               onChange={(e) =>
                 update({
@@ -313,10 +318,10 @@ export function NodeInspector({
                 })
               }
             />
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             进展摘要
-            <textarea
+            <Textarea
               rows={4}
               value={node.milestone?.summary || ''}
               onChange={(e) =>
@@ -328,24 +333,24 @@ export function NodeInspector({
                 })
               }
             />
-          </label>
+          </Field>
         </>
       )}
       {node.kind === 'agent' && (
         <>
-          <label className="field">
+          <Field>
             任务要求
-            <textarea
+            <Textarea
               rows={7}
               value={node.task || ''}
               onChange={(e) => update({ task: e.target.value })}
             />
-          </label>
+          </Field>
         </>
       )}
       {node.kind === 'function' && (
         <>
-          <label className="field">
+          <Field>
             处理函数
             <NativeSelect
               value={node.functionName || 'identity'}
@@ -367,7 +372,7 @@ export function NodeInspector({
               <option value="join">按键关联</option>
               <option value="groupBy">按字段分组</option>
             </NativeSelect>
-          </label>
+          </Field>
           {['merge', 'collect', 'join'].includes(node.functionName || '') && (
             <CollectionEditor
               node={node}
@@ -376,9 +381,9 @@ export function NodeInspector({
             />
           )}
           {node.functionName === 'groupBy' && (
-            <label className="field">
+            <Field>
               分组字段（每行一项）
-              <textarea
+              <Textarea
                 aria-label="分组字段"
                 rows={3}
                 value={
@@ -398,7 +403,7 @@ export function NodeInspector({
                   })
                 }
               />
-            </label>
+            </Field>
           )}
           {node.functionName === 'expression' && (
             <ExpressionEditor
@@ -408,9 +413,9 @@ export function NodeInspector({
             />
           )}
           {node.functionName === 'select-fields' && (
-            <label className="field">
+            <Field>
               字段（逗号分隔）
-              <input
+              <Input
                 value={node.params?.fields?.join(', ') || ''}
                 onChange={(e) =>
                   update({
@@ -420,15 +425,15 @@ export function NodeInspector({
                   })
                 }
               />
-            </label>
+            </Field>
           )}
         </>
       )}
       {node.kind === 'branch' && (
         <>
-          <label className="field">
+          <Field>
             判断字段
-            <input
+            <Input
               value={node.condition?.field || ''}
               onChange={(e) =>
                 update({
@@ -441,10 +446,10 @@ export function NodeInspector({
               }
               placeholder="例如 category"
             />
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             条件
-            <select
+            <NativeSelect
               value={node.condition?.operator || 'equals'}
               onChange={(e) =>
                 update({
@@ -460,12 +465,12 @@ export function NodeInspector({
               <option value="equals">等于</option>
               <option value="contains">包含</option>
               <option value="exists">存在</option>
-            </select>
-          </label>
+            </NativeSelect>
+          </Field>
           {node.condition?.operator !== 'exists' && (
-            <label className="field">
+            <Field>
               值
-              <input
+              <Input
                 value={String(node.condition?.value ?? '')}
                 onChange={(e) =>
                   update({
@@ -478,7 +483,7 @@ export function NodeInspector({
                   })
                 }
               />
-            </label>
+            </Field>
           )}
         </>
       )}
@@ -501,7 +506,7 @@ export function NodeInspector({
       {node.kind !== 'create-items' && (
         <details className="details">
           <summary>输入与输出 Schema</summary>
-          <p className="muted">
+          <p className="meta-text">
             {collectionFunction(node)
               ? node.functionName === 'collect'
                 ? '输入和输出均为具名数组对象；输出对象作为一项。'
@@ -538,6 +543,7 @@ export function NodeInspector({
                 <small>{portLabel(e.to[1])}</small>
               </span>
               <Button
+                size="sm"
                 variant="ghost"
                 aria-label={`删除连接 ${nodeLabel(definition, e.from[0])} 到 ${nodeLabel(definition, e.to[0])}`}
                 onClick={() =>
@@ -643,7 +649,7 @@ export function NodeInspector({
             {issue.message}
           </p>
         ))}
-      <Button onClick={onChat} className="w-full">
+      <Button variant="outline" size="sm" onClick={onChat} className="w-full">
         对话修改此步骤
       </Button>
     </div>
@@ -662,9 +668,9 @@ function ConnectionForm({
   const [to, setTo] = useState(inputPorts(node)[0]);
   return (
     <div className="stack">
-      <label className="field">
+      <Field>
         来自
-        <select value={from} onChange={(e) => setFrom(e.target.value)}>
+        <NativeSelect value={from} onChange={(e) => setFrom(e.target.value)}>
           {definition.inputs.map((p) => (
             <option key={p} value={`$input::${p}`}>
               工作材料 · {portLabel(p)}
@@ -677,19 +683,21 @@ function ConnectionForm({
               </option>
             )),
           )}
-        </select>
-      </label>
-      <label className="field">
+        </NativeSelect>
+      </Field>
+      <Field>
         输入端口
-        <select value={to} onChange={(e) => setTo(e.target.value)}>
+        <NativeSelect value={to} onChange={(e) => setTo(e.target.value)}>
           {inputPorts(node).map((p) => (
             <option key={p} value={p}>
               {portLabel(p)}
             </option>
           ))}
-        </select>
-      </label>
+        </NativeSelect>
+      </Field>
       <Button
+        variant="outline"
+        size="sm"
         onClick={() =>
           onChange({
             ...definition,
@@ -723,9 +731,9 @@ function SchemaField({
     setError('');
   }, [serialized]);
   return (
-    <label className="field">
+    <Field>
       {label}
-      <textarea
+      <Textarea
         rows={5}
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -744,6 +752,6 @@ function SchemaField({
           {error}
         </span>
       )}
-    </label>
+    </Field>
   );
 }

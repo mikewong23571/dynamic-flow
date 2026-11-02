@@ -142,7 +142,7 @@ export function RecordTable({
             </label>
           )}
           {searchable && (
-            <span className="muted">
+            <span className="meta-text">
               {filtered.length} / {rows.length} 条
             </span>
           )}

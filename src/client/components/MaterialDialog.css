@@ -7,7 +7,7 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    gap: 12px;
+    gap: var(--space-group);
     padding: 24px 24px 20px;
     border-bottom: 1px solid var(--line);
     text-align: left;
@@ -21,7 +21,7 @@
     width: 40px;
     height: 40px;
     border: 1px solid var(--line-strong);
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     background: var(--surface);
     color: var(--muted);
   }
@@ -40,7 +40,7 @@
   }
   .material-reader-meta {
     margin-top: 6px;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--muted);
   }
   .material-reader-toolbar {
@@ -48,7 +48,7 @@
     flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--space-group);
     padding: 12px 24px;
     border-bottom: 1px solid var(--line);
     background: var(--surface);
@@ -59,7 +59,7 @@
   }
   .material-reader-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--space-inline);
     flex-shrink: 0;
   }
   .material-reader-body {
@@ -85,7 +85,7 @@
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     font-family: monospace;
-    font-size: 12px;
+    font-size: var(--text-small);
     line-height: 1.8;
     tab-size: 2;
   }
@@ -93,7 +93,7 @@
     margin: 0;
     padding: 8px 24px;
     color: var(--danger);
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   @media (max-width: 600px) {
     .material-reader-header {

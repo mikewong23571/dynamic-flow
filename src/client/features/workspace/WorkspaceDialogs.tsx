@@ -1,3 +1,4 @@
+import './WorkspaceDialogs.css';
 import { short, workTitle } from '../../core/format';
 import { useRef } from 'react';
 import { ContentVisibility } from '../../components/ContentVisibility';

@@ -1,3 +1,5 @@
+import { FormActions } from '../../components/ui/field';
+import { Field } from '../../components/ui/field';
 import { ChildStageChoices } from './ChildStageChoices';
 import { CompletionInputChoices } from './CompletionInputChoices';
 import { nodeInputPorts } from '../../../shared/node-ports';
@@ -155,7 +157,7 @@ export function PrepareItemRun({
               />
             )}
             <div className="item-form-pair">
-              <label className="field">
+              <Field>
                 处理方法
                 <NativeSelect
                   value={methodId}
@@ -182,8 +184,8 @@ export function PrepareItemRun({
                     </option>
                   ))}
                 </NativeSelect>
-              </label>
-              <label className="field">
+              </Field>
+              <Field>
                 保存版本
                 <NativeSelect
                   value={definitionId}
@@ -205,9 +207,9 @@ export function PrepareItemRun({
                     </option>
                   ))}
                 </NativeSelect>
-              </label>
+              </Field>
             </div>
-            <label className="field">
+            <Field>
               处理范围
               <NativeSelect
                 value={scopeNodeId}
@@ -223,7 +225,7 @@ export function PrepareItemRun({
                     </option>
                   ))}
               </NativeSelect>
-            </label>
+            </Field>
             <div className="inline-group">
               <Button
                 type="button"
@@ -243,7 +245,7 @@ export function PrepareItemRun({
               <span>
                 {scopeNodeId ? '单步骤正式处理' : '正式处理 · 完整流程'}
               </span>
-              <span className="muted">{item.title}</span>
+              <span className="meta-text">{item.title}</span>
             </div>
             {loadingError && (
               <div className="error-banner" role="alert">
@@ -302,7 +304,7 @@ export function PrepareItemRun({
                 {error}
               </p>
             )}
-            <div className="modal-actions">
+            <FormActions>
               <Button
                 type="button"
                 variant="ghost"
@@ -317,7 +319,7 @@ export function PrepareItemRun({
               >
                 {busy ? '正在启动…' : `开始处理 ${selectedCount} 项输入`}
               </Button>
-            </div>
+            </FormActions>
           </form>
         </DialogContent>
       </Dialog>

@@ -1,7 +1,7 @@
 import { MaterialCard } from '../../components/MaterialCard';
 import type { NodeResult } from '../../../shared/records';
 import { DeferredDetails } from '../../components/DeferredContent';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { short } from '../../core/format';
 import { ArtifactPreview } from './ArtifactPreview';
 import {
@@ -67,7 +67,12 @@ export function RunSources({
     groups.set(source.group, group);
   }
   const link = (source: Source) => (
-    <Button key={source.result.id} onClick={() => onNavigate(source.focus)}>
+    <Button
+      variant="outline"
+      size="sm"
+      key={source.result.id}
+      onClick={() => onNavigate(source.focus)}
+    >
       上游 · {source.label}
       {source.total > 1 ? ` · 第 ${source.number} 项` : ''}
     </Button>
@@ -121,7 +126,7 @@ export function RunSources({
         ),
       )}
       {missing.map((id) => (
-        <p key={id} className="muted">
+        <p key={id} className="meta-text">
           来源结果不可用 · {short(id)}
         </p>
       ))}
