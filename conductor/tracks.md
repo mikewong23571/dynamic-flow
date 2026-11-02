@@ -1,8 +1,13 @@
 # Tracks Registry
 
-- [ ] **Track: 前端样式与组件层次治理**
+- [x] **Track: OpenUI 业务分组语义与默认边界**
+  *Link: [feature-openui-business-sections_20261102](./tracks/feature-openui-business-sections_20261102/index.md)*
+  状态：done；Section业务分组、平台默认边界和嵌套语义、Assistant说明已实现。12模块/25浏览器及两尺寸实看通过；独立worktree本地提交7d37c55、4336持久预览保留，真实模型未测、托管未发布。绑定已释放。
+
+
+- [x] **Track: 前端样式与组件层次治理**
   *Link: [feature-frontend-style-governance_20261102](./tracks/feature-frontend-style-governance_20261102/index.md)*
-  状态：new，深入审查与建档完成，Phase 1–5 待实施；102 TSX/20 CSS 的依赖与样式归属盘点、隔离构建、1 条样式及 2 条两尺寸深入审查路线完成；已复现缩窗遮挡、层叠/尺寸差异与任务弹窗焦点丢失，系统方案和 SG01–SG10 验收已登记。仅文档，未修改产品源码或部署。
+  状态：done，Phase 1–5 完成并通过独立审查，绑定已释放。统一控件/组合、CSS所有权、布局/焦点/Portal及防回归；24模块、70个不同浏览器案例分轮通过，最终15治理通过。产品在独立worktree交付，持久预览4336；未push或部署托管，原仓源码保持。
 
 - [~] **Track: 唯一工作项流程与业务工作界面**
   *Link: [overall-design-workitem-openui_20261030](./tracks/overall-design-workitem-openui_20261030/index.md)*

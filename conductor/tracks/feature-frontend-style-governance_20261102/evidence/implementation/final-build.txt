@@ -1,0 +1,26 @@
+
+> dynamic-flow-workbench@ build /home/mike/projs/fork/dynamic-flow-style-governance
+> vite build
+
+vite v8.3.0 building client environment for production...
+transforming...
+✓ 3336 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                0.51 kB │ gzip:   0.32 kB
+dist/assets/geist-cyrillic-ext-wght-normal-DjL33-gN.woff2      7.42 kB
+dist/assets/geist-vietnamese-wght-normal-6IgcOCM7.woff2        8.00 kB
+dist/assets/geist-cyrillic-wght-normal-BEAKL7Jp.woff2         15.08 kB
+dist/assets/geist-latin-ext-wght-normal-DC-KSUi6.woff2        16.51 kB
+dist/assets/geist-latin-wght-normal-BgDaEnEv.woff2            29.40 kB
+dist/assets/index-Ccy4c7Gw.css                               146.70 kB │ gzip:  25.14 kB
+dist/assets/ci-info-C5-WKsuS.js                                5.24 kB │ gzip:   1.97 kB
+dist/assets/canvas-layout-DZ8jahyw.js                      1,433.22 kB │ gzip: 443.07 kB
+dist/assets/index-DWahbHGq.js                              1,681.69 kB │ gzip: 513.85 kB
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.87s

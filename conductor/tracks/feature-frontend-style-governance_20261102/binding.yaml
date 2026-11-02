@@ -1,11 +1,10 @@
 binding:
   owner: mike
-  session_id: 01a19b2c-465b-76b0-a943-d99461da3233
-  agent: codex
-  host: dev-mike
-  pid: 3224766
-  started_at: 2026-11-02T07:47:41.001088+00:00
-  released: false
-# 当前会话仅完成审查与规划；后续实施须进入本track，不覆盖其它会话的track。
-# pid为已校验存活的Codex app-server；线程身份由真实session_id区分。
-# heartbeat只表示最近一次本会话活动，不承诺后台定时心跳；30分钟未更新按stale处理。
+  session_id: null
+  agent: null
+  host: null
+  pid: null
+  started_at: null
+  released: true
+  released_at: '2026-11-02T09:11:41.758694+00:00'
+# 完成后清空原生会话导航字段；历史身份仅留在审计证据，不作为活跃绑定。

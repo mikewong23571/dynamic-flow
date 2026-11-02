@@ -1,0 +1,14 @@
+✔ native OpenUI library produces the prompt/schema and derives frozen record identity from saved source (13.938186ms)
+✔ saved native programs reject incomplete components, unknown references, and Query writes (2.533376ms)
+✔ native named merge changes one statement, preserves mutations and binding variables (3.418541ms)
+✔ business observation is independent of delivery and requires live reads rather than a saved status snapshot (2.935825ms)
+✔ native composition supports per-record contextual actions without adding business pages (1.896412ms)
+✔ explicit business sections preserve data, input and mutation contracts without rewriting legacy programs (4.186313ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 690.238276

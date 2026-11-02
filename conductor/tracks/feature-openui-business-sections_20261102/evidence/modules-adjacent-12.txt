@@ -1,0 +1,20 @@
+✔ native OpenUI library produces the prompt/schema and derives frozen record identity from saved source (11.511406ms)
+✔ saved native programs reject incomplete components, unknown references, and Query writes (2.721953ms)
+✔ native named merge changes one statement, preserves mutations and binding variables (3.824021ms)
+✔ business observation is independent of delivery and requires live reads rather than a saved status snapshot (2.628845ms)
+✔ native composition supports per-record contextual actions without adding business pages (1.7385ms)
+✔ explicit business sections preserve data, input and mutation contracts without rewriting legacy programs (4.050028ms)
+✔ private workspace is isolated, stale edits rejected, and real inputs run without a model (174.650018ms)
+✔ declared delivery uses saved values, preserves other outputs and selected records across restart (200.571371ms)
+✔ work item Pi tools discover methods and save through the page service; turn state survives reopen (91.894421ms)
+✔ uploads keep real spreadsheet values and structured input revisions keep provenance (402.711474ms)
+✔ record continuation selects a saved method version and only runs the chosen real row (138.756851ms)
+✔ method catalog advertises emitted item schemas rather than batch validation schemas (23.762673ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4363.486025

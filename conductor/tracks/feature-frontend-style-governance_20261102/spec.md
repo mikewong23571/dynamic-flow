@@ -1,6 +1,6 @@
 # 前端样式与组件层次治理
 
-状态：深入审查与建档完成，实施待开始。2026-11-02 用户认可系统治理方向，并要求先深入审查、再新建 track；本轮不修改产品源码或部署。问题与证据见 [audit.md](audit.md)，目标方案见 [design.md](design.md)。
+状态：用户授权的 Phase 1–5 已完成并通过本轮独立审查；独立 worktree 交付，托管未部署。2026-11-02 用户认可系统治理方向，并要求先深入审查、再新建 track；本轮实施产品改造，托管实例不自动部署。问题与证据见 [audit.md](audit.md)，目标方案见 [design.md](design.md)。
 
 ## 目标
 
@@ -30,17 +30,17 @@
 
 ## 改动点
 
-本仓 dynamic-flow 为唯一代码范围；沿用单仓工作流，无外部仓库或多仓母仓。本轮实际仅写本 track 与两个 Conductor 索引，以下为后续实施预期范围。
+本仓 dynamic-flow 为唯一代码范围；沿用单仓工作流，无外部仓库或多仓母仓。产品改造只在独立 worktree；原仓源码和用户未提交现场保持。以下为已授权实施范围。
 
 | 仓库 id | 模块 / 路径 | 改动说明 |
 | --- | --- | --- |
 | dynamic-flow（宿主仓） | src/client/styles.css、main.tsx、index.html | token、reset、层顺序、暗色策略；按拥有者迁移规则，维持入口顺序 |
 | dynamic-flow | src/client/components/ui/、components/ui.tsx | 控件尺寸/状态与单一 Button API；包装层布局接口；保留业务 Badge 和 Modal 的合理职责 |
-| dynamic-flow | components/WorkspaceFrame.*、Management.*、MaterialCard.*、MaterialDialog.* | 共享结构、响应式、字段/动作区组合、浮层焦点与材料阅读 |
+| dynamic-flow | components/WorkspaceFrame.*、Management.*、MaterialCard.*、MaterialDialog.*、useTaskDialogFocus.ts | 共享结构、响应式、字段/动作区组合、浮层焦点与材料阅读 |
 | dynamic-flow | app/、features/workspace/、features/settings/ | 方法工作区、列表入口、创建/调用/试运行与设置表单 |
 | dynamic-flow | features/openui/、features/work-items/ | 原生组合、InputFields、RecordTable、任务表单、Assistant 停靠和条件/子项弹窗 |
 | dynamic-flow | features/inspector/、canvas/、assistant/、results/ | 保留专用呈现，收敛公共控件和重复外观；限定第三方适配 |
-| dynamic-flow | tests/browser/、package.json（必要时最小检查脚本） | 关键失败路径、控件矩阵、视觉基线和规则检查，不新增镜像实现测试 |
+| dynamic-flow | tests/browser/、scripts/（最小样式检查）、package.json、必要时 pnpm-lock.yaml | 关键失败路径、控件矩阵、视觉基线和规则检查，不新增镜像实现测试 |
 | dynamic-flow | client AGENTS、ui README、DESIGN-NOTES、tests AGENTS、product-guidelines | 更新当前规则及实际命令，历史证据保留在原 track |
 
 ## 影响域

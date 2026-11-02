@@ -1,0 +1,21 @@
+
+Running 10 tests using 1 worker
+
+(node:1696499) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/style-governance.spec.ts:127:3 › style contracts and controlled task focus 1440 (2.5s)
+  ✓   2 tests/browser/style-governance.spec.ts:127:3 › style contracts and controlled task focus 1024 (2.0s)
+  ✓   3 tests/browser/style-governance.spec.ts:204:1 › resizing preserves action reachability and user panel preference (1.4s)
+  ✓   4 tests/browser/style-governance.spec.ts:232:3 › task success and missing trigger return focus 1440 (2.9s)
+  ✓   5 tests/browser/style-governance.spec.ts:232:3 › task success and missing trigger return focus 1024 (2.3s)
+  ✓   6 tests/browser/style-governance.spec.ts:274:1 › saved panel width and manual method panel remain reachable on resize (2.6s)
+(node:1696715) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1696726) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 tests/browser/style-governance.spec.ts:315:1 › public control state matrix and explicit compact sizing (1.6s)
+  ✓   8 tests/browser/style-governance.spec.ts:373:1 › home long request remains readable and retains local input (988ms)
+  ✓   9 tests/browser/style-governance.spec.ts:393:3 › dedicated material reader keeps width and returns to source 1440 (1.3s)
+  ✓  10 tests/browser/style-governance.spec.ts:393:3 › dedicated material reader keeps width and returns to source 1024 (1.3s)
+
+  10 passed (23.9s)

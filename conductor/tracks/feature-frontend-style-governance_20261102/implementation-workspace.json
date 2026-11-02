@@ -253,5 +253,16 @@
     "data business directories",
     "models.toml",
     "ignored runtime directories"
-  ]
+  ],
+  "snapshot_baseline": "99cef65b63155322a3f6f3ac684daaadcc760a25",
+  "state": "complete",
+  "implementation_head": "ccc4ff083de944e574bf70c305a97ae671d112a6",
+  "delivery": {
+    "kind": "local_worktree",
+    "status": "complete",
+    "push": false,
+    "mr": null,
+    "preview": "http://10.134.94.200:4336/items/78abd2d8-cad5-42b5-9567-2d93938dd392",
+    "worktree_retained_for": "persistent isolated preview"
+  }
 }

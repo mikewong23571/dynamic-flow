@@ -1,0 +1,49 @@
+
+Running 1 test using 1 worker
+
+(node:1706114) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/browser/portal-before.spec.ts:417:1 › retained material task portals follow tab and page visibility (17.9s)
+
+
+  1) tests/browser/portal-before.spec.ts:417:1 › retained material task portals follow tab and page visibility 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('dialog')
+    Expected: 0
+    Received: 1
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveCount" getByRole('dialog') with timeout 15000ms
+      - waiting for getByRole('dialog')
+        34 × locator resolved to 1 element
+           - unexpected value "1"
+
+
+      435 |   await page.goBack();
+      436 |   await expect(page.getByRole('tab', { name:'流程', exact:true, includeHidden:true })).toHaveAttribute('aria-selected','true');
+    > 437 |   await expect(page.getByRole('dialog')).toHaveCount(0);
+          |                                          ^
+      438 |   await expect(page.locator('[data-slot="dialog-overlay"]')).toHaveCount(0);
+      439 |   await page.goBack();
+      440 |   await page.goBack();
+        at /tmp/flowcraft-ui-audit-hr5h73ih/tests/browser/portal-before.spec.ts:437:42
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../style-material-valid-red/portal-before-retained-mat-a0181-low-tab-and-page-visibility/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../style-material-valid-red/portal-before-retained-mat-a0181-low-tab-and-page-visibility/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../style-material-valid-red/portal-before-retained-mat-a0181-low-tab-and-page-visibility/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../style-material-valid-red/portal-before-retained-mat-a0181-low-tab-and-page-visibility/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/browser/portal-before.spec.ts:417:1 › retained material task portals follow tab and page visibility 

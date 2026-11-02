@@ -1,0 +1,14 @@
+# 单仓项目工作流；无远程交付/母仓改写，保留独立预览。
+repositories:
+  - id: dynamic-flow
+    state: ready
+    worktree: /home/mike/projs/fork/dynamic-flow-style-governance
+    branch: feature/frontend-style-governance_20261102
+    baseline: 8be1587cda6ee628024c4c09731130f6f9875e79
+    touched_paths: [src/client/features/openui/, src/shared/openui.ts, src/server/assistant/workitem.ts, tests/openui.test.ts, tests/browser/openui-sections.spec.ts, docs/workitem-ui-authoring.md, src/client/AGENTS.md, src/shared/AGENTS.md, src/server/assistant/AGENTS.md, conductor/tracks/feature-openui-business-sections_20261102/, conductor/tracks.md]
+    delivery:
+      status: committed
+      commits: [0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148, 3e8379241bd8ff7792dafa781f8132f0dcde857c, b7f635f, b616ab37dda15ef0fb49eaaeef3af21e39739532]
+      mr: null
+
+# 本地完成：项目workflow明确只交付独立worktree，无push/MR要求；保留持久预览，收口元数据commit由git log追踪。

@@ -1,6 +1,6 @@
 # 深入审查：组件层次与样式归属
 
-日期：2026-11-02。审查正式 src/client 与相关测试，不以 Spike、历史截图或旧 track 的完成记录代替当前事实。基线为有既有未提交修改的源码快照，HEAD 仅用于追溯；逐文件 SHA 与执行环境见 [证据](evidence/baseline/README.md)。本轮没有修改产品代码。
+日期：2026-11-02。审查正式 src/client 与相关测试，不以 Spike、历史截图或旧 track 的完成记录代替当前事实。基线为有既有未提交修改的源码快照，HEAD 仅用于追溯；逐文件 SHA 与执行环境见 [证据](evidence/baseline/README.md)。本页仅记录Phase0审查时的源码，后续治理实施和当前状态见documentation.md，不以本页历史状态代替当前实现。
 
 ## 方法与范围
 

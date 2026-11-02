@@ -1,0 +1,38 @@
+[
+  {
+    "width": 1440,
+    "sections": [
+      {
+        "title": "处理清单",
+        "border": "1px",
+        "heading": "H2"
+      },
+      {
+        "title": "补充范围",
+        "border": "1px",
+        "heading": "H2"
+      }
+    ],
+    "selectionAndDraftRetained": true,
+    "dialogEscapeAndFocus": true,
+    "noGlobalOverflow": true
+  },
+  {
+    "width": 1024,
+    "sections": [
+      {
+        "title": "处理清单",
+        "border": "1px",
+        "heading": "H2"
+      },
+      {
+        "title": "补充范围",
+        "border": "1px",
+        "heading": "H2"
+      }
+    ],
+    "selectionAndDraftRetained": true,
+    "dialogEscapeAndFocus": true,
+    "noGlobalOverflow": true
+  }
+]

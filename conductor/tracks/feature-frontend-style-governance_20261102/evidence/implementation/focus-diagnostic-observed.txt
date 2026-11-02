@@ -1,0 +1,25 @@
+
+Running 1 test using 1 worker
+
+(node:1692687) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+MODAL_CLOSE 补充任务 true false BUTTON true null 补充当前记录 补充当前记录
+MODAL_CONTEXT {"connected":true,"rect":{"x":244,"y":799.25,"width":826,"height":32,"top":799.25,"right":1070,"bottom":831.25,"left":244},"visibility":"visible","display":"flex","context":"composition-workspace","visible":true}
+MODAL_CLOSE 补充任务 true false BUTTON false null 补充当前记录 补充当前记录
+MODAL_CONTEXT {"connected":false,"rect":{"x":0,"y":0,"width":0,"height":0,"top":0,"right":0,"bottom":0,"left":0},"visibility":"","display":"","context":"composition-workspace","visible":false}
+MODAL_FALLBACK H1 INPUT
+MODAL_CLOSE 补充任务 true false BODY true null FlowcraftLOCAL首页工作项流水线已打开的流水线尚未打开流水线模型设置尚未配置本地工作空间工作项 · WI-20261102-ca1034OpenUI反馈闭环待复核 目标工作流程输入记录完成条件 0/0处理清单继续所选记录编号反馈状态详情R1导出失败需核对R2批量导出待确认查看来源补充范围适用范围渠道请选择桌面网页备注保存输入Assistant新会话当前工作项一起推进这件事先把目标变成步骤，再一起检查和改进。⌘ / Ctrl + Enter 发送发送 FlowcraftLOCAL首页工作项流水线已打开的流水线尚未打开流水线模型设置尚未配置本地工作空间工作项 · WI-20261102-ca1034OpenUI反馈闭环待复核 目标工作流程输入记录完成条件 0/0处理清单继续所选记录编号反馈状态详情R1导出失败需核对R2批量导出待确认查看来源补充范围适用范围渠道请选择桌面网页备注保存输入Assistant新会话当前工作项一起推进这件事先把目标变成步骤，再一起检查和改进。⌘ / Ctrl + Enter 发送发送
+  
+
+补充任务补充任务检查任务交接补充范围适用范围渠道请选择桌面网页备注保存输入关闭
+MODAL_CONTEXT {"connected":true,"rect":{"x":0,"y":0,"width":1440,"height":900,"top":0,"right":1440,"bottom":900,"left":0},"visibility":"visible","display":"block","visible":true}
+MODAL_FALLBACK H1 H1
+FOCUS_AFTER_REMOVE {
+  tag: 'H1',
+  text: 'OpenUI反馈闭环',
+  label: null,
+  heading: '<h1 title="整理反馈、补范围并检查实际处理过程" tabindex="-1">OpenUI反馈闭环</h1>'
+}
+  ✓  1 tests/browser/style-governance.spec.ts:231:3 › task success and missing trigger return focus 1440 (2.6s)
+
+  1 passed (7.7s)

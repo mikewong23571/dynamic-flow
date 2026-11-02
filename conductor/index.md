@@ -1,6 +1,6 @@
 # Project Context
 
-- [前端样式与组件层次治理](tracks/feature-frontend-style-governance_20261102/index.md)（2026-11-02：深入审查、组件层次方案与迁移计划已建档；待实施，当前缺陷及两尺寸证据见新 track）。
+- [前端样式与组件层次治理](tracks/feature-frontend-style-governance_20261102/index.md)（2026-11-02：Phase 1–5 完成，独立审查通过；代码与持续预览在独立worktree/4336，原仓托管未部署；证据与交付边界见track）。
 
 - [唯一工作项流程、OpenUI正式框架与中间过程可见性](tracks/overall-design-workitem-openui_20261030/index.md)（2026-10-30：设计及实施计划已落地，代码/数据清理未开始；允许删除退役业务数据，不保留双轨兼容）。
 
