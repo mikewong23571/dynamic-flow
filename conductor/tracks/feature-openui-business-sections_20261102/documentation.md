@@ -32,3 +32,8 @@ Task1实现提交`0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148`。产品构建随后
 父会话维护的preview-*为4336独立持久合成样例证据，可随Task2归档；独立审查review.md和Task3状态由父会话写入最后提交。本执行agent不修改持久预览或旧done track，不push/MR或部署托管实例。
 
 Task2验证与证据提交：`3e8379241bd8ff7792dafa781f8132f0dcde857c`；Task1实现为`0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148`。执行agent已完成Task1/2，后续Task3由编排者接续，保持预览/数据，不提前done或释放。
+
+## Task3与收口
+编排者review与独立预览证据提交b616ab3；检查了真实调用双方、diff和两尺寸主区/子组/任务截图。4336预览通过正式保存合同更新合成程序revision5→6，固定delivery身份保留；选择、草稿、Escape焦点和窄屏动作命中通过。原仓src聚合hash前后不变。详细证据/边界见review.md。
+
+按项目单仓workflow完成本地交付；不适用通用模板多仓push/MR/check-complete/archive要求，不自动发布托管实例。0f56951为实现，3e83792为测试证据，b7f635f为SHA回写，b616ab3为独立审查。本次清空会话导航字段并删除heartbeat；仅同步本track与原仓registry新条目，不改原仓产品。

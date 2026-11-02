@@ -1,8 +1,8 @@
 # Tracks Registry
 
-- [~] **Track: OpenUI 业务分组语义与默认边界**
+- [x] **Track: OpenUI 业务分组语义与默认边界**
   *Link: [feature-openui-business-sections_20261102](./tracks/feature-openui-business-sections_20261102/index.md)*
-  状态：进行中；Assistant显式Section业务分组、平台统一边界与嵌套层次，Stack只负责布局。独立worktree本地实施。
+  状态：done；Section通用业务分组、平台默认边界和嵌套语义、Assistant说明已实现。12模块/25浏览器及两尺寸实看通过，独立4336预览保留；真实模型未测、托管未发布，绑定已释放。
 
 - [x] **Track: 前端样式与组件层次治理**
   *Link: [feature-frontend-style-governance_20261102](./tracks/feature-frontend-style-governance_20261102/index.md)*
