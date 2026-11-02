@@ -14,3 +14,5 @@ Task 1 检查点：新增真实浏览器反例在旧实现找不到命名region�
 Task1实现提交：`0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148`。Task2当前同构建25条新/相邻浏览器及12条OpenUI/后端接线模块全通过；加强旧程序夹具为source中完全不含Section后再定向核对两尺寸，不改产品产物。
 
 Task2完成：同冻结产物25条浏览器（Section2、capabilities2、workitem6、治理15）和12条OpenUI/真实后端接线模块通过；legacy夹具强化为source完全不含Section后2条定向重验通过，不另累加覆盖。6张两尺寸主区/下滚子组/任务图已实际查看。类型/构建/样式守卫与变更格式检查通过；未执行真实模型。Task3 review/持久预览/释放仍由父会话完成。
+
+Task2验证与证据提交：`3e8379241bd8ff7792dafa781f8132f0dcde857c`；Task1实现为`0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148`。执行agent已完成Task1/2，后续Task3由编排者接续，保持预览/数据，不提前done或释放。

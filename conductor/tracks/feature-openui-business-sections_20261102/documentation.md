@@ -30,3 +30,5 @@ Task1实现提交`0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148`。产品构建随后
 6张实际图覆盖1440/1024主区、下滚后嵌套子组、任务弹窗；已实际view_image查看主/子组边界、两尺寸排布和任务标题层次，窄屏可滚动到后续内容，无横向溢出。选择、输入草稿、任务Escape/焦点、真实submit_input、旧无Section布局、空标题、重复标题的唯一ID均有断言。类型、构建、静态样式守卫与变更Prettier检查通过；构建只保留已有bundle大小警告。实际分轮日志及截图见evidence/README.md。没有真实模型调用，不声称模型生成质量或自动遵从分组指引已验收。
 
 父会话维护的preview-*为4336独立持久合成样例证据，可随Task2归档；独立审查review.md和Task3状态由父会话写入最后提交。本执行agent不修改持久预览或旧done track，不push/MR或部署托管实例。
+
+Task2验证与证据提交：`3e8379241bd8ff7792dafa781f8132f0dcde857c`；Task1实现为`0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148`。执行agent已完成Task1/2，后续Task3由编排者接续，保持预览/数据，不提前done或释放。

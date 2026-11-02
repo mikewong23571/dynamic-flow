@@ -8,5 +8,5 @@ repositories:
     touched_paths: [src/client/features/openui/, src/shared/openui.ts, src/server/assistant/workitem.ts, tests/openui.test.ts, tests/browser/openui-sections.spec.ts, docs/workitem-ui-authoring.md, src/client/AGENTS.md, src/shared/AGENTS.md, src/server/assistant/AGENTS.md, conductor/tracks/feature-openui-business-sections_20261102/, conductor/tracks.md]
     delivery:
       status: verified-awaiting-review
-      commits: [0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148]
+      commits: [0f56951fe2a7d5bdf3c5dfe5a7c653dce0463148, 3e8379241bd8ff7792dafa781f8132f0dcde857c]
       mr: null
