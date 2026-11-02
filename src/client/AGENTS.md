@@ -60,6 +60,6 @@ WorkItems保留已访问详情实例，隐藏时停止轮询并隐藏Portal。Co
 
 页面组合能力：Stack组织纵向/可换行横向内容；Disclosure展开辅助内容；Dialog用原生$open绑定承接就近任务，InputForm可用同一$draft预置当前记录身份。原生@Each与数据函数直接由SDK处理，不自建循环/求值器。ActionButton声明primary/secondary/quiet及实时disabled，默认secondary。内容/表单的空标题不重复渲染标题；表格只有显式绑定selection才显示勾选，searchable为true才显示搜索。固定执行/保留版本/界面编辑归工作项更多菜单，主区由Assistant按实际工作安排；工作主区不再以“成果”限定数据阶段。
 
-OpenUI布局责任：适配器及OpenUIWorkspace.css一起定义导航、视图、区块和内容的排版；父容器负责直接子项的间距，内容组件无页面外边距。具体层级见控件README。不要再把这部分样式散放到工作项外壳，或根据子组件类型自动猜横向/纵向排列。
+OpenUI布局责任：适配器及OpenUIWorkspace.css一起定义导航、视图、区块和内容的排版；父容器负责直接子项的间距，内容组件无页面外边距。SectionRenderer负责显式业务分组的轻边界、useId可访问命名与有标题祖先的嵌套层次；同组可混合表格/表单/文字/动作，Stack只排布。空Section标题保持无名且不占标题层级，不按子内容自动分组。对应真实浏览器回归为openui-sections.spec.ts。具体控件层级见控件README。不要再把这部分样式散放到工作项外壳，或根据子组件类型自动猜横向/纵向排列。
 
 前端样式治理：Button只从components/ui/button导入；控件标准32px、紧凑28px，Input/Select/Textarea明确400值字重，Field不带页面margin，父容器gap管理外部间距。NativeSelect默认填满字段，工具栏显式fit。WorkspaceFrame按窗口切换物理停靠并保留展开偏好/宽度；1279以下不以side覆盖主动作。受控Modal承担焦点交还，触发失效回当前任务标题。专用样式在实际features CSS；运行pnpm check:styles及tests/browser/style-governance.spec.ts，不能只检查scrollWidth或更新golden。

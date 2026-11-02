@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useId,
   useRef,
   useState,
   type ReactNode,
@@ -512,6 +513,31 @@ function NavigationRenderer({ props, renderNode }: ComponentRenderProps) {
     </Tabs>
   );
 }
+const SectionDepth = createContext(0);
+function SectionRenderer({ props, renderNode }: ComponentRenderProps) {
+  const depth = useContext(SectionDepth);
+  const headingId = useId();
+  const title = String(props.title || '').trim();
+  const headings = ['h2', 'h3', 'h4', 'h5', 'h6'] as const;
+  const Heading = headings[Math.min(depth, headings.length - 1)];
+  return (
+    <section
+      className="composition-section openui-section"
+      aria-labelledby={title ? headingId : undefined}
+      data-section-depth={depth}
+    >
+      {title && (
+        <Heading id={headingId} className="openui-section-heading">
+          {title}
+        </Heading>
+      )}
+      <SectionDepth.Provider value={depth + (title ? 1 : 0)}>
+        <div className="openui-stack">{renderNode(props.children)}</div>
+      </SectionDepth.Provider>
+    </section>
+  );
+}
+
 function DialogRenderer({ props, renderNode }: ComponentRenderProps) {
   const env = useEnvironment();
   const open = useStateField<boolean>(
@@ -530,7 +556,10 @@ function DialogRenderer({ props, renderNode }: ComponentRenderProps) {
           {env.error}
         </p>
       )}
-      {renderNode(props.children)}
+      {/* The task title starts a new outline, independent of the opener's nesting. */}
+      <SectionDepth.Provider value={1}>
+        {renderNode(props.children)}
+      </SectionDepth.Provider>
     </Modal>
   );
 }
@@ -556,12 +585,7 @@ const adapters: Record<string, (props: ComponentRenderProps) => ReactNode> = {
     </DeferredDetails>
   ),
   Dialog: DialogRenderer,
-  Section: ({ props, renderNode }) => (
-    <section className="composition-section openui-section">
-      {props.title ? <h2>{String(props.title)}</h2> : null}
-      <div className="openui-stack">{renderNode(props.children)}</div>
-    </section>
-  ),
+  Section: SectionRenderer,
   View: ({ props, renderNode }) => (
     <div className="openui-view">{renderNode(props.children)}</div>
   ),

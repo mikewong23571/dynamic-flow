@@ -1,0 +1,11 @@
+schema_version: '2.1'
+track: feature-openui-business-sections_20261102
+type: feature
+status: in-progress
+module: openui/composition
+depends_on: [feature-frontend-style-governance_20261102]
+owner: mike
+created_at: 2026-11-02
+updated_at: 2026-11-02
+repo_scope: repo-scope.yaml
+step_id: null

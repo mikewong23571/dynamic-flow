@@ -1,0 +1,8 @@
+binding:
+  owner: mike
+  session_id: 01a19b2c-465b-76b0-a943-d99461da3233
+  agent: codex
+  host: dev-mike
+  pid: 3224766
+  started_at: '2026-11-02T09:36:40.891240+00:00'
+  released: false

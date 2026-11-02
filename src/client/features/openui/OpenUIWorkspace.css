@@ -14,11 +14,23 @@
     gap: var(--space-group);
     min-width: 0;
   }
-  .openui-section > h2,
+  .openui-section {
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-field);
+  }
+  .openui-section:not([data-section-depth='0']) {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+    padding: 0 0 0 var(--space-field);
+  }
+  .openui-section-heading,
   .openui-content > h2 {
     margin: 0;
     font-size: var(--text-section);
     font-weight: 500;
+  }
+  .openui-section:not([data-section-depth='0']) > .openui-section-heading {
+    font-size: var(--text-control);
   }
   .openui-stack {
     display: flex;

@@ -154,7 +154,7 @@ const dataTable = defineComponent({
 const stack = defineComponent({
   name: 'Stack',
   description:
-    'Compose content vertically or in a wrapping horizontal row, without adding a title or panel.',
+    'Layout only: compose content vertically or in a wrapping horizontal row. Stack never creates a business group, heading or visual boundary; use Section for an explicit business group.',
   props: z.object({
     children: z.array(z.unknown()),
     direction: z.enum(['vertical', 'horizontal']).optional(),
@@ -182,7 +182,7 @@ const dialog = defineComponent({
 const section = defineComponent({
   name: 'Section',
   description:
-    'A named group with consistent heading-to-content spacing. Children flow vertically; use Stack for an explicit horizontal group. A section never infers layout from the types of its children.',
+    'An explicit business group with a shared heading and a light default boundary. Mix related tables, forms, text and group actions within the same Section. Nest Section for business subgroups; the renderer handles heading levels and accessible names without stacked cards. Children flow vertically; Stack only arranges content. Group names and contents come from the work, never from child component types.',
   props: z.object({ title: z.string(), children: z.array(z.unknown()) }),
   component: null,
 });
@@ -266,7 +266,7 @@ export const openuiInstructions = openuiContract.prompt({
     "read_output({output?,nodeId?,port?,runId?,offset?,limit?}) reads actual stage output from this item's explicitly selected run; omitted runId observes its current execution. Returns {run,rows,sources,total,offset,limit}; run may be null before execution, rows contains only actual completed instance outputs even while the run is running/waiting/failed. Choose either an exported output name or an exact nodeId+port from the fixed Definition. The latter also observes successful stages that are not exported, without changing the old definition. Never guess a different source when the requested stage has not produced results. This is observation, not publication. DataTable can inspect object rows; Details can inspect a chosen object. Preserve sources for further reasoning/actions.",
     'Input/output rows are paged. Use total for the whole returned scope, existing children summary for child counts, and actual aggregate method output for business counts; never label counts of the current page as global totals. Before execution show pending/unknown for execution-derived findings and statistics; empty Query defaults are loading data, not completed business results.',
     'All live Query reads must declare a positive refresh interval in seconds, normally 2, using the native fourth argument. This keeps data current without regenerating source or resetting user drafts. Use null/empty defaults while loading, not fabricated business data. read_delivery({output}) reads the fixed published delivery.',
-    'Stack(children,direction?) composes content without adding headings; horizontal wraps at narrow widths. Section(title,children) adds a single heading. An empty title on content/form components omits their heading when a parent already names them. Disclosure(title,children) holds optional detail. Dialog(title,$open,children) opens via @Set and closes by updating the same binding. Use native @Each(rows,"row", inlineComponentTemplate) for per-record composition and actions; the loop variable only exists inside that inline template. A contextual action can @Set($draft,{id:row.id}) and then @Set($open,true), so one real InputForm edits the chosen record without another business page.',
+    'Section(title,children) declares an explicit business group with a light default boundary; related data, text, forms and actions can share one group. Nest Section for real subgroups; the renderer handles heading levels and accessible names. Choose group names/count/content from the current work, never from a fixed page template or child component types. Stack(children,direction?) only arranges content without a business boundary or heading; horizontal wraps at narrow widths. An empty title on content/form components omits their heading when a parent already names them. Disclosure(title,children) holds optional detail. Dialog(title,$open,children) opens via @Set and closes by updating the same binding. Use native @Each(rows,"row", inlineComponentTemplate) for per-record composition and actions; the loop variable only exists inside that inline template. A contextual action can @Set($draft,{id:row.id}) and then @Set($open,true), so one real InputForm edits the chosen record without another business page.',
     'ActionButton(label,action?,emphasis?,disabled?) uses primary, secondary or quiet emphasis; secondary is the default. disabled is a live boolean. Business labels and placement come from the actual task. Execution remains guarded by the same server command.',
     'DataTable and Records only show selection checkboxes when selection is explicitly bound. Search is opt-in through the final searchable argument. Their detail reader stays available, while custom per-row presentation/actions can use native @Each and the composition components.',
     'Records(output,title,rowKey,columns,selection?,actions?,details?,groupBy?,searchable?) reads real saved delivery data. Field(field,label) names an actual top-level field; IDs are non-empty unique strings.',
@@ -281,7 +281,7 @@ export const openuiInstructions = openuiContract.prompt({
   toolExamples: [
     // Syntax examples, not a prescribed workspace structure.
     `root = Workspace("读取内容", [content])\nobserved = Query("read_output", {output: "result"}, {rows: [], sources: []}, 2)\ncontent = DataTable("内容", observed.rows, "id", [Field("id", "编号"), Field("title", "事项")])`,
-    `root = Workspace("处理清单", [records, form])\n$selected = []\n$draft = {}\nrecords = Records("records", "实际成果", "id", [Field("id", "编号"), Field("title", "事项")], $selected, [next])\nnext = ActionButton("继续所选记录", @Run(continueStep))\ncontinueStep = Mutation("continue_records", {output: "records", recordIds: $selected})\nform = InputForm("request", "补充输入", $draft, save)\nsave = ActionButton("保存输入", @Run(saveInput))\nsaveInput = Mutation("submit_input", {inputPort: "request", value: $draft})`,
+    `root = Workspace("处理清单", [handling, supplement])\nhandling = Section("处理事项", [records])\nsupplement = Section("补充资料", [form])\n$selected = []\n$draft = {}\nrecords = Records("records", "", "id", [Field("id", "编号"), Field("title", "事项")], $selected, [next])\nnext = ActionButton("继续所选记录", @Run(continueStep))\ncontinueStep = Mutation("continue_records", {output: "records", recordIds: $selected})\nform = InputForm("request", "", $draft, save)\nsave = ActionButton("保存输入", @Run(saveInput))\nsaveInput = Mutation("submit_input", {inputPort: "request", value: $draft})`,
   ],
 });
 const parser = createParser(openuiContract.toJSONSchema());

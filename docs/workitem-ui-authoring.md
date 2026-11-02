@@ -51,4 +51,4 @@ ActionButton提供primary/secondary/quiet和实时disabled；内容/表单的空
 
 ## 前端布局责任
 
-Assistant决定内容、分组与显式横纵组合，组件负责基础排版。ViewNavigation分开导航和内容，View/Workspace排列主要区块，Section组织标题与正文，Stack组织局部内容；表格、详情和表单只管理自身内容，不携带页面外边距。排版实现归OpenUIWorkspace.css与对应适配器，尺寸约定见前端控件README。改变某个业务字段或子组件类型不应意外改变其父容器布局；不依赖CSS猜测业务结构。
+Assistant决定内容、分组与显式横纵组合，组件负责基础排版。ViewNavigation分开导航和内容，View/Workspace排列主要区块；Section(title, children)显式声明业务分组，平台提供轻分界和可访问名称，嵌套Section按有标题祖先推进标题层次，避免层层卡片。相关表格、表单、文字和本组动作可以放在同一Section，业务名字、数量和内容由工作需要决定；内容组件可用空标题避免重复。Stack仅控制局部横纵排布，不产生业务区域或分界，平台不会按子组件类型自动分组，也不改写既有无Section程序；表格、详情和表单只管理自身内容，不携带页面外边距。排版实现归OpenUIWorkspace.css与对应适配器，尺寸约定见前端控件README。改变某个业务字段或子组件类型不应意外改变其父容器布局；不依赖CSS猜测业务结构。
