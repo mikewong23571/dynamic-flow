@@ -197,11 +197,14 @@
   }
   .context-panel[data-mode='dock'] {
     width: auto;
-    height: min(34dvh, 300px);
+    height: auto;
     max-height: 45%;
     flex-shrink: 0;
     border-left: 0;
     border-top: 1px solid var(--line);
+  }
+  .context-panel[data-mode='dock'][data-preferred-mode='side'] {
+    height: min(34dvh, 300px);
   }
   .context-panel[data-mode='dock'] .panel-tabs {
     height: 32px;

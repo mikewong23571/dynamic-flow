@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:1710987) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/browser/style-governance.spec.ts:204:1 › resizing preserves action reachability and user panel preference (1.8s)
+  ✓  2 tests/browser/style-governance.spec.ts:231:1 › collapsed composer dock fits its content and preserves expanded panel intent (2.0s)
+  ✓  3 tests/browser/style-governance.spec.ts:338:1 › saved panel width and manual method panel remain reachable on resize (3.0s)
+  ✓  4 tests/browser/style-governance.spec.ts:445:1 › home long request remains readable and retains local input (887ms)
+
+  4 passed (12.7s)

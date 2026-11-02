@@ -228,6 +228,70 @@ test('resizing preserves action reachability and user panel preference', async (
   await expect(page.locator('.context-panel[data-mode="side"]')).toBeVisible();
 });
 
+test('collapsed composer dock fits its content and preserves expanded panel intent', async ({
+  page,
+  request,
+}, info) => {
+  const ws = await seed(request);
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto(`/items/${ws.item.id}?tab=results`);
+  const panel = page.getByRole('complementary', {
+    name: '工作项 Assistant',
+    exact: true,
+  });
+  const composer = panel.locator('.composer');
+  const bottomGap = async () => {
+    const dock = (await panel.boundingBox())!;
+    const content = (await composer.boundingBox())!;
+    return dock.y + dock.height - content.y - content.height;
+  };
+  await expect(composer).toBeVisible();
+  await expect.poll(bottomGap).toBeLessThanOrEqual(16);
+  await expect(panel).toHaveAttribute('data-preferred-mode', 'dock');
+  await page.screenshot({
+    path: info.outputPath('collapsed-composer-1024.png'),
+  });
+  const collapsedHeight = (await panel.boundingBox())!.height;
+  const save = page
+    .locator('[data-openui-renderer="official"]')
+    .getByRole('button', { name: '保存输入', exact: true });
+  const hit = () =>
+    save.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      return el.contains(
+        document.elementFromPoint(
+          box.x + box.width / 2,
+          box.y + box.height / 2,
+        ),
+      );
+    });
+  await save.scrollIntoViewIfNeeded();
+  await expect.poll(hit).toBe(true);
+  await page
+    .getByRole('button', { name: '展开工作项 Assistant', exact: true })
+    .click();
+  await expect(panel).toHaveAttribute('data-preferred-mode', 'side');
+  await expect(panel).toHaveAttribute('data-mode', 'dock');
+  await expect
+    .poll(async () => (await panel.boundingBox())!.height)
+    .toBeGreaterThan(collapsedHeight + 40);
+  expect((await panel.boundingBox())!.height).toBeLessThanOrEqual(300);
+  await save.scrollIntoViewIfNeeded();
+  await expect.poll(hit).toBe(true);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(panel).toHaveAttribute('data-mode', 'side');
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await expect(panel).toHaveAttribute('data-mode', 'dock');
+  await page
+    .getByRole('button', { name: '收起工作项 Assistant', exact: true })
+    .click();
+  await expect(panel).toHaveAttribute('data-preferred-mode', 'dock');
+  await expect.poll(bottomGap).toBeLessThanOrEqual(16);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(panel).toHaveAttribute('data-mode', 'dock');
+  await expect.poll(bottomGap).toBeLessThanOrEqual(16);
+});
+
 for (const width of [1440, 1024]) {
   test(`task success and missing trigger return focus ${width}`, async ({
     page,

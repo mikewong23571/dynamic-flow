@@ -35,7 +35,7 @@ App.css、Assistant.css、NodeInspector.css、ModelSettings.css、Results.css、
 
 ## 页面与 OpenUI
 
-WorkspaceFrame 统一页头、导航、主区和共享侧栏。展开偏好和拖拽宽度保留；1279px以下物理停靠，1440并排，1024冷打开默认底部Composer，缩窗不会让side覆盖主要动作。业务数据和动作保留在features。
+WorkspaceFrame 统一页头、导航、主区和共享侧栏。展开偏好和拖拽宽度保留；1279px以下物理停靠，1440并排，1024冷打开默认底部Composer，按内容定高；data-preferred-mode保留展开意图，preferred side在窄屏effective dock使用有界高度，收起回preferred dock不保留空白。缩窗不会让side覆盖主要动作。业务数据和动作保留在features。
 
 OpenUIWorkspace.css 与正式 SDK 适配器共同定义：Workspace/View主区块24px，Section标题到内容12px，同组Stack16px，导航到内容16px。父容器拥有直接子项间距，内容无页面外 margin。Records/InputForm/Report复用现成表格/字段/产物；模型不写CSS补间距。横向组合由明确Stack声明，不按子组件类型猜测。
 

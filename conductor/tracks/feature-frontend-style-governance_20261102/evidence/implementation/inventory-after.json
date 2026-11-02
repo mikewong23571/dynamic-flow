@@ -90,11 +90,11 @@
     },
     {
       "path": "src/client/components/WorkspaceFrame.css",
-      "sha256": "1ac6e6bcbd54e4f5a6c4f8475caabbce20e74a7e3a4ffe528059cc118c67225b"
+      "sha256": "d05b29e7b5e949083c42d7f0017dcf97c3deef04dca59d9285f6878276541fc3"
     },
     {
       "path": "src/client/components/WorkspaceFrame.tsx",
-      "sha256": "ad147e2b2a616dffc883a92e30e6a0fcaabadff2a11b48ce2f7e7cf5d68ecfcc"
+      "sha256": "816c7ea0d603b1b759b2221ec7ede2121dd92e3d80a15d4fa1faf7012571bd42"
     },
     {
       "path": "src/client/components/assistant-ui/model-selector.tsx",
@@ -664,7 +664,7 @@
   "summary": {
     "tsxFiles": 103,
     "cssFiles": 26,
-    "cssLines": 5647,
+    "cssLines": 5650,
     "unlayeredFiles": [],
     "nativeByTag": {
       "input": 27,
@@ -744,8 +744,8 @@
       "height": {
         "100%": 9,
         "36px": 3,
+        "auto": 3,
         "5px": 2,
-        "auto": 2,
         "100dvh": 1,
         "62px": 1,
         "40px": 1,
@@ -1183,6 +1183,7 @@
         "ref": "panel",
         "className": "context-panel",
         "data-mode": "effectiveMode",
+        "data-preferred-mode": "mode",
         "aria-label": "label",
         "style": "effectiveMode === 'side' && width ? { width "
       }

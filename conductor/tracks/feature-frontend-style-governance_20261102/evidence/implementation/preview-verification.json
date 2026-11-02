@@ -5,5 +5,21 @@
     1024
   ],
   "pageErrors": [],
+  "measurements": [
+    {
+      "width": 1440,
+      "preferredMode": "side",
+      "effectiveMode": "side",
+      "panelHeight": 780,
+      "bottomGap": 16
+    },
+    {
+      "width": 1024,
+      "preferredMode": "dock",
+      "effectiveMode": "dock",
+      "panelHeight": 147,
+      "bottomGap": 12
+    }
+  ],
   "runStatus": "completed"
 }

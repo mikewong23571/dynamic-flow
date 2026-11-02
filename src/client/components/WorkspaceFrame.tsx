@@ -194,6 +194,7 @@ export function WorkspaceSidePanel({
       ref={panel}
       className="context-panel"
       data-mode={effectiveMode}
+      data-preferred-mode={mode}
       aria-label={label}
       style={effectiveMode === 'side' && width ? { width } : undefined}
     >

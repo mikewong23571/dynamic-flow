@@ -85,3 +85,7 @@
 持续预览： http://10.134.94.200:4336/items/78abd2d8-cad5-42b5-9567-2d93938dd392 ，完整后端与正式dist在0.0.0.0:4336；监听进程1709160、启动pnpm进程1709113。持久数据及日志在本worktree `.flowcraft-preview-data/`（preview-server.log、preview-process.json、preview-seed.json）。启动命令：`HOST=0.0.0.0 FLOWCRAFT_API_PORT=4336 FLOWCRAFT_DATA_ROOT=$PWD/.flowcraft-preview-data pnpm preview`；保持运行供查看，4335及托管端口/服务未触碰。
 
 样例标题明确为“UI治理演示（合成样例）”，含2条合成材料及2行合成反馈，使用function/expression/aggregate/literal的真实运行（completed）并发布工作表面。它证明真实运行及UI展示接线，不声称模型或业务质量验收。没有models.toml/密钥/自动模型调用，没有复制用户数据。1440/1024实际打开表面与任务并Escape关闭，无pageerror，4张截图已实看并归档。预览可变业务状态不进入Git；归档只含合成seed说明、验证结果和截图。
+
+## SG05 最终看图补修
+
+父会话在1024真实预览发现默认折叠Composer dock底部约126px空白；新增反例改前失败后，WorkspaceSidePanel以公开data-preferred-mode区分折叠dock与窄屏展开side：折叠auto定高，展开side转dock才有界高度。新预览1024面板147px、底部12px正常margin，释放114px主内容；已实看完整两尺寸截图。当前15条治理全部通过且未更新golden；4条直接布局回归、类型/构建/守卫/Prettier通过。新dist已在本人4336预览生效，监听PID/URL/持久数据不变；未触碰4335或托管。完整证据见implementation/README.md的SG05补修段。当前不同浏览器用例总数70（55既有+15治理），分轮产物说明保留，不累加重复回归。

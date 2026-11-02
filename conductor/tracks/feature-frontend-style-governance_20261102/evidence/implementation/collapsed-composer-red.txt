@@ -1,0 +1,43 @@
+
+Running 1 test using 1 worker
+
+(node:1710561) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/browser/style-governance.spec.ts:231:1 › collapsed composer dock fits its content and preserves expanded panel intent (16.0s)
+
+
+  1) tests/browser/style-governance.spec.ts:231:1 › collapsed composer dock fits its content and preserves expanded panel intent
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 16
+    Received:    126.109375
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      247 |   };
+      248 |   await expect(composer).toBeVisible();
+    > 249 |   await expect.poll(bottomGap).toBeLessThanOrEqual(16);
+          |                                ^
+      250 |   await expect(panel).toHaveAttribute('data-preferred-mode', 'dock');
+      251 |   await page.screenshot({
+      252 |     path: info.outputPath('collapsed-composer-1024.png'),
+        at /home/mike/projs/fork/dynamic-flow-style-governance/tests/browser/style-governance.spec.ts:249:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../../tmp/style-collapsed-red/style-governance-collapsed-36fd3-erves-expanded-panel-intent/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../../tmp/style-collapsed-red/style-governance-collapsed-36fd3-erves-expanded-panel-intent/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../../tmp/style-collapsed-red/style-governance-collapsed-36fd3-erves-expanded-panel-intent/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../../../../../tmp/style-collapsed-red/style-governance-collapsed-36fd3-erves-expanded-panel-intent/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/browser/style-governance.spec.ts:231:1 › collapsed composer dock fits its content and preserves expanded panel intent

@@ -42,11 +42,21 @@
 - material-visibility-red.txt：修正后的有效反例；明确回到flow且aria-selected=true后旧Dialog仍有1个。恢复可见性约束后的对应通过日志 material-visibility-green.txt。最初裸URL回退不保证隐藏inputs的测试前提错误已丢弃，不用作产品缺陷证据。
 - adjacent-55.txt：冻结产物上55条既有浏览器全部通过，产物SHA见adjacent-build-manifest.json；此轮早于最后的材料Portal与字段组细节修复，不声称它是最终产物全量重验。
 - modules-24.txt：24条client/navigation-actions/openui/canvas-layout/canvas-view-state模块回归通过。
-- final-contracts-and-navigation-22.txt：最终构建14条治理、2条方法引用、6条导航合计22/22通过，无更新golden；最后变更的直接影响路线已重跑。既有55条中8条重复，去重为69条不同浏览器用例，不把轮次累计为更多覆盖。
+- final-contracts-and-navigation-22.txt：上一检查点构建14条治理、2条方法引用、6条导航合计22/22通过，无更新golden；最后变更的直接影响路线已重跑。既有55条中8条重复，该轮去重为69条不同浏览器用例，不把轮次累计为更多覆盖；后续SG05复审新增1条，当前共70条不同用例。
 - final-typecheck.txt / final-build.txt / final-style-check.txt：最终类型、构建、守卫通过；构建仍提示既有bundle大小警告，未扩展为拆包优化。
 
-全部浏览器测试使用fixtures.ts创建的临时dataRoot、随机端口及独立--output，不接触4320/4321与用户模型。模型设置截图中的密码为未提交的合成字符串，取消/重开断言为空；没有保存密钥或复制models.toml。两尺寸工作区、任务、材料和设置截图已实际查看，新矩阵字段组左右与普通字段对齐。真实模型、用户业务数据、完整原型所有长尾路线与用户主观视觉确认未执行；69条测试也不表示所有行为均穷尽。
+全部浏览器测试使用fixtures.ts创建的临时dataRoot、随机端口及独立--output，不接触4320/4321与用户模型。模型设置截图中的密码为未提交的合成字符串，取消/重开断言为空；没有保存密钥或复制models.toml。两尺寸工作区、任务、材料和设置截图已实际查看，新矩阵字段组左右与普通字段对齐。真实模型、用户业务数据、完整原型所有长尾路线与用户主观视觉确认未执行；这些测试也不表示所有行为均穷尽。
 
 ## 持续预览
 
 [打开合成样例](http://10.134.94.200:4336/items/78abd2d8-cad5-42b5-9567-2d93938dd392)。独立worktree的`.flowcraft-preview-data/`持久保存预览数据和preview-server.log；监听PID1709160，pnpm启动PID1709113。完整backend+正式dist，0.0.0.0:4336；不占用4335或托管端口。preview-seed.json/preview-verification.json明确合成身份和真实纯函数运行completed；preview-*两尺寸工作表面/任务截图已实看，页面无运行时错误。未保存真实模型配置或自动调用模型。预览启动/数据说明见documentation.md。
+
+## SG05 父复审后的折叠面板补修
+
+父会话实际看图发现1024默认Composer下方126px空白，来自对所有effective dock固定高度。collapsed-composer-red.txt记录新增用例在改前的真实失败：panel底部减Composer底部=126.109375px，大于允许的正常16px外间距。
+
+WorkspaceSidePanel公开data-preferred-mode保存原意图；effective dock共享边界使用auto高度，只有preferred side（展开会话/Inspector因窄屏转停靠）使用min(34dvh,300px)的有界高度。没有新建业务布局层。preferred dock折叠时按内容定高，现1024实际面板147px、Composer底部12px正常margin；相比原面板261px释放114px给主区。
+
+collapsed-composer-affected-4.txt覆盖折叠/展开、两尺寸往返、已保存方法侧栏宽度/手动开关、主区动作scrollIntoView后实际命中及长目标内部滚动，4/4通过。collapsed-composer-contracts-15.txt为当前冻结构建15条治理用例全通过，无update-snapshots；既有导航8条采用上一检查点已通过结果，没有无目的重跑全部70。类型/构建/守卫/修改文件Prettier均通过，日志为collapsed-composer-*。
+
+现有4336后端直接提供新dist，未重启/触碰其它实例；新浏览器页面确认新data-preferred-mode、底部12px测量和0 pageerror。preview-1024/1440及任务截图已更新并实看；preview-verification.json记录当前测量值。之前55条广回归、24模块及22直接影响回归的历史轮次依旧有效，均不伪称在本次布局补修后全部重验。最后交付项仍待父会话最终review。
