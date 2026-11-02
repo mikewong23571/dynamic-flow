@@ -110,6 +110,22 @@ for (const width of [1440, 1024])
       await expect(
         page.getByRole('navigation', { name: '列表分页' }),
       ).toContainText('第 1 / 2 页');
+      const searchControl = page.getByRole('textbox', {
+        name: '搜索工作项',
+        exact: true,
+      });
+      const statusControl = page.getByRole('combobox', { name: '工作项状态' });
+      const searchBounds = (await searchControl.boundingBox())!;
+      const statusBounds = (await statusControl.boundingBox())!;
+      expect(searchBounds.width).toBeGreaterThan(statusBounds.width);
+      expect(Math.abs(searchBounds.y - statusBounds.y)).toBeLessThanOrEqual(1);
+      expect(searchBounds.height).toBe(statusBounds.height);
+      const searchForm = (await page
+        .locator('.management-search')
+        .boundingBox())!;
+      expect(
+        statusBounds.x - (searchForm.x + searchForm.width),
+      ).toBeLessThanOrEqual(24);
       await page.screenshot({ path: join(evidence, `list-${width}.png`) });
       await page.getByRole('button', { name: '下一页', exact: true }).click();
       await expect(listed.locator('tbody tr')).toHaveCount(2);

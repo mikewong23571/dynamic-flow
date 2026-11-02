@@ -65,7 +65,7 @@ export function ListToolbar({
           搜索
         </Button>
       </form>
-      {children}
+      {children && <div className="management-toolbar-actions">{children}</div>}
     </div>
   );
 }

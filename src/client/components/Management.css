@@ -35,8 +35,9 @@
   }
   .management-toolbar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: var(--space-field);
     padding: 20px 32px;
   }
@@ -44,7 +45,15 @@
     display: flex;
     gap: var(--space-inline);
     align-items: center;
-    width: min(390px, 55%);
+    width: min(390px, 100%);
+    flex-shrink: 0;
+  }
+  .management-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-inline);
+    min-width: 0;
   }
   .management-search-field {
     position: relative;

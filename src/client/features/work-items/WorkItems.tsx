@@ -363,6 +363,7 @@ export function WorkItems({
                     </Button>
                   )}
                   <NativeSelect
+                    layout="fit"
                     size="sm"
                     aria-label="工作项状态"
                     value={status}
