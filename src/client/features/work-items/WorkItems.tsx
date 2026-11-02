@@ -348,22 +348,19 @@ export function WorkItems({
                     setQuery(searchText.trim());
                     setPage(1);
                   }}
+                  onClear={
+                    searchText || query
+                      ? () => {
+                          setSearchText('');
+                          setQuery('');
+                          setPage(1);
+                        }
+                      : undefined
+                  }
                 >
-                  {(searchText || query) && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        setSearchText('');
-                        setQuery('');
-                        setPage(1);
-                      }}
-                    >
-                      清除搜索
-                    </Button>
-                  )}
                   <NativeSelect
                     layout="fit"
+                    wrapperClassName="w-[var(--toolbar-filter-width)] shrink-0"
                     size="sm"
                     aria-label="工作项状态"
                     value={status}

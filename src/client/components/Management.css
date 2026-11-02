@@ -34,10 +34,12 @@
     font-variant-numeric: tabular-nums;
   }
   .management-toolbar {
+    --toolbar-search-width: 320px;
+    --toolbar-filter-width: 160px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: var(--space-field);
     padding: 20px 32px;
   }
@@ -45,8 +47,9 @@
     display: flex;
     gap: var(--space-inline);
     align-items: center;
-    width: min(390px, 100%);
+    width: min(var(--toolbar-search-width), 100%);
     flex-shrink: 0;
+    margin-left: auto;
   }
   .management-toolbar-actions {
     display: flex;

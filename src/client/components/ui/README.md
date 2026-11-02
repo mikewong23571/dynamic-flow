@@ -32,7 +32,7 @@ App.css、Assistant.css、NodeInspector.css、ModelSettings.css、Results.css、
 - Modal 组合 DialogContent 的 application 布局：应用 CSS 管既有640/860/920/1040等任务尺寸，不被原语默认 sm:max-w-lg/grid/p-6 压住。MaterialDialog 继续直接用 Dialog 原语和自己的阅读尺寸。
 - 受控 Modal 打开时记录触发对象及任务范围；关闭/成功后返回有效触发对象，失效、禁用、inert、body/焦点guard等目标回到当前可见任务标题，再回 main。外部 onCloseAutoFocus 明确接管时优先。
 - ContentVisibility 控制已保留页面和 body Portal 是否实际可见，不清草稿或业务状态；DeferredContent/Details 按需创建长正文。
-- ListToolbar 将有界搜索框与按内容宽度的筛选/动作就近排列，空间不足时换行；NativeSelect 工具栏调用显式 layout=fit，不能沿用表单填满宽度。
+- ListToolbar 左侧是筛选、右侧是搜索；组件内布局变量定义搜索区总宽320px（含提交按钮）、常用状态筛选宽160px，两者高28px。剩余空间留白，窄屏760px以下分两行且搜索占满可用宽度。清除入口属于搜索框并保留其宽度与焦点。NativeSelect 工具栏调用显式 layout=fit，可通过公开wrapperClassName使用筛选宽度变量；表单仍默认fill。
 
 ## 页面与 OpenUI
 

@@ -160,7 +160,7 @@
   }
 }
 
-/* Scoped layout overrides for the unlayered full-page Management toolbar. */
+/* Nested lists share the same filter/search layout as full-page lists. */
 @layer components {
   .item-relations > .section-heading {
     gap: var(--space-group);
@@ -168,36 +168,17 @@
     margin-bottom: 12px;
   }
   .item-relations > .management-toolbar {
-    display: grid;
-    grid-template-columns: minmax(240px, 1fr) auto;
-    gap: var(--space-group);
     padding: 0;
     margin-bottom: 16px;
-  }
-  .item-relations > .management-toolbar > .management-search {
-    width: 100%;
-    max-width: 520px;
-    min-width: 0;
   }
   .item-relations-filters {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: var(--space-inline);
   }
   .item-relations > .management-pagination {
     padding: 16px 0 0;
-  }
-  @media (max-width: 900px) {
-    .item-relations > .management-toolbar {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    .item-relations > .management-toolbar > .management-search {
-      max-width: none;
-    }
-    .item-relations-filters {
-      justify-content: flex-start;
-    }
   }
 }

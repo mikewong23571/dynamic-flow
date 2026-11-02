@@ -1,0 +1,40 @@
+
+Running 1 test using 1 worker
+
+(node:1754189) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/browser/workitem-composition-roots.spec.ts:10:3 › 首页与全局列表只展示顶层，父项内部仍能管理子项 1440 (1.7s)
+
+
+  1) tests/browser/workitem-composition-roots.spec.ts:10:3 › 首页与全局列表只展示顶层，父项内部仍能管理子项 1440 ──────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 160
+    Received: 118
+
+      132 |         };
+      133 |       });
+    > 134 |       expect(statusBounds.width).toBe(160);
+          |                                  ^
+      135 |       expect(searchForm.width).toBe(320);
+      136 |       expect(statusBounds.x).toBe(toolbarEdges.left);
+      137 |       expect(searchForm.x + searchForm.width).toBe(toolbarEdges.right);
+        at /home/mike/projs/fork/dynamic-flow-style-governance/tests/browser/workitem-composition-roots.spec.ts:134:34
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../../tmp/flowcraft-toolbar-placement-red/workitem-composition-roots-首页与全局列表只展示顶层，父项内部仍能管理子项-1440/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../../tmp/flowcraft-toolbar-placement-red/workitem-composition-roots-首页与全局列表只展示顶层，父项内部仍能管理子项-1440/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../../tmp/flowcraft-toolbar-placement-red/workitem-composition-roots-首页与全局列表只展示顶层，父项内部仍能管理子项-1440/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../../../../../tmp/flowcraft-toolbar-placement-red/workitem-composition-roots-首页与全局列表只展示顶层，父项内部仍能管理子项-1440/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/browser/workitem-composition-roots.spec.ts:10:3 › 首页与全局列表只展示顶层，父项内部仍能管理子项 1440 ───────────
