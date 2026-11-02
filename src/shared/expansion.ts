@@ -31,7 +31,6 @@ export function materializeDefinition(
             id: n.id,
             label: n.label,
             kind: 'function' as const,
-            mode: 'each' as const,
             operation: 'map' as const,
             functionName: 'identity' as const,
             contract: n.contract,

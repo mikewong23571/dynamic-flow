@@ -1,0 +1,26 @@
+{
+  "track_id": "workitem-composition_20261028",
+  "type": "feature",
+  "status": "complete",
+  "created_at": "2026-10-28",
+  "workspace": "/home/mike/projs/fork/dynamic-flow-workitem-composition",
+  "authorization": "用户要求将近期确定的任务访问与导航业务合同落文档；当前仅规范和实施计划，不直接改导航界面。",
+  "repo_scope": null,
+  "phase": "task-navigation-contract-documented",
+  "current_scope": "task-navigation-business-contract",
+  "implementation_status": "contract-delivered-navigation-implementation-handed-off",
+  "executor": "root",
+  "subagents_allowed": false,
+  "design_status": "contract-defined-representative-visual-design-pending",
+  "updated_at": "2026-10-29",
+  "source_freeze": {
+    "source_digest": "2340e61fa6eca881d7b107f4a445b7c46fbdba896aa9ff9bcb12988ef5558b70",
+    "file_count": 215,
+    "scope": "历史：文档重置阶段的src摘要，已由用户落地授权解除冻结"
+  },
+  "initial_authorization": "用户明确要求设定收敛目标、定义实施计划并派发 subagent 落地",
+  "planning_status": "contract-and-module-handoff-documented",
+  "next_step": "整体导航已在独立track交付，当前验收见其evidence；R业务结果回接仍另列。",
+  "completed_at": "2026-10-29",
+  "handed_off_to": "feature-task-navigation_20261029"
+}

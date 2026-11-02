@@ -1,0 +1,20 @@
+{
+  "facts": [
+    {
+      "width": 1440,
+      "errors": [],
+      "conversations": 2,
+      "switchedBack": true
+    },
+    {
+      "width": 1024,
+      "errors": [],
+      "conversations": 2,
+      "switchedBack": true
+    }
+  ],
+  "scope": "真实预览只读切换已有两条会话；无新建、发送、运行或确认",
+  "rootRuns": 3,
+  "businessStatus": "open",
+  "newConversationId": "bf95e4a2-8c3c-4e5c-b370-fb557454eef5"
+}

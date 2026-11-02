@@ -1,0 +1,25 @@
+{
+  "facts": [
+    {
+      "width": 1440,
+      "errors": [],
+      "views": 5,
+      "navigation": "tabs",
+      "modelDetailTitle": "受影响范围与版本（按仓库）详情",
+      "readOnlyBusinessFormOpened": true,
+      "inputsOnlyOnInputTab": true
+    },
+    {
+      "width": 1024,
+      "errors": [],
+      "views": 5,
+      "navigation": "tabs",
+      "modelDetailTitle": "受影响范围与版本（按仓库）详情",
+      "readOnlyBusinessFormOpened": true,
+      "inputsOnlyOnInputTab": true
+    }
+  ],
+  "rootRuns": 4,
+  "status": "open",
+  "scope": "只读查看5个明确声明的Tabs、详情/工具菜单、实际业务表单、输入页；无提交或确认"
+}

@@ -22,7 +22,7 @@ function definition(timeoutSeconds?: number): Definition {
         id: 'investigate',
         label: '调查材料',
         kind: 'agent',
-        mode: 'each',
+
         operation: 'map',
         task: '提取证据',
         expectedOutput: {
@@ -35,14 +35,14 @@ function definition(timeoutSeconds?: number): Definition {
         id: 'investigated',
         label: '记录调查',
         kind: 'milestone',
-        mode: 'all',
+
         milestone: { stage: '已调查', summary: '已有调查证据' },
       },
       {
         id: 'wait',
         label: '等待公告',
         kind: 'wait',
-        mode: 'all',
+
         wait: {
           event: 'vendor.advisory',
           reason: '等待公告或复核期限',
@@ -53,7 +53,7 @@ function definition(timeoutSeconds?: number): Definition {
         id: 'reviewed',
         label: '完成复核',
         kind: 'milestone',
-        mode: 'all',
+
         milestone: { stage: '已复核', summary: '待人工确认完成条件' },
       },
     ],
@@ -165,23 +165,34 @@ serve({fetch:application.app.fetch,port:0,hostname:'127.0.0.1'}, address => {
     assert.fail(`Expected ${status}, got ${JSON.stringify(item.execution)}`);
   }
   async function create(key: string, timeoutSeconds?: number) {
-    const method = await request<Snapshot>('/api/works', {
-      goal: key,
-      materials: ['method sample'],
-    });
-    await request(`/api/works/${method.work.id}/actions`, {
-      action: 'saveDraft',
-      definition: definition(timeoutSeconds),
-    });
     const item = await request<WorkItemView>('/api/items', {
       key,
       title: key,
-      workflowId: method.work.id,
       goal: '调查并跟踪',
       criteria: ['结论有证据'],
       materials: [`${key} 证据一`, `${key} 证据二`],
     });
-    await request(`/api/items/${item.id}/actions`, { action: 'run' });
+    const ws = await request<{ item: WorkItemView }>(
+      `/api/items/${item.id}/workspace/actions`,
+      {
+        action: 'saveFlow',
+        baseRevision: item.revision,
+        definition: definition(timeoutSeconds),
+      },
+    );
+    const ready = await request<{ item: WorkItemView }>(
+      `/api/items/${item.id}/workspace/actions`,
+      {
+        action: 'selectInputs',
+        baseRevision: ws.item.revision,
+        inputPort: 'materials',
+        materialIds: item.materials.map((m) => m.id),
+      },
+    );
+    await request(`/api/items/${item.id}/actions`, {
+      action: 'run',
+      baseRevision: ready.item.revision,
+    });
     return until(item.id, 'waiting');
   }
   async function record(item: WorkItemView): Promise<Run> {

@@ -1,0 +1,33 @@
+import {mkdtemp,readFile,writeFile,copyFile,cp,readdir,stat,mkdir} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
+import {tmpdir} from 'node:os';
+import {createRequire} from 'node:module';
+import {createApplication} from '/home/mike/projs/fork/dynamic-flow-workitem-composition/src/server/index.ts';
+import {assessmentMethod} from '/home/mike/projs/fork/dynamic-flow-workitem-composition/pipelines/cve/composition/recipe.ts';
+import {interactiveBatchDefinition,interactiveUpdateDefinition} from '/home/mike/projs/fork/dynamic-flow-workitem-composition/pipelines/cve/composition/interactive.ts';
+import {alerts,assessments} from '/home/mike/projs/fork/dynamic-flow-workitem-composition/pipelines/cve/composition/fixture.ts';
+const require=createRequire('/home/mike/projs/fork/dynamic-flow-workitem-composition/package.json');const{serve}=require('@hono/node-server');
+const preview=(await readFile('/tmp/flowcraft-workitem-preview-path','utf8')).trim();
+const dataRoot=await mkdtemp(join(tmpdir(),'flowcraft-fresh-design-'));await writeFile('/tmp/flowcraft-fresh-design-path',dataRoot);
+for(const name of ['models.toml','model-settings.json'])await copyFile(join(preview,name),join(dataRoot,name));
+const out=resolve('conductor/tracks/workitem-composition_20261028/evidence/fresh-design');await mkdir(out,{recursive:true});
+const realFetch=globalThis.fetch;const requests:any[]=[];
+globalThis.fetch=async(input,init)=>{const raw=init?.body;if(typeof raw==='string'){try{const b=JSON.parse(raw);if(b.model){const fact={model:b.model,thinking:b.thinking?.type,budgetTokens:b.thinking?.budget_tokens,effort:b.output_config?.effort||b.reasoning_effort,maxTokens:b.max_tokens,tools:b.tools?.length};requests.push(fact);await writeFile(join(out,'request-settings.json'),JSON.stringify(requests,null,2));}}catch{}}return realFetch(input,init);};
+const app=await createApplication({dataRoot});
+const server=serve({fetch:app.app.fetch,hostname:'0.0.0.0',port:4332},()=>console.log('Fresh no-template preview listening on 4332'));
+const post=async(path:string,body:any)=>{const r=await app.app.request(path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});if(!r.ok)throw Error(await r.text());return r.json() as Promise<any>};
+const save=async(title:string,definition:any)=>{const w=await app.work.createWork(title,[]);await app.work.rename(w.id,title);return {workId:w.id,definitionId:await app.flow.saveDraft(w.id,undefined,definition)}};
+const check=await save('核对提供的范围判断及依据',assessmentMethod);
+const batch=await save('批次核对及实施范围汇总',interactiveBatchDefinition(check));
+await save('补充核查材料并重新汇总',interactiveUpdateDefinition(batch,'evidence'));
+await save('记录人工例外决定并重新汇总',interactiveUpdateDefinition(batch,'exception'));
+const item=await post('/api/items',{title:'全新设计·仓库修复与审计推进',goal:'这一批CVE告警进来，哪些仓库在哪些版本受到哪些告警影响，需要实际改动哪些仓库，以及我还要补什么才能满足安全审计。修复或有证据排除每条告警，例外必须由我明确确认。',materials:[JSON.stringify({notice:'全部为合成数据，仅用于交互设计验证，不代表实际漏洞判断或审批。',alerts,assessments},null,2)],criteria:[]});
+const path=`/api/items/${item.id}/workspace`;let ws=await post(path+'/actions',{action:'init'});
+const before={itemId:item.id,privateWorkId:ws.work.work.id,model:'deepseek-v4-flash',effort:'high',methodCount:ws.methods.length,methodUiTemplates:ws.methods.filter((m:any)=>m.uiPlan||m.presentations?.length||m.presentation).length,initialUiPlan:!!ws.uiPlan,initialDefinition:!!ws.work.work.draftId,materials:1,existingChats:ws.work.work.messages.length};
+if(before.methodUiTemplates||before.initialUiPlan||before.initialDefinition||before.existingChats)throw Error('Fresh design must have no UI template, flow or conversation');
+await writeFile(join(out,'before.json'),JSON.stringify(before,null,2));console.log(JSON.stringify(before));
+const prompt='请作为这个工作项的Assistant，从目标和唯一原始材料重新设计并实际保存一个可以用来推进业务的版本。用户最关心：哪些仓库/版本受影响，实际要改哪些仓库，还有哪些缺口需要他处理。验收口径是修复或有证据排除每条告警，例外必须由用户明确确认。材料完全虚构，只沿用已提供判断与证据，不生成新的漏洞结论。\n这里没有给你任何界面模板，也没有指定Tab名称、数量、字段、分组或按钮；请你独立决定怎样组织业务界面，用户如何看清范围、查看依据、补充资料并推进到最终交付/人工验收。只使用真实方法合同和本应用已提供的原语与UI能力，方法衔接保持薄，技术标识使用原生英文。自己发现并检查可复用的方法，读取材料，按真实来源绑定输入，保存处理流程、可操作界面及必要未确认完成条件；检查工具错误并自行修正。完成后可执行这批纯函数核对并将真实结果绑定到自己设计的界面，以便用户马上看和操作。不得替用户填写例外确认或验收条件，不自动结项。最后简短说明你怎样安排用户的下一步，以及平台能力不够时的具体缺口，不要只在聊天里描述。';
+const receipt=await post(path+'/actions',{action:'assistant',conversationId:'main',text:prompt});const started=Date.now();let last='';
+for(;;){ws=await(await app.app.request(path)).json();const msg=ws.work.work.messages.find((m:any)=>m.requestId===receipt.requestId&&m.role==='assistant');if(msg){const state=JSON.stringify({status:msg.status,activities:msg.activities?.map((a:any)=>({name:a.toolName,status:a.status})),elapsedMs:Date.now()-started});if(state!==last){console.log(state);last=state;}if(['completed','failed','cancelled'].includes(msg.status)){await writeFile(join(out,'result.json'),JSON.stringify({before,elapsedMs:Date.now()-started,message:msg,plan:ws.uiPlan,definition:ws.work.definitions[ws.work.work.draftId],runs:ws.work.work.runs.map((r:any)=>({id:r.id,status:r.status,definitionId:r.definitionId,error:r.error})),deliveries:ws.deliveries?.map((d:any)=>({id:d.id,output:d.presentation.output,title:d.presentation.title,rows:d.rows?.length})),criteria:ws.item.criteria,status:ws.item.status,url:`http://10.134.94.200:4332/items/${item.id}?tab=results`},null,2));console.log(JSON.stringify({done:true,status:msg.status,itemId:item.id,views:ws.uiPlan?.views.map((v:any)=>({output:v.output,title:v.title,actions:v.actions?.map((a:any)=>a.label)})),runs:ws.work.work.runs.length,error:msg.error}));break;}}
+ if(Date.now()-started>20*60*1000){console.log('Still running after twenty minutes; service and model left intact');break;}await new Promise(r=>setTimeout(r,3000));}
+for(const signal of ['SIGTERM','SIGINT'])process.on(signal,()=>{app.runs.close();app.batches.close();server.close(()=>process.exit(0))});

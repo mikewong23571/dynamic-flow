@@ -1,0 +1,281 @@
+{
+  "title": "漏洞事实研究",
+  "goal": "研究指定漏洞的官方事实、版本范围和触发机制，形成有来源的核查依据。",
+  "definition": {
+    "schemaVersion": 1,
+    "inputs": [
+      "question"
+    ],
+    "inputContracts": {
+      "question": {
+        "item": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "nodes": [
+      {
+        "id": "research",
+        "label": "研究漏洞事实",
+        "kind": "agent",
+        "operation": "map",
+        "concurrency": 1,
+        "tools": {
+          "builtin": [],
+          "mcp": [
+            "cveawg",
+            "websearch"
+          ]
+        },
+        "task": "根据输入的漏洞编号、组件和问题，研究官方CVE记录、项目公告与修复说明。自行组织查证路径，明确受影响及修复版本、漏洞机制和实际触发条件，区分已证实事实与仍未知信息。输出可供源码核查使用的facts对象，evidence保留实际读取来源的URL、标题和关键原文摘录；report用简洁中文概括事实与未知。",
+        "inputSchema": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "cve": {
+              "type": "string"
+            },
+            "component": {
+              "type": "string"
+            },
+            "affectedVersions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "fixedVersions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "mechanism": {
+              "type": "string"
+            },
+            "triggerConditions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "excerpt": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "excerpt"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "unknown": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "report": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "cve",
+            "component",
+            "affectedVersions",
+            "fixedVersions",
+            "mechanism",
+            "triggerConditions",
+            "evidence",
+            "unknown",
+            "report"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "summary",
+        "label": "汇集本轮研究结果",
+        "kind": "function",
+        "functionName": "expression",
+        "operation": "aggregate",
+        "expectedOutput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "summary",
+            "scope"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "summary": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "scope": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "metrics": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "value"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nextAction": {
+              "type": "string"
+            }
+          }
+        },
+        "expression": {
+          "kind": "object",
+          "fields": {
+            "title": {
+              "kind": "literal",
+              "value": "本轮漏洞事实研究结果"
+            },
+            "summary": {
+              "kind": "literal",
+              "value": "已汇集本轮研究记录，具体版本、触发机制、来源与未知事项见逐项成果。"
+            },
+            "scope": {
+              "kind": "literal",
+              "value": "仅本轮固定输入中的研究问题，不代表业务源码或生产部署影响已确认。"
+            },
+            "metrics": {
+              "kind": "array",
+              "items": [
+                {
+                  "kind": "object",
+                  "fields": {
+                    "label": {
+                      "kind": "literal",
+                      "value": "研究记录"
+                    },
+                    "value": {
+                      "kind": "call",
+                      "function": "length",
+                      "args": [
+                        {
+                          "kind": "variable",
+                          "name": "input"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "limitations": {
+              "kind": "literal",
+              "value": [
+                "事实研究结果需人工核对；源码影响与部署影响仍需独立证据。"
+              ]
+            },
+            "nextAction": {
+              "kind": "literal",
+              "value": "复核事实与未知事项；需要补证或确认存在影响时，建立后续工作项。"
+            }
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": [
+          "$input",
+          "question"
+        ],
+        "to": [
+          "research",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "research",
+          "output"
+        ],
+        "to": [
+          "summary",
+          "input"
+        ]
+      }
+    ],
+    "outputs": {
+      "facts": [
+        "research",
+        "output"
+      ],
+      "summary": [
+        "summary",
+        "output"
+      ]
+    },
+    "summaryOutput": "summary"
+  },
+  "view": {
+    "positions": {
+      "research": {
+        "x": 320,
+        "y": 180
+      },
+      "summary": {
+        "x": 320,
+        "y": 0
+      }
+    },
+    "viewport": {
+      "x": 120,
+      "y": 40,
+      "zoom": 1
+    }
+  }
+}

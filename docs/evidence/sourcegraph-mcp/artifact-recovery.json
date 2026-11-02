@@ -1,0 +1,10 @@
+{
+  "runId": "c89f33ca-dd37-4258-af08-82efb112f364",
+  "resultId": "ac7d03ff-b26a-4665-af3c-4705ee82c0ca",
+  "activityId": "c89f33ca-dd37-4258-af08-82efb112f364:verify:0ca4e56a-9efb-4b1c-8a45-abd9ee2c1e4c:0:0:call_75568349ac6a40bc997f213b",
+  "source": "Successful bash heredoc retained in tool activity; recovered bytes, not a reconstructed node conclusion",
+  "file": "cleaned-cve-2025-27516-chatops-api-evidence.md",
+  "bytes": 4121,
+  "restoredAt": "2026-10-22T14:42:17.253Z",
+  "nodeStatus": "failed"
+}

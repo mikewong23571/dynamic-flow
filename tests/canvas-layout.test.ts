@@ -46,14 +46,14 @@ function fixture() {
         id,
         label: id,
         kind: 'function' as const,
-        mode: 'each' as const,
+        operation: 'map' as const,
         functionName: 'identity' as const,
       })),
       {
         id: 'collect',
         label: '收集',
         kind: 'function',
-        mode: 'all',
+
         functionName: 'collect',
         inputNames: names,
       },
@@ -61,7 +61,7 @@ function fixture() {
         id: 'merge',
         label: '拼接',
         kind: 'function',
-        mode: 'all',
+
         functionName: 'merge',
         inputNames: names,
       },
@@ -69,7 +69,7 @@ function fixture() {
         id: 'join',
         label: '关联',
         kind: 'function',
-        mode: 'all',
+
         functionName: 'join',
         join: {
           type: 'full',
@@ -214,7 +214,7 @@ test('dynamic and identically named input/output ports keep measured positions w
     id: 'disconnected',
     label: '待接线',
     kind: 'function',
-    mode: 'all',
+
     functionName: 'collect',
     inputNames: ['a', 'b', 'c', 'd', 'e', 'f'],
   });

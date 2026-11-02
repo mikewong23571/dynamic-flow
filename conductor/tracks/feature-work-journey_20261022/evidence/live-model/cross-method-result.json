@@ -1,0 +1,219 @@
+{
+  "id": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+  "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+  "scope": "full",
+  "inputs": {
+    "records": [
+      {
+        "value": {
+          "original": "搜索比以前快很多，团队很满意。",
+          "category": "称赞",
+          "reason": "反馈明确表达对搜索速度提升的正面评价与满意情绪（\"快很多\"\"很满意\"），未提出问题或新需求，属于称赞。"
+        },
+        "sampleId": "M03",
+        "materialIds": [
+          "M03"
+        ],
+        "sourceResultIds": [
+          "8fa0861f-17f5-44f7-8cb6-7e866de5137c"
+        ]
+      },
+      {
+        "value": {
+          "original": "界面很顺手，但导出报告经常失败，影响交付。",
+          "category": "问题",
+          "reason": "正面依据：界面很顺手；问题或需求依据：导出报告经常失败，影响交付。"
+        },
+        "sampleId": "M01",
+        "materialIds": [
+          "M01"
+        ],
+        "sourceResultIds": [
+          "a85b02dc-612a-486d-8ac6-0af6ddb7fa4a"
+        ]
+      }
+    ]
+  },
+  "inputSources": [
+    {
+      "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+      "runId": "2e6ef635-78df-4188-8326-3d48b899a6f3",
+      "resultId": "8fa0861f-17f5-44f7-8cb6-7e866de5137c",
+      "port": "output",
+      "index": 0
+    },
+    {
+      "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+      "runId": "8ff28984-5ffa-4480-a0a1-e23fb9e01615",
+      "resultId": "a85b02dc-612a-486d-8ac6-0af6ddb7fa4a",
+      "port": "output",
+      "index": 0
+    }
+  ],
+  "workItem": {
+    "id": "237a0e38-bffd-41cd-b95f-4d384386c392",
+    "key": "WI-20261022-adf153",
+    "title": "真实验收 · 客户反馈整理",
+    "goal": "整理客户反馈，分类并形成有原文依据的建议；明确报告实际覆盖范围。",
+    "revision": 6,
+    "data": {},
+    "materials": [
+      {
+        "id": "M03",
+        "text": "搜索比以前快很多，团队很满意。"
+      },
+      {
+        "id": "M01",
+        "text": "界面很顺手，但导出报告经常失败，影响交付。"
+      }
+    ]
+  },
+  "effectMode": "commit",
+  "status": "completed",
+  "stopRequested": false,
+  "nodeStates": {
+    "report": "completed"
+  },
+  "nodeTotals": {
+    "report": 1
+  },
+  "results": [
+    {
+      "id": "11aad442-8327-4e3e-95cd-460a270a0be4",
+      "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+      "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+      "nodeId": "report",
+      "instanceId": "report:all:0",
+      "input": {
+        "input": [
+          {
+            "value": {
+              "original": "搜索比以前快很多，团队很满意。",
+              "category": "称赞",
+              "reason": "反馈明确表达对搜索速度提升的正面评价与满意情绪（\"快很多\"\"很满意\"），未提出问题或新需求，属于称赞。"
+            },
+            "sampleId": "M03",
+            "materialIds": [
+              "M03"
+            ],
+            "sourceResultIds": [
+              "8fa0861f-17f5-44f7-8cb6-7e866de5137c"
+            ]
+          },
+          {
+            "value": {
+              "original": "界面很顺手，但导出报告经常失败，影响交付。",
+              "category": "问题",
+              "reason": "正面依据：界面很顺手；问题或需求依据：导出报告经常失败，影响交付。"
+            },
+            "sampleId": "M01",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": [
+              "a85b02dc-612a-486d-8ac6-0af6ddb7fa4a"
+            ]
+          }
+        ]
+      },
+      "outputs": {
+        "output": [
+          {
+            "value": "# 客户反馈整理 · 验收报告\n\n## 一、本次实际接收范围\n\n本次整批接收 **2 条** 已完成的分类成果记录，每条均包含 `original`、`category`、`reason` 字段，已按对象结构逐条读取；原文内容已与对应材料核对一致。覆盖的类别范围为 **2 个类别**：\n\n| 类别 | 条目数 |\n| --- | --- |\n| 称赞 | 1 条 |\n| 问题 | 1 条 |\n\n未对任何记录重新分类，未改写任何判定结论，以下如实呈现实际收到内容。\n\n## 二、按类别分组的成果条目\n\n### 称赞（1 条）\n\n**条目 1**\n- **原文依据**：「搜索比以前快很多，团队很满意。」\n- **类别**：称赞\n- **理由**：反馈明确表达对搜索速度提升的正面评价与满意情绪（\"快很多\"\"很满意\"），未提出问题或新需求，属于称赞。\n\n### 问题（1 条）\n\n**条目 2**\n- **原文依据**：「界面很顺手，但导出报告经常失败，影响交付。」\n- **类别**：问题\n- **理由**：正面依据：界面很顺手；问题或需求依据：导出报告经常失败，影响交付。\n\n## 三、说明\n\n- 以上共 2 条成果条目，与本次实际收到的记录数量一致，无遗漏、无新增。\n- 各条原文均为逐字引用，类别与理由均直接来自对应记录原文，未引入输入之外的信息。",
+            "sampleId": "11aad442-8327-4e3e-95cd-460a270a0be4",
+            "materialIds": [
+              "M03",
+              "M01"
+            ],
+            "sourceResultIds": [
+              "11aad442-8327-4e3e-95cd-460a270a0be4"
+            ]
+          }
+        ]
+      },
+      "status": "completed",
+      "activities": [
+        {
+          "id": "24b60bc4-21e5-40a1-b55f-7766a43c41e6:report:all:0:call_67b24c53aaa946a5bdee1cd3",
+          "toolCallId": "call_67b24c53aaa946a5bdee1cd3",
+          "toolName": "inspect_material",
+          "status": "completed",
+          "args": {
+            "materialId": "M03"
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"id\":\"M03\",\"text\":\"搜索比以前快很多，团队很满意。\"}"
+              }
+            ],
+            "details": {
+              "id": "M03",
+              "text": "搜索比以前快很多，团队很满意。"
+            }
+          }
+        },
+        {
+          "id": "24b60bc4-21e5-40a1-b55f-7766a43c41e6:report:all:0:call_2ffb62000b9f4d1da1b1a2fc",
+          "toolCallId": "call_2ffb62000b9f4d1da1b1a2fc",
+          "toolName": "inspect_material",
+          "status": "completed",
+          "args": {
+            "materialId": "M01"
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"id\":\"M01\",\"text\":\"界面很顺手，但导出报告经常失败，影响交付。\"}"
+              }
+            ],
+            "details": {
+              "id": "M01",
+              "text": "界面很顺手，但导出报告经常失败，影响交付。"
+            }
+          }
+        },
+        {
+          "id": "24b60bc4-21e5-40a1-b55f-7766a43c41e6:report:all:0:call_41a08dff96dc4c82bb2bdf67",
+          "toolCallId": "call_41a08dff96dc4c82bb2bdf67",
+          "toolName": "report_progress",
+          "status": "completed",
+          "args": {
+            "materialIds": [
+              "M03",
+              "M01"
+            ],
+            "nextAction": "等待用户验收确认；如后续补充新记录可按同一格式增补报告。",
+            "stage": "验收报告已生成",
+            "summary": "整批接收 2 条已完成分类记录（M03 称赞、M01 问题），原文已与材料核对一致，生成按类别分组、逐字引用原文并声明实际覆盖范围的 Markdown 验收报告。"
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"saved\":true,\"stage\":\"验收报告已生成\",\"summary\":\"整批接收 2 条已完成分类记录（M03 称赞、M01 问题），原文已与材料核对一致，生成按类别分组、逐字引用原文并声明实际覆盖范围的 Markdown 验收报告。\",\"revision\":8}"
+              }
+            ],
+            "details": {
+              "saved": true
+            }
+          }
+        }
+      ],
+      "startedAt": "2026-10-22T12:27:54.584Z",
+      "effectiveModel": {
+        "source": "default",
+        "alias": "sangfor/glm-5.3-flash",
+        "model": "glm-5.3-flash",
+        "effort": "max"
+      },
+      "finishedAt": "2026-10-22T12:28:23.031Z"
+    }
+  ],
+  "waits": [],
+  "signals": [],
+  "startedAt": "2026-10-22T12:27:54.574Z",
+  "finishedAt": "2026-10-22T12:28:23.035Z"
+}

@@ -1,0 +1,16 @@
+{
+  "track_id": "feature-workspace-performance_20261030",
+  "type": "feature",
+  "status": "complete",
+  "created_at": "2026-10-30",
+  "executor": "root",
+  "workspace": "/home/mike/projs/fork/dynamic-flow-workitem-composition",
+  "subagents_allowed": false,
+  "depends_on": [
+    "feature-workitem-plan-check_20261029"
+  ],
+  "phase": "deployed-to-managed-instance",
+  "deployment_url": "http://10.134.94.200:4320",
+  "next_step": "性能修复已部署；业务正式方法衔接由实际Assistant继续规划，非本性能track验收。",
+  "completed_at": "2026-10-30"
+}

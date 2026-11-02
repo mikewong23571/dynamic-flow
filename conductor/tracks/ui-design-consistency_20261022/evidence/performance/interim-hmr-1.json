@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-22T08:44:36.359Z",
+  "first": {
+    "ms": 1460,
+    "dom": 670,
+    "hiddenPanels": 5,
+    "longTasks": [
+      {
+        "start": 531.8999998569489,
+        "duration": 197
+      },
+      {
+        "start": 732.5,
+        "duration": 204
+      },
+      {
+        "start": 1088.7000000476837,
+        "duration": 58
+      },
+      {
+        "start": 1179.5999999046326,
+        "duration": 67
+      },
+      {
+        "start": 1306.2000000476837,
+        "duration": 100
+      },
+      {
+        "start": 1409.7000000476837,
+        "duration": 96
+      },
+      {
+        "start": 1929.7999999523163,
+        "duration": 136
+      },
+      {
+        "start": 2089.899999856949,
+        "duration": 62
+      }
+    ]
+  },
+  "switches": [
+    {
+      "index": 0,
+      "label": "固定材料与业务范围\n已完成",
+      "ms": 190,
+      "dom": 747
+    },
+    {
+      "index": 1,
+      "label": "检查候选系统\n已完成",
+      "ms": 208,
+      "dom": 796
+    },
+    {
+      "index": 2,
+      "label": "有候选系统？\n已完成",
+      "ms": 226,
+      "dom": 845
+    },
+    {
+      "index": 3,
+      "label": "展开待核查系统\n已完成",
+      "ms": 257,
+      "dom": 886
+    },
+    {
+      "index": 4,
+      "label": "逐系统核实影响\n已完成",
+      "ms": 309,
+      "dom": 968
+    }
+  ],
+  "api": 14,
+  "dom": 968,
+  "longTaskCount": 13,
+  "maxLongTask": 239,
+  "longTaskMs": 1804,
+  "heap": 72200000
+}

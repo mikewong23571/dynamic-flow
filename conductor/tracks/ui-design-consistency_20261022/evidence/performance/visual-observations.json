@@ -1,0 +1,177 @@
+{
+  "errors": [],
+  "observations": [
+    {
+      "width": 1440,
+      "geometry": [
+        {
+          "title": "固定材料与业务范围",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgb(16, 33, 55)",
+          "border": "rgb(82, 168, 255)"
+        },
+        {
+          "title": "检查候选系统",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "有候选系统？",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "展开待核查系统",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "逐系统核实影响",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "保留待发现范围",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "收集核查与范围缺口",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "计算整体影响结论",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "已形成业务影响记录",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "输出业务影响报告",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1024,
+      "geometry": [
+        {
+          "title": "固定材料与业务范围",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgb(16, 33, 55)",
+          "border": "rgb(82, 168, 255)"
+        },
+        {
+          "title": "检查候选系统",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "有候选系统？",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "展开待核查系统",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "逐系统核实影响",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "保留待发现范围",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "收集核查与范围缺口",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "计算整体影响结论",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "已形成业务影响记录",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        },
+        {
+          "title": "输出业务影响报告",
+          "titleY": 491.140625,
+          "statusY": 531.140625,
+          "height": 76,
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "rgba(255, 255, 255, 0.08)"
+        }
+      ],
+      "overflow": false
+    }
+  ]
+}

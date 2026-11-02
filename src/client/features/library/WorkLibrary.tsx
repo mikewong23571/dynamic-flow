@@ -1,3 +1,5 @@
+import { ObjectLink } from '../../components/ObjectLink';
+import { routeHref } from '../../app/navigation';
 import { useEffect, useState, type FormEvent } from 'react';
 import {
   Archive,
@@ -13,9 +15,8 @@ import type { WorkPage, WorkSummary } from '../../../shared/records';
 import { api } from '../../core/api';
 import { runAction } from '../../core/action';
 import { dateTime, errorText } from '../../core/format';
-import { Empty, Modal } from '../../components/ui';
+import { Badge, Empty, Modal } from '../../components/ui';
 import { Button } from '../../components/ui/button';
-import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import {
   Tabs,
@@ -44,6 +45,7 @@ import {
   ListLoading,
 } from '../../components/Management';
 import { usePinnedWorks } from './usePinnedWorks';
+import { WorkspaceHeading } from '../../components/WorkspaceFrame';
 import './WorkLibrary.css';
 
 export default function WorkLibrary({
@@ -51,11 +53,13 @@ export default function WorkLibrary({
   onCreate,
   onChanged,
   refreshKey = 0,
+  embedded = false,
 }: {
   onOpen: (id: string) => void;
   onCreate: () => void;
   onChanged?: () => void;
   refreshKey?: number;
+  embedded?: boolean;
 }) {
   const [searchText, setSearchText] = useState('');
   const [query, setQuery] = useState('');
@@ -143,243 +147,268 @@ export default function WorkLibrary({
   const currentPage = data?.page ?? 1;
   return (
     <section className="management-page" aria-label="流水线管理">
-      <PageHeader title="流水线" count={data?.total}>
-        <Button size="sm" onClick={onCreate}>
-          <Plus />
-          新建流水线
-        </Button>
-      </PageHeader>
-      {pinnedWorks.length > 0 && (
-        <div className="library-pinned" aria-label="已置顶的流水线">
-          {pinnedWorks.map((work) => {
-            const name = work.title || work.goal;
-            return (
-              <div className="library-pinned-row" key={work.id}>
-                <Pin size={14} />
-                <button
-                  className="management-title-button"
-                  aria-label={name}
-                  onClick={() => onOpen(work.id)}
-                  title={name}
-                >
-                  <strong>{name}</strong>
-                  <span className="management-secondary">
-                    {work.nodeCount
-                      ? `${work.nodeCount} 个节点`
-                      : '尚未编排节点'}{' '}
-                    · {dateTime(work.updatedAt)}
-                  </span>
-                </button>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={`取消置顶 ${name}`}
-                  title="取消置顶"
-                  onClick={() => togglePin(work.id)}
-                >
-                  <PinOff />
-                </Button>
-              </div>
-            );
-          })}
-        </div>
+      {embedded ? (
+        <WorkspaceHeading
+          title="流水线"
+          status={
+            <span className="management-count">{data?.total ?? '—'}</span>
+          }
+          actions={
+            <Button size="sm" onClick={onCreate}>
+              <Plus />
+              新建流水线
+            </Button>
+          }
+        />
+      ) : (
+        <PageHeader title="流水线" count={data?.total}>
+          <Button size="sm" onClick={onCreate}>
+            <Plus />
+            新建流水线
+          </Button>
+        </PageHeader>
       )}
-      <Tabs
-        className="library-body"
-        value={archived ? 'archived' : 'active'}
-        onValueChange={(value) => {
-          setArchived(value === 'archived');
-          setPage(1);
-        }}
-      >
-        <ListToolbar
-          label="搜索标题或目标"
-          placeholder="搜索流水线"
-          value={searchText}
-          onChange={setSearchText}
-          onSearch={() => {
-            setPage(1);
-            setQuery(searchText.trim());
-          }}
-        >
-          <TabsList aria-label="流水线归档状态">
-            <TabsTrigger value="active">未归档</TabsTrigger>
-            <TabsTrigger value="archived">已归档</TabsTrigger>
-          </TabsList>
-        </ListToolbar>
-        {error && (
-          <div className="library-error" role="alert">
-            <span>{error}</span>
-            {!renaming && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setRevision((value) => value + 1)}
-              >
-                重试
-              </Button>
-            )}
+      <div className={embedded ? 'management-content' : undefined}>
+        {pinnedWorks.length > 0 && (
+          <div className="library-pinned" aria-label="已置顶的流水线">
+            {pinnedWorks.map((work) => {
+              const name = work.title || work.goal;
+              return (
+                <div className="library-pinned-row" key={work.id}>
+                  <Pin size={14} />
+                  <button
+                    className="management-title-button"
+                    aria-label={name}
+                    onClick={() => onOpen(work.id)}
+                    title={name}
+                  >
+                    <strong>{name}</strong>
+                    <span className="management-secondary">
+                      {work.nodeCount
+                        ? `${work.nodeCount} 个节点`
+                        : '尚未编排节点'}{' '}
+                      · {dateTime(work.updatedAt)}
+                    </span>
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={`取消置顶 ${name}`}
+                    title="取消置顶"
+                    onClick={() => togglePin(work.id)}
+                  >
+                    <PinOff />
+                  </Button>
+                </div>
+              );
+            })}
           </div>
         )}
-        <TabsContent
+        <Tabs
+          className="library-body"
           value={archived ? 'archived' : 'active'}
-          className="library-content"
-          aria-busy={loading}
+          onValueChange={(value) => {
+            setArchived(value === 'archived');
+            setPage(1);
+          }}
         >
-          {loading ? (
-            <ListLoading />
-          ) : !data?.works.length ? (
-            <Empty
-              title={
-                query
-                  ? '没有匹配的流水线'
-                  : archived
-                    ? '还没有归档的流水线'
-                    : '还没有流水线'
-              }
-            >
-              {!query && !archived && (
-                <Button variant="outline" onClick={onCreate}>
-                  新建流水线
+          <ListToolbar
+            label="搜索标题或目标"
+            placeholder="搜索流水线"
+            value={searchText}
+            onChange={setSearchText}
+            onSearch={() => {
+              setPage(1);
+              setQuery(searchText.trim());
+            }}
+          >
+            <TabsList aria-label="流水线归档状态">
+              <TabsTrigger value="active">未归档</TabsTrigger>
+              <TabsTrigger value="archived">已归档</TabsTrigger>
+            </TabsList>
+          </ListToolbar>
+          {error && (
+            <div className="library-error" role="alert">
+              <span>{error}</span>
+              {!renaming && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setRevision((value) => value + 1)}
+                >
+                  重试
                 </Button>
               )}
-            </Empty>
-          ) : (
-            <div className="management-table-wrap">
-              <Table className="management-table library-table">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>名称</TableHead>
-                    <TableHead>定义状态</TableHead>
-                    <TableHead>{archived ? '归档时间' : '最近修改'}</TableHead>
-                    <TableHead>
-                      <span className="sr-only">操作</span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.works.map((work) => {
-                    const name = work.title || work.goal;
-                    const state = work.definitionState || 'empty';
-                    return (
-                      <TableRow key={work.id} className="library-item">
-                        <TableCell>
-                          <div className="management-row-title">
-                            <Workflow size={18} />
-                            <button
-                              className="management-title-button"
-                              aria-label={name}
-                              onClick={() => onOpen(work.id)}
-                              title={name}
-                            >
-                              <h2>{name}</h2>
-                              <span className="management-secondary">
-                                {work.nodeCount
-                                  ? `${work.nodeCount} 个节点`
-                                  : '尚未编排节点'}
-                              </span>
-                            </button>
-                            {pinned.includes(work.id) && (
-                              <Pin
-                                size={13}
-                                className="library-pinned-mark"
-                                aria-label="已置顶"
-                              />
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`definition-state definition-${state}`}
-                          >
-                            {
-                              {
-                                empty: '未定义',
-                                draft: '草稿',
-                                adopted: '已采用',
-                                changed: '有新草稿',
-                              }[state]
-                            }
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="management-date">
-                          {dateTime(
-                            (archived ? work.archivedAt : undefined) ||
-                              work.updatedAt,
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon-sm"
-                                aria-label={`更多操作 ${name}`}
-                                disabled={busy}
-                              >
-                                <MoreHorizontal />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {!archived && (
-                                <DropdownMenuItem
-                                  onSelect={() => togglePin(work.id)}
-                                >
-                                  {pinned.includes(work.id) ? (
-                                    <PinOff />
-                                  ) : (
-                                    <Pin />
-                                  )}
-                                  {pinned.includes(work.id)
-                                    ? '取消置顶'
-                                    : '置顶'}
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuItem
-                                onSelect={() => {
-                                  setRenaming(work);
-                                  setTitle(name);
-                                  setError('');
-                                }}
-                              >
-                                <Pencil />
-                                重命名
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onSelect={() =>
-                                  void action(work.id, {
-                                    action: 'archive',
-                                    archived: !archived,
-                                  })
-                                }
-                              >
-                                {archived ? <ArchiveRestore /> : <Archive />}
-                                {archived ? '恢复' : '归档'}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
             </div>
           )}
-        </TabsContent>
-      </Tabs>
-      <ListPagination
-        page={currentPage}
-        pageSize={pageSize}
-        total={data?.total ?? 0}
-        loading={loading}
-        onPage={setPage}
-        onPageSize={(size) => {
-          setPageSize(size);
-          setPage(1);
-        }}
-      />
+          <TabsContent
+            value={archived ? 'archived' : 'active'}
+            className="library-content"
+            aria-busy={loading}
+          >
+            {loading ? (
+              <ListLoading />
+            ) : !data?.works.length ? (
+              <Empty
+                title={
+                  query
+                    ? '没有匹配的流水线'
+                    : archived
+                      ? '还没有归档的流水线'
+                      : '还没有流水线'
+                }
+              >
+                {!query && !archived && (
+                  <Button variant="outline" onClick={onCreate}>
+                    新建流水线
+                  </Button>
+                )}
+              </Empty>
+            ) : (
+              <div className="management-table-wrap">
+                <Table className="management-table library-table">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>名称</TableHead>
+                      <TableHead>定义状态</TableHead>
+                      <TableHead>
+                        {archived ? '归档时间' : '最近修改'}
+                      </TableHead>
+                      <TableHead>
+                        <span className="sr-only">操作</span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data.works.map((work) => {
+                      const name = work.title || work.goal;
+                      const state = work.definitionState || 'empty';
+                      return (
+                        <TableRow key={work.id} className="library-item">
+                          <TableCell>
+                            <div className="management-row-title">
+                              <Workflow size={18} />
+                              <ObjectLink
+                                href={routeHref({
+                                  kind: 'method',
+                                  id: work.id,
+                                  tab: 'canvas',
+                                })}
+                                className="management-title-button no-underline"
+                                aria-label={name}
+                                onNavigate={() => onOpen(work.id)}
+                                title={name}
+                              >
+                                <h2>{name}</h2>
+                                <span className="management-secondary">
+                                  {work.nodeCount
+                                    ? `${work.nodeCount} 个节点`
+                                    : '尚未编排节点'}{' '}
+                                  · {work.goal}
+                                </span>
+                              </ObjectLink>
+                              {pinned.includes(work.id) && (
+                                <Pin
+                                  size={13}
+                                  className="library-pinned-mark"
+                                  aria-label="已置顶"
+                                />
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge status={state}>
+                              {
+                                {
+                                  empty: '未定义',
+                                  draft: '草稿',
+                                  adopted: '已采用',
+                                  changed: '有新草稿',
+                                }[state]
+                              }
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="management-date">
+                            {dateTime(
+                              (archived ? work.archivedAt : undefined) ||
+                                work.updatedAt,
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  aria-label={`更多操作 ${name}`}
+                                  disabled={busy}
+                                >
+                                  <MoreHorizontal />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                {!archived && (
+                                  <DropdownMenuItem
+                                    onSelect={() => togglePin(work.id)}
+                                  >
+                                    {pinned.includes(work.id) ? (
+                                      <PinOff />
+                                    ) : (
+                                      <Pin />
+                                    )}
+                                    {pinned.includes(work.id)
+                                      ? '取消置顶'
+                                      : '置顶'}
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem
+                                  onSelect={() => {
+                                    setRenaming(work);
+                                    setTitle(name);
+                                    setError('');
+                                  }}
+                                >
+                                  <Pencil />
+                                  重命名
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    void action(work.id, {
+                                      action: 'archive',
+                                      archived: !archived,
+                                    })
+                                  }
+                                >
+                                  {archived ? <ArchiveRestore /> : <Archive />}
+                                  {archived ? '恢复' : '归档'}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+        {(!embedded ||
+          (data && (data.total > pageSize || currentPage > 1))) && (
+          <ListPagination
+            page={currentPage}
+            pageSize={pageSize}
+            total={data?.total ?? 0}
+            loading={loading}
+            onPage={setPage}
+            onPageSize={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+          />
+        )}
+      </div>
       <Modal
         open={Boolean(renaming)}
         onOpenChange={(open) => {

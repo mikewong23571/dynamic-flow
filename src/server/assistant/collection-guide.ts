@@ -1,4 +1,4 @@
-export const collectionGuide = `多路数据组合提供三种 function 节点，均设mode:all、operation:aggregate，输出端口output，每个输入端口只接一条边。依赖所有已连接上游完成；空路有效、失败上游阻断。不要为了合并任意多路而层层串联旧merge，也不要把输入值从其它未连接节点偷读。
+export const collectionGuide = `多路数据组合提供三种 function 节点，均为整批集合运算，输出端口output，每个输入端口只接一条边。依赖所有已连接上游完成；空路有效、失败上游阻断。不要为了合并任意多路而层层串联旧merge，也不要把输入值从其它未连接节点偷读。
 1. 多路汇合：functionName:'merge',inputNames:['investigation','remediation','verification']。至少2个非空不重复端口，edges.to=[节点id,对应inputNames名称]。按inputNames声明顺序拼接各路所有项，并保留每项来源；不保留路名称到输出value。不带inputNames的旧merge才是left/right兼容行为，不要改写既有定义含义。
 2. 具名收集：functionName:'collect',inputNames:['investigation','remediation']。输出一项对象 {investigation:[该路值...],remediation:[该路值...]}。每路均是数组，空路为[]，单项也不能自动解包。下游可用expression let/object pattern解构；默认map逐项读取该对象，不误用aggregate后按对象直接取字段。
 3. 按键关联：functionName:'join',join:{type:'inner'|'left'|'right'|'full',leftKey:['cveId'],rightKey:['vulnerability','id'],duplicates:'all'|'error'}。固定输入left/right，不设置inputNames。输出多项{left:左侧原值或null,right:右侧原值或null}。inner只保留匹配，left保留左缺配，right保留右缺配，full两侧缺配均保留。all对重复键全部配对，error在任一路重复键时失败；不要隐式丢弃重复。缺失/null/对象/数组关联键失败，键只支持字符串、有限数、布尔且严格区分类型。空路径[]表示使用整个标量值作键。按左输入顺序和右匹配顺序输出，最后追加右缺配，不承诺按键排序。

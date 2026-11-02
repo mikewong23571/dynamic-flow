@@ -1,0 +1,446 @@
+[
+  {
+    "nodeId": "scope",
+    "activities": [
+      {
+        "tool": "ls",
+        "status": "completed",
+        "arguments": {
+          "path": "/tmp/dynamic-flow-pi-rcdIBD"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "node_modules/"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "report_progress",
+        "status": "completed",
+        "arguments": {
+          "materialIds": [
+            "M01",
+            "M02",
+            "M03"
+          ],
+          "nextAction": "verify 节点按 concurrency=1 逐系统核查 SCC/chatops-api 与 SCC/adr-api 的实际 Jinja2 版本与模板调用方式；若仓库仍不可达，保留证据缺口并等待操作者提供新的明确入口。",
+          "stage": "aggregate",
+          "summary": "CVE-2025-27516（Jinja2）聚合完成：编号四方一致（M01/M02/M03/workItem.data 均为 CVE-2025-27516·Jinja2，无冲突），A 材料 manifest 来源已固定（workId=a6b0f746-1095-46b4-8f20-008d80d8c654、runId=12f37002-976b-4746-bc6c-54b4bb1e723c、definitionId=bbfd0ac7-307e-490f-8b88-7268f92fe83a、resultId=7462ce40-64a0-4f4b-98f8-0694e1cd30bb，materialsVersion=12f37002-976b-4746-bc6c-54b4bb1e723c/7462ce40-64a0-4f4b-98f8-0694e1cd30bb）。业务范围 [SCC/chatops-api, SCC/adr-api] 三处一致。候选系统 2 个：chatops-api（requirements.txt 线索）、adr-api（requirements.txt 与 test-requirements.txt 线索），Jinja2-2.10.1 wheel 历史扫描线索（2025-12-04 工作区），仓库 URL 取自 M03，revision/environment 因仓库预检失败（git ls-remote TLS 异常、源码检索服务被拒）记 null，不重试。关键漏洞事实齐备（受影响 <=3.1.5、修复 3.1.6、8 条触发条件），未触发 systems=[] 排除；未覆盖范围与缺口已显式记录；M02 的 8 条实际取得来源正文原样移交 source_documents；本轮未发起新网络取证、无新增工具失败。"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"saved\":true,\"stage\":\"aggregate\",\"summary\":\"CVE-2025-27516（Jinja2）聚合完成：编号四方一致（M01/M02/M03/workItem.data 均为 CVE-2025-27516·Jinja2，无冲突），A 材料 manifest 来源已固定（workId=a6b0f746-1095-46b4-8f20-008d80d8c654、runId=12f37002-976b-4746-bc6c-54b4bb1e723c、definitionId=bbfd0ac7-307e-490f-8b88-7268f92fe83a、resultId=7462ce40-64a0-4f4b-98f8-0694e1cd30bb，materialsVersion=12f37002-976b-4746-bc6c-54b4bb1e723c/7462ce40-64a0-4f4b-98f8-0694e1cd30bb）。业务范围 [SCC/chatops-api, SCC/adr-api] 三处一致。候选系统 2 个：chatops-api（requirements.txt 线索）、adr-api（requirements.txt 与 test-requirements.txt 线索），Jinja2-2.10.1 wheel 历史扫描线索（2025-12-04 工作区），仓库 URL 取自 M03，revision/environment 因仓库预检失败（git ls-remote TLS 异常、源码检索服务被拒）记 null，不重试。关键漏洞事实齐备（受影响 <=3.1.5、修复 3.1.6、8 条触发条件），未触发 systems=[] 排除；未覆盖范围与缺口已显式记录；M02 的 8 条实际取得来源正文原样移交 source_documents；本轮未发起新网络取证、无新增工具失败。\",\"revision\":13}"
+            }
+          ],
+          "details": {
+            "saved": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "nodeId": "route",
+    "activities": []
+  },
+  {
+    "nodeId": "branch",
+    "activities": []
+  },
+  {
+    "nodeId": "expand",
+    "activities": []
+  },
+  {
+    "nodeId": "verify",
+    "activities": [
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "date -u +%Y-%m-%dT%H:%M:%SZ; pwd; ls -la"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "2026-10-22T04:34:19Z\n/tmp/dynamic-flow-pi-zlq1IH\ntotal 164\ndrwx------   2 mike mike   4096 Oct 22 04:33 .\ndrwxrwxrwt 189 root root 159744 Oct 22 04:34 ..\nlrwxrwxrwx   1 mike mike     47 Oct 22 04:33 node_modules -> /home/mike/projs/fork/dynamic-flow/node_modules\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "git config --show-origin --get-regexp 'url\\.' 2>/dev/null; echo \"---global---\"; git config --global --list 2>/dev/null | head -30; echo \"---system---\"; git config --system --list 2>/dev/null | head -30"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "file:/home/mike/.gitconfig\turl.https://mirrors.sangfor.com/github/.insteadof https://github.com/\nfile:/home/mike/.gitconfig\turl.https://mirrors.sangfor.com/github/.insteadof http://github.com/\nfile:/home/mike/.gitconfig\turl.http://mirrors.sangfor.org/github.insteadof https://github.com\n---global---\nuser.email=13569@sangfor.com\nuser.name=王辉赳13569\nurl.https://mirrors.sangfor.com/github/.insteadof=https://github.com/\nurl.https://mirrors.sangfor.com/github/.insteadof=http://github.com/\ncore.quotepath=false\nrebase.autostash=true\nfetch.prune=true\npull.rebase=true\nurl.http://mirrors.sangfor.org/github.insteadof=https://github.com\n---system---\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "cd /tmp && GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null GIT_TERMINAL_PROMPT=0 timeout 40 git ls-remote https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git 2>&1 | head -20; echo \"EXIT=$?\"",
+          "timeout": 60
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "fatal: unable to access 'https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git/': gnutls_handshake() failed: The TLS connection was non-properly terminated.\nEXIT=0\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "env | grep -i -E 'proxy' ; echo \"---curl diag---\"; curl -sv --max-time 25 'https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git/info/refs?service=git-upload-pack' -o /dev/null 2>&1 | tail -15; echo \"CURL_EXIT=$?\"",
+          "timeout": 40
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "no_proxy=localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,newapi-ai.sangfor.com,mirrors.sangfor.org,npm.uedc.sangfor.com.cn\nNO_PROXY=localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,newapi-ai.sangfor.com,mirrors.sangfor.org,npm.uedc.sangfor.com.cn\nGOPROXY=http://mirrors.sangfor.org/nexus/repository/go-proxy-group\nHTTPS_PROXY=socks5h://127.0.0.1:1082\nHTTP_PROXY=socks5h://127.0.0.1:1082\n---curl diag---\n* Uses proxy env variable no_proxy == 'localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,newapi-ai.sangfor.com,mirrors.sangfor.org,npm.uedc.sangfor.com.cn'\n* Uses proxy env variable HTTPS_PROXY == 'socks5h://127.0.0.1:1082'\n*   Trying 127.0.0.1:1082...\n* Connected to 127.0.0.1 (127.0.0.1) port 1082\n* SOCKS5 connect to mq.code.sangfor.org:443 (remotely resolved)\n* SOCKS5 request granted.\n* Connected to 127.0.0.1 (127.0.0.1) port 1082\n* ALPN: curl offers h2,http/1.1\n} [5 bytes data]\n* TLSv1.3 (OUT), TLS handshake, Client hello (1):\n} [512 bytes data]\n*  CAfile: /etc/ssl/certs/ca-certificates.crt\n*  CApath: /etc/ssl/certs\n* OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to mq.code.sangfor.org:443 \n* Closing connection\nCURL_EXIT=0\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "ls -d /tmp/ws-ua_20251204091525_XQTYYK 2>&1; ls /tmp | head -30; echo \"---cve-fix dir---\"; ls /home/mike/projs/main/cve-fix 2>&1 | head -20; echo \"---artifacts---\"; ls /home/mike/projs/main/cve-fix/artifacts 2>&1 | head -20"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "ls: cannot access '/tmp/ws-ua_20251204091525_XQTYYK': No such file or directory\n__pycache__\na.txt\naccuracy-env-backend-commit.txt\naccuracy-env-backend.log\naccuracy-env-backend.py\naccuracy-env-build.log\naccuracy-env-bundle.json\naccuracy-env-front-full.log\naccuracy-env-front-tests.log\naccuracy-env-frontend-commit.txt\naccuracy-env-last-tests.log\naccuracy-env-lint.log\naccuracy-env-preview\naccuracy-env-regression.log\naccuracy-env-typecheck.log\naccuracy-executor-backend-commit.txt\naccuracy-executor-backend.log\naccuracy-executor-backend.py\naccuracy-executor-browser.cjs\naccuracy-executor-build.log\naccuracy-executor-bundle.json\naccuracy-executor-evidence\naccuracy-executor-front.log\naccuracy-executor-frontend-commit.txt\naccuracy-executor-frontend.py\naccuracy-executor-full-backend.log\naccuracy-executor-full-front.log\naccuracy-executor-lint.log\naccuracy-executor-preview.json\naccuracy-executor-type.log\n---cve-fix dir---\nAGENTS.md\nMakefile\nanalysis\nartifacts\ncve_fix.egg-info\ncve_solutions\ndocs\nops\nprompts\npyproject.toml\nrefs\nrepos\nruntime\nschemas\nscripts\nsgconfig.yml\nstate\ntests\nuv.lock\nwork_repos\n---artifacts---\ncve_business_impact_index.jsonl\ncve_business_impact_promoted\ncve_materials_index.jsonl\ncve_materials_promoted\ncve_workflow_dashboard\nlibrary2cves.jsonl\nvulnerabilities.clean.jsonl\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "cd /tmp && env -u HTTP_PROXY -u HTTPS_PROXY -u http_proxy -u https_proxy -u ALL_PROXY -u all_proxy GIT_TERMINAL_PROMPT=0 timeout 40 git ls-remote https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git 2>&1 | head -10; echo \"EXIT=${PIPESTATUS[0]}\"",
+          "timeout": 60
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "EXIT=124\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "ls /home/mike/projs/main/cve-fix/repos 2>&1 | head; echo \"---work_repos---\"; ls /home/mike/projs/main/cve-fix/work_repos 2>&1 | head; echo \"---refs---\"; ls /home/mike/projs/main/cve-fix/refs 2>&1 | head"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "ImageMagick6_official_cve_2019_11597\nPillow\nPillow-620\nPillow_official\nPyMySQL\nakka\napache-kafka\napache-tomcat\napache-tomcat-official-46701\napache-tomcat-official-cve-2024-38286\n---work_repos---\nsf-secagent\nwcms-api\n---refs---\nvulnerabilities.json\nvulnerabilities.jsonl\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "ls /home/mike/projs/main/cve-fix/repos | grep -i -E 'jinja|chatops|adr|scc' ; echo \"---(no match if empty)---\"; sed -n '1682p' /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl > /tmp/line1682.json; wc -c /tmp/line1682.json; python3 -c \"\nimport json\nd=json.load(open('/tmp/line1682.json'))\nprint('vulnId=',d.get('vulnId'))\nprint('library=',d.get('library'))\nts=d.get('traceSource','')\nlines=[l for l in ts.split('\\n') if 'chatops' in l or 'aDR' in l]\nfor l in lines: print(repr(l))\nprint('assignedPerson=',d.get('assignedPerson'),'project=',d.get('project'))\n\""
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "jinja\n---(no match if empty)---\n6269 /tmp/line1682.json\nvulnId= CVE-2025-27516\nlibrary= Jinja2-2.10.1-py2.py3-none-any.whl\n'  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/Subscription/chatops/chatops-api/chatops-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl'\n'  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/python-adrapiclient/python-adr-api-client/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl'\n'  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/test-requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl'\n'  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl'\nassignedPerson= 余昌发 project= update-request6.txt\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "cd /home/mike/projs/main/cve-fix/repos/jinja && git remote get-url origin 2>/dev/null; git log --oneline -1 2>/dev/null; echo \"---chatops occurrences in clean.jsonl---\"; grep -c 'chatops' /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl; grep -n 'chatops' /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl | grep -o '^[0-9]*' | head"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "https://mirrors.sangfor.com/github/pallets/jinja.git\n5ef70112 Merge branch 'stable'\n---chatops occurrences in clean.jsonl---\n27\n1666\n1667\n1673\n1680\n1681\n1682\n1683\n1684\n1802\n1803\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "grep -n 'CVE-2025-27516' /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl | grep -o '^[0-9]*'; echo '---chatops+27516 same line---'; awk -F: '/CVE-2025-27516/ && /chatops-api/ {print NR\": \"$1}' /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl | head -5"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "1682\n---chatops+27516 same line---\n1682: {\"vulnId\"\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "cd /tmp/dynamic-flow-pi-zlq1IH && cp /tmp/line1682.json cleaned-cve-2025-27516-chatops-clue-line1682.json && cat > cleaned-cve-2025-27516-chatops-repo-access-20261022.txt <<'EOF'\n【SCC/chatops-api 给定仓库访问取证 · 2026-10-22（UTC）· 本节点实测，非模型转述】\n目标仓库（M03 repositories 字段给定入口）: https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git\n\n一、本机访问环境\n$ env | grep -i -E 'proxy'\nno_proxy=localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,newapi-ai.sangfor.com,mirrors.sangfor.org,npm.uedc.sangfor.com.cn\nNO_PROXY=localhost,127.0.0.1,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10,newapi-ai.sangfor.com,mirrors.sangfor.org,npm.uedc.sangfor.com.cn\nGOPROXY=http://mirrors.sangfor.org/nexus/repository/go-proxy-group\nHTTPS_PROXY=socks5h://127.0.0.1:1082\nHTTP_PROXY=socks5h://127.0.0.1:1082\n（mq.code.sangfor.org 不在 no_proxy 名单；默认经 socks5 代理出网）\n$ git config --show-origin --get-regexp 'url\\.'\nfile:/home/mike/.gitconfig\turl.https://mirrors.sangfor.com/github/.insteadof https://github.com/\nfile:/home/mike/.gitconfig\turl.https://mirrors.sangfor.com/github/.insteadof http://github.com/\nfile:/home/mike/.gitconfig\turl.http://mirrors.sangfor.org/github.insteadof=https://github.com\n（URL 重写仅作用于 github.com，与 mq.code.sangfor.org 无关，排除本机 git 重写干扰）\n\n二、尝试 1：干净 git 配置（GIT_CONFIG_GLOBAL/SYSTEM=/dev/null，走默认代理）\n$ GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null GIT_TERMINAL_PROMPT=0 timeout 40 git ls-remote https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git\nfatal: unable to access 'https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git/': gnutls_handshake() failed: The TLS connection was non-properly terminated.\n（与 M03 repository_preflight 2026-10-22「git ls-remote 失败：TLS 连接异常终止」一致）\n\n三、尝试 2：HTTP 层诊断（curl，走默认代理）\n$ curl -sv --max-time 25 'https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git/info/refs?service=git-upload-pack' -o /dev/null\n* Uses proxy env variable HTTPS_PROXY == 'socks5h://127.0.0.1:1082'\n*   Trying 127.0.0.1:1082... / Connected to 127.0.0.1 (127.0.0.1) port 1082\n* SOCKS5 connect to mq.code.sangfor.org:443 (remotely resolved) / SOCKS5 request granted.\n* TLSv1.3 (OUT), TLS handshake, Client hello (1):\n* OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to mq.code.sangfor.org:443\n（TLS 握手阶段连接被对端/链路终止，未收到任何 HTTP 响应）\n\n四、尝试 3：去代理直连（排除代理因素）\n$ env -u HTTP_PROXY -u HTTPS_PROXY -u http_proxy -u https_proxy -u ALL_PROXY -u all_proxy GIT_TERMINAL_PROMPT=0 timeout 40 git ls-remote https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git\n（无输出，EXIT=124：40 秒超时，直连不可达）\n\n五、本机替代源码入口排查（只读）\n- /tmp/ws-ua_20251204091525_XQTYYK（扫描线索 systemPath）：ls 报 No such file or directory，本机不存在该 2025-12-04 扫描工作区。\n- /home/mike/projs/main/cve-fix/repos：含 Pillow、apache-tomcat、jinja 等 CVE 研究克隆；repos/jinja 的 origin=https://mirrors.sangfor.com/github/pallets/jinja.git（上游取证克隆，非业务仓库）；无 chatops-api/adr-api 检出。\n- /home/mike/projs/main/cve-fix/work_repos：仅 sf-secagent、wcms-api，无 chatops-api。\n\n结论：给定仓库在本节点三种访问配置下均不可达，与 M03 预检一致；未获得 SCC/chatops-api 当前源码、requirements.txt 实文、revision 或部署信息。每方法各尝试一次，未反复重试。\nEOF\nls -la; date -u +%Y-%m-%dT%H:%M:%SZ; wc -c cleaned-*"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "total 176\ndrwx------   2 mike mike   4096 Oct 22 04:38 .\ndrwxrwxrwt 189 root root 159744 Oct 22 04:38 ..\n-rw-rw-r--   1 mike mike   6269 Oct 22 04:38 cleaned-cve-2025-27516-chatops-clue-line1682.json\n-rw-rw-r--   1 mike mike   3566 Oct 22 04:38 cleaned-cve-2025-27516-chatops-repo-access-20261022.txt\nlrwxrwxrwx   1 mike mike     47 Oct 22 04:33 node_modules -> /home/mike/projs/fork/dynamic-flow/node_modules\n2026-10-22T04:38:26Z\n6269 cleaned-cve-2025-27516-chatops-clue-line1682.json\n3566 cleaned-cve-2025-27516-chatops-repo-access-20261022.txt\n9835 total\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "report_progress",
+        "status": "completed",
+        "arguments": {
+          "materialIds": [
+            "M01",
+            "M02",
+            "M03"
+          ],
+          "nextAction": "待操作者/应用侧提供可达入口（开放 mq.code.sangfor.org 网络或提供源码包/镜像）后读取 chatops-api 当前 requirements.txt 与 revision，再核查 Jinja2 实际版本及调用方式；在此之前维持 undetermined。",
+          "stage": "verify",
+          "summary": "SCC/chatops-api 对 CVE-2025-27516 判定为 undetermined：唯一业务证据是 vulnerabilities.clean.jsonl 第 1682 行历史扫描线索（chatops-api/requirements.txt 直接依赖 Jinja2-2.10.1 wheel，2025-12-04 Jenkins 工作区），落在受影响范围 <3.1.6 内但按 M03 约定不代表当前部署版本。给定仓库三种访问配置实测均不可达（干净 git 配置+代理：gnutls TLS 握手被终止 SSL_ERROR_SYSCALL；curl 诊断同点断开；去代理直连 40s 超时），与 M03 预检一致；本机无源码检出、无扫描工作区（/tmp/ws-ua_20251204091525_XQTYYK 不存在）。当前版本、依赖引入点实文、调用路径、输入可控性、SandboxedEnvironment 配置均无法核实，无排除依据亦不足以确认触发。取证已落盘 cleaned-cve-2025-27516-chatops-clue-line1682.json 与 cleaned-cve-2025-27516-chatops-repo-access-20261022.txt。"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"saved\":true,\"stage\":\"verify\",\"summary\":\"SCC/chatops-api 对 CVE-2025-27516 判定为 undetermined：唯一业务证据是 vulnerabilities.clean.jsonl 第 1682 行历史扫描线索（chatops-api/requirements.txt 直接依赖 Jinja2-2.10.1 wheel，2025-12-04 Jenkins 工作区），落在受影响范围 <3.1.6 内但按 M03 约定不代表当前部署版本。给定仓库三种访问配置实测均不可达（干净 git 配置+代理：gnutls TLS 握手被终止 SSL_ERROR_SYSCALL；curl 诊断同点断开；去代理直连 40s 超时），与 M03 预检一致；本机无源码检出、无扫描工作区（/tmp/ws-ua_20251204091525_XQTYYK 不存在）。当前版本、依赖引入点实文、调用路径、输入可控性、SandboxedEnvironment 配置均无法核实，无排除依据亦不足以确认触发。取证已落盘 cleaned-cve-2025-27516-chatops-clue-line1682.json 与 cleaned-cve-2025-27516-chatops-repo-access-20261022.txt。\",\"revision\":14}"
+            }
+          ],
+          "details": {
+            "saved": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "nodeId": "verify",
+    "activities": [
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "echo \"=== date(UTC) ===\"; date -u +%Y-%m-%dT%H:%M:%SZ; echo \"=== pwd ===\"; pwd; ls -la; echo \"=== clue source exists? ===\"; ls -l /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl 2>&1 | head -3; echo \"=== scan workspace? ===\"; ls -ld /tmp/ws-ua_20251204091525_XQTYYK 2>&1; echo \"=== git url rewrites(global) ===\"; git config --global --get-regexp '^url\\.' 2>&1; echo \"=== git url rewrites(system) ===\"; git config --system --get-regexp '^url\\.' 2>&1; echo \"=== git version ===\"; git --version 2>&1"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "=== date(UTC) ===\n2026-10-22T04:42:07Z\n=== pwd ===\n/tmp/dynamic-flow-pi-DFseWx\ntotal 172\ndrwx------   2 mike mike   4096 Oct 22 04:39 .\ndrwxrwxrwt 189 root root 159744 Oct 22 04:42 ..\nlrwxrwxrwx   1 mike mike    134 Oct 22 04:39 cleaned-cve-2025-27516-chatops-clue-line1682.json -> /home/mike/projs/fork/dynamic-flow/data/5cb210fc-f700-43bd-9946-736d869db90b/uploads/cleaned-cve-2025-27516-chatops-clue-line1682.json\nlrwxrwxrwx   1 mike mike    140 Oct 22 04:39 cleaned-cve-2025-27516-chatops-repo-access-20261022.txt -> /home/mike/projs/fork/dynamic-flow/data/5cb210fc-f700-43bd-9946-736d869db90b/uploads/cleaned-cve-2025-27516-chatops-repo-access-20261022.txt\nlrwxrwxrwx   1 mike mike     47 Oct 22 04:39 node_modules -> /home/mike/projs/fork/dynamic-flow/node_modules\n=== clue source exists? ===\n-rw-rw-r-- 1 mike mike 12305697 Mar  9  2026 /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl\n=== scan workspace? ===\nls: cannot access '/tmp/ws-ua_20251204091525_XQTYYK': No such file or directory\n=== git url rewrites(global) ===\nurl.https://mirrors.sangfor.com/github/.insteadof https://github.com/\nurl.https://mirrors.sangfor.com/github/.insteadof http://github.com/\nurl.http://mirrors.sangfor.org/github.insteadof https://github.com\n=== git url rewrites(system) ===\n=== git version ===\ngit version 2.43.0\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "python3 - <<'EOF'\nimport json\npath='/home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl'\nwith open(path,'r',encoding='utf-8') as f:\n    for i,line in enumerate(f,1):\n        if i==1682:\n            rec=json.loads(line)\n            break\nprint(\"keys:\", sorted(rec.keys()))\nprint(\"vulnId:\", rec.get(\"vulnId\"))\nprint(\"library:\", rec.get(\"library\"))\nprint(\"libraryRaw:\", rec.get(\"libraryRaw\"))\nprint(\"libraryNames:\", rec.get(\"libraryNames\"))\nprint(\"project:\", rec.get(\"project\"))\nprint(\"assignedPerson:\", rec.get(\"assignedPerson\"))\nts=rec.get(\"traceSource\",\"\")\nlines=[l for l in ts.split(\"\\n\") if l.strip()]\nprint(\"traceSource lines total:\", len(lines))\nadr=[l for l in lines if \"adr-api\" in l and \"python-adrapiclient\" not in l]\nprint(\"--- adr-api lines (verbatim) ---\")\nfor l in adr: print(repr(l))\nchatops=[l for l in lines if \"chatops-api\" in l]\nprint(\"--- chatops lines (for cross-check, verbatim) ---\")\nfor l in chatops: print(repr(l))\n# save cleaned artifact for this node (adr-api focus, full record preserved)\nout={\n  \"purpose\": \"CVE-2025-27516 B 节点（SCC/adr-api）提取的业务依赖线索（仅线索，非影响判定）\",\n  \"extractedFrom\": \"/home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl 第 1682 行\",\n  \"extractedAt\": \"2026-10-22T04:42Z\",\n  \"adr_api_dependency_lines\": adr,\n  \"full_record_line1682\": rec\n}\nwith open('/tmp/dynamic-flow-pi-DFseWx/cleaned-cve-2025-27516-adr-api-clue-line1682.json','w',encoding='utf-8') as g:\n    json.dump(out,g,ensure_ascii=False,indent=2)\nprint(\"saved artifact bytes:\", __import__('os').path.getsize('/tmp/dynamic-flow-pi-DFseWx/cleaned-cve-2025-27516-adr-api-clue-line1682.json'))\nEOF"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "keys: ['assignedPerson', 'isTraced', 'library', 'libraryNames', 'libraryRaw', 'project', 'sourceFile', 'traceSource', 'vulnId']\nvulnId: CVE-2025-27516\nlibrary: Jinja2-2.10.1-py2.py3-none-any.whl\nlibraryRaw: Jinja2-2.10.1-py2.py3-none-any.whl\nlibraryNames: ['Jinja2']\nproject: update-request6.txt\nassignedPerson: 余昌发\ntraceSource lines total: 20\n--- adr-api lines (verbatim) ---\n'  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/test-requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl'\n'  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl'\n--- chatops lines (for cross-check, verbatim) ---\n'  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/Subscription/chatops/chatops-api/chatops-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl'\nsaved artifact bytes: 7259\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "websearch_fetchWebContent",
+        "status": "completed",
+        "arguments": {
+          "maxChars": 8000,
+          "renderMode": "request",
+          "url": "https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"url\": \"https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7\",\n  \"finalUrl\": \"https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7\",\n  \"contentType\": \"text/html; charset=utf-8\",\n  \"title\": \"Sandbox breakout through attr filter selecting format method · Advisory · pallets/jinja · GitHub\",\n  \"retrievalMethod\": \"request\",\n  \"truncated\": false,\n  \"content\": \"palletsjinjaRepository navigationCodeIssues80 (80)Pull requests25 (25)Only collaborators can create PRsActionsSecurity and quality5 (5)InsightsMore items\\n\\n      jinja\\n      Security\\n      Advisories\\n      GHSA-cpwx-vrp4-4pq7\\n\\n        Sandbox breakout through attr filter selecting format method\\n\\n  Moderate\\n\\n          davidism\\n          published\\n          GHSA-cpwx-vrp4-4pq7\\n          Mar 5, 2025\\n\\n      Package\\n\\n      Jinja2\\n            (pip)\\n\\n      Affected versions\\n\\n      <=3.1.5\\n\\n      Patched versions\\n\\n      None\\n\\n  Description\\n\\n    An oversight in how the Jinja sandboxed environment interacts with the |attr filter allows an attacker that controls the content of a template to execute arbitrary Python code.\\nTo exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates.\\nJinja's sandbox does catch calls to str.format and ensures they don't escape the sandbox. However, it's possible to use the |attr filter to get a reference to a string's plain format method, bypassing the sandbox. After the fix, the |attr filter no longer bypasses the environment's attribute lookup.\\n\\n  Severity\\n\\n  Moderate\\n\\n    5.4\\n\\n        CVSS overall score\\n\\n                    This score calculates overall vulnerability severity from 0 to 10 and is based on the Common Vulnerability Scoring System (CVSS).\\n\\n      / 10\\n\\n    CVSS v4 base metrics\\n      Exploitability Metrics\\n\\n          Attack Vector\\n          Local\\n\\n          Attack Complexity\\n          Low\\n\\n          Attack Requirements\\n          Present\\n\\n          Privileges Required\\n          Low\\n\\n          User interaction\\n          Passive\\n      Vulnerable System Impact Metrics\\n\\n          Confidentiality\\n          High\\n\\n          Integrity\\n          High\\n\\n          Availability\\n          High\\n      Subsequent System Impact Metrics\\n\\n          Confidentiality\\n          None\\n\\n          Integrity\\n          None\\n\\n          Availability\\n          None\\n\\n    Learn more about base metrics\\n\\n        CVSS v4 base metrics\\n\\n                    Exploitability Metrics\\n\\n                Attack Vector:\\n                This metric reflects the context by which vulnerability exploitation is possible. This metric value (and consequently the resulting severity) will be larger the more remote (logically, and physically) an attacker can be in order to exploit the vulnerable system. The assumption is that the number of potential attackers for a vulnerability that could be exploited from across a network is larger than the number of potential attackers that could exploit a vulnerability requiring physical access to a device, and therefore warrants a greater severity.\\n\\n                Attack Complexity:\\n                This metric captures measurable actions that must be taken by the attacker to actively evade or circumvent existing built-in security-enhancing conditions in order to obtain a working exploit. These are conditions whose primary purpose is to increase security and/or increase exploit engineering complexity. A vulnerability exploitable without a target-specific variable has a lower complexity than a vulnerability that would require non-trivial customization. This metric is meant to capture security mechanisms utilized by the vulnerable system.\\n\\n                Attack Requirements:\\n                This metric captures the prerequisite deployment and execution conditions or variables of the vulnerable system that enable the attack. These differ from security-enhancing techniques/technologies (ref Attack Complexity) as the primary purpose of these conditions is not to explicitly mitigate attacks, but rather, emerge naturally as a consequence of the deployment and execution of the vulnerable system.\\n\\n                Privileges Required:\\n                This metric describes the level of privileges an attacker must possess prior to successfully exploiting the vulnerability. The method by which the attacker obtains privileged credentials prior to the attack (e.g., free trial accounts), is outside the scope of this metric. Generally, self-service provisioned accounts do not constitute a privilege requirement if the attacker can grant themselves privileges as part of the attack.\\n\\n                User interaction:\\n                This metric captures the requirement for a human user, other than the attacker, to participate in the successful compromise of the vulnerable system. This metric determines whether the vulnerability can be exploited solely at the will of the attacker, or whether a separate user (or user-initiated process) must participate in some manner.\\n\\n            Vulnerable System Impact Metrics\\n\\n                Confidentiality:\\n                This metric measures the impact to the confidentiality of the information managed by the VULNERABLE SYSTEM due to a successfully exploited vulnerability. Confidentiality refers to limiting information access and disclosure to only authorized users, as well as preventing access by, or disclosure to, unauthorized ones.\\n\\n                Integrity:\\n                This metric measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the trustworthiness and veracity of information. Integrity of the VULNERABLE SYSTEM is impacted when an attacker makes unauthorized modification of system data. Integrity is also impacted when a system user can repudiate critical actions taken in the context of the system (e.g. due to insufficient logging).\\n\\n                Availability:\\n                This metric measures the impact to the availability of the VULNERABLE SYSTEM resulting from a successfully exploited vulnerability. While the Confidentiality and Integrity impact metrics apply to the loss of confidentiality or integrity of data (e.g., information, files) used by the system, this metric refers to the loss of availability of the impacted system itself, such as a networked service (e.g., web, database, email). Since availability refers to the accessibility of information resources, attacks that consume network bandwidth, processor cycles, or disk space all impact the availability of a system.\\n\\n            Subsequent System Impact Metrics\\n\\n                Confidentiality:\\n                This metric measures the impact to the confidentiality of the information managed by the SUBSEQUENT SYSTEM due to a successfully exploited vulnerability. Confidentiality refers to limiting information access and disclosure to only authorized users, as well as preventing access by, or disclosure to, unauthorized ones.\\n\\n                Integrity:\\n                This metric measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the trustworthiness and veracity of information. Integrity of the SUBSEQUENT SYSTEM is impacted when an attacker makes unauthorized modification of system data. Integrity is also impacted when a system user can repudiate critical actions taken in the context of the system (e.g. due to insufficient logging).\\n\\n                Availability:\\n                This metric measures the impact to the availability of the SUBSEQUENT SYSTEM resulting from a successfully exploited vulnerability. While the Confidentiality and Integrity impact metrics apply to the loss of confidentiality or integrity of data (e.g., information, files) used by the system, this metric refers to the loss of availability of the impacted system itself, such as a networked service (e.g., web, database, email). Since availability refers to the accessibility of information resources, attacks that consume network bandwidth, processor cycles, or disk space all impact the availability of a system.\\n\\n  CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N\\n\\n  CVE ID\\n\\n    CVE-2025-27516\\n\\n  Weaknesses\\n    No CWEs\\n\\n    Credits\\n\\n      securingapps\\n\\n  Reporter\"\n}"
+            }
+          ],
+          "details": {
+            "server": "websearch",
+            "tool": "fetchWebContent"
+          }
+        }
+      },
+      {
+        "tool": "websearch_fetchWebContent",
+        "status": "completed",
+        "arguments": {
+          "maxChars": 8000,
+          "renderMode": "request",
+          "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-27516"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"url\": \"https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-27516\",\n  \"finalUrl\": \"https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2025-27516\",\n  \"contentType\": \"application/json\",\n  \"title\": \"\",\n  \"retrievalMethod\": \"request\",\n  \"truncated\": false,\n  \"content\": \"{\\\"resultsPerPage\\\":1,\\\"startIndex\\\":0,\\\"totalResults\\\":1,\\\"format\\\":\\\"NVD_CVE\\\",\\\"version\\\":\\\"2.0\\\",\\\"timestamp\\\":\\\"2026-10-22T04:51:15.785\\\",\\\"vulnerabilities\\\":[{\\\"cve\\\":{\\\"id\\\":\\\"CVE-2025-27516\\\",\\\"sourceIdentifier\\\":\\\"security-advisories@github.com\\\",\\\"published\\\":\\\"2025-03-05T21:15:20.073\\\",\\\"lastModified\\\":\\\"2026-06-17T09:03:44.560\\\",\\\"vulnStatus\\\":\\\"Modified\\\",\\\"cveTags\\\":[],\\\"descriptions\\\":[{\\\"lang\\\":\\\"en\\\",\\\"value\\\":\\\"Jinja is an extensible templating engine. Prior to 3.1.6, an oversight in how the Jinja sandboxed environment interacts with the |attr filter allows an attacker that controls the content of a template to execute arbitrary Python code. To exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates. Jinja's sandbox does catch calls to str.format and ensures they don't escape the sandbox. However, it's possible to use the |attr filter to get a reference to a string's plain format method, bypassing the sandbox. After the fix, the |attr filter no longer bypasses the environment's attribute lookup. This vulnerability is fixed in 3.1.6.\\\"},{\\\"lang\\\":\\\"es\\\",\\\"value\\\":\\\"Jinja es un motor de plantillas extensible. Antes de la versión 3.1.6, un descuido en la forma en que el entorno aislado de Jinja interactúa con el filtro |attr permite que un atacante que controla el contenido de una plantilla ejecute código Python arbitrario. Para explotar la vulnerabilidad, un atacante debe controlar el contenido de una plantilla. Si ese es el caso depende del tipo de aplicación que utilice Jinja. Esta vulnerabilidad afecta a los usuarios de aplicaciones que ejecutan plantillas no confiables. El entorno aislado de Jinja detecta las llamadas a str.format y garantiza que no escapen del entorno aislado. Sin embargo, es posible utilizar el filtro |attr para obtener una referencia al método de formato simple de una cadena, sin pasar por el entorno aislado. Después de la corrección, el filtro |attr ya no pasa por alto la búsqueda de atributos del entorno. Esta vulnerabilidad se corrigió en la versión 3.1.6.\\\"}],\\\"affected\\\":[{\\\"source\\\":\\\"security-advisories@github.com\\\",\\\"affectedData\\\":[{\\\"vendor\\\":\\\"pallets\\\",\\\"product\\\":\\\"jinja\\\",\\\"versions\\\":[{\\\"version\\\":\\\"< 3.1.6\\\",\\\"status\\\":\\\"affected\\\"}]}]}],\\\"metrics\\\":{\\\"cvssMetricV40\\\":[{\\\"source\\\":\\\"security-advisories@github.com\\\",\\\"type\\\":\\\"Secondary\\\",\\\"cvssData\\\":{\\\"version\\\":\\\"4.0\\\",\\\"vectorString\\\":\\\"CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X\\\",\\\"baseScore\\\":5.4,\\\"baseSeverity\\\":\\\"MEDIUM\\\",\\\"attackVector\\\":\\\"LOCAL\\\",\\\"attackComplexity\\\":\\\"LOW\\\",\\\"attackRequirements\\\":\\\"PRESENT\\\",\\\"privilegesRequired\\\":\\\"LOW\\\",\\\"userInteraction\\\":\\\"PASSIVE\\\",\\\"vulnConfidentialityImpact\\\":\\\"HIGH\\\",\\\"vulnIntegrityImpact\\\":\\\"HIGH\\\",\\\"vulnAvailabilityImpact\\\":\\\"HIGH\\\",\\\"subConfidentialityImpact\\\":\\\"NONE\\\",\\\"subIntegrityImpact\\\":\\\"NONE\\\",\\\"subAvailabilityImpact\\\":\\\"NONE\\\",\\\"exploitMaturity\\\":\\\"NOT_DEFINED\\\",\\\"confidentialityRequirement\\\":\\\"NOT_DEFINED\\\",\\\"integrityRequirement\\\":\\\"NOT_DEFINED\\\",\\\"availabilityRequirement\\\":\\\"NOT_DEFINED\\\",\\\"modifiedAttackVector\\\":\\\"NOT_DEFINED\\\",\\\"modifiedAttackComplexity\\\":\\\"NOT_DEFINED\\\",\\\"modifiedAttackRequirements\\\":\\\"NOT_DEFINED\\\",\\\"modifiedPrivilegesRequired\\\":\\\"NOT_DEFINED\\\",\\\"modifiedUserInteraction\\\":\\\"NOT_DEFINED\\\",\\\"modifiedVulnConfidentialityImpact\\\":\\\"NOT_DEFINED\\\",\\\"modifiedVulnIntegrityImpact\\\":\\\"NOT_DEFINED\\\",\\\"modifiedVulnAvailabilityImpact\\\":\\\"NOT_DEFINED\\\",\\\"modifiedSubConfidentialityImpact\\\":\\\"NOT_DEFINED\\\",\\\"modifiedSubIntegrityImpact\\\":\\\"NOT_DEFINED\\\",\\\"modifiedSubAvailabilityImpact\\\":\\\"NOT_DEFINED\\\",\\\"Safety\\\":\\\"NOT_DEFINED\\\",\\\"Automatable\\\":\\\"NOT_DEFINED\\\",\\\"Recovery\\\":\\\"NOT_DEFINED\\\",\\\"valueDensity\\\":\\\"NOT_DEFINED\\\",\\\"vulnerabilityResponseEffort\\\":\\\"NOT_DEFINED\\\",\\\"providerUrgency\\\":\\\"NOT_DEFINED\\\"}}],\\\"cvssMetricV31\\\":[{\\\"source\\\":\\\"nvd@nist.gov\\\",\\\"type\\\":\\\"Primary\\\",\\\"cvssData\\\":{\\\"version\\\":\\\"3.1\\\",\\\"vectorString\\\":\\\"CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H\\\",\\\"baseScore\\\":8.8,\\\"baseSeverity\\\":\\\"HIGH\\\",\\\"attackVector\\\":\\\"LOCAL\\\",\\\"attackComplexity\\\":\\\"LOW\\\",\\\"privilegesRequired\\\":\\\"LOW\\\",\\\"userInteraction\\\":\\\"NONE\\\",\\\"scope\\\":\\\"CHANGED\\\",\\\"confidentialityImpact\\\":\\\"HIGH\\\",\\\"integrityImpact\\\":\\\"HIGH\\\",\\\"availabilityImpact\\\":\\\"HIGH\\\"},\\\"exploitabilityScore\\\":2.0,\\\"impactScore\\\":6.0}],\\\"ssvcV203\\\":[{\\\"source\\\":\\\"134c704f-9b21-4f2e-91b3-4a467353bcc0\\\",\\\"ssvcData\\\":{\\\"timestamp\\\":\\\"2025-07-31T03:56:03.356670Z\\\",\\\"id\\\":\\\"CVE-2025-27516\\\",\\\"options\\\":[{\\\"exploitation\\\":\\\"none\\\"},{\\\"automatable\\\":\\\"no\\\"},{\\\"technicalImpact\\\":\\\"total\\\"}],\\\"role\\\":\\\"CISA Coordinator\\\",\\\"version\\\":\\\"2.0.3\\\"}}]},\\\"weaknesses\\\":[{\\\"source\\\":\\\"security-advisories@github.com\\\",\\\"type\\\":\\\"Secondary\\\",\\\"description\\\":[{\\\"lang\\\":\\\"en\\\",\\\"value\\\":\\\"CWE-1336\\\"}]}],\\\"configurations\\\":[{\\\"nodes\\\":[{\\\"operator\\\":\\\"OR\\\",\\\"negate\\\":false,\\\"cpeMatch\\\":[{\\\"vulnerable\\\":true,\\\"criteria\\\":\\\"cpe:2.3:a:palletsprojects:jinja:*:*:*:*:*:*:*:*\\\",\\\"versionEndExcluding\\\":\\\"3.1.6\\\",\\\"matchCriteriaId\\\":\\\"331B4BEB-27DD-4593-AB42-5A218EFA4526\\\"}]}]},{\\\"nodes\\\":[{\\\"operator\\\":\\\"OR\\\",\\\"negate\\\":false,\\\"cpeMatch\\\":[{\\\"vulnerable\\\":true,\\\"criteria\\\":\\\"cpe:2.3:o:debian:debian_linux:11.0:*:*:*:*:*:*:*\\\",\\\"matchCriteriaId\\\":\\\"FA6FEEC2-9F11-4643-8827-749718254FED\\\"}]}]}],\\\"references\\\":[{\\\"url\\\":\\\"https://github.com/pallets/jinja/commit/90457bbf33b8662926ae65cdde4c4c32e756e403\\\",\\\"source\\\":\\\"security-advisories@github.com\\\",\\\"tags\\\":[\\\"Patch\\\"]},{\\\"url\\\":\\\"https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7\\\",\\\"source\\\":\\\"security-advisories@github.com\\\",\\\"tags\\\":[\\\"Vendor Advisory\\\"]},{\\\"url\\\":\\\"https://lists.debian.org/debian-lts-announce/2025/04/msg00022.html\\\",\\\"source\\\":\\\"af854a3a-2127-422b-91ae-364da2661108\\\"},{\\\"url\\\":\\\"https://lists.debian.org/debian-lts-announce/2025/04/msg00045.html\\\",\\\"source\\\":\\\"af854a3a-2127-422b-91ae-364da2661108\\\",\\\"tags\\\":[\\\"Mailing List\\\",\\\"Third Party Advisory\\\"]}]}}]}\"\n}"
+            }
+          ],
+          "details": {
+            "server": "websearch",
+            "tool": "fetchWebContent"
+          }
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "date -u +%Y-%m-%dT%H:%M:%SZ; ls -l /tmp/dynamic-flow-pi-DFseWx/cleaned-cve-2025-27516-adr-api-clue-line1682.json"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "2026-10-22T04:43:05Z\n-rw-rw-r-- 1 mike mike 7259 Oct 22 04:42 /tmp/dynamic-flow-pi-DFseWx/cleaned-cve-2025-27516-adr-api-clue-line1682.json\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "report_progress",
+        "status": "completed",
+        "arguments": {
+          "stage": "verify-investigation-done",
+          "summary": "CVE-2025-27516 × SCC/adr-api 判定完成：conclusion=undetermined。已一手读取 vulnerabilities.clean.jsonl 第 1682 行（确认 adr-api requirements.txt 与 test-requirements.txt 各一条 Jinja2-2.10.1 直接依赖历史线索，all-scan-scc-6，systemPath 指向 2025-12-04 扫描工作区，该路径本机不存在）；一手复核 GHSA-cpwx-vrp4-4pq7 与 NVD CVE API（受影响 <3.1.6、需攻击者控制模板内容、影响执行不可信模板的应用）。仓库给定入口预检不可达（M03：git ls-remote TLS 失败），按 M03 指令未重试；当前部署版本、调用方式无证据，无排除依据。清洗制品 cleaned-cve-2025-27516-adr-api-clue-line1682.json 已保存至工作目录。",
+          "materialIds": [
+            "M01",
+            "M02",
+            "M03"
+          ],
+          "nextAction": "输出 expectedOutput JSON（system=SCC/adr-api，source_documents 含线索制品与两份官方一手正文）；后续需可用的仓库访问入口才能核查当前 requirements/锁定版本与模板渲染代码路径。"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"saved\":true,\"stage\":\"verify-investigation-done\",\"summary\":\"CVE-2025-27516 × SCC/adr-api 判定完成：conclusion=undetermined。已一手读取 vulnerabilities.clean.jsonl 第 1682 行（确认 adr-api requirements.txt 与 test-requirements.txt 各一条 Jinja2-2.10.1 直接依赖历史线索，all-scan-scc-6，systemPath 指向 2025-12-04 扫描工作区，该路径本机不存在）；一手复核 GHSA-cpwx-vrp4-4pq7 与 NVD CVE API（受影响 <3.1.6、需攻击者控制模板内容、影响执行不可信模板的应用）。仓库给定入口预检不可达（M03：git ls-remote TLS 失败），按 M03 指令未重试；当前部署版本、调用方式无证据，无排除依据。清洗制品 cleaned-cve-2025-27516-adr-api-clue-line1682.json 已保存至工作目录。\",\"revision\":15}"
+            }
+          ],
+          "details": {
+            "saved": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "nodeId": "collect",
+    "activities": []
+  },
+  {
+    "nodeId": "conclusion",
+    "activities": []
+  },
+  {
+    "nodeId": "progress",
+    "activities": []
+  },
+  {
+    "nodeId": "report",
+    "activities": [
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "ls -la /tmp/dynamic-flow-pi-jvUXBi 2>/dev/null; echo \"---\"; ls /home/mike/projs/main/cve-fix/artifacts/ 2>/dev/null | head -5"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "total 176\ndrwx------   2 mike mike   4096 Oct 22 04:46 .\ndrwxrwxrwt 189 root root 159744 Oct 22 04:48 ..\nlrwxrwxrwx   1 mike mike    134 Oct 22 04:46 cleaned-cve-2025-27516-adr-api-clue-line1682.json -> /home/mike/projs/fork/dynamic-flow/data/5cb210fc-f700-43bd-9946-736d869db90b/uploads/cleaned-cve-2025-27516-adr-api-clue-line1682.json\nlrwxrwxrwx   1 mike mike    134 Oct 22 04:46 cleaned-cve-2025-27516-chatops-clue-line1682.json -> /home/mike/projs/fork/dynamic-flow/data/5cb210fc-f700-43bd-9946-736d869db90b/uploads/cleaned-cve-2025-27516-chatops-clue-line1682.json\nlrwxrwxrwx   1 mike mike    140 Oct 22 04:46 cleaned-cve-2025-27516-chatops-repo-access-20261022.txt -> /home/mike/projs/fork/dynamic-flow/data/5cb210fc-f700-43bd-9946-736d869db90b/uploads/cleaned-cve-2025-27516-chatops-repo-access-20261022.txt\nlrwxrwxrwx   1 mike mike     47 Oct 22 04:46 node_modules -> /home/mike/projs/fork/dynamic-flow/node_modules\n---\ncve_business_impact_index.jsonl\ncve_business_impact_promoted\ncve_materials_index.jsonl\ncve_materials_promoted\ncve_workflow_dashboard\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "bash",
+        "status": "completed",
+        "arguments": {
+          "command": "sed -n '1682p' /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl 2>/dev/null | head -c 600; echo; echo \"---chatops/adr 命中核验---\"; grep -n 'CVE-2025-27516' /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl 2>/dev/null | head -3; grep -c 'chatops' /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl 2>/dev/null"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"vulnId\": \"CVE-2025-27516\", \"library\": \"Jinja2-2.10.1-py2.py3-none-any.whl\", \"sourceFile\": null, \"project\": \"update-request6.txt\", \"isTraced\": true, \"traceSource\": \"Library [Jinja2-2.10.1-py2.py3-none-any.whl] 搜索结果:\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/SS/python-securityscoreclient/python-securityscoreclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jin\n---chatops/adr 命中核验---\n1682:{\"vulnId\": \"CVE-2025-27516\", \"library\": \"Jinja2-2.10.1-py2.py3-none-any.whl\", \"sourceFile\": null, \"project\": \"update-request6.txt\", \"isTraced\": true, \"traceSource\": \"Library [Jinja2-2.10.1-py2.py3-none-any.whl] 搜索结果:\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/SS/python-securityscoreclient/python-securityscoreclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/SDK/3rd/python-xaasclient/python-xaasclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/BI/python-biclient/python-biclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/Subscription/chatops/chatops-api/chatops-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/CBSP/cbsp-api/cbsp_api/test-requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/CBSP/cbsp-api/cbsp_api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/python-adrapiclient/python-adr-api-client/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/CSPM/python-cspmclient/python-cspmclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/SDK/3rd/python-janusclient/python-janusclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/WCMS/wcms-api/wcms-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/Guance/python-guanceclient/python-guanceclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/SDK/3rd/python-sangforoneclient/python-sangforoneclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/MSS/mssp-api/mssp-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/CSPM/cspm-server/cspm-server/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/SDK/3rd/python-msspclient/python-msspclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/SD/python-marketplaceclient/python-marketplaceclient/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/CSPM/cspm-api/cspm-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/test-requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\", \"assignedPerson\": \"余昌发\", \"libraryRaw\": \"Jinja2-2.10.1-py2.py3-none-any.whl\", \"libraryNames\": [\"Jinja2\"]}\n27\n"
+            }
+          ]
+        }
+      },
+      {
+        "tool": "report_progress",
+        "status": "completed",
+        "arguments": {
+          "materialIds": [
+            "M01",
+            "M02",
+            "M03"
+          ],
+          "nextAction": "等待操作者提供 SCC/chatops-api、SCC/adr-api 仓库的可达访问入口（网络白名单/直连/源码包/镜像/制品库路径）或确认扩大范围；取得入口后由下游 verify 节点读取 requirements.txt 实文与 revision、核查 Jinja2 调用点与部署环境实际安装版本，再复核 undetermined 判定。",
+          "stage": "report-aggregate",
+          "summary": "CVE-2025-27516（Jinja2）业务影响报告汇总完成：忠实沿用输入 status=incomplete、overall_conclusion=undetermined；SCC/chatops-api 与 SCC/adr-api 均判 undetermined（impacted 0、not_impacted 0）。本轮本地复核：vulnerabilities.clean.jsonl 第 1682 行实读一致（CVE-2025-27516 仅命中该行，chatops 命中 27 行，chatops-api/adr-api 线索逐字存在）；三份 cleaned 取证制品在本工作目录可见。两系统当前源码/版本/触发条件均未核实（仓库不可达），未覆盖范围与下一步已在报告中单独展示；业务结项未达成，留待操作者确认。"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"saved\":true,\"stage\":\"report-aggregate\",\"summary\":\"CVE-2025-27516（Jinja2）业务影响报告汇总完成：忠实沿用输入 status=incomplete、overall_conclusion=undetermined；SCC/chatops-api 与 SCC/adr-api 均判 undetermined（impacted 0、not_impacted 0）。本轮本地复核：vulnerabilities.clean.jsonl 第 1682 行实读一致（CVE-2025-27516 仅命中该行，chatops 命中 27 行，chatops-api/adr-api 线索逐字存在）；三份 cleaned 取证制品在本工作目录可见。两系统当前源码/版本/触发条件均未核实（仓库不可达），未覆盖范围与下一步已在报告中单独展示；业务结项未达成，留待操作者确认。\",\"revision\":17}"
+            }
+          ],
+          "details": {
+            "saved": true
+          }
+        }
+      }
+    ]
+  }
+]

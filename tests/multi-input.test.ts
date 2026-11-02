@@ -22,7 +22,7 @@ const collection = (
   id: 'group',
   label: '汇合',
   kind: 'function',
-  mode: 'all',
+  operation: 'aggregate',
   functionName,
   ...extra,
 });
@@ -164,7 +164,7 @@ const follow: FlowNode = {
   label: '读取结果',
   kind: 'function',
   functionName: 'identity',
-  mode: 'each',
+  operation: 'map',
 };
 
 test('join all four modes retain duplicates, strict key types and deterministic rows', async (t) => {
@@ -378,7 +378,7 @@ test('static connections compare collection port item schemas and emitted item c
     label: '源',
     kind: 'function',
     functionName: 'identity',
-    mode: 'each',
+    operation: 'map',
     expectedOutput: { type: 'string' },
   };
   const target = collection('collect', {
@@ -429,7 +429,6 @@ test('static connections compare collection port item schemas and emitted item c
   for (const patch of [
     { inputNames: ['a', 'a'] },
     { inputNames: ['a', ' '] },
-    { mode: 'each' },
     { operation: 'map' },
   ])
     assert.ok(
@@ -476,7 +475,7 @@ test('upstream instances finish out of order; merge waits, preserves declared or
         id,
         label: id,
         kind: 'agent' as const,
-        mode: 'each' as const,
+        operation: 'map' as const,
         task: 'echo',
       })),
       group,
@@ -529,7 +528,7 @@ test('join lineage uses exactly participating upstream instances; node preview a
       label: port,
       kind: 'function',
       functionName: 'identity',
-      mode: 'each',
+      operation: 'map',
     });
     def.edges.find((e) => e.to[0] === 'group' && e.to[1] === port)!.from = [
       port,
@@ -586,17 +585,20 @@ test('join lineage uses exactly participating upstream instances; node preview a
   assert.match(retried.results[0].error!, /键必须/);
 });
 
-test('legacy merge retains per-input default and explicit aggregate array behavior', async (t) => {
+test('merge always emits declared port rows without an implicit legacy array mode', async (t) => {
   const s = await setup(t);
   for (const operation of [undefined, 'aggregate'] as const) {
     const run = await s.run(
-      definition(collection('merge', { operation }), ['left', 'right']),
+      definition(
+        collection('merge', { operation, inputNames: ['left', 'right'] }),
+        ['left', 'right'],
+      ),
       input({ left: [1], right: [2] }),
     );
     assert.equal(run.status, 'completed');
     assert.deepEqual(
       run.results[0].outputs.output.map((i) => i.value),
-      operation ? [[2, 1]] : [2, 1],
+      [1, 2],
     );
   }
 });

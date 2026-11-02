@@ -92,4 +92,48 @@ Agent/普通函数的 operation=map 可配 repeat（max 1–10，until 可选纯
 
 ## 工作项报告交接
 
-普通 Agent 的 NodeExecution 传递实际 Run.scope/effectMode，full/commit 工作项由 assistant 提供受限 report_progress 工具，入口直接连接 items.reportProgress。动态规划不提供报告，展开后普通子节点继续使用同一执行路径和绑定身份。带 comparisonId 的运行强制 preview，即使调用方请求 commit；单节点与试运行同样不授予业务报告。停止前后的工具信号与 work-items 对当前 Run/实例复查共同拒绝迟到写入，不改调度/恢复算法。`tests/workitem-progress.test.ts` 覆盖实际 Pi 替身、并行展开、两项共享方法、输出失败、比较与预览边界。
+普通 Agent 的 NodeExecution 传递实际 Run.scope/effectMode，full/commit 工作项由 assistant 提供受限 report_progress 工具，入口直接连接 items.reportProgress。动态规划不提供报告，展开后普通子节点继续使用同一执行路径和绑定身份。带 comparisonId 的运行强制 preview，即使调用方请求 commit；旧单节点调用与试运行不授予业务报告；明确正式单步见下节。停止前后的工具信号与 work-items 对当前 Run/实例复查共同拒绝迟到写入，不改调度/恢复算法。`tests/workitem-progress.test.ts` 覆盖实际 Pi 替身、并行展开、两项共享方法、输出失败、比较与预览边界。
+
+## 显式正式单步与原始样本
+
+工作项准备入口可为静态普通Agent/Function设置内部commitScope=node，连同明确workItem/effectMode才形成node/commit；普通旧node调用不因带工作项而获得正式语义。里程碑仍full/commit，比较/retry强制preview。Run保存inputSources跨方法直接引用和sampleSource原始实例选择；retry保留固定来源。
+
+`work/run-samples.ts`读取源Run真实result.input并冻结业务材料，用于原始实例比较与试运行；不可把输出或浏览器传入值当原始输入。对应trials固定两侧同一Inputs和WorkItem上下文，不写回Work样例。
+
+节点输出异常时保留executeNode写入的rawOutput：普通/展开后节点执行与dynamic规划两条调用路径均写入失败NodeResult；通过现有快照API读取，不把该原文当有效输出或工具活动。成功产物仍以outputs为准。
+
+## 明确建立子项（2026-10-23）
+
+`create-items` 是固定整批处理的 的 input→output 业务节点。每个输入值是一份候选容器；仅正式工作项 full/commit 且非比较调用 `RunHooks.onCreateItems(parentId, source, signal)`，其余路径只输出 preview/candidates，不建立工作项，静态正式单步仍只支持普通 Agent/Function。
+
+source 为 `CandidateSource(kind:node-input, workId/runId/resultId/port/index)`，读取首次保存的 `NodeResult.input`；恢复复用该 resultId 并比较输入，不由 sourceResultIds 猜端口。每容器输出 `{source,receipts}`，部分失败保存成功回执并将节点失败；hook级失败仍保留固定清单入口。停止后不执行下一容器，closed 的迟到 hook 不覆盖恢复结果。普通 retry 仍 preview；业务补建走 work-items 同源动作，不改旧失败 Run。
+
+`tests/create-items-runtime.test.ts` 验证直接输入、多容器身份、preview/比较/停止、恢复与回执；`tests/create-items-integration.test.ts` 连真实HTTP hook与工作项文件，模型为显式替身。真实 Pi 小样和前端验收见 feature-workitem-decomposition track。
+
+
+普通 aggregate 节点的输出仅按 expectedOutput 校验；Definition.summaryOutput 是可选展示绑定，不追加固定schema。标准摘要卡片只在 isRunResultSummary 成立时显示，其它合法值保留普通原值阅读。失败沿用真实节点失败和已有成果保留，不补造报告，也不更新业务完成状态。相关验证 tests/result-summary.test.ts、cve-v2.test.ts。
+
+
+## 固定方法组合调用（2026-10-28）
+
+`kind:call` 仍走本模块同一 schedule/perform。call 保存 workId/definitionId/inputNames/outputNames；aggregate 整批调用一次，map 按 eachPort 单项派发、其余端口广播。启动通过 flow/calls.ts 解析固定引用与接口、拒绝循环；不递归公共 start，也不另建调度器。NodeResult.call 先保存真实子 Run 引用再派发，Run.parentCall 记录调用血缘。调用输出按固定 Definition.outputs 投射具名端口；InputItem.source 保存子方法精确生产位置，本地 sourceResultIds 指向父调用结果。
+
+子调用继承 workItem/effectMode/comparison；本次材料按实际 batch.materialIds 筛选并冻结，普通方法调用用 Run.materials，不借用被调用方法样例。缺失材料、端口或输入契约明确失败。父停止沿实际调用树传播，不取消独立业务子项；正常关闭后未确定实例由现有文件恢复和显式 resume 处理。
+
+子等待以 RunWait.source 投影到父等待，父 signal 转交真实等待执行；父 resume 继续原子 Run，成功实例不重复运行。父等待不占据子调用的执行名额。失败实例保留成功调用并阻断要求成功的下游；尚未提供任意部分失败自动汇总。`tests/composition-runtime.test.ts` 使用真实临时文件验证多端口/广播、来源、固定版本、递归与缺失拒绝、停止、等待重开、显式恢复、材料范围和多层调用。
+
+
+固定call的子Run.inputSources仅来自本次实际映射/广播输入及对应父结果，不复制父Run的全部来源。逐项调用的另一条输入来源不能混入当前子Run；旧无逐条source的输入仅按sourceResultIds匹配已有来源回溯。
+
+invocation.ts集中原有map/flatMap/aggregate批次及schema参数组装，runtime与工作项方案检查共用。它只构造调用参数，不执行节点；普通map/flatMap为单值、aggregate为值数组，collection/call为具名端口数组对象。唯一输出分发、节点执行、正式副作用与恢复仍在原运行器。
+
+
+逐项call的invocationBatches先将eachPort替换为本条，再structuredClone调用包；其余端口按现有语义广播并隔离。不能先复制整批再替换，否则N条输入会造成N²拷贝，也会拖慢只读检查。检查器与runtime仍共用同一函数。验证见workspace-performance.test.ts的复制次数/独立调用包与composition-runtime。
+
+## 唯一计算及冻结上下文
+
+FlowNode不再有mode；普通Agent/Function必须声明map/flatMap/aggregate，call声明map或aggregate，集合与控制节点由kind/functionName固定整批。shared/node-ports.nodeOperation是调用单元的唯一读取；merge/collect必须明确inputNames，无隐含left/right兼容。原resultOutput专用业务schema已移出内核，普通输出只按明确schema验证。
+
+所有Run在start保存materials；NodeExecution和子call只读取本轮冻结材料，后续Work补材料不倒灌。实例/引用存在性使用files.select，固定call接口每Run复用校验，不逐实例复制整个Work。正式失败补跑由工作项服务新建commit Run并显式接续成功来源；此模块retry是明确的诊断preview，不能代替正式交付。
+
+验证：runtime-mechanisms.test覆盖schema编译生命周期、业务正文不猜字段及5实例不重复读取Work；composition-runtime/lifecycle-runtime覆盖固定call、广播、等待、停止、恢复及成功实例保留。不要把局部通过当浏览器或真实模型验收。

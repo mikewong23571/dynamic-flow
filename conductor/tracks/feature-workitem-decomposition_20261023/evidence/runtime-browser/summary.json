@@ -1,0 +1,93 @@
+{
+  "build": "index-Bd1gK5Gq.js",
+  "coldUiBudgetMs": 3000,
+  "warmUiAndFilterBudgetMs": 2000,
+  "returnBudgetMs": 1000,
+  "dimensions": {
+    "1440": {
+      "timings": [
+        {
+          "pass": 0,
+          "listMs": 3496.7278639999995,
+          "firstListMs": 2661.0275220000003,
+          "filterMs": 130.10340600000018,
+          "openMs": 791.1703699999998,
+          "backMs": 144.51935699999922,
+          "requests": 23
+        },
+        {
+          "pass": 1,
+          "listMs": 1056.6366909999997,
+          "firstListMs": 424.2873019999988,
+          "filterMs": 114.82867100000112,
+          "openMs": 737.6926469999999,
+          "backMs": 132.36842799999977,
+          "requests": 23
+        },
+        {
+          "pass": 2,
+          "listMs": 943.2191609999991,
+          "firstListMs": 381.84823700000015,
+          "filterMs": 117.70507399999951,
+          "openMs": 738.7714919999999,
+          "backMs": 104.15379900000153,
+          "requests": 23
+        }
+      ],
+      "maxSummaryBytes": 30334,
+      "maxSelectedRunBytes": 60625
+    },
+    "1024": {
+      "timings": [
+        {
+          "pass": 0,
+          "listMs": 3379.3894260000015,
+          "firstListMs": 2523.4072659999983,
+          "filterMs": 132.99930099999983,
+          "openMs": 767.6448579999997,
+          "backMs": 122.07794999999896,
+          "requests": 23
+        },
+        {
+          "pass": 1,
+          "listMs": 937.3551269999989,
+          "firstListMs": 384.2312669999992,
+          "filterMs": 130.63631400000304,
+          "openMs": 859.1948860000011,
+          "backMs": 148.19459599999755,
+          "requests": 23
+        },
+        {
+          "pass": 2,
+          "listMs": 1016.0938029999998,
+          "firstListMs": 433.0043680000017,
+          "filterMs": 154.54869400000098,
+          "openMs": 760.315300000002,
+          "backMs": 112.85467900000003,
+          "requests": 23
+        }
+      ],
+      "maxSummaryBytes": 30334,
+      "maxSelectedRunBytes": 60625
+    }
+  },
+  "batchWindow": {
+    "newStartLimit": 2,
+    "waitingReleased": 2,
+    "interruptedReleased": 2,
+    "resumeUsesOriginalRun": true,
+    "signalUsesOriginalRun": true,
+    "runPeak": 4,
+    "agentPeak": 8,
+    "submittedRuns": 6,
+    "pausedUnsubmitted": 2
+  },
+  "inputOperations": {
+    "completeInputs": 10,
+    "missingInputs": 2,
+    "inputRevisions": 2,
+    "individualMappings": 0,
+    "launches": 12,
+    "agentPeak": 1
+  }
+}

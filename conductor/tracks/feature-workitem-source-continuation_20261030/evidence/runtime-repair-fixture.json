@@ -1,0 +1,70 @@
+{
+  "definitionId": "0c1ad3bc-406d-4254-971e-88c6c26c71be",
+  "fixture": true,
+  "productionChanged": false,
+  "checks": [
+    {
+      "case": "reuse and fixed child continuation without duplicate research",
+      "passed": true,
+      "continuedSource": {
+        "workId": "820d14d6-d06f-4bf7-86e4-453ec1c920f6",
+        "runId": "12347cf9-8442-4579-b821-251e7293cdba",
+        "resultId": "a564ff80-4d7d-49ef-9ea6-744c20f4f657",
+        "port": "output",
+        "index": 0
+      }
+    },
+    {
+      "case": "scope distinguishes pending, running, failed and uncovered without audit completion",
+      "passed": true
+    },
+    {
+      "case": "unmatched request yields visible gap",
+      "passed": true,
+      "gaps": [
+        {
+          "candidateCount": 0,
+          "candidates": "",
+          "cveKey": "CVE-FIXTURE-DOES-NOT-EXIST",
+          "detail": "研究池中没有与“CVE-FIXTURE-DOES-NOT-EXIST”匹配的研究事实记录，因此未发起核查；请补充研究问题或核对编号。",
+          "gapKey": "核查缺口：研究池无匹配记录：CVE-FIXTURE-DOES-NOT-EXIST",
+          "kind": "缺少研究事实",
+          "nextAction": "先在本轮安排里补充该 CVE 的研究问题，或把编号改成研究事实中已存在的 CVE / 记录键。",
+          "targetCount": 1
+        }
+      ]
+    },
+    {
+      "case": "known fact without targets does not invoke repository method",
+      "passed": true
+    },
+    {
+      "case": "old and new facts require explicit adoption",
+      "passed": true,
+      "gaps": [
+        {
+          "candidateCount": 2,
+          "candidates": "fixture-existing ; 新增研究：CVE-FIXTURE-EXISTING · 问题：same CVE new evidence",
+          "cveKey": "CVE-FIXTURE-EXISTING",
+          "detail": "同一编号匹配到多条研究事实记录（可能同时来自既有交接、原批次后续成果与本轮新增），无法自动确定用哪一条，因此未发起核查；不会自动取第一条或最新一条。",
+          "gapKey": "核查缺口：选择歧义：CVE-FIXTURE-EXISTING",
+          "kind": "选择歧义",
+          "nextAction": "请把核查对象改填为 candidates 中的某一条记录键后重试。",
+          "targetCount": 1
+        }
+      ]
+    },
+    {
+      "case": "exact record adoption reaches both default and explicit branches",
+      "passed": true
+    },
+    {
+      "case": "two questions for same CVE preserve both records and publish",
+      "passed": true
+    },
+    {
+      "case": "identical questions dispatch once and still publish",
+      "passed": true
+    }
+  ]
+}

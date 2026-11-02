@@ -1,0 +1,466 @@
+{
+  "leafCount": 1000,
+  "targetCount": 100,
+  "historyPerLeaf": 20,
+  "runsPerLeaf": 4,
+  "timings": [
+    {
+      "pass": 0,
+      "listMs": 6465.334261,
+      "filterMs": 4035.0650950000017,
+      "openMs": 1175.6883660000021,
+      "backMs": 3462.0690890000005,
+      "requests": 26
+    },
+    {
+      "pass": 1,
+      "listMs": 5865.881755000002,
+      "filterMs": 4095.3252969999958,
+      "openMs": 1160.2153089999993,
+      "backMs": 3489.080224999998,
+      "requests": 26
+    },
+    {
+      "pass": 2,
+      "listMs": 5939.247101000001,
+      "filterMs": 4306.353344999996,
+      "openMs": 1249.5909050000046,
+      "backMs": 3548.1166620000004,
+      "requests": 26
+    }
+  ],
+  "responses": [
+    {
+      "path": "/api/config",
+      "bytes": 524,
+      "ms": 13.921
+    },
+    {
+      "path": "/api/works/5d30ad1f-5068-432d-ac45-7eb9493a8ad0",
+      "bytes": 337,
+      "ms": 17.931,
+      "runs": 0
+    },
+    {
+      "path": "/api/works/5d30ad1f-5068-432d-ac45-7eb9493a8ad0",
+      "bytes": 337,
+      "ms": 15.986,
+      "runs": 0
+    },
+    {
+      "path": "/api/items?query=&status=&summary=true&page=1&pageSize=10",
+      "bytes": 11796,
+      "ms": 2802.248,
+      "rows": 10
+    },
+    {
+      "path": "/api/works?pageSize=100",
+      "bytes": 397,
+      "ms": 2813.822
+    },
+    {
+      "path": "/api/items?query=SCALE-QUARTER&status=&summary=true&page=1&pageSize=10",
+      "bytes": 600,
+      "ms": 2535.91,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 2.893
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 4.239
+    },
+    {
+      "path": "/api/items?summary=true&parentId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&pageSize=1",
+      "bytes": 660,
+      "ms": 1922.106,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 16.593
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&query=&page=1&pageSize=25&todo=",
+      "bytes": 10045,
+      "ms": 1778.914,
+      "rows": 25
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 285.865
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=&page=1&pageSize=25&todo=",
+      "bytes": 30334,
+      "ms": 3283.895,
+      "rows": 25
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=&page=1&pageSize=25&todo=blocked",
+      "bytes": 1516,
+      "ms": 3251.443,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 46.09
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=%E4%BB%93%E5%BA%93+777&page=1&pageSize=25&todo=blocked",
+      "bytes": 1516,
+      "ms": 3116.823,
+      "rows": 1
+    },
+    {
+      "path": "/api/items?summary=true&parentId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&pageSize=1",
+      "bytes": 660,
+      "ms": 3184.838,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/scale-leaf-777",
+      "bytes": 36510,
+      "ms": 646.409
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 48.965
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 106.865
+    },
+    {
+      "path": "/api/items/scale-leaf-777",
+      "bytes": 36510,
+      "ms": 3482.581
+    },
+    {
+      "path": "/api/works/b804322f-6801-4f39-88f2-fb851ea21911?runIds=scale-leaf-777-run-0%2Cscale-leaf-777-run-1%2Cscale-leaf-777-run-2%2Cscale-leaf-777-run-3",
+      "bytes": 60701,
+      "ms": 3148.801,
+      "runs": 4
+    },
+    {
+      "path": "/api/items?summary=true&parentId=scale-leaf-777&view=children&pageSize=1",
+      "bytes": 262,
+      "ms": 3436.651,
+      "rows": 0
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 27.807
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=%E4%BB%93%E5%BA%93+777&page=1&pageSize=25&todo=blocked",
+      "bytes": 1516,
+      "ms": 2917.68,
+      "rows": 1
+    },
+    {
+      "path": "/api/items?summary=true&parentId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&pageSize=1",
+      "bytes": 660,
+      "ms": 3193.735,
+      "rows": 1
+    },
+    {
+      "path": "/api/works/5d30ad1f-5068-432d-ac45-7eb9493a8ad0",
+      "bytes": 337,
+      "ms": 4.451,
+      "runs": 0
+    },
+    {
+      "path": "/api/config",
+      "bytes": 524,
+      "ms": 3.655
+    },
+    {
+      "path": "/api/works/5d30ad1f-5068-432d-ac45-7eb9493a8ad0",
+      "bytes": 337,
+      "ms": 4.777,
+      "runs": 0
+    },
+    {
+      "path": "/api/items?query=&status=&summary=true&page=1&pageSize=10",
+      "bytes": 11796,
+      "ms": 2546.518,
+      "rows": 10
+    },
+    {
+      "path": "/api/works?pageSize=100",
+      "bytes": 397,
+      "ms": 2569.992
+    },
+    {
+      "path": "/api/items?query=SCALE-QUARTER&status=&summary=true&page=1&pageSize=10",
+      "bytes": 600,
+      "ms": 2315.978,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 4.176
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 10.851
+    },
+    {
+      "path": "/api/items?summary=true&parentId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&pageSize=1",
+      "bytes": 660,
+      "ms": 1938.83,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 9.125
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&query=&page=1&pageSize=25&todo=",
+      "bytes": 10045,
+      "ms": 1809.418,
+      "rows": 25
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 185.064
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=&page=1&pageSize=25&todo=",
+      "bytes": 30334,
+      "ms": 3367.003,
+      "rows": 25
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=&page=1&pageSize=25&todo=blocked",
+      "bytes": 1516,
+      "ms": 3349.205,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 141.799
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=%E4%BB%93%E5%BA%93+777&page=1&pageSize=25&todo=blocked",
+      "bytes": 1516,
+      "ms": 3216.841,
+      "rows": 1
+    },
+    {
+      "path": "/api/items?summary=true&parentId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&pageSize=1",
+      "bytes": 660,
+      "ms": 3125.566,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/scale-leaf-777",
+      "bytes": 36510,
+      "ms": 643.274
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 60.967
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 145.563
+    },
+    {
+      "path": "/api/items/scale-leaf-777",
+      "bytes": 36510,
+      "ms": 3601.298
+    },
+    {
+      "path": "/api/works/b804322f-6801-4f39-88f2-fb851ea21911?runIds=scale-leaf-777-run-0%2Cscale-leaf-777-run-1%2Cscale-leaf-777-run-2%2Cscale-leaf-777-run-3",
+      "bytes": 60701,
+      "ms": 3242.225,
+      "runs": 4
+    },
+    {
+      "path": "/api/items?summary=true&parentId=scale-leaf-777&view=children&pageSize=1",
+      "bytes": 262,
+      "ms": 3529.506,
+      "rows": 0
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 25.737
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=%E4%BB%93%E5%BA%93+777&page=1&pageSize=25&todo=blocked",
+      "bytes": 1516,
+      "ms": 2970.246,
+      "rows": 1
+    },
+    {
+      "path": "/api/items?summary=true&parentId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&pageSize=1",
+      "bytes": 660,
+      "ms": 3235.296,
+      "rows": 1
+    },
+    {
+      "path": "/api/works/5d30ad1f-5068-432d-ac45-7eb9493a8ad0",
+      "bytes": 337,
+      "ms": 4.493,
+      "runs": 0
+    },
+    {
+      "path": "/api/config",
+      "bytes": 524,
+      "ms": 3.305
+    },
+    {
+      "path": "/api/works/5d30ad1f-5068-432d-ac45-7eb9493a8ad0",
+      "bytes": 337,
+      "ms": 5.02,
+      "runs": 0
+    },
+    {
+      "path": "/api/items?query=&status=&summary=true&page=1&pageSize=10",
+      "bytes": 11796,
+      "ms": 2431.819,
+      "rows": 10
+    },
+    {
+      "path": "/api/works?pageSize=100",
+      "bytes": 397,
+      "ms": 2649.857
+    },
+    {
+      "path": "/api/items?query=SCALE-QUARTER&status=&summary=true&page=1&pageSize=10",
+      "bytes": 600,
+      "ms": 2367.76,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 2.854
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 3.643
+    },
+    {
+      "path": "/api/items?summary=true&parentId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&pageSize=1",
+      "bytes": 660,
+      "ms": 1893.298,
+      "rows": 1
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&query=&page=1&pageSize=25&todo=",
+      "bytes": 10045,
+      "ms": 1775.994,
+      "rows": 25
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 249.244
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 429.156
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=&page=1&pageSize=25&todo=",
+      "bytes": 30334,
+      "ms": 3543.299,
+      "rows": 25
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=&page=1&pageSize=25&todo=blocked",
+      "bytes": 1516,
+      "ms": 3490.821,
+      "rows": 1
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=%E4%BB%93%E5%BA%93+777&page=1&pageSize=25&todo=blocked",
+      "bytes": 1516,
+      "ms": 3312.669,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 287.163
+    },
+    {
+      "path": "/api/items?summary=true&parentId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&pageSize=1",
+      "bytes": 660,
+      "ms": 3365.269,
+      "rows": 1
+    },
+    {
+      "path": "/api/items/scale-leaf-777",
+      "bytes": 36510,
+      "ms": 721.261
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 58.248
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 121.241
+    },
+    {
+      "path": "/api/items/scale-leaf-777",
+      "bytes": 36510,
+      "ms": 3793.835
+    },
+    {
+      "path": "/api/works/b804322f-6801-4f39-88f2-fb851ea21911?runIds=scale-leaf-777-run-0%2Cscale-leaf-777-run-1%2Cscale-leaf-777-run-2%2Cscale-leaf-777-run-3",
+      "bytes": 60701,
+      "ms": 3352.244,
+      "runs": 4
+    },
+    {
+      "path": "/api/items?summary=true&parentId=scale-leaf-777&view=children&pageSize=1",
+      "bytes": 262,
+      "ms": 3615.183,
+      "rows": 0
+    },
+    {
+      "path": "/api/items/d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec",
+      "bytes": 545,
+      "ms": 128.346
+    },
+    {
+      "path": "/api/items?summary=true&rootId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=todo&query=%E4%BB%93%E5%BA%93+777&page=1&pageSize=25&todo=blocked",
+      "bytes": 1516,
+      "ms": 3039.378,
+      "rows": 1
+    },
+    {
+      "path": "/api/items?summary=true&parentId=d2d752f8-2a1a-40ed-b2aa-4b0496ce14ec&view=children&pageSize=1",
+      "bytes": 660,
+      "ms": 3292.868,
+      "rows": 1
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "base": "http://127.0.0.1:4330",
+  "itemId": "852367c9-7ff7-4aba-8da8-ae0550d7d823",
+  "facts": [
+    {
+      "width": 1440,
+      "errors": [],
+      "views": 5,
+      "exceptionFormOpened": true,
+      "submitted": false
+    },
+    {
+      "width": 1024,
+      "errors": [],
+      "views": 5,
+      "exceptionFormOpened": true,
+      "submitted": false
+    }
+  ],
+  "rootRuns": 4,
+  "status": "open",
+  "scope": "只读查看五视图/流程并打开例外表单，不提交或确认"
+}

@@ -1,0 +1,52 @@
+{
+  "itemId": "237a0e38-bffd-41cd-b95f-4d384386c392",
+  "itemKey": "WI-20261022-adf153",
+  "title": "真实验收 · 客户反馈整理",
+  "goal": "整理客户反馈，分类并形成有原文依据的建议；明确报告实际覆盖范围。",
+  "materials": [
+    "界面很顺手，但导出报告经常失败，影响交付。",
+    "希望支持批量导出，逐条操作太慢。",
+    "搜索比以前快很多，团队很满意。"
+  ],
+  "instruction": "请建立简短中文标题“反馈分类与汇总”的可运行方法。只需两个普通静态步骤：逐条分类、整批汇总建议。分类结果是带 original、category、reason 的对象，original 保留原文，category 为问题、需求或称赞；汇总输出 Markdown，引用具体原文并注明覆盖范围。两步分别提供可检查的最终输出“分类结果”和“建议报告”。只使用本次明确提供的材料，不把具体反馈内容写死进任务或做法，不调用网络和本地文件，不创建动态步骤或等待。请保存实际定义，不自动运行。",
+  "methodId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+  "requestedAt": "2026-10-22T11:55:47.388Z",
+  "effectiveModel": {
+    "source": "default",
+    "alias": "sangfor/glm-5.3-flash",
+    "model": "glm-5.3-flash",
+    "effort": "max"
+  },
+  "uiErrors": [],
+  "firstRun": {
+    "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+    "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+    "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9"
+  },
+  "executionStartedAt": "2026-10-22T11:58:41.900Z",
+  "retryRun": {
+    "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+    "runId": "2e6ef635-78df-4188-8326-3d48b899a6f3",
+    "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9"
+  },
+  "comparisonId": "8ca5ff39-ebd0-4425-9836-f5b30e20eea4",
+  "candidateDefinitionId": "84fc3677-d668-47af-972b-18d51353a68f",
+  "candidateInstruction": "对当前输入的这条客户反馈原文进行分类：category 只能取\"问题\"、\"需求\"或\"称赞\"之一；original 逐字保留这条反馈原文；reason 用一句话说明分类依据。只依据当前输入内容判断，不引入外部信息。\n本次改进：reason 请明确分为“正面依据：…”和“问题或需求依据：…”，每部分只引用原文，没有对应信息写“无”；仍保留 original 和 category，分类规则不变，不添加输入中没有的事实。",
+  "formalSummary": {
+    "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+    "runId": "28dd0280-348f-454c-8346-6227f6286f0d",
+    "definitionId": "84fc3677-d668-47af-972b-18d51353a68f"
+  },
+  "classificationCountBeforeSummary": 11,
+  "selectedSummaryResults": [
+    "8fa0861f-17f5-44f7-8cb6-7e866de5137c",
+    "a85b02dc-612a-486d-8ac6-0af6ddb7fa4a"
+  ],
+  "reportMethodId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+  "reportMethodInstruction": "请生成一条独立、可复用的方法，标题为“分类成果报告”。它接收已经完成的分类成果，而不重新分类原始文本。只要一个普通 Agent 整批处理步骤，读取入口 records 的多条对象（每条含 original、category、reason 字符串），形成简洁 Markdown 报告，引用原文并声明本次收到的条目数量及范围。入口 inputContracts.records.item 为对象 schema，节点 inputSchema 为对象数组；请保留对象，不把对象转成文本。输出名“成果报告”，expectedOutput 为 string。不要依赖方法样例，不调用网络或本地文件，不创建动态或等待步骤。保存定义，不自动运行。",
+  "crossMethodRun": {
+    "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+    "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+    "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf"
+  }
+}

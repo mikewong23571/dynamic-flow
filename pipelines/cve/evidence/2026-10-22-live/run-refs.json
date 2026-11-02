@@ -1,0 +1,50 @@
+{
+  "itemId": "3a1412fb-937b-4add-a7cd-7f23f94bf05a",
+  "key": "CVE-2025-27516:SCC-chatops-adr:Flowcraft测试-024932",
+  "A": {
+    "workId": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+    "runId": "12f37002-976b-4746-bc6c-54b4bb1e723c",
+    "definitionId": "bbfd0ac7-307e-490f-8b88-7268f92fe83a"
+  },
+  "startedAt": "2026-10-22T02:49:32.575019+00:00",
+  "folder": "pipelines/cve/evidence/2026-10-22-live",
+  "previousRuns": [
+    {
+      "workId": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+      "runId": "f1625072-f7cc-480d-bb6e-ea16c213c0e3",
+      "definitionId": "065291f9-79c2-4d5b-81bc-896d494ba198",
+      "status": "cancelled",
+      "reason": "停止 Agent 自写 MCP 客户端路线，改用 Pi MCP 插件。"
+    }
+  ],
+  "methods": {
+    "A": {
+      "workId": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+      "definitionId": "bbfd0ac7-307e-490f-8b88-7268f92fe83a"
+    },
+    "B": {
+      "workId": "5cb210fc-f700-43bd-9946-736d869db90b",
+      "definitionId": "ae43882c-1a87-4787-886d-d1c207315b34"
+    }
+  },
+  "nativeMcp": true,
+  "B": {
+    "workId": "5cb210fc-f700-43bd-9946-736d869db90b",
+    "runId": "5732dd2e-ef01-489a-94ed-39f6dc581b1d",
+    "definitionId": "ae43882c-1a87-4787-886d-d1c207315b34"
+  },
+  "handoffSource": {
+    "workId": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+    "runId": "12f37002-976b-4746-bc6c-54b4bb1e723c",
+    "definitionId": "bbfd0ac7-307e-490f-8b88-7268f92fe83a",
+    "resultId": "7462ce40-64a0-4f4b-98f8-0694e1cd30bb"
+  },
+  "finalSource": {
+    "workId": "5cb210fc-f700-43bd-9946-736d869db90b",
+    "runId": "5732dd2e-ef01-489a-94ed-39f6dc581b1d",
+    "definitionId": "ae43882c-1a87-4787-886d-d1c207315b34",
+    "resultId": "61f36a38-90c5-4ed5-9e42-9a7747892ec3",
+    "reportResultId": "1e5477b1-4c57-4964-9591-90609b59d6a6"
+  },
+  "finishedAt": "2026-10-22T04:50:17.522338+00:00"
+}

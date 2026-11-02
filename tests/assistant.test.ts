@@ -16,10 +16,7 @@ import {
   type ModelConfig,
 } from '../src/server/assistant/config.ts';
 import { seedCatalog } from './catalog-fixture.ts';
-import {
-  parseOutput,
-  validateEvidence,
-} from '../src/server/assistant/validation.ts';
+import { parseOutput } from '../src/server/assistant/validation.ts';
 import type {
   SessionInput,
   SessionRunner,
@@ -44,10 +41,16 @@ const definition: Definition = {
       id: 'classify',
       label: '分类',
       kind: 'agent',
-      mode: 'each',
+      operation: 'map',
       task: '分类',
     },
-    { id: 'report', label: '报告', kind: 'agent', mode: 'all', task: '汇总' },
+    {
+      id: 'report',
+      label: '报告',
+      kind: 'agent',
+      operation: 'aggregate',
+      task: '汇总',
+    },
   ],
   edges: [
     { from: ['$input', 'materials'], to: ['classify', 'input'] },
@@ -303,7 +306,7 @@ test('stop reaches active session signal and cancelled state, preserving saved d
   }
 });
 
-test('required fields, nested schemas, enum and raw evidence are enforced', () => {
+test('required fields, nested schemas, enum and declared evidence structure are enforced', () => {
   const schema = {
     type: 'object',
     required: ['category', 'evidence'],
@@ -334,29 +337,10 @@ test('required fields, nested schemas, enum and raw evidence are enforced', () =
     '{"category":"问题","evidence":[{"quote":"导出失败","materialId":"F01"}]}',
     schema,
   );
-  validateEvidence(output, [{ id: 'F01', text: '界面很好但导出失败' }]);
-  assert.throws(
-    () => validateEvidence({ materialId: 'F99' }, [{ id: 'F01', text: 'x' }]),
-    /本次输入/,
-  );
-  assert.throws(
-    () =>
-      validateEvidence({ materialId: 'F01', quote: '编造原话' }, [
-        { id: 'F01', text: 'x' },
-      ]),
-    /逐字引用/,
-  );
-  assert.throws(
-    () => validateEvidence('报告 [F99]', [{ id: 'F01', text: 'x' }]),
-    /本次输入/,
-  );
-  assert.throws(
-    () =>
-      validateEvidence('报告 [12345678-1234-1234-1234-123456789012]', [
-        { id: 'F01', text: 'x' },
-      ]),
-    /本次输入/,
-  );
+  assert.deepEqual(output, {
+    category: '问题',
+    evidence: [{ quote: '导出失败', materialId: 'F01' }],
+  });
 });
 
 test('node executor sees only selected source materials and rejects fabricated required output', async () => {
@@ -391,6 +375,29 @@ test('node executor sees only selected source materials and rejects fabricated r
       category: '问题',
     });
     assert.equal(JSON.parse(input!.prompt).materials.length, 1);
+    const prompt = JSON.parse(input!.prompt);
+    assert.equal(prompt.inputs.input[0].value, material.text);
+    assert.deepEqual(prompt.materials, [
+      { id: material.id, characters: material.text.length },
+    ]);
+    const inspect = input!.tools.find(
+      (tool) => tool.name === 'inspect_material',
+    )!;
+    const original = await inspect.execute(
+      'read-material',
+      { materialId: material.id },
+      context.signal,
+      undefined,
+      {} as never,
+    );
+    assert.equal(
+      JSON.parse((original.content[0] as { text: string }).text).text,
+      material.text,
+    );
+    context.inputs.input[0].value = { category: '问题' };
+    await f.assistant.executeNode(context);
+    assert.equal(JSON.parse(input!.prompt).materials[0].text, material.text);
+
     // agent 节点会话带运行时与文件访问
     assert.deepEqual(input!.builtinTools, [
       'read',
@@ -449,7 +456,25 @@ test('node session links work uploads and collects only cleaned artifacts', asyn
     const stage = await mkdtemp(join(tmpdir(), 'node-stage-'));
     await writeFile(join(stage, 'cleaned-out.csv'), 'x\n');
     await writeFile(join(stage, 'scratch.mjs'), '// 不收割');
+    await mkdir(join(stage, 'cleaned-artifacts', 'sources'), {
+      recursive: true,
+    });
+    await writeFile(
+      join(stage, 'cleaned-artifacts', 'sources', 'evidence.md'),
+      '# evidence\n',
+    );
+    await mkdir(join(stage, 'cleaned-empty'));
     await input!.collect!(stage);
+    assert.equal(
+      await readFile(
+        f.files.uploadPath(
+          f.work.id,
+          'cleaned-artifacts__sources__evidence.md',
+        ),
+        'utf8',
+      ),
+      '# evidence\n',
+    );
     assert.equal(
       await readFile(f.files.uploadPath(f.work.id, 'cleaned-out.csv'), 'utf8'),
       'x\n',
@@ -505,44 +530,19 @@ test('invalid author proposals never become drafts or comparison baselines and r
   }
 });
 
-test('nested evidence strings inherit their material identity and cannot cite another real input', () => {
-  const materials = [
-    { id: 'M01', text: '界面顺手，但是导出失败。' },
-    { id: 'M02', text: '搜索速度很快。' },
-  ];
-  validateEvidence(
-    { materialId: 'M01', items: [{ category: '问题', evidence: '导出失败' }] },
-    materials,
+test('business evidence fields and bracketed labels have only the declared schema meaning', () => {
+  const value = {
+    sourceId: 'external-advisory',
+    references: ['https://example.test'],
+    evidence: 'synthesized analysis [M99]',
+  };
+  assert.deepEqual(
+    parseOutput(JSON.stringify(value), {
+      type: 'object',
+      required: ['sourceId', 'references', 'evidence'],
+    }),
+    value,
   );
-  validateEvidence(
-    { materialIds: ['M01'], items: [{ evidence: ['界面顺手', '导出失败'] }] },
-    materials,
-  );
-  assert.throws(
-    () =>
-      validateEvidence(
-        { materialId: 'M01', items: [{ evidence: '搜索速度很快' }] },
-        materials,
-      ),
-    /逐字引用/,
-  );
-  assert.throws(
-    () =>
-      validateEvidence(
-        { materialId: 'M01', items: [{ quote: '搜索速度很快' }] },
-        materials,
-      ),
-    /逐字引用/,
-  );
-  assert.throws(
-    () =>
-      validateEvidence(
-        { materialId: 'M01', items: [{ evidence: '编造依据' }] },
-        materials,
-      ),
-    /逐字引用/,
-  );
-  assert.throws(() => validateEvidence('[M99]', materials), /本次输入/);
 });
 
 test('literal fenced JSON is parsed before schema validation', () => {
@@ -577,7 +577,7 @@ test('string report output accepts Markdown and JSON strings, rejects object wra
   );
 });
 
-test('string report node prompts for Markdown instead of JSON and preserves structured-node JSON instructions', async () => {
+test('string reports remain Markdown while structured nodes support protocol and legacy JSON', async () => {
   const prompts: string[] = [];
   const f = await fixture(async (input) => {
     prompts.push(input.systemPrompt);
@@ -608,7 +608,7 @@ test('string report node prompts for Markdown instead of JSON and preserves stru
       onActivity: async () => {},
     };
     assert.equal(typeof (await f.assistant.executeNode(context)), 'string');
-    assert.match(prompts[0], /不要使用 report 或 content 字段包装/);
+    assert.match(prompts[0], /最终回复只返回完整的 Markdown 正文/);
     assert.doesNotMatch(
       prompts[0],
       /最终回复必须仅包含符合 expectedOutput 的 JSON/,
@@ -620,7 +620,8 @@ test('string report node prompts for Markdown instead of JSON and preserves stru
     assert.deepEqual(await f.assistant.executeNode(context), {
       category: '问题',
     });
-    assert.match(prompts[1], /符合 expectedOutput 的 JSON/);
+    assert.match(prompts[1], /submit_result 提交符合 expectedOutput/);
+    assert.doesNotMatch(prompts[0], /submit_result/);
   } finally {
     await f.clean();
   }
@@ -810,7 +811,7 @@ test('item goal and frozen evidence reach the real Pi boundary; shared schema su
       definitionId: f.id,
       node: {
         ...definition.nodes[0],
-        mode: 'all',
+
         operation: 'map',
         expectedOutput: {
           type: 'object',
@@ -841,7 +842,11 @@ test('item goal and frozen evidence reach the real Pi boundary; shared schema su
     assert.deepEqual(output, { summary: '工作项材料', verified: false });
     assert.equal(seen!.operation, 'map');
     assert.equal(seen!.workItem.goal, item.goal);
-    assert.deepEqual(seen!.materials, item.materials);
+    assert.deepEqual(
+      seen!.materials,
+      item.materials.map((m) => ({ id: m.id, characters: m.text.length })),
+    );
+    assert.equal(seen!.inputs.input[0].value, item.materials[0].text);
     assert.throws(
       () =>
         parseOutput('{"verified":true}', {
@@ -966,7 +971,7 @@ test('persistent session: bootstrap once, serialize per work, survive restart', 
   });
 });
 
-test('report_progress is scoped to ordinary full/commit item execution and binds identities before saving', async () => {
+test('report_progress is scoped to ordinary full or explicit node commit and binds identities before saving', async () => {
   let expected = false;
   let inspect: ((input: SessionInput) => Promise<void>) | undefined;
   const f = await fixture(async (input) => {
@@ -1033,6 +1038,17 @@ test('report_progress is scoped to ordinary full/commit item execution and binds
     await assistant.executeNode({
       ...context,
       scope: { nodeId: context.node.id },
+      effectMode: 'preview',
+    });
+    expected = true;
+    await assistant.executeNode({
+      ...context,
+      scope: { nodeId: context.node.id },
+    });
+    expected = false;
+    await assistant.executeNode({
+      ...context,
+      scope: { nodeId: 'different-node' },
     });
     await assistant.executeNode({ ...context, scope: undefined });
     await assert.rejects(
@@ -1087,6 +1103,217 @@ test('report_progress is scoped to ordinary full/commit item execution and binds
       assert.equal(captured.length, 1);
     };
     await assert.rejects(assistant.executeNode(context));
+  } finally {
+    await f.clean();
+  }
+});
+
+test('explicit node tools expose only selected capabilities and omit ambient business data', async () => {
+  const f = await fixture(async (session) => {
+    assert.deepEqual(session.builtinTools, []);
+    assert.deepEqual(session.tools, []);
+    assert.equal(session.mcp, undefined);
+    assert.deepEqual(session.linkFiles, []);
+    assert.equal(session.linkRuntime, false);
+    assert.doesNotMatch(
+      session.systemPrompt,
+      /inspect_material|report_progress|Node.js/,
+    );
+    const prompt = JSON.parse(session.prompt);
+    assert.equal(prompt.workItem.data, undefined);
+    assert.equal(prompt.workItem.goal, '明确业务目标');
+    assert.equal(prompt.inputs.input[0].value, '本次原文');
+    assert.doesNotMatch(session.prompt, /历史宿主线索/);
+    return '完成';
+  });
+  try {
+    await f.files.saveUpload(
+      f.work.id,
+      'history.txt',
+      Buffer.from('历史宿主线索'),
+    );
+    await f.assistant.executeNode({
+      workId: f.work.id,
+      runId: 'selected',
+      instanceId: 'selected-instance',
+      definitionId: f.id,
+      node: { ...definition.nodes[0], tools: { builtin: [], mcp: [] } },
+      inputs: {
+        input: [
+          {
+            sampleId: 'M01',
+            value: '本次原文',
+            materialIds: ['M01'],
+            sourceResultIds: [],
+          },
+        ],
+      },
+      materials: [{ id: 'M01', text: '本次原文' }],
+      workItem: {
+        id: 'item',
+        key: 'I',
+        title: '事项',
+        goal: '明确业务目标',
+        revision: 0,
+        data: { hidden: '历史宿主线索' },
+        materials: [{ id: 'M01', text: '本次原文' }],
+      },
+      scope: 'full',
+      effectMode: 'commit',
+      signal: new AbortController().signal,
+      onActivity: async () => {},
+    });
+  } finally {
+    await f.clean();
+  }
+});
+
+test('author saves explicit node tool selection through the existing definition tool', async () => {
+  const proposal = structuredClone(definition);
+  proposal.nodes[0].tools = { builtin: [], mcp: ['cveawg', 'websearch'] };
+  const f = await fixture(async (session) => {
+    const schema = JSON.stringify(
+      session.tools.find((tool) => tool.name === 'update_flow')!.parameters,
+    );
+    assert.match(schema, /builtin/);
+    assert.match(schema, /sourcegraph/);
+    await save(session, proposal);
+    return '已保存';
+  });
+  try {
+    const request = await f.assistant.requestEdit(f.work.id, {
+      text: '选择研究工具',
+      expectedDraftId: f.id,
+    });
+    assert.equal((await f.finish(request)).status, 'completed');
+    const snapshot = await f.flow.snapshot(f.work.id);
+    assert.deepEqual(
+      snapshot.definitions[snapshot.work.draftId!].nodes[0].tools,
+      proposal.nodes[0].tools,
+    );
+  } finally {
+    await f.clean();
+  }
+});
+
+test('structured nodes submit a validated result within the same session, including explicit tools', async () => {
+  const f = await fixture(async (session) => {
+    const submit = session.tools.find((tool) => tool.name === 'submit_result');
+    assert.ok(submit);
+    assert.deepEqual(
+      JSON.parse(JSON.stringify(submit.parameters)).properties.result,
+      {
+        type: 'object',
+        properties: {
+          count: { type: 'number' },
+          materialId: { type: 'string' },
+        },
+        required: ['count'],
+      },
+    );
+    await assert.rejects(
+      submit.execute(
+        'serialized',
+        { result: '{"count":1}' },
+        session.signal,
+        undefined,
+        {} as never,
+      ),
+      /schema/,
+    );
+
+    assert.deepEqual(
+      session.tools.map((tool) => tool.name),
+      ['submit_result'],
+    );
+    await assert.rejects(
+      submit.execute(
+        'bad-schema',
+        { result: { count: 'wrong' } },
+        session.signal,
+        undefined,
+        {} as never,
+      ),
+      /schema|类型|结果/,
+    );
+    // The output contract names a business field; it is not a material reference command.
+    await submit.execute(
+      'business-source',
+      { result: { count: 1, materialId: 'external-advisory' } },
+      session.signal,
+      undefined,
+      {} as never,
+    );
+    await submit.execute(
+      'valid',
+      { result: { count: 1, materialId: 'M01' } },
+      session.signal,
+      undefined,
+      {} as never,
+    );
+    return '研究已完成，结果已提交。';
+  });
+  try {
+    const context: NodeExecution = {
+      workId: f.work.id,
+      runId: 'protocol',
+      instanceId: 'instance',
+      definitionId: f.id,
+      node: {
+        ...definition.nodes[0],
+        tools: { builtin: [], mcp: [] },
+        expectedOutput: {
+          type: 'object',
+          properties: {
+            count: { type: 'number' },
+            materialId: { type: 'string' },
+          },
+          required: ['count'],
+        },
+      },
+      inputs: {
+        input: [
+          {
+            sampleId: 'M01',
+            value: f.work.materials[0].text,
+            materialIds: ['M01'],
+            sourceResultIds: [],
+          },
+        ],
+      },
+      materials: f.work.materials,
+      signal: new AbortController().signal,
+      onActivity: async () => {},
+    };
+    assert.deepEqual(await f.assistant.executeNode(context), {
+      count: 1,
+      materialId: 'M01',
+    });
+  } finally {
+    await f.clean();
+  }
+});
+
+test('failed output parsing retains actual final text for runtime diagnostics', async () => {
+  const f = await fixture(async () => '模型实际返回的非JSON说明');
+  try {
+    const context: NodeExecution = {
+      workId: f.work.id,
+      runId: 'bad-output',
+      instanceId: 'instance',
+      definitionId: f.id,
+      node: {
+        ...definition.nodes[0],
+        tools: { builtin: [], mcp: [] },
+        expectedOutput: { type: 'object' },
+      },
+      inputs: { input: [] },
+      materials: [],
+      signal: new AbortController().signal,
+      onActivity: async () => {},
+    };
+    await assert.rejects(f.assistant.executeNode(context), /有效 JSON/);
+    assert.equal(context.rawOutput, '模型实际返回的非JSON说明');
   } finally {
     await f.clean();
   }

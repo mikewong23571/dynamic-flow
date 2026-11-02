@@ -1,4 +1,4 @@
-import type { Definition, Snapshot } from '../../shared/records';
+import type { Definition, Snapshot, FlowNode } from '../../shared/records';
 
 export function acceptSnapshot(
   previous: Snapshot | null,
@@ -12,6 +12,14 @@ export function acceptSnapshot(
 export function removeNode(definition: Definition, nodeId: string): Definition {
   return {
     ...definition,
+    ...(definition.summaryOutput
+      ? {
+          summaryOutput:
+            definition.outputs[definition.summaryOutput]?.[0] === nodeId
+              ? undefined
+              : definition.summaryOutput,
+        }
+      : {}),
     nodes: definition.nodes.filter((n) => n.id !== nodeId),
     edges: definition.edges.filter(
       (e) => e.from[0] !== nodeId && e.to[0] !== nodeId,
@@ -61,4 +69,54 @@ export function changeSummary(
   if (JSON.stringify(before.outputs) !== JSON.stringify(after.outputs))
     lines.push('调整最终输出');
   return lines;
+}
+/** Display the operation encoded in the IR, independently of its business label. */
+export function nodePrimitive(node: FlowNode, native = false): string {
+  if (native) {
+    if (node.kind === 'call') return `call · ${node.operation}`;
+    if (node.kind === 'function')
+      return node.functionName === 'expression'
+        ? node.expression?.kind || 'expression'
+        : node.functionName || 'function';
+    return node.kind;
+  }
+  if (node.kind === 'call')
+    return node.operation === 'map' ? '逐项应用' : '整批应用';
+  if (node.kind === 'branch') return '条件分路';
+  if (node.kind === 'function') {
+    const functions: Record<string, string> = {
+      collect: '多路收集',
+      merge: '合并集合',
+      join: '按键关联',
+      groupBy: '分组',
+      identity: '透传',
+      'select-fields': '字段映射',
+    };
+    if (functions[node.functionName || ''])
+      return functions[node.functionName!];
+    if (node.functionName === 'expression') {
+      const expressions: Record<string, string> = {
+        match: '模式匹配',
+        reduce: '归约',
+        flatMap: '展开集合',
+        map: '逐项映射',
+        filter: '筛选',
+        object: '构造记录',
+        array: '构造列表',
+      };
+      if (expressions[node.expression?.kind || ''])
+        return expressions[node.expression!.kind];
+    }
+    return node.operation === 'flatMap' ? '展开集合' : '数据变换';
+  }
+  return (
+    {
+      agent: 'AI 分析',
+      file: '文件输入',
+      wait: '等待事件',
+      milestone: '记录里程碑',
+      dynamic: '动态展开',
+      'create-items': '拆分工作项',
+    }[node.kind] || '处理步骤'
+  );
 }

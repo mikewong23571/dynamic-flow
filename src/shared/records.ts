@@ -15,8 +15,23 @@ export interface FlowNode {
   id: string;
   label: string;
   kind:
-    'agent' | 'function' | 'branch' | 'wait' | 'milestone' | 'file' | 'dynamic';
-  mode: 'each' | 'all';
+    | 'agent'
+    | 'function'
+    | 'branch'
+    | 'wait'
+    | 'milestone'
+    | 'file'
+    | 'dynamic'
+    | 'call'
+    | 'create-items';
+  /** Fixed method interface; eachPort selects the mapped input, other ports broadcast. */
+  call?: {
+    workId: string;
+    definitionId: string;
+    inputNames: string[];
+    outputNames: string[];
+    eachPort?: string;
+  };
   contract?: {
     responsibility: string;
     done: string;
@@ -26,6 +41,10 @@ export interface FlowNode {
   dynamic?: { boundary: string; maxNodes: number };
   repeat?: { max: number; until?: Expression };
   task?: string;
+  tools?: {
+    builtin: ('read' | 'grep' | 'find' | 'ls' | 'bash' | 'edit' | 'write')[];
+    mcp: ('websearch' | 'sourcegraph' | 'cveawg')[];
+  };
   /** file 来源节点：指向工作 uploads 中的文件名，输出文件名供下游用运行时读取。 */
   file?: { name: string };
   operation?: 'map' | 'flatMap' | 'aggregate';
@@ -35,7 +54,14 @@ export interface FlowNode {
   milestone?: { stage: string; summary: string };
   expectedOutput?: Json;
   functionName?:
-    'identity' | 'select-fields' | 'merge' | 'collect' | 'join' | 'expression';
+    | 'identity'
+    | 'select-fields'
+    | 'merge'
+    | 'collect'
+    | 'join'
+    | 'groupBy'
+    | 'expression';
+  groupBy?: { keys: (string | number)[][] };
   inputNames?: string[];
   join?: {
     type: 'inner' | 'left' | 'right' | 'full';
@@ -52,6 +78,8 @@ export interface FlowNode {
   };
 }
 export interface Definition {
+  /** Read-only origin when a saved method node is extracted for formal item processing. */
+  sourceNode?: { workId: string; definitionId: string; nodeId: string };
   schemaVersion: 1;
   problem?: {
     framing: string;
@@ -65,6 +93,9 @@ export interface Definition {
   inputContracts?: Record<string, InputContract>;
   nodes: FlowNode[];
   edges: { from: [string, string]; to: [string, string] }[];
+  /** 可选摘要展示绑定，不改变节点expectedOutput运行合同；不识别标准卡片时按原值阅读。 */
+  summaryOutput?: string;
+  /** Explicit output containing actionable business records, separate from a text summary. */
   outputs: Record<string, [string, string]>;
 }
 /** 严格入口契约：条目形状与违约行为。宽松端口不声明契约。 */
@@ -76,7 +107,21 @@ export interface InputContract {
   /** 违约行为：reject（缺省，invoke 门口拒绝）| interpret（agent 修复环，复检仍败则拒绝）。 */
   onInvalid?: 'reject' | 'interpret';
 }
+export interface ContentMaterial {
+  id: string;
+  text: string;
+  contentUrl?: string;
+  characters?: number;
+}
 export interface InputItem {
+  /** Exact frozen input when continuing a failed instance. */
+  inputSource?: OutputReference;
+  /** Top-level record fields for arranging a delivery without loading its body. */
+  valueFields?: string[];
+  /** Transport-only pointer: value is omitted, never an actual null result. */
+  contentUrl?: string;
+  /** Exact saved producer when selected as input or crossing a fixed call. */
+  source?: OutputReference;
   sampleId: string;
   value: Json;
   materialIds: string[];
@@ -90,6 +135,8 @@ export interface Issue {
   field?: string;
 }
 export interface Activity {
+  /** Transport-only pointer to the full saved tool arguments/result. */
+  contentUrl?: string;
   id: string;
   toolCallId: string;
   toolName: string;
@@ -99,6 +146,10 @@ export interface Activity {
   error?: string;
 }
 export interface NodeResult {
+  /** Real nested execution, persisted before dispatch and reused on recovery. */
+  call?: ItemRunRef;
+  /** Actual final model reply retained when output parsing/validation fails. */
+  rawOutput?: string;
   id: string;
   runId: string;
   definitionId: string;
@@ -119,6 +170,17 @@ export interface NodeResult {
   finishedAt?: string;
 }
 export interface Run {
+  retrySource?: ItemRunRef & { resultIds: string[] };
+  /** Frozen material scope for nested methods; never callee workspace samples. */
+  materials: ContentMaterial[];
+  /** An execution call is distinct from an independent child business item. */
+  parentCall?: ItemRunRef & {
+    nodeId: string;
+    instanceId: string;
+    resultId: string;
+  };
+  sampleSource?: RunSampleSource;
+  inputSources?: OutputReference[];
   id: string;
   definitionId: string;
   scope: 'full' | { nodeId: string };
@@ -145,7 +207,14 @@ export interface Run {
   invocation?: { loose?: boolean; repairedPorts?: string[] };
   error?: string;
 }
+export interface RunSampleSource {
+  runId: string;
+  resultIds: string[];
+}
 export interface Comparison {
+  workItem?: WorkItemInput;
+  inputSources?: OutputReference[];
+  sampleSource?: RunSampleSource;
   id: string;
   baselineId: string;
   candidateId: string;
@@ -158,10 +227,25 @@ export interface Comparison {
   createdAt: string;
   error?: string;
 }
+export interface AssistantConversation {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+}
+/** A user's explicit reference to an immutable method version, not an execution request. */
+export interface MethodReference {
+  workId: string;
+  definitionId: string;
+  title: string;
+}
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   text: string;
+  methodReferences?: MethodReference[];
+  conversationId?: string;
+  createdAt?: string;
   status?: Status;
   requestId?: string;
   definitionId?: string;
@@ -184,6 +268,8 @@ export interface ViewState {
   };
 }
 export interface Work {
+  ownerItemId?: string;
+  uiProgramTemplate?: import('./openui.js').OpenUIProgram;
   id: string;
   title?: string;
   titleEdited?: boolean;
@@ -192,7 +278,7 @@ export interface Work {
   createdAt: string;
   updatedAt: string;
   revision: number;
-  materials: { id: string; text: string }[];
+  materials: ContentMaterial[];
   definitionIds: string[];
   draftId?: string;
   draftBaseId?: string;
@@ -202,6 +288,7 @@ export interface Work {
   comparisons: Comparison[];
   keptResultIds: string[];
   messages: ChatMessage[];
+  assistantConversations?: AssistantConversation[];
   /** 按 scope 的模型覆盖；当前只有 assistant（对话），workflow 预留。 */
   modelSelections?: { assistant?: ModelSelection };
 }
@@ -284,6 +371,12 @@ export interface WorkPage {
   pageSize: number;
 }
 export interface StartRun {
+  retrySource?: ItemRunRef & { resultIds: string[] };
+  materials?: ContentMaterial[];
+  /** Granted only by the explicit work-item single-step action. */
+  commitScope?: 'node';
+  sampleSource?: RunSampleSource;
+  inputSources?: OutputReference[];
   workItem?: WorkItemInput;
   effectMode?: 'commit' | 'preview';
   definitionId: string;
@@ -293,6 +386,8 @@ export interface StartRun {
 }
 export interface EditRequest {
   text: string;
+  sampleSource?: RunSampleSource;
+  methodReferences?: MethodReference[];
   expectedDraftId?: string;
   nodeId?: string;
   sampleIds?: string[];
@@ -302,6 +397,8 @@ export interface ImportRequest {
   note?: string;
 }
 export interface NodeExecution {
+  /** Model final reply, copied to failed NodeResult by the runtime. */
+  rawOutput?: string;
   problem?: Definition['problem'];
   iteration?: number;
   workItem?: WorkItemInput;
@@ -322,20 +419,101 @@ export interface NodeExecution {
 }
 
 // A business item outlives any method workspace or individual execution.
+export interface CriterionReference extends ItemRunRef {
+  port?: string;
+  index?: number;
+  label: string;
+  resultId: string;
+  nodeId?: string;
+  instanceId?: string;
+}
 export interface CompletionCriterion {
+  references?: CriterionReference[];
   id: string;
   text: string;
   met: boolean;
   evidence: string;
 }
 export interface WorkItemInput {
+  /** Transport-only marker for frozen context omitted from a run overview. */
+  contextOmitted?: boolean;
+  receivedInputs?: ReceivedItemInput[];
   id: string;
   key: string;
   title: string;
   goal: string;
   revision: number;
   data: Record<string, Json>;
-  materials: { id: string; text: string }[];
+  materials: ContentMaterial[];
+}
+/** Explicit material selection for a saved version of the current method. */
+export interface OutputReference {
+  workId: string;
+  runId: string;
+  resultId: string;
+  port: string;
+  index: number;
+}
+export type ItemInputSelection =
+  | { kind: 'material'; materialId: string }
+  | { kind: 'result'; source: OutputReference }
+  | {
+      kind: 'child-results';
+      itemId: string;
+      sources: OutputReference[];
+      scope?: 'children' | 'descendants';
+    }
+  | { kind: 'received'; inputId: string }
+  | {
+      kind: 'completion';
+      itemId: string;
+      completionHistoryId: string;
+      historical?: boolean;
+    };
+/** One selected child becomes one input; output values stay unchanged within it. */
+export interface ChildStageValue {
+  item: {
+    id: string;
+    key: string;
+    title: string;
+    goal: string;
+    data: Record<string, Json>;
+  };
+  outputs: { source: OutputReference; value: Json }[];
+}
+/** Read-only discovery; references, counts and previews, no editable result copies. */
+export interface ChildStageInputs {
+  children: {
+    id: string;
+    key: string;
+    title: string;
+    excluded: boolean;
+    issues: string[];
+    runs: (ItemRunRef & {
+      title: string;
+      round: number;
+      status: Status;
+      startedAt: string;
+      groups: {
+        nodeId: string;
+        port: string;
+        label: string;
+        final: boolean;
+        summary: boolean;
+        outputs: {
+          source: OutputReference;
+          preview: string;
+          entries?: number;
+        }[];
+      }[];
+    })[];
+  }[];
+}
+export interface WorkItemRunSelection {
+  scope?: Run['scope'];
+  definitionId: string;
+  baseRevision?: number;
+  inputBindings?: Record<string, ItemInputSelection[]>;
 }
 export interface ItemRunRef {
   workId: string;
@@ -354,8 +532,16 @@ export interface ItemHistory {
     | 'completed'
     | 'reopened'
     | 'method'
-    | 'run';
+    | 'run'
+    | 'children'
+    | 'scope'
+    | 'input'
+    | 'interface';
   summary: string;
+  uiSnapshot?: {
+    program: import('./openui.js').OpenUIProgram;
+    deliveries: import('./workitem-composition.js').ItemDelivery[];
+  };
   source?: ItemRunRef & {
     nodeId?: string;
     instanceId?: string;
@@ -365,9 +551,26 @@ export interface ItemHistory {
   progress?: { stage: string; nextAction?: string; blocker?: string };
   materialIds?: string[];
   criteria?: CompletionCriterion[];
+  childCompletions?: CompletionReference[];
+  confirmedScope?: string[];
+  completionTitle?: string;
+  completionGoal?: string;
+  completionData?: Record<string, Json>;
+  childLinks?: ChildCreationReceipt[];
 }
 export interface WorkItem extends WorkItemInput {
-  workflowId: string;
+  uiProgram?: import('./openui.js').OpenUIProgram;
+  workId: string;
+  inputBindings: Record<string, ItemInputSelection[]>;
+  deliveries: import('./workitem-composition.js').ItemDelivery[];
+  parentId?: string;
+  parentScope?: {
+    status: 'included' | 'excluded';
+    reason?: string;
+    at: string;
+  };
+  origin?: CandidateOrigin;
+  trackingKey?: string;
   status: 'open' | 'completed';
   stage: string;
   summary: string;
@@ -381,6 +584,8 @@ export interface WorkItem extends WorkItemInput {
   progressAt: string;
 }
 export interface RunWait {
+  /** A projected nested wait; signals target its actual execution, not this display row. */
+  source?: ItemRunRef & { nodeId: string };
   nodeId: string;
   event: string;
   reason: string;
@@ -396,7 +601,8 @@ export interface RunSignal {
   receivedAt: string;
 }
 export interface WorkItemView extends WorkItem {
-  effectiveStatus: 'open' | 'running' | 'waiting' | 'attention' | 'completed';
+  effectiveStatus:
+    'open' | 'running' | 'waiting' | 'attention' | 'review' | 'completed';
   execution?: ItemRunRef & {
     status: Status;
     waits: RunWait[];
@@ -413,6 +619,7 @@ export interface WorkItemView extends WorkItem {
 export interface WorkItemSummary {
   total: number;
   pending: number;
+  review: number;
   open: number;
   running: number;
   waiting: number;
@@ -435,11 +642,112 @@ export interface WorkItemProgressReport {
   source?: ItemRunRef & { nodeId: string; instanceId: string };
 }
 export interface CreateWorkItem {
+  parentId?: string;
+  receivedInputs?: Omit<ReceivedItemInput, 'id'>[];
+  confirmReopen?: boolean;
+  key?: string;
+  title: string;
+  goal: string;
+  criteria?: string[];
+  materials: string[];
+  data?: Record<string, Json>;
+}
+
+/** Explicit handoff: values remain JSON; a revision never changes the original. */
+export interface ReceivedItemInput {
+  inputSource?: OutputReference;
+  contentUrl?: string;
+  id: string;
+  label: string;
+  value: Json;
+  source?: OutputReference;
+  replacesId?: string;
+  revised?: boolean;
+  origin?: CandidateOrigin & { inputIndex: number };
+  materials?: ContentMaterial[];
+}
+export type CandidateSource = OutputReference & {
+  kind: 'output' | 'node-input';
+};
+export interface CandidateOrigin {
+  source: CandidateSource;
+  candidateId: string;
+}
+export interface WorkItemCandidate {
+  id: string;
+  title: string;
+  goal: string;
+  data?: Record<string, Json>;
+  criteria?: string[];
+  trackingKey?: string;
+  inputs: Omit<ReceivedItemInput, 'id'>[];
+  existingChildId?: string;
+}
+export interface ChildCreationReceipt {
+  inputsAppended?: boolean;
+  candidateId: string;
+  status: 'created' | 'linked' | 'needs-input' | 'failed';
+  childId?: string;
+  error?: string;
+  source?: CandidateSource;
+}
+export interface CreateChildrenRequest {
+  appendInputs?: boolean;
+  candidates?: WorkItemCandidate[];
+  source?: CandidateSource;
+  candidateIds?: string[];
+  edits?: WorkItemCandidate[];
+  confirmReopen?: boolean;
+}
+export interface CompletionReference {
+  itemId: string;
+  completionHistoryId: string;
+}
+export interface ItemPreparation {
+  itemId: string;
+  workId?: string;
+  definitionId?: string;
+  baseRevision?: number;
+  inputBindings: Record<string, ItemInputSelection[]>;
+  inputs?: Inputs;
+  issues: string[];
+  createsChildren?: boolean;
+}
+export interface WorkItemSummaryRow {
+  id: string;
   key: string;
   title: string;
   goal: string;
-  workflowId: string;
-  criteria: string[];
-  materials: string[];
-  data?: Record<string, Json>;
+  parentId?: string;
+  parentTitle?: string;
+  parentScope?: WorkItem['parentScope'];
+  status: WorkItem['status'];
+  effectiveStatus: WorkItemView['effectiveStatus'];
+  stage: string;
+  summary: string;
+  blocker?: string;
+  nextAction?: string;
+  workId: string;
+  progressAt: string;
+  createdAt: string;
+  runs: ItemRunRef[];
+  execution?: {
+    status: Status;
+    workId: string;
+    runId: string;
+    definitionId: string;
+  };
+  childCount: number;
+  completedChildCount: number;
+  todo?: 'process' | 'running' | 'waiting' | 'blocked' | 'review' | 'confirm';
+  completion?: CompletionReference;
+}
+export interface WorkItemSummaryPage {
+  items: WorkItemSummaryRow[];
+  total: number;
+  page: number;
+  pageSize: number;
+  summary: WorkItemSummary;
+  scopeSummary: WorkItemSummary;
+  todoTotal: number;
 }

@@ -56,7 +56,7 @@
 
 file 来源节点（kind:file, file.name 非空）无入边、输出 output；定义存在 file 来源节点时 inputs 可为空，否则仍需至少一个非空不重复输入名。
 
-当前端口：普通节点 input/output；branch input → matched/unmatched、mode=all；merge left/right → output、mode=all。每个目标端口仅一条来源。条件 field 为空字符串表示判断整个 value，非空字段由 runtime 读取；这是文本材料直接分流的具体需要，影响 B2/T2，已与 runs 实现者同步并加入域内有效定义测试。旧伪代码 match/rest 不再是实际接口。
+当前端口：普通节点 input/output；branch input → matched/unmatched；merge left/right → output。每个目标端口仅一条来源。条件 field 为空字符串表示判断整个 value，非空字段由 runtime 读取；这是文本材料直接分流的具体需要，影响 B2/T2，已与 runs 实现者同步并加入域内有效定义测试。旧伪代码 match/rest 不再是实际接口。
 
 域内证据：`pnpm exec tsx --test tests/state.test.ts` 验证冲突、起点、保存不完整配置、局部问题、环、显式汇合和布局不改版本。状态为 **模块实现完成，产品联测待验收**；连线实际输入、Pi 改图和浏览器操作交由相邻模块与根验收。
 
@@ -83,11 +83,11 @@ Schema 当前使用 Ajv 的 JSON Schema draft-07，允许基础类型 union；�
 
 ## 多路集合函数（2026-09-20）
 
-正式端口语义共用 `src/shared/node-ports.ts`。`merge` 配置 `inputNames` 后支持至少两路具名输入；旧 merge 不配置此字段时继续 left/right 与历史行为。`collect` 要求 `inputNames`，`join` 固定 left/right；配置集合函数均为 all，operation 只能省略或 aggregate。`collections.ts` 校验具名端口唯一、join 类型/路径/重复键策略并返回字段问题；坏字段类型不会令校验崩溃。
+正式端口语义共用 `src/shared/node-ports.ts`。`merge` 必须配置 `inputNames`，支持至少两路具名输入。`collect` 要求 `inputNames`，`join` 固定 left/right；集合函数统一聚合，operation 只能省略或 aggregate。`collections.ts` 校验具名端口唯一、join 类型/路径/重复键策略并返回字段问题；坏字段类型不会令校验崩溃。
 
 集合函数 inputSchema 检查 `{端口名: 值数组}`；静态连接按 `properties[端口].items` 的明确顶层类型拒绝冲突。新 merge / join 的 expectedOutput 检查整个数组，但端口发出数组中的每项，因此静态出线取 items；collect 整个对象作为一项。其余 JSON Schema 仍由运行时校验。不是通用 schema 子类型证明。
 
-域内 `tests/multi-input.test.ts` 使用真实文件保存重开，覆盖具名多路/旧 merge、四种 join、Schema、纯表达式解构、空路/失败路、输入顺序/精确参与来源以及节点 preview/retry；浏览器和真实作者验收由本轮 track 汇总。
+域内 `tests/multi-input.test.ts` 使用真实文件保存重开，覆盖具名多路 merge、四种 join、Schema、纯表达式解构、空路/失败路、输入顺序/精确参与来源以及节点 preview/retry；浏览器和真实作者验收由本轮 track 汇总。
 
 ## 画布路由持久化（2026-09-20）
 
@@ -100,3 +100,35 @@ saveLayout 接收 ViewState 的 positions、可选 viewport、showPorts 与 rout
 ## 输入契约（2026-09-21）
 
 `contracts.ts`：Definition.inputContracts 按端口声明 item schema（draft-07，复用 schema.ts 编译校验）、required（缺省 true）与 onInvalid（reject 缺省 / interpret）。checkDefinition 统一调用 checkInputContracts（端口须存在、schema 可编译），手工可保存不完整契约，运行前校验不变。validateInvocation 供 invoke 路由逐条校验裸值；机械算子语义不变，契约只管入口。测试 tests/invoke.test.ts。
+
+`FlowNode.tools`仅支持普通Agent，builtin/mcp均为明确数组；校验已知工具/服务名称、重复项和未知字段。字段省略保留旧节点行为，显式空数组表示不提供工具；工具配置随定义冻结。
+
+## 建立子项节点（2026-10-23）
+
+`kind:create-items` 使用 input→output，固定整批处理；无自定义父项配置。输入每项为候选容器，输出每项为该容器的建立回执；inputSchema/expectedOutput按整批数组校验。普通端口规则已覆盖，不加第二套端口逻辑。动态提案明确拒绝create-items；用户必须在保存的方法中显式配置该业务动作。作者TypeBox schema、指引与运行器同步；`tests/create-items-author.test.ts` 验证作者实际保存和动态边界。
+
+
+Definition.summaryOutput 可选；checkDefinition 验证其精确绑定普通 aggregate 的 output，拒绝动态/迭代摘要节点。输出只按节点 expectedOutput 校验；summaryOutput 不改变执行合法性。shared/result-summary.ts 只提供可选标准摘要的显式schema和展示识别，非标准值仍按普通产物阅读。
+
+
+## 方法组合与按键分组（2026-10-28）
+
+`calls.ts` 提供 checkCall 与 async validateCallReferences。前者供 checkDefinition 统一校验 call 配置和 map/aggregate 语义；后者递归读取固定方法版本、核对具名输入输出、私有工作归属及循环引用。未保存提案使用不与保存版本冲突的根标识，正式运行仍按新保存ID重验。共同调用/分组配置schema在shared/node-ports.ts，作者工具复用，不另造调度或编译平台。
+
+`functionName:groupBy` 按 groupBy.keys 中的自身字段路径构造类型严格的复合键，输出每组 `{key,items}`；groups与组内项保持首次出现顺序，来源只来自本组输入。它属于普通确定性集合函数；inputSchema约束具名数组对象，expectedOutput约束整个分组数组。join/collect/reduce与现有DAG收口继续复用。验证tests/composition-runtime.test.ts及相邻multi-input/functional-ir。
+
+## 有界运行读取
+
+`snapshot(workId, { overview: true, runIds })` 在 files.select 复制前过滤 Run，并将大值投影为带 contentUrl 的概要；不得把 null 当实际输出。固定正文由 `/api/works/:id/content` 按 run/result/port/index 精确读取，预览每段最多20000字符，完整下载显式请求。概要只用于传输，执行、校验、接续仍从原记录读取。对应反例见 bounded-workspace.test.ts。
+
+浏览器方法工作区的GET、动作响应与SSE显式使用view=overview；需要业务原值的CLI须用view=full并限定runIds，不能把页面概要的遗漏值当结果。InputItem.valueFields保留大值的顶层字段，用于既有交付配置；运行入口拒绝将contentUrl概要作为输入提交。
+
+## 唯一节点语义与编译生命周期
+
+mode和resultOutput已退役，不接受旧字段。普通Agent/Function显式map/flatMap/aggregate，call显式map/aggregate；集合/控制节点固定整批，merge/collect明确inputNames。端口和执行单元来自shared/node-ports，不能在校验器另建旧模式分支。
+
+schema.ts按schema内容复用编译函数，只保留128份近期结果；每次编译后移除Ajv对临时schema对象的强引用。schemaIssue和validateValue共用此机制，候选草案不无限留在全局缓存。files对不可变Definition版本缓存解析，调用方仍拿独立副本。相同定义重复快照不得逐次编译。
+
+验证：runtime-mechanisms.test、functional-ir、multi-input和composition-runtime，覆盖真实输入/输出及失败依赖阻断；领域成果唯一ID由交付合同/具体业务负责，不恢复专用resultOutput引擎。
+
+`Definition.sourceNode` 只记录提取单步骤时的固定来源 `{workId, definitionId, nodeId}`。保存校验三个非空标识；它不加载来源定义、不跟随最新版本，也不形成执行依赖。

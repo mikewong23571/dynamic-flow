@@ -1,0 +1,11 @@
+{
+  "startedAt": "2026-10-29T07:29:37.421Z",
+  "itemId": "33800ab9-0d63-4484-92c3-936d8ff86d62",
+  "scope": "真实默认模型仅共同编辑明确虚构演示的界面安排；不运行漏洞核查、不确认条件或结项",
+  "before": {
+    "runCount": 3,
+    "definitionId": "9ce13d9a-ae38-42d7-861c-0430339832e3",
+    "status": "open"
+  },
+  "error": "Error: expect(locator).toBeChecked() failed\n\nLocator:  getByRole('checkbox', { name: '选择记录 worker-D', exact: true })\nExpected: checked\nReceived: unchecked\nTimeout:  5000ms\n\nCall log:\n  - Expect \"toBeChecked\" getByRole('checkbox', { name: '选择记录 worker-D', exact: true }) with timeout 5000ms\n  - waiting for getByRole('checkbox', { name: '选择记录 worker-D', exact: true })\n    14 × locator resolved to <input type=\"checkbox\" aria-label=\"选择记录 worker-D\"/>\n       - unexpected value \"unchecked\"\n"
+}

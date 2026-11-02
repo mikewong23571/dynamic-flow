@@ -1,0 +1,102 @@
+{
+  "sourceCommit": "c6f73d7d5f69acb80fc89faefd12c0865c8603d1",
+  "node": "v25.4.0",
+  "zod": "4.6.5 (workspace dependency, source package declares ^4.3.6)",
+  "invalidPropsCatalogResult": {
+    "success": true,
+    "data": {
+      "root": "r",
+      "elements": {
+        "r": {
+          "type": "Text",
+          "props": {
+            "content": 123,
+            "unexpected": true
+          },
+          "children": []
+        }
+      }
+    }
+  },
+  "invalidPropsStructuralResult": {
+    "valid": true,
+    "issues": []
+  },
+  "singleComponentInvalidResult": false,
+  "validatedFull": {
+    "success": true,
+    "data": {
+      "root": "r",
+      "elements": {
+        "r": {
+          "type": "Text",
+          "props": {
+            "content": {
+              "$state": "/data/value"
+            }
+          },
+          "children": []
+        }
+      }
+    }
+  },
+  "originalFull": {
+    "root": "r",
+    "elements": {
+      "r": {
+        "type": "Text",
+        "props": {
+          "content": {
+            "$state": "/data/value"
+          }
+        },
+        "children": [],
+        "on": {
+          "press": {
+            "action": "submit",
+            "params": {
+              "recordId": "rec-1"
+            }
+          }
+        },
+        "watch": {
+          "/draft/x": {
+            "action": "submit"
+          }
+        }
+      }
+    },
+    "state": {
+      "data": {
+        "value": "real"
+      },
+      "draft": {
+        "x": 1
+      }
+    }
+  },
+  "streaming": {
+    "firstPatchCount": 1,
+    "secondPatchCount": 1,
+    "final": {
+      "root": "r",
+      "elements": {
+        "r": {
+          "type": "Text",
+          "props": {
+            "content": "hello"
+          },
+          "children": []
+        }
+      }
+    },
+    "patchCount": 2
+  },
+  "malformedActionParamsReachedHandler": {
+    "recordId": 42,
+    "extra": "accepted"
+  },
+  "directRendererInvalidProps": "<span>123</span>",
+  "rawFullRender": "<span>real</span>",
+  "validatedFullRender": "<span>MISSING</span>"
+}

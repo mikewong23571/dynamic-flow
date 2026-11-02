@@ -1,0 +1,19 @@
+{
+  "runId": "2e6ef635-78df-4188-8326-3d48b899a6f3",
+  "inputs": {
+    "input": [
+      {
+        "sampleId": "M03",
+        "value": "搜索比以前快很多，团队很满意。",
+        "materialIds": [
+          "M03"
+        ],
+        "sourceResultIds": []
+      }
+    ]
+  },
+  "scope": {
+    "nodeId": "classify"
+  },
+  "effectMode": "preview"
+}

@@ -137,9 +137,7 @@ export function SemanticFields({
                 onChange={(e) =>
                   update({
                     repeat: e.target.checked ? { max: 3 } : undefined,
-                    ...(e.target.checked
-                      ? { operation: 'map', mode: 'each' }
-                      : {}),
+                    ...(e.target.checked ? { operation: 'map' } : {}),
                   })
                 }
               />

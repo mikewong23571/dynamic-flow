@@ -10,7 +10,7 @@ import { changeSummary } from '../../core/definition';
 import { comparisonStale } from '../../core/compare';
 import { active, short } from '../../core/format';
 import { Badge, Button, Empty } from '../../components/ui';
-import { Value } from './Results';
+import { ArtifactValue } from './ArtifactValue';
 function output(result: NodeResult | undefined) {
   if (!result) return <span className="muted">等待结果</span>;
   return (
@@ -20,7 +20,11 @@ function output(result: NodeResult | undefined) {
       {Object.values(result.outputs)
         .flat()
         .map((item, i) => (
-          <Value key={i} value={item.value} />
+          <ArtifactValue
+            key={i}
+            value={item.value}
+            contentUrl={item.contentUrl}
+          />
         ))}
     </>
   );
@@ -60,7 +64,7 @@ export function Comparison({
     <div className="comparison-view scroll">
       <div className="section-heading">
         <div>
-          <h2>同输入比较</h2>
+          <h2>同输入比较做法</h2>
           <p className="muted">
             {
               definitions[comparison.candidateId]?.nodes.find(
@@ -110,7 +114,9 @@ export function Comparison({
         <div className="compare-row" key={id}>
           <div>
             <span className="sample-id">{id}</span>
-            <Value value={items.find((i) => i.sampleId === id)!.value} />
+            <ArtifactValue
+              value={items.find((i) => i.sampleId === id)!.value}
+            />
           </div>
           <div>{output(comparisonResult(baseline, comparison.nodeId, id))}</div>
           <div>

@@ -1,0 +1,17 @@
+{
+  "itemId": "852367c9-7ff7-4aba-8da8-ae0550d7d823",
+  "sourceRoot": "/tmp/flowcraft-fresh-design-yNdbz8",
+  "previewRoot": "/tmp/flowcraft-workitem-preview-20261028-c_lyq6pt",
+  "works": 5,
+  "rootRuns": 4,
+  "status": "open",
+  "views": [
+    "受影响范围与版本（按仓库）",
+    "待处理缺口（按类型）",
+    "实施仓库与改动",
+    "逐条告警核对",
+    "批次核对摘要"
+  ],
+  "url": "http://10.134.94.200:4330/items/852367c9-7ff7-4aba-8da8-ae0550d7d823?tab=results",
+  "scope": "仅复制本次独立合成新建工作项及其5个Work，ID均新建且目标不存在；不复制配置/密钥/链接，不改已有演示"
+}

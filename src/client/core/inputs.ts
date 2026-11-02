@@ -1,7 +1,10 @@
 import { nodeInputPorts as inputPorts } from '../../shared/node-ports';
 import type { FlowNode, Inputs, Work } from '../../shared/records';
 
-export { nodeInputPorts as inputPorts } from '../../shared/node-ports';
+export {
+  nodeInputPorts as inputPorts,
+  nodeOutputPorts as outputPorts,
+} from '../../shared/node-ports';
 
 export const materialInputs = (
   work: Work,
@@ -17,13 +20,6 @@ export const materialInputs = (
       sourceResultIds: [],
     })),
 });
-export function outputPorts(node: FlowNode) {
-  return node.kind === 'branch'
-    ? ['matched', 'unmatched']
-    : node.kind === 'wait'
-      ? ['output', 'event']
-      : ['output'];
-}
 export function localInputs(
   node: FlowNode | undefined,
   items: Inputs,

@@ -1,0 +1,101 @@
+{
+  "scope": "相对M交付的节点引用增量",
+  "changes": [
+    {
+      "path": "docs/design.md",
+      "change": "modified",
+      "before": "db67e43fbf605c262a598bcfe3f41875592ea2f66e8eb58d857b3a37e49feca5",
+      "after": "e322f2992504f8c1170b101a5362f58805d8fc49c61a9a5fc0178020030b001b"
+    },
+    {
+      "path": "docs/implementation-map.md",
+      "change": "modified",
+      "before": "76b586cc517a4455cc09919ec45d964213278789b0cece822747372e2f6b37d2",
+      "after": "73425aad448371748baae176c3615e4c2bf37e8bffc447e8d542a8e34b0cbad9"
+    },
+    {
+      "path": "src/client/AGENTS.md",
+      "change": "modified",
+      "before": "050a46129159030a91a794a1fc7955987351b4106f206593e715b78d1bf1ac47",
+      "after": "7af7cafad809b11b67a026c646ac199329ebe613689a528e744e858155be03d9"
+    },
+    {
+      "path": "src/client/DESIGN-NOTES.md",
+      "change": "modified",
+      "before": "28480bb5c22471b3256556c1b03b11aac73dc730a9cfb512d764a50cb67da166",
+      "after": "45913114113b40322d7c3ac406e28dd913509e27407b2cc62b521206d1040656"
+    },
+    {
+      "path": "src/client/components/ui.tsx",
+      "change": "modified",
+      "before": "c19712975ac82678457bf6a17e27742b821551502020a676b9a6cc536c90df90",
+      "after": "347933af58aebdf6ec0814fdc06148e9d9cfc2181c57dd3798fecf53daa5d21b"
+    },
+    {
+      "path": "src/client/components/ui/README.md",
+      "change": "modified",
+      "before": "dbe9e27b1363395b3ebd3090f038a78bdeb8c7afb9c5518810fd28b78b0dc7b5",
+      "after": "b41a3e277f319b587f44d23c3cbae7e840207a46b3f121eb184d8aaa45f8313c"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowCanvas.css",
+      "change": "modified",
+      "before": "94393236ea1de64009da6c9401863cb6ef82213a62464d8bd302b2db7d236cf7",
+      "after": "a74bbd63615832c2040423e73b4afc2230de04091e8e05d1a31ec955c1048706"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowCanvas.tsx",
+      "change": "modified",
+      "before": "162d57489cbb246410af25f05126709ee9179fc7c0f75b501e63c5e4ef1dfa51",
+      "after": "50340d12199f7e1cd202850eeb0dfe7f9cecdb2c97ccf99ff244b9b687e9719c"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowNode.tsx",
+      "change": "modified",
+      "before": "131dc0a8f3b43bbd568ec1fcaa7aa31aa7a82d72477cbe097b2b21225c32a6b8",
+      "after": "03f07713b1120988b2e7691cf46761d8c9e17a774263769ee3743eb4c15a0a66"
+    },
+    {
+      "path": "src/client/features/work-items/WorkItemDetail.tsx",
+      "change": "modified",
+      "before": "ffe1e96746c8e736ab31b6be9e6f30fc055c27061ee09a0a32dbc1e9c0680d18",
+      "after": "f1787f47016899a36505cebce6a3c5263632266e1579631a3dc8af4333b8ee0a"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionFlow.tsx",
+      "change": "modified",
+      "before": "e49cf29ca1b24daa593962b48c7952e27c738bf66d2681d78b1d80f491d04a49",
+      "after": "d98e72deb8b85feeef32c43e9888edd4699f6732d7259a9eafb55d02edef12eb"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionPlan.tsx",
+      "change": "modified",
+      "before": "91f7433e8aee2ada3f0906e72e0d3a3a4b2ac51afc35d7ff441d324bb96f51ee",
+      "after": "006cd4bba1d3aedbe10f359ce26916996d7d82b058e3ba5538028adef5245f35"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionWorkspace.css",
+      "change": "modified",
+      "before": "75ecfa1c0d383a3de37e27adc5abcbc387aff1c248977a91596576e0d38d7c33",
+      "after": "5adf6294c9125a758518db3ca7049b980814d4767870897f26f648ada6629e88"
+    },
+    {
+      "path": "src/client/features/work-items/composition/MethodPreview.tsx",
+      "change": "added",
+      "before": null,
+      "after": "43b1017009d42cb611a1498afbdd2826ac305e68dfc3277b5f3aee4831fe39b5"
+    },
+    {
+      "path": "tests/AGENTS.md",
+      "change": "modified",
+      "before": "3e1d5b361c51c6c93b50ac5b527512778e60ba4204bc07da51f862c2b765b355",
+      "after": "e1d6e9becc5975357923a549ef30f9cbe299f5105bf90e526c9ebec2cef1a56f"
+    },
+    {
+      "path": "tests/browser/workitem-composition-call-node.spec.ts",
+      "change": "added",
+      "before": null,
+      "after": "f608ca9b24eee61ae1d0467e608ddf09574ffaa5030ec5e09c197b5bee86c5b2"
+    }
+  ]
+}

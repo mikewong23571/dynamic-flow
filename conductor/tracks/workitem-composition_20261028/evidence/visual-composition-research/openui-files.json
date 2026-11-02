@@ -1,0 +1,27 @@
+[
+  {
+    "path": "packages/lang-core/src/parser/ast.ts",
+    "lines": 222,
+    "url": "https://raw.githubusercontent.com/thesysdev/openui/1492107c8d24805a19651ad57420156f702bbda5/packages/lang-core/src/parser/ast.ts"
+  },
+  {
+    "path": "packages/lang-core/src/parser/lexer.ts",
+    "lines": 380,
+    "url": "https://raw.githubusercontent.com/thesysdev/openui/1492107c8d24805a19651ad57420156f702bbda5/packages/lang-core/src/parser/lexer.ts"
+  },
+  {
+    "path": "packages/lang-core/src/parser/merge.ts",
+    "lines": 184,
+    "url": "https://raw.githubusercontent.com/thesysdev/openui/1492107c8d24805a19651ad57420156f702bbda5/packages/lang-core/src/parser/merge.ts"
+  },
+  {
+    "path": "packages/lang-core/src/parser/serialize.ts",
+    "lines": 287,
+    "url": "https://raw.githubusercontent.com/thesysdev/openui/1492107c8d24805a19651ad57420156f702bbda5/packages/lang-core/src/parser/serialize.ts"
+  },
+  {
+    "path": "packages/lang-core/src/parser/index.ts",
+    "lines": 36,
+    "url": "https://raw.githubusercontent.com/thesysdev/openui/1492107c8d24805a19651ad57420156f702bbda5/packages/lang-core/src/parser/index.ts"
+  }
+]

@@ -1,5 +1,7 @@
 # 技术栈与决策状态
 
+> 2026-10-30新增确定目标：[OpenUI正式集成track](tracks/overall-design-workitem-openui_20261030/index.md)。业务界面将使用OpenUI Lang/core/react-lang的同源库、官方Renderer和交互；旧json-render与自建ItemUiPlan解释链退役。保留Pi、assistant-ui、React Flow、Hono及文件存储，尚未安装新渲染包或完成接入。下表为现状，不将目标写成已实现。
+
 当前架构依据：[设计 v5](../docs/design.md)。正式应用位于 src/，版本以 package.json / pnpm-lock.yaml 为准。安装列表同时保留历史实验依赖，不能把包存在等同于正式产品已采用。
 
 ## 正式实现

@@ -1,0 +1,619 @@
+{
+  "startedAt": "2026-10-29T05:04:49.061Z",
+  "itemId": "33800ab9-0d63-4484-92c3-936d8ff86d62",
+  "scope": "真实默认模型，在独立预览上将明确虚构的演示改为一个固定方法调用及可操作界面。没有真实漏洞核查或修复。",
+  "turns": [
+    {
+      "durationMs": 61326,
+      "status": "completed",
+      "text": "已按新方向重做为「薄工作项」并保存，本轮只规划：未执行、未发布、未确认任何条件。\n\n**现在的结构**\n- 本项只有一步：把第一份材料的整批虚构输入交给已保存的「演示·整批核对与交付」固定版本，取回四路结果。归并、核对、改动展开等九步拆分都留在该流水线里，不再出现在本项。\n- 输入只有一个批次入口，已按第一份材料原文绑定（8 条告警 + 6 条范围判断，来源可追溯）；第二份材料仅作历史参考，未参与。\n- 输出沿用流水线的四路：仓库影响、改动安排、逐条告警交付、验收缺口。\n\n**成果页能看什么**\n- 仓库影响：按目标仓库分组，列问题/分支/当前判断/依据是否齐备，展开可看原审计版本、判断依据与证据。\n- 改动安排：实施仓库、分支、改动内容、依赖改动、逐关系覆盖与验证。\n- 逐条告警交付：每条原告警的处置、依据是否齐备、例外确认记录（重复告警与无判断告警都会单列）。\n- 验收缺口：原始告警数、依据已齐备数、仍待处理的原告警清单。\n\n**页面上可做的操作（都绑定模板现有固定方法）**\n- 仓库影响里对「待核查」的范围补核查依据（选一条 → 填实际核对版本、结论、说明、证据）。\n- 逐条交付里对「例外」的范围登记明确确认（选一条 → 勾选确认 + 填确认理由与适用范围）。\n- 验收缺口里的人工核对只进入人工核对，不自动结项。\n\n**两项完成要求已设置但保持未确认**\n1. 全部原告警都有适用范围的依据，且例外已由用户明确确认；\n2. 已核对改动范围、固定来源及最终交付。\n\n**怎么推进**\n先在成果页点执行启动这一批（或告诉我可以运行），跑完后四张视图会绑定真实结果；随后在页面上对 worker-D 这类缺依据的范围补核查、对 portal-B 做例外确认，待缺口清单清空后由你在验收缺口处做人工核对。需要我现在启动执行吗？",
+      "tools": [
+        {
+          "name": "find_methods",
+          "status": "completed"
+        },
+        {
+          "name": "inspect_method",
+          "status": "completed"
+        },
+        {
+          "name": "read_artifact",
+          "status": "completed"
+        },
+        {
+          "name": "check_flow",
+          "status": "completed"
+        },
+        {
+          "name": "find_methods",
+          "status": "completed"
+        },
+        {
+          "name": "save_flow",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "check_ui_plan",
+          "status": "completed"
+        },
+        {
+          "name": "save_ui_plan",
+          "status": "completed"
+        },
+        {
+          "name": "set_completion_requirements",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "durationMs": 43784,
+      "status": "completed",
+      "text": "执行完成，四个视图已一次性绑定到本轮真实结果。\n\n**实际覆盖**\n- 原告警 8 条 → 归并为 7 个调查范围（scan-01/scan-02-duplicate 同属一个范围）。\n- 仓库影响：7 条范围记录，其中 6 条依据齐备；判断沿用材料原值（5 条受影响/fixed、portal-A 不受影响/excluded）。\n- 改动安排：4 项实施改动——api/main 的依赖升级（同时覆盖 DEMO-A、DEMO-B）、api/release 的独立升级、platform-images/stable 的基础镜像、worker/main 的镜像重建（依赖前一项）。\n- 逐条告警交付：8 条原告警全部列出，重复告警保留。\n- 验收缺口：原始告警 8、依据已齐备 6。\n\n**剩余缺口（2 条）**\n- scan-07-missing（worker/DEMO-D）：无判断材料，当前“证据不足/待核查”。\n- scan-08-exception（portal/DEMO-B）：提出延期例外，确认字段为空，尚未获明确确认。\n\n**页面可推进的操作**\n- 仓库影响：选中 worker 那条待核查范围 → “补充核查依据”，填实际核对版本、结论、说明、证据。\n- 逐条告警交付：选中 portal-B 那条 → “确认所选范围例外”，勾选确认并填确认理由与适用范围。\n- 验收缺口：待未决告警清空前，人工核对入口保持不可用。\n\n两项完成要求仍未满足、未确认，工作项处于待你核对的评审状态；本轮未新增漏洞判断、未填任何人工表单、未确认例外或结项。",
+      "tools": [
+        {
+          "name": "execute",
+          "status": "completed"
+        },
+        {
+          "name": "inspect_run",
+          "status": "completed"
+        },
+        {
+          "name": "inspect_run",
+          "status": "completed"
+        },
+        {
+          "name": "read_artifact",
+          "status": "completed"
+        },
+        {
+          "name": "read_artifact",
+          "status": "completed"
+        },
+        {
+          "name": "publish_ui_plan",
+          "status": "completed"
+        },
+        {
+          "name": "inspect_work_item",
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "before": {
+    "runs": 0,
+    "nodes": 9
+  },
+  "planned": {
+    "definition": {
+      "edges": [
+        {
+          "from": [
+            "$input",
+            "batch"
+          ],
+          "to": [
+            "pipeline",
+            "batch"
+          ]
+        }
+      ],
+      "inputContracts": {
+        "batch": {
+          "item": {
+            "properties": {
+              "alerts": {
+                "items": {
+                  "properties": {
+                    "baseline": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "cve": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "relationId": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "repository": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "requestedRef": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "relationId",
+                    "repository",
+                    "requestedRef",
+                    "baseline",
+                    "cve"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "assessments": {
+                "items": {
+                  "properties": {
+                    "baseline": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "changes": {
+                      "items": {
+                        "properties": {
+                          "dependsOn": {
+                            "items": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "description": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "id": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "repository": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "requestedRef": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "repository",
+                          "requestedRef",
+                          "description",
+                          "dependsOn"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "conclusion": {
+                      "enum": [
+                        "受影响",
+                        "不受影响",
+                        "证据不足"
+                      ]
+                    },
+                    "confirmation": {
+                      "type": "string"
+                    },
+                    "disposition": {
+                      "enum": [
+                        "fixed",
+                        "excluded",
+                        "exception",
+                        "pending"
+                      ]
+                    },
+                    "evidence": {
+                      "items": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "reason": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "repository": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "requestedRef": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "verification": {
+                      "properties": {
+                        "baseline": {
+                          "type": "string"
+                        },
+                        "evidence": {
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "successor": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "baseline",
+                        "successor",
+                        "evidence"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "repository",
+                    "requestedRef",
+                    "baseline",
+                    "conclusion",
+                    "disposition",
+                    "reason",
+                    "evidence",
+                    "confirmation",
+                    "changes",
+                    "verification"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "alerts",
+              "assessments"
+            ],
+            "type": "object"
+          },
+          "required": true
+        }
+      },
+      "inputs": [
+        "batch"
+      ],
+      "nodes": [
+        {
+          "call": {
+            "definitionId": "a4fb35fd-81e7-4a35-a9a2-22c353fdd1e6",
+            "inputNames": [
+              "batch"
+            ],
+            "outputNames": [
+              "impact",
+              "changes",
+              "audit",
+              "completion"
+            ],
+            "workId": "fe1a6a05-7530-410b-a832-27f694afef5b"
+          },
+          "contract": {
+            "done": "一次整体调用返回 impact/changes/audit/completion 四路结果",
+            "rationale": "范围归并、判断核对、改动展开与归并、逐条交付与缺口汇总均已固化在保存方法中，本项只保留固定版本调用，保持工作项薄",
+            "responsibility": "把 M01 的虚构批次整体交给已保存的整批核对与交付流水线",
+            "semanticRole": "整批交付调用"
+          },
+          "id": "pipeline",
+          "kind": "call",
+          "label": "整批核对与交付（固定保存版本）",
+          "mode": "all",
+          "operation": "aggregate"
+        }
+      ],
+      "outputs": {
+        "audit": [
+          "pipeline",
+          "audit"
+        ],
+        "changes": [
+          "pipeline",
+          "changes"
+        ],
+        "completion": [
+          "pipeline",
+          "completion"
+        ],
+        "impact": [
+          "pipeline",
+          "impact"
+        ]
+      },
+      "problem": {
+        "constraints": "仅使用 M01 虚构输入；不扫描仓库、不新增漏洞结论、不确认例外或结项；本项只规划，不执行、不发布。",
+        "evidence": "M01（假设演示输入，8条告警与6条范围判断）；已保存方法 a4fb35fd 的 batch 输入合同与 impact/changes/audit/completion 输出，及其 uiPlan 模板；配套固定方法 0be4d07e（补充范围核查依据）、84e09aff（登记范围例外确认）。",
+        "framing": "演示：本项只保留一个固定调用，把 M01 的虚构告警批次交给已保存的「演示·整批核对与交付」流水线，产出仓库影响、改动安排、逐条告警交付与验收缺口；具体归并、核对与拆分留在可复用流水线中。",
+        "known": "M01 提供 8 条虚构告警（含同范围重复 scan-02、无判断材料的 scan-07）与 6 条范围判断（portal-A 不受影响/excluded，portal-B 受影响/exception 且确认字段为空）；目标方法的 batch 输入、四路输出与 uiPlan 模板已核对。",
+        "unknown": "worker-D（DEMO-D）无判断材料，影响与处置未知；portal-B 延期例外是否获用户明确确认未知；本项尚无任何真实运行结果。"
+      },
+      "schemaVersion": 1
+    },
+    "uiPlan": {
+      "id": "61d98929-dd9f-4c33-952c-9cf0fb3a6145",
+      "definitionId": "eb3b4c02-7b38-46d9-9745-619d83609fe0",
+      "views": [
+        {
+          "actions": [
+            {
+              "execute": true,
+              "fields": [
+                "observedBaseline",
+                "conclusion",
+                "reason",
+                "evidence"
+              ],
+              "id": "evidence",
+              "kind": "input",
+              "label": "补充核查依据",
+              "method": {
+                "definitionId": "de781259-e29d-4122-bb7e-4a3f9d2af835",
+                "inputPort": "records",
+                "workId": "0be4d07e-da55-43a8-beb4-21f118ec797e"
+              },
+              "recordField": "record",
+              "selection": "one",
+              "when": {
+                "field": "disposition",
+                "message": "请选择仍待核查的范围。",
+                "operator": "equals",
+                "value": "pending"
+              }
+            }
+          ],
+          "columns": [
+            {
+              "field": "cve",
+              "label": "问题"
+            },
+            {
+              "field": "requestedRef",
+              "label": "分支"
+            },
+            {
+              "field": "conclusion",
+              "label": "当前判断"
+            },
+            {
+              "field": "accepted",
+              "label": "依据已齐备"
+            }
+          ],
+          "details": [
+            {
+              "field": "repository",
+              "label": "目标仓库"
+            },
+            {
+              "field": "requestedRef",
+              "label": "目标分支"
+            },
+            {
+              "field": "baseline",
+              "label": "原审计版本"
+            },
+            {
+              "field": "cve",
+              "label": "问题"
+            },
+            {
+              "field": "reason",
+              "label": "判断依据"
+            },
+            {
+              "field": "evidence",
+              "label": "证据"
+            }
+          ],
+          "groupBy": "repository",
+          "kind": "groups",
+          "output": "impact",
+          "rowKey": "id",
+          "title": "仓库影响"
+        },
+        {
+          "columns": [
+            {
+              "field": "repository",
+              "label": "实施仓库"
+            },
+            {
+              "field": "requestedRef",
+              "label": "ref"
+            },
+            {
+              "field": "description",
+              "label": "改动"
+            },
+            {
+              "field": "coverage",
+              "label": "逐关系覆盖与验证"
+            },
+            {
+              "field": "dependsOn",
+              "label": "依赖改动"
+            }
+          ],
+          "details": [
+            {
+              "field": "repository",
+              "label": "实际改动仓库"
+            },
+            {
+              "field": "requestedRef",
+              "label": "实施分支"
+            },
+            {
+              "field": "description",
+              "label": "改动内容"
+            },
+            {
+              "field": "dependsOn",
+              "label": "前置改动"
+            },
+            {
+              "field": "coverage",
+              "label": "覆盖与验证关系"
+            }
+          ],
+          "kind": "table",
+          "output": "changes",
+          "rowKey": "id",
+          "title": "改动安排"
+        },
+        {
+          "actions": [
+            {
+              "execute": true,
+              "fields": [
+                "confirm",
+                "confirmationNote"
+              ],
+              "id": "exception",
+              "kind": "input",
+              "label": "确认所选范围例外",
+              "method": {
+                "definitionId": "1783c9a7-28fe-4452-b2ce-a00c195c115d",
+                "inputPort": "records",
+                "workId": "84e09aff-f2f9-4f6d-8f35-544cce7e2068"
+              },
+              "recordField": "record",
+              "selection": "one",
+              "when": {
+                "field": "disposition",
+                "message": "请选择已提出例外的范围。",
+                "operator": "equals",
+                "value": "exception"
+              }
+            }
+          ],
+          "columns": [
+            {
+              "field": "id",
+              "label": "原告警"
+            },
+            {
+              "field": "repository",
+              "label": "仓库"
+            },
+            {
+              "field": "requestedRef",
+              "label": "ref"
+            },
+            {
+              "field": "disposition",
+              "label": "处置"
+            },
+            {
+              "field": "accepted",
+              "label": "依据已齐备"
+            },
+            {
+              "field": "confirmation",
+              "label": "例外确认"
+            }
+          ],
+          "details": [
+            {
+              "field": "repository",
+              "label": "目标仓库"
+            },
+            {
+              "field": "requestedRef",
+              "label": "目标分支"
+            },
+            {
+              "field": "baseline",
+              "label": "原审计版本"
+            },
+            {
+              "field": "cve",
+              "label": "问题"
+            },
+            {
+              "field": "reason",
+              "label": "处置依据"
+            },
+            {
+              "field": "confirmation",
+              "label": "例外确认记录"
+            }
+          ],
+          "kind": "table",
+          "output": "audit",
+          "rowKey": "id",
+          "title": "逐条告警交付"
+        },
+        {
+          "actions": [
+            {
+              "id": "review",
+              "kind": "review",
+              "label": "核对交付并确认完成",
+              "selection": "none",
+              "when": {
+                "field": "unresolvedAlertIds",
+                "message": "仍有未决原告警，请先补充或核对相应范围。",
+                "operator": "empty"
+              }
+            }
+          ],
+          "details": [
+            {
+              "field": "originalAlertCount",
+              "label": "原始告警"
+            },
+            {
+              "field": "acceptedCount",
+              "label": "依据已齐备"
+            },
+            {
+              "field": "unresolvedAlertIds",
+              "label": "仍待处理的原告警"
+            }
+          ],
+          "kind": "report",
+          "output": "completion",
+          "title": "验收缺口"
+        }
+      ],
+      "inputs": []
+    },
+    "inputSelections": {
+      "batch": [
+        {
+          "kind": "received",
+          "inputId": "164c6287-d116-4683-8e1f-977508196d9c"
+        }
+      ]
+    },
+    "criteria": [
+      {
+        "id": "alert-evidence",
+        "text": "全部原告警都有适用范围的依据（含无判断材料的范围已补齐核查依据），且例外已由用户明确确认",
+        "met": false,
+        "evidence": ""
+      },
+      {
+        "id": "delivery-review",
+        "text": "已核对改动范围、固定来源及最终交付",
+        "met": false,
+        "evidence": ""
+      }
+    ]
+  }
+}

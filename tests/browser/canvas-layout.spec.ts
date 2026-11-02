@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { selectCanvasNode } from './canvas-actions';
+import { test, expect } from './fixtures';
 import type { Definition, FlowNode, Snapshot } from '../../src/shared/records';
 const definition: Definition = {
   schemaVersion: 1,
@@ -8,7 +9,7 @@ const definition: Definition = {
       id,
       label: id,
       kind: 'function',
-      mode: 'each',
+
       operation: 'map',
       functionName: 'expression',
       expression: {
@@ -20,7 +21,7 @@ const definition: Definition = {
       id: functionName,
       label: functionName === 'merge' ? '多路汇合' : '具名收集',
       kind: 'function',
-      mode: 'all',
+
       operation: 'aggregate',
       functionName: functionName as 'merge' | 'collect',
       inputNames: ['调查', '修复', '验证'],
@@ -29,7 +30,7 @@ const definition: Definition = {
       id: 'join',
       label: '按键关联',
       kind: 'function',
-      mode: 'all',
+
       operation: 'aggregate',
       functionName: 'join',
       join: {
@@ -88,17 +89,10 @@ for (const [width, height] of [
       });
       const before = await snapshot();
       // 侧栏只列显式打开的流水线（opened-pipelines 语义）；预置本浏览器的打开入口。
-      await page.addInitScript((workId) => {
-        localStorage.setItem(
-          'dynamic-flow.opened-works',
-          JSON.stringify([{ id: workId, goal: '', updatedAt: '' }]),
-        );
-        localStorage.setItem('dynamic-flow.work', workId);
-      }, id);
-      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.goto(`/methods/${id}`, { waitUntil: 'domcontentloaded' });
       await page
         .locator('.work-list')
-        .getByRole('button', { name: initial.work.title, exact: true })
+        .getByRole('link', { name: initial.work.title, exact: true })
         .click();
       await expect(page.locator('[data-routing="elk"]')).toHaveCount(
         definition.edges.length,
@@ -128,7 +122,7 @@ for (const [width, height] of [
         );
       });
       expect(overlaps).toBe(false);
-      await page.locator('.react-flow__node[data-id="collect"]').click();
+      await selectCanvasNode(page, 'collect');
       await expect(
         page.locator('.react-flow__edge.connection-focus'),
       ).toHaveCount(3);
@@ -145,7 +139,10 @@ for (const [width, height] of [
       await expect(page.locator('.canvas-connection-info')).toContainText(
         '调查 · 输出 → 具名收集 · 调查',
       );
-      await page.getByRole('button', { name: '显示端口', exact: true }).click();
+      await page.getByRole('button', { name: '显示端口', exact: true }).focus();
+      await page
+        .getByRole('button', { name: '显示端口', exact: true })
+        .press('Enter');
       await expect(
         page.getByRole('button', { name: '显示端口', exact: true }),
       ).toHaveAttribute('aria-pressed', 'true');
@@ -175,6 +172,8 @@ for (const [width, height] of [
       await expect(page.locator('[data-routing="elk"]')).toHaveCount(
         definition.edges.length,
       );
+      await page.getByRole('button', { name: '收起侧栏', exact: true }).click();
+      await page.locator('.react-flow__controls-fitview').click();
       const node = page.locator(
         '.react-flow__node[data-id="collect"] .node-heading',
       );
@@ -202,7 +201,10 @@ for (const [width, height] of [
       await expect(
         page.getByRole('button', { name: '显示端口', exact: true }),
       ).toHaveAttribute('aria-pressed', 'true');
-      await page.getByRole('button', { name: '整理布局', exact: true }).click();
+      await page.getByRole('button', { name: '整理布局', exact: true }).focus();
+      await page
+        .getByRole('button', { name: '整理布局', exact: true })
+        .press('Enter');
       await expect(page.locator('[data-routing="elk"]')).toHaveCount(
         definition.edges.length,
       );
@@ -236,30 +238,11 @@ test('迟到布局不覆盖整理期间的手动拖动', async ({ page, request 
     release = resolve;
   });
   let requested = false;
-  await page.route('**/__test-layout-release', async (route) => {
+  // Delay the actual lazy chunk used by the packaged application.
+  await page.route('**/assets/canvas-layout-*.js', async (route) => {
     requested = true;
     await gate;
-    await route.fulfill({ status: 200, body: 'ready' });
-  });
-  await page.route('**/src/client/features/canvas/canvas-layout.ts*', async (route) => {
-    const response = await route.fetch();
-    const body = (await response.text()).replace(
-      'export async function layoutWorkflow(',
-      'async function originalLayoutWorkflow(',
-    );
-    await route.fulfill({
-      response,
-      body:
-        body +
-        `
-export async function layoutWorkflow(...args) {
-  const result = await originalLayoutWorkflow(...args);
-  await fetch('/__test-layout-release');
-  setTimeout(() => { document.documentElement.dataset.layoutCompleted = 'true'; }, 100);
-  return result;
-}
-`,
-    });
+    await route.continue();
   });
   try {
     await request.post(`/api/works/${id}/actions`, {
@@ -278,19 +261,13 @@ export async function layoutWorkflow(...args) {
       },
     });
     // 侧栏只列显式打开的流水线（opened-pipelines 语义）；预置本浏览器的打开入口。
-    await page.addInitScript((workId) => {
-      localStorage.setItem(
-        'dynamic-flow.opened-works',
-        JSON.stringify([{ id: workId, goal: '', updatedAt: '' }]),
-      );
-      localStorage.setItem('dynamic-flow.work', workId);
-    }, id);
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.goto(`/methods/${id}`, { waitUntil: 'domcontentloaded' });
     await page
       .locator('.work-list')
-      .getByRole('button', { name: initial.work.title, exact: true })
+      .getByRole('link', { name: initial.work.title, exact: true })
       .click();
-    await page.getByRole('button', { name: '整理布局', exact: true }).click();
+    const arrange = page.getByRole('button', { name: '整理布局', exact: true });
+    if (await arrange.isEnabled()) await arrange.click();
     await expect.poll(() => requested).toBe(true);
     const node = page.locator(
       '.react-flow__node[data-id="调查"] .node-heading',
@@ -309,11 +286,10 @@ export async function layoutWorkflow(...args) {
       .not.toBe(JSON.stringify(positions));
     const manual = (await snapshot()).work.view.positions;
     release();
-    // Observe after the real ELK result and the 40ms measurement settling window.
-    await expect(page.locator('html')).toHaveAttribute(
-      'data-layout-completed',
-      'true',
-    );
+    // The delayed request must settle without adopting positions after manual movement.
+    await expect(
+      page.getByRole('button', { name: '整理布局', exact: true }),
+    ).toBeEnabled();
     await page.getByRole('button', { name: '显示端口', exact: true }).click();
     await expect
       .poll(async () => (await snapshot()).work.view.showPorts)

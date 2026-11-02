@@ -1,3 +1,4 @@
+import { MaterialCard } from '../../components/MaterialCard';
 import { Plus } from 'lucide-react';
 import { Button, Modal } from '../../components/ui';
 import type { WorkspaceController } from '../../app/controller';
@@ -47,23 +48,21 @@ export function MaterialsDialog({
           添加材料
         </Button>
       </div>
-      <div className="materials-list">
+      <div className="material-cards">
         {work.materials.map((m) => (
-          <label key={m.id} className="material-row">
-            <input
-              type="checkbox"
-              checked={selectedMaterials.includes(m.id)}
-              onChange={() =>
+          <MaterialCard
+            key={m.id}
+            material={m}
+            selection={{
+              checked: selectedMaterials.includes(m.id),
+              onChange: () =>
                 setSelectedMaterials((ids) =>
                   ids.includes(m.id)
                     ? ids.filter((id) => id !== m.id)
                     : [...ids, m.id],
-                )
-              }
-            />
-            <b>{m.id}</b>
-            <span>{m.text}</span>
-          </label>
+                ),
+            }}
+          />
         ))}
         {work.materials.length === 0 && <p className="muted">暂无材料</p>}
       </div>

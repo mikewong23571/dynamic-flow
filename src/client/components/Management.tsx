@@ -94,7 +94,7 @@ export function ListPagination({
           value={pageSize}
           onChange={(event) => onPageSize(Number(event.target.value))}
         >
-          {[10, 20, 50].map((size) => (
+          {[10, 20, 25, 50].map((size) => (
             <NativeSelectOption key={size} value={size}>
               {size} 项
             </NativeSelectOption>

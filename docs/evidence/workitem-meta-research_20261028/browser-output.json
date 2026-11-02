@@ -1,0 +1,37 @@
+{
+  "url": "https://no-ai-demo.json-render.dev/",
+  "browser": "153.0.8010.12",
+  "node": "v25.4.0",
+  "errors": [],
+  "steps": [
+    {
+      "action": "edit bound form value",
+      "value": "Flowcraft research"
+    },
+    {
+      "action": "dependent options and computed result",
+      "japanCities": [
+        "Tokyo",
+        "Osaka",
+        "Kyoto",
+        "Yokohama",
+        "Sapporo"
+      ],
+      "result": "Tokyo, Japan"
+    },
+    {
+      "action": "country change updates options; inspect retained city in computed output",
+      "canadaCities": [
+        "Toronto",
+        "Vancouver",
+        "Montreal",
+        "Calgary",
+        "Ottawa"
+      ],
+      "cityTriggerText": ""
+    }
+  ],
+  "body": "Confetti\nUser Profile Card\nSettings Form\nPricing Table\nStatus Dashboard\nFeature Comparison\nRegistration Form\nCascading Selects\n\nWatchers reset dependent fields, $computed derives display values\n\nShipping Address\nSelect your country to load available cities\nCountry\nCanada\nCity\nTokyo, Canada\n\nShipping to: Tokyo in Canada. Cities available: Toronto,Vancouver,Montreal,Calgary,Ottawa",
+  "observedDependentValueMismatch": true,
+  "probeCompleted": true
+}

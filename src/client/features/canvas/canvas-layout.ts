@@ -48,6 +48,7 @@ function checkMeasurements(node: LayoutNode) {
 export async function layoutWorkflow(
   definition: Definition,
   nodes: LayoutNode[],
+  layerSpacing = 104,
 ): Promise<{
   positions: Record<string, LayoutPoint>;
   routes: Record<string, LayoutPoint[]>;
@@ -111,7 +112,7 @@ export async function layoutWorkflow(
       'elk.randomSeed': '1',
       'elk.padding': '[top=32,left=32,bottom=32,right=32]',
       'elk.spacing.nodeNode': '48',
-      'elk.layered.spacing.nodeNodeBetweenLayers': '104',
+      'elk.layered.spacing.nodeNodeBetweenLayers': String(layerSpacing),
       'elk.layered.spacing.edgeNodeBetweenLayers': '24',
       'elk.layered.spacing.edgeEdgeBetweenLayers': '16',
       'elk.spacing.edgeNode': '24',

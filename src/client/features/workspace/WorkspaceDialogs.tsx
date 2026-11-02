@@ -1,3 +1,6 @@
+import { short, workTitle } from '../../core/format';
+import { useRef } from 'react';
+import { ContentVisibility } from '../../components/ContentVisibility';
 import type { WorkspaceController } from '../../app/controller';
 import { CreateWorkDialog } from './CreateWorkDialog';
 import { AddMaterialsDialog } from './AddMaterialsDialog';
@@ -8,11 +11,7 @@ import { DefinitionJsDialog } from './DefinitionJsDialog';
 import { InvokeDialog } from './InvokeDialog';
 
 /** 对话框组装层：把 controller 的值显式交给各对话框，各自只依赖自己用到的字段。 */
-export function WorkspaceDialogs({
-  controller,
-}: {
-  controller: WorkspaceController;
-}) {
+function MethodDialogs({ controller }: { controller: WorkspaceController }) {
   const {
     createOpen,
     setCreateOpen,
@@ -40,6 +39,8 @@ export function WorkspaceDialogs({
     setTrialOpen,
     inputMode,
     setInputMode,
+    sampleSource,
+    setSampleSource,
     samplePort,
     setSamplePort,
     setSampleSelection,
@@ -70,17 +71,6 @@ export function WorkspaceDialogs({
   } = controller;
   return (
     <>
-      <CreateWorkDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        goal={goal}
-        setGoal={setGoal}
-        materialText={materialText}
-        setMaterialText={setMaterialText}
-        error={error}
-        busy={busy}
-        create={create}
-      />
       <AddMaterialsDialog
         open={addOpen}
         onOpenChange={setAddOpen}
@@ -111,6 +101,8 @@ export function WorkspaceDialogs({
         onOpenChange={setTrialOpen}
         selected={selected}
         work={work}
+        sampleSource={sampleSource}
+        setSampleSource={setSampleSource}
         inputMode={inputMode}
         setInputMode={setInputMode}
         samplePort={samplePort}
@@ -150,8 +142,46 @@ export function WorkspaceDialogs({
         open={invokeOpen}
         onOpenChange={setInvokeOpen}
         definition={executionDefinition}
+        identity={
+          work
+            ? `${workTitle(work)} · ${short(selectedDefinitionId)}`
+            : undefined
+        }
         invokeWork={invokeWork}
       />
+    </>
+  );
+}
+
+/** Keep method forms tied to their method while only the visible workspace presents portals. */
+export function WorkspaceDialogs({
+  controller,
+  active,
+}: {
+  controller: WorkspaceController;
+  active: boolean;
+}) {
+  const retained = useRef(new Map<string, WorkspaceController>());
+  if (controller.work?.id === controller.workId)
+    retained.current.set(controller.workId, controller);
+  return (
+    <>
+      <CreateWorkDialog
+        open={controller.createOpen}
+        onOpenChange={controller.setCreateOpen}
+        goal={controller.goal}
+        setGoal={controller.setGoal}
+        materialText={controller.materialText}
+        setMaterialText={controller.setMaterialText}
+        error={controller.error}
+        busy={controller.busy}
+        create={controller.create}
+      />
+      {[...retained.current].map(([id, saved]) => (
+        <ContentVisibility key={id} active={active && id === controller.workId}>
+          <MethodDialogs controller={saved} />
+        </ContentVisibility>
+      ))}
     </>
   );
 }

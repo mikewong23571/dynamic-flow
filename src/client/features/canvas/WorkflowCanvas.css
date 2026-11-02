@@ -42,10 +42,10 @@
   transition: opacity 120ms ease;
 }
 .canvas .react-flow__node.connection-dim {
-  opacity: 0.4;
+  opacity: 0.9;
 }
 .canvas .react-flow__edge.connection-dim {
-  opacity: 0.18;
+  opacity: 0.85;
 }
 .canvas .react-flow__edge.connection-focus .react-flow__edge-path {
   stroke: var(--accent);
@@ -85,12 +85,16 @@
   font-size: 10px;
 }
 .canvas--overview
-  .workflow-node:not(.selected):not(:hover):not(:focus-within)
+  .workflow-node:not(.workflow-node-business):not(.selected):not(:hover):not(
+    :focus-within
+  )
   .node-port-label {
   opacity: 0;
 }
 .canvas--overview
-  .workflow-node:not(.selected):not(:hover):not(:focus-within)
+  .workflow-node:not(.workflow-node-business):not(.selected):not(:hover):not(
+    :focus-within
+  )
   .node-port-count {
   display: flex;
 }
@@ -105,4 +109,70 @@
   .canvas-actions .button span {
     display: none;
   }
+}
+
+.workflow-node-business .node-responsibility {
+  margin: 0;
+  padding: 0 16px 12px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.workflow-node-business .node-summary {
+  padding-top: 0;
+}
+.workflow-node-business .node-heading {
+  min-height: 64px;
+}
+.workflow-node-business {
+  width: 220px;
+}
+.workflow-node-business .node-kind {
+  font-size: 12px;
+}
+.workflow-node-business strong {
+  font-size: 16px;
+}
+.workflow-node-business .node-summary,
+.workflow-node-business .node-port {
+  font-size: 12px;
+}
+.canvas--overview .workflow-node-business .node-port {
+  min-height: 22px;
+  line-height: 22px;
+}
+.workflow-node-business .node-ports {
+  column-gap: 14px;
+}
+.node-method-version {
+  color: var(--muted);
+  font-size: 10px;
+  font-family: inherit;
+}
+.node-method-link strong {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+}
+.node-method-link:hover strong {
+  text-decoration-color: currentColor;
+}
+.node-method-link > svg {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: var(--muted);
+}
+.node-instance-link {
+  font-size: inherit;
+  gap: 4px;
+}
+.node-delivery-mark {
+  margin-right: 3px;
+  color: var(--subtle);
+  display: inline-block;
+  vertical-align: -2px;
 }

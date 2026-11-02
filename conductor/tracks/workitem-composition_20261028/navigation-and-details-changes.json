@@ -1,0 +1,203 @@
+{
+  "scope": "相对R交付的S增量；含删除旧外壳推导",
+  "changes": [
+    {
+      "path": "docs/design.md",
+      "change": "modified",
+      "before": "9b2a37cd82bfc099acdfb0508407340ce1e1275122ac1718d8f7d139e4d8254f",
+      "after": "17dd07f619743f6bf143b8747e9410cb2b8b6b90d45b944e3f0671b3946a8f65"
+    },
+    {
+      "path": "docs/implementation-map.md",
+      "change": "modified",
+      "before": "b086edc88d96fa01b8270a62b2e77e13a6225e2374f426e73405926341b14534",
+      "after": "64d7a49b145bdadff3f50f43c7b70d8e96c042f028312534d87032403c9edbcb"
+    },
+    {
+      "path": "docs/workitem-ui-authoring.md",
+      "change": "modified",
+      "before": "e9a40df0ec333ab89ead24f63ef3a71c0981575faf7cc6d096a0d9ea90502105",
+      "after": "22ab23e720fd797d31edf713e4ae8ba42e90cda21a849b6d027dc75ee67d23cc"
+    },
+    {
+      "path": "src/client/AGENTS.md",
+      "change": "modified",
+      "before": "dcc4012dee623a72c7b436012de446dacfa5634be939db6eaa985a50ba63d6a3",
+      "after": "7b184408ca571852195ccfa8b66069ba9b19abe01b2ad93e5940004dd999ae9b"
+    },
+    {
+      "path": "src/client/DESIGN-NOTES.md",
+      "change": "modified",
+      "before": "694f36276c3765d49f080177e680e5b923ca3eb1b8814e8e9706feb5bc88329b",
+      "after": "2c751089ed7618e474ad62bfebee6394b068745df7ad887668280f3ef8fce972"
+    },
+    {
+      "path": "src/client/components/ui/README.md",
+      "change": "modified",
+      "before": "e91f778c9858dff8b6d81a4c77e37f85c83f4116f186876193dd722871183422",
+      "after": "f35afcaf67b2c78ac305b65d17d352e686f048e5a12d095d1d802f73fc2b4b90"
+    },
+    {
+      "path": "src/client/features/work-items/WorkItemDetail.tsx",
+      "change": "modified",
+      "before": "4ae930698fcb70a8fd4389d3f9ded71e94c37c1ec87a0afa65b16abece227a40",
+      "after": "272bcea29e37ba9987098beb95323c6c6050baf58bb0758ed0365e4b347ee19f"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionDeliveries.tsx",
+      "change": "modified",
+      "before": "b6a9b01c6502c849876b92591c671d5afb1c418a4fad00d52f07989ed48402b0",
+      "after": "c1587a19916b6d395cc2cbe56739a8f4f74c9224ebca77e2708f62c23d0267c9"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionWorkspace.css",
+      "change": "modified",
+      "before": "3b1feb7652c6f896443998f8408f2e05e3ad4080a98d3cda648198f3212cb8d5",
+      "after": "008c4a0593ea22febff499d68c301fc77349d8511a77237b20a694ebf94aab98"
+    },
+    {
+      "path": "src/client/features/work-items/composition/DeliveryView.tsx",
+      "change": "modified",
+      "before": "36358e4d7f9c581ec44af551c12563493743d2ad61f8096d71db0a13d7b8e7bf",
+      "after": "5c917c626f6fa1217554e6f83b14dba2e1b2002899f8134d38e0901c2d62248c"
+    },
+    {
+      "path": "src/client/features/work-items/composition/PlannedInputs.tsx",
+      "change": "added",
+      "before": null,
+      "after": "647ddbcad7ca5b3541cc53a700f705d2924b6470bdebc89d80badd46a8a6180b"
+    },
+    {
+      "path": "src/client/features/work-items/composition/PlannedWork.tsx",
+      "change": "modified",
+      "before": "b1935238a58a7ee4c6869f21af95c04beb053f843823640c99ecc8b9898da62d",
+      "after": "b27756089529531db0b84190f7f092bb348eeaa6e93aab02000cb4ef05550c83"
+    },
+    {
+      "path": "src/client/features/work-items/composition/RecordTools.tsx",
+      "change": "added",
+      "before": null,
+      "after": "19a6116b55917364b20343a8f2516d08dc2f206af31718de9650d0597716edc5"
+    },
+    {
+      "path": "src/client/features/work-items/composition/UiArrangement.tsx",
+      "change": "modified",
+      "before": "64de51d19a081eb86e3b21bb50b5907d9a7ab95cc70a319236f7a4e6f4694721",
+      "after": "a86de9ad837d3aaa9cb91803b49eb911b77608db89c6ed1284d05207fbce9521"
+    },
+    {
+      "path": "src/client/features/work-items/composition/ViewNavigation.tsx",
+      "change": "added",
+      "before": null,
+      "after": "fe791bb52966f2fb58c96b687b4334eaa167954107d627119cd31566f531252d"
+    },
+    {
+      "path": "src/client/features/work-items/composition/delivery-spec.ts",
+      "change": "modified",
+      "before": "be6d96d90c01a5fd2537098867fb3480efee5dde7a9ff8bed8219849be7d7116",
+      "after": "c2fa3c0bd34d5a517d00e9cabbf86501bbe6b57f2e344c127f1107ba9737aa3b"
+    },
+    {
+      "path": "src/client/features/work-items/composition/interface-progress.ts",
+      "change": "deleted",
+      "before": "e9b9d803354a71a4958ff2b73eaa34c6307f254dda6b709f2d0ec2d2ec3c47d7",
+      "after": null
+    },
+    {
+      "path": "src/server/assistant/AGENTS.md",
+      "change": "modified",
+      "before": "fccb9a9cfd0fd1043b0433bbe7cca8a4ad64da31c658c7d52f0033a6aa88d12a",
+      "after": "4bd710992bc5df7a704ac413ab62254916ae9f5371501e4eca2f06b1faf652dd"
+    },
+    {
+      "path": "src/server/assistant/workitem.ts",
+      "change": "modified",
+      "before": "11edb5aae1704c8b01756f8ecaa7fa0675e4df3d3437c65e237c24814029efbc",
+      "after": "7409668a782d860fb3a85cd2880e362f68de06497e5f32d06f38547f39841166"
+    },
+    {
+      "path": "src/server/work-items/AGENTS.md",
+      "change": "modified",
+      "before": "6c9735923165af10e03a8a9c90b667061125e4561a525d67c548cb0714c80ac5",
+      "after": "7156b45cec55a3aed1cc668094edffbeb9128352ff0342c1db4890e8b0a95294"
+    },
+    {
+      "path": "src/server/work-items/composition-ui.ts",
+      "change": "modified",
+      "before": "73973e3d2f433224950424a46c505bb54a05eddb0f71399e81b15741b32fe822",
+      "after": "34982cca51a395bbcc4690f29925af6138c42b62f54c609b58d0c936d0a64e41"
+    },
+    {
+      "path": "src/shared/AGENTS.md",
+      "change": "modified",
+      "before": "8fa08eaa29a5cb2ef6849a355ffa843b1512592426de6375125bd67d1fd12b20",
+      "after": "11471be2fc761bda66dee8f88e5b1c83320e1a8664c4f4b4cd95e2322fe836d3"
+    },
+    {
+      "path": "src/shared/item-ui.ts",
+      "change": "modified",
+      "before": "623753aad4607639186ff1b49995b632832823d4d24ec6506f1b838446006b63",
+      "after": "a867b90d1fd78750695ee4f54a47b77627cf5315d5483cf2c860e790b57e67cb"
+    },
+    {
+      "path": "src/shared/ui-authoring.ts",
+      "change": "modified",
+      "before": "bba5a3e12c403ffe46de49b1efc01188595bc946a59ec5dddeba768cd3de4dca",
+      "after": "2a5afca3c07f303dad649273964f4fb13fc1ab50a0b2074fc1112576fae0543b"
+    },
+    {
+      "path": "src/shared/workitem-composition.ts",
+      "change": "modified",
+      "before": "bc34bca56dbb3ae08a2da04fa4f28c0bd76e71764f1769faad260f68036b1ce4",
+      "after": "beb948dc07b538fae9fe1be6d844193229469ea1c25ba891f89e58260585c7d7"
+    },
+    {
+      "path": "tests/AGENTS.md",
+      "change": "modified",
+      "before": "78227a8617a8eaf803fea97d948c556fbed51f0ba4997cf3981cdd593fecd2a3",
+      "after": "190d778e05f8a6125f10d456cfac2b01afe23eacb51c1ede3831a775a23ca531"
+    },
+    {
+      "path": "tests/browser/workitem-composition-conversations.spec.ts",
+      "change": "modified",
+      "before": "59884704157354ecf71bfea1238a549c7b8498bdbd6d7adada8efe2f6e6730dc",
+      "after": "42fef56e78d3f11116da1917e1cf5ecae54f13c3be58dd6702ff22c76eb8f322"
+    },
+    {
+      "path": "tests/browser/workitem-composition-cve-interface.spec.ts",
+      "change": "modified",
+      "before": "0385520e08921fa229da4241d05c8342d5207404c57041f52c34a3602f84685e",
+      "after": "8022e5bd455c36bd80ea79293e34d28046eec9a7f2f8abeb11a7f84d785ad813"
+    },
+    {
+      "path": "tests/browser/workitem-composition-interactions.spec.ts",
+      "change": "modified",
+      "before": "3a868bb547cb6611438db52e1f5b1a0c15e56b850da3f14a9bbff4ec85a7fe0b",
+      "after": "2b892680f2da5d10272d288e094341a76cb745236ae0990b5060ac817940c1e5"
+    },
+    {
+      "path": "tests/browser/workitem-composition-navigation-contract.spec.ts",
+      "change": "added",
+      "before": null,
+      "after": "ed7d07aeec0d4e8a63d516d2ae2ae77f1e5f88f56bb9fbce715105720c109f35"
+    },
+    {
+      "path": "tests/browser/workitem-composition.spec.ts",
+      "change": "modified",
+      "before": "a7d01bf49eff33e433b9d10839c4ec171dae7f3e5ebec93cc29d8bd2b4dbe00a",
+      "after": "6e63582aab84b0ea06477b0dcd9f5cb75c94ac8e3e56217f75c06ce3400911f6"
+    },
+    {
+      "path": "tests/ui-authoring-http.test.ts",
+      "change": "modified",
+      "before": "8a7c8c8ff55238eeef1440076c2266a6e2d2c85cc642cfae7f4ce280ce524e14",
+      "after": "c2609ba33162ba4693a5da3ce77462b8479b710ed38539b67b9d5771ffd98b85"
+    },
+    {
+      "path": "tests/ui-authoring.test.ts",
+      "change": "modified",
+      "before": "8f19687c149403b8cddb140d3c54ecbb3bbadd2430f43a4bdec9e3d3188bb985",
+      "after": "a2c17e700fcb03a032476c85b816565b94eba40b291b1e803f2923323e0ef5a7"
+    }
+  ]
+}

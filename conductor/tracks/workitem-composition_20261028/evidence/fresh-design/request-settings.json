@@ -1,0 +1,317 @@
+[
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  },
+  {
+    "model": "deepseek-v4-flash",
+    "thinking": "enabled",
+    "budgetTokens": 8192,
+    "maxTokens": 393216,
+    "tools": 28
+  }
+]

@@ -11,19 +11,32 @@ import {
   GitBranch,
   Bot,
   FileText,
-  Check,
-  LoaderCircle,
-  AlertCircle,
   Clock3,
   Flag,
+  ArrowUpRight,
+  Workflow,
+  FileOutput,
 } from 'lucide-react';
 import type { FlowNode } from '../../../shared/records';
 import { inputPorts, outputPorts } from '../../core/inputs';
+import { Badge } from '../../components/ui';
 import { statusNames, portLabel } from '../../core/format';
 import { expressionSummary } from '../inspector/expression-model';
 import { collectionSummary } from '../inspector/collection-model';
+import { Button } from '../../components/ui/button';
+import { nodePrimitive } from '../../core/definition';
+export type CanvasMethodReference = {
+  title: string;
+  onOpen: () => void;
+};
 export type CanvasData = {
   label: string;
+  business?: boolean;
+  nativeLabels?: boolean;
+  outputLabels?: Record<string, string>;
+  finalPorts?: string[];
+  methodReference?: CanvasMethodReference;
+  onInspect?: () => void;
   node?: FlowNode;
   ports?: string[];
   status?: string;
@@ -41,6 +54,18 @@ export function WorkflowNode({
   selected,
 }: NodeProps<Node<CanvasData>>) {
   const { node } = data;
+  const labelPort = (port: string) =>
+    data.nativeLabels ? port : portLabel(port);
+  const labelOutput = (port: string) =>
+    data.nativeLabels ? port : data.outputLabels?.[port] || portLabel(port);
+  const pipeline = node?.kind === 'call';
+  const title = pipeline
+    ? data.methodReference?.title || data.label
+    : data.label;
+  const responsibility = data.business
+    ? node?.contract?.responsibility ||
+      (pipeline && node.label !== title ? node.label : undefined)
+    : undefined;
   const Icon = !node
     ? FileText
     : node.kind === 'file'
@@ -53,7 +78,9 @@ export function WorkflowNode({
             ? Clock3
             : node.kind === 'milestone'
               ? Flag
-              : Boxes;
+              : pipeline
+                ? Workflow
+                : Boxes;
   const inputs = node ? inputPorts(node) : [];
   const outputs = node ? outputPorts(node) : data.ports || [];
   const state = data.status;
@@ -64,7 +91,7 @@ export function WorkflowNode({
   }, [id, portIdentity, updateNodeInternals]);
   return (
     <div
-      className={`workflow-node ${selected ? 'selected' : ''} ${state || ''}`}
+      className={`workflow-node ${selected ? 'selected' : ''} ${state || ''} ${data.business ? 'workflow-node-business' : ''}`}
     >
       <div className="node-heading">
         <span className={`node-icon ${node?.kind || 'material'}`}>
@@ -72,23 +99,33 @@ export function WorkflowNode({
         </span>
         <div className="node-identity">
           <span className="node-kind">
-            {!node
-              ? '输入'
-              : node.kind === 'file'
-                ? '文件'
-                : node.kind === 'dynamic'
-                  ? '局部动态展开'
-                  : node.kind === 'agent'
-                    ? 'Agent'
-                    : node.kind === 'branch'
-                      ? '条件分流'
-                      : node.kind === 'wait'
-                        ? '持久等待'
-                        : node.kind === 'milestone'
-                          ? '业务里程碑'
-                          : '数据处理'}
+            {node
+              ? nodePrimitive(node, data.nativeLabels)
+              : data.nativeLabels
+                ? 'input'
+                : '输入集合'}
           </span>
-          <strong title={data.label}>{data.label}</strong>
+          {pipeline && data.methodReference ? (
+            <Button
+              variant="ghost"
+              className="node-method-link nodrag nopan h-auto max-w-full items-start justify-start gap-1 rounded-none p-0 text-left whitespace-normal hover:bg-transparent"
+              onClick={(event) => {
+                event.stopPropagation();
+                data.methodReference!.onOpen();
+              }}
+              aria-label={`查看引用流水线 ${title}`}
+            >
+              <strong title={title}>{title}</strong>
+              <ArrowUpRight size={13} />
+            </Button>
+          ) : (
+            <strong title={title}>{title}</strong>
+          )}
+          {pipeline && node.call && (
+            <code className="node-method-version">
+              固定版 {node.call.definitionId.slice(0, 8)}
+            </code>
+          )}
         </div>
       </div>
       {node?.kind === 'branch' && (
@@ -97,11 +134,13 @@ export function WorkflowNode({
           title={`${node.condition?.field || '整个输入'} ${node.condition?.operator || ''} ${String(node.condition?.value ?? '')}`}
         >
           {node.condition?.field || '整个输入'} ·{' '}
-          {node.condition?.operator === 'contains'
-            ? '包含'
-            : node.condition?.operator === 'equals'
-              ? '等于'
-              : '存在'}{' '}
+          {data.nativeLabels
+            ? node.condition?.operator || 'exists'
+            : node.condition?.operator === 'contains'
+              ? '包含'
+              : node.condition?.operator === 'equals'
+                ? '等于'
+                : '存在'}{' '}
           {String(node.condition?.value ?? '')}
         </p>
       )}
@@ -113,14 +152,23 @@ export function WorkflowNode({
           {expressionSummary(node.expression)}
         </p>
       )}
+      {responsibility && (
+        <p className="node-responsibility" title={responsibility}>
+          {responsibility}
+        </p>
+      )}
       <div className="node-summary">
         <span>
           {node
-            ? (node.kind === 'dynamic'
-                ? `最多 ${node.dynamic?.maxNodes ?? 5} 步`
-                : node.repeat
-                  ? `最多 ${node.repeat.max} 轮`
-                  : '') ||
+            ? (pipeline
+                ? node.operation === 'map'
+                  ? `按 ${labelPort(node.call?.eachPort || 'input')}`
+                  : '整批输入'
+                : node.kind === 'dynamic'
+                  ? `最多 ${node.dynamic?.maxNodes ?? 5} 步`
+                  : node.repeat
+                    ? `最多 ${node.repeat.max} 轮`
+                    : '') ||
               collectionSummary(node) ||
               (node.kind === 'file'
                 ? node.file?.name || '未选择文件'
@@ -130,29 +178,42 @@ export function WorkflowNode({
                     ? node.milestone?.stage || '记录进展'
                     : node.operation === 'flatMap'
                       ? '逐项产生多项'
-                      : node.mode === 'each'
+                      : node.operation === 'map'
                         ? node.contract?.semanticRole || '逐项处理'
                         : '整批汇总')
-            : '原始材料'}
-          {data.final && <span className="node-final">最终产物</span>}
+            : data.business
+              ? '已选输入集合'
+              : '原始材料'}
+          {data.final && !data.business && (
+            <span className="node-final">最终产物</span>
+          )}
         </span>
-        {node && (
-          <span
-            className={`node-status ${state || ''}`}
-            title={statusNames[state || ''] || '待运行'}
-          >
-            {state === 'completed' ? (
-              <Check size={12} />
-            ) : state === 'running' ? (
-              <LoaderCircle size={12} className="spin" />
-            ) : state === 'failed' || state === 'blocked' ? (
-              <AlertCircle size={12} />
-            ) : null}
-            {state === 'waiting'
-              ? '等待事件'
-              : data.progress || statusNames[state || ''] || '待运行'}
-          </span>
-        )}
+        {node &&
+          (data.onInspect ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="node-instance-link nodrag nopan h-auto p-0"
+              aria-label={`查看${title}的执行实例`}
+              onClick={(event) => {
+                event.stopPropagation();
+                data.onInspect!();
+              }}
+            >
+              <Badge status={state || 'queued'}>
+                {state === 'waiting'
+                  ? '等待事件'
+                  : data.progress || statusNames[state || ''] || '待运行'}
+              </Badge>
+              <ArrowUpRight size={11} />
+            </Button>
+          ) : (
+            <Badge status={state || 'queued'}>
+              {state === 'waiting'
+                ? '等待事件'
+                : data.progress || statusNames[state || ''] || '待运行'}
+            </Badge>
+          ))}
       </div>
       <div className="node-ports">
         <span className="node-port-count">
@@ -173,7 +234,7 @@ export function WorkflowNode({
                 type="target"
                 position={Position.Left}
                 id={port}
-                aria-label={`输入 ${portLabel(port)}`}
+                aria-label={`输入 ${labelPort(port)}`}
                 tabIndex={0}
                 onFocus={() =>
                   data.onPortFocus?.({
@@ -184,8 +245,8 @@ export function WorkflowNode({
                 }
                 onBlur={() => data.onPortFocus?.()}
               />
-              <span className="node-port-label" title={portLabel(port)}>
-                {portLabel(port)}
+              <span className="node-port-label" title={labelPort(port)}>
+                {labelPort(port)}
               </span>
             </div>
           ))}
@@ -194,7 +255,7 @@ export function WorkflowNode({
           {outputs.map((port) => (
             <div
               key={port}
-              className="node-port output"
+              className={`node-port output ${data.finalPorts?.includes(port) ? 'node-port-delivery' : ''}`}
               onMouseEnter={() =>
                 data.onPortFocus?.({
                   nodeId: id,
@@ -204,14 +265,24 @@ export function WorkflowNode({
               }
               onMouseLeave={() => data.onPortFocus?.()}
             >
-              <span className="node-port-label" title={portLabel(port)}>
-                {portLabel(port)}
+              <span
+                className="node-port-label"
+                title={`${data.finalPorts?.includes(port) ? '交付绑定 · ' : ''}${data.outputLabels?.[port] || portLabel(port)}（${port}）`}
+              >
+                {data.finalPorts?.includes(port) && (
+                  <FileOutput
+                    size={12}
+                    className="node-delivery-mark"
+                    aria-label="交付绑定"
+                  />
+                )}
+                {labelOutput(port)}
               </span>
               <Handle
                 type="source"
                 position={Position.Right}
                 id={port}
-                aria-label={`输出 ${portLabel(port)}`}
+                aria-label={`输出 ${labelOutput(port)}`}
                 tabIndex={0}
                 onFocus={() =>
                   data.onPortFocus?.({

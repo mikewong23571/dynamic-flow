@@ -77,3 +77,14 @@ pnpm format:check
 | `src/shared/records.ts`  | 上述调用双方共享的少量记录                                               |
 
 改代码先读根与就近 `AGENTS.md`，再按 [生命周期故事](docs/workitem-stories.md)、[原有用户故事](docs/user-stories.md)、[模块与验收地图](docs/implementation-map.md) 找到子问题。术语见 [术语与编号](docs/glossary.md)，产品规则见 [当前设计](docs/design.md)。原始 v2 保持在 `docs/archive/`。
+
+## 可持续查看的预览
+
+在独立工作目录/worktree中运行：
+
+```sh
+pnpm build
+pnpm preview
+```
+
+预览由同一个后端提供页面及API，默认监听`0.0.0.0:4335`，业务记录、运行、上传及会话保存在该工作目录的`.flowcraft-preview-data/`，清理`/tmp`不影响这些数据。该目录不提交Git，且与托管实例的`data/`隔离。`FLOWCRAFT_API_PORT`和`FLOWCRAFT_DATA_ROOT`可显式指定其它端口及持久目录；发给用户持续使用的地址不可绑定临时测试数据。

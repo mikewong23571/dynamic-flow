@@ -1,0 +1,26 @@
+[
+  {
+    "width": 1440,
+    "count": 4,
+    "selectedVersion": "ae43882c-1a87-4787-886d-d1c207315b34",
+    "lazyBody": true,
+    "selection": true,
+    "emptyDisabled": true,
+    "cancelPreservesItem": true,
+    "overflow": false,
+    "errors": [],
+    "writes": []
+  },
+  {
+    "width": 1024,
+    "count": 4,
+    "selectedVersion": "ae43882c-1a87-4787-886d-d1c207315b34",
+    "lazyBody": true,
+    "selection": true,
+    "emptyDisabled": true,
+    "cancelPreservesItem": true,
+    "overflow": false,
+    "errors": [],
+    "writes": []
+  }
+]

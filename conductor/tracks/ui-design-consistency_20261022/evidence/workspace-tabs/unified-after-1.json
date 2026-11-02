@@ -1,0 +1,108 @@
+{
+  "timeOrigin": 1792658818136.2,
+  "date": "2026-10-22T08:47:02.386Z",
+  "work": "5cb210fc-f700-43bd-9946-736d869db90b",
+  "width": 1440,
+  "errors": [],
+  "measurements": [
+    {
+      "target": "results",
+      "ms": 376,
+      "dom": 999,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 494.90000009536743,
+          "duration": 201
+        },
+        {
+          "start": 699.0999999046326,
+          "duration": 200
+        },
+        {
+          "start": 913.7999999523163,
+          "duration": 51
+        },
+        {
+          "start": 1256.5999999046326,
+          "duration": 120
+        },
+        {
+          "start": 1433.4000000953674,
+          "duration": 54
+        },
+        {
+          "start": 1684.9000000953674,
+          "duration": 472
+        },
+        {
+          "start": 2157.2999999523163,
+          "duration": 685
+        },
+        {
+          "start": 3026.5999999046326,
+          "duration": 72
+        },
+        {
+          "start": 3116.7999999523163,
+          "duration": 111
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 158,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3384,
+          "duration": 98
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 231,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3551.4000000953674,
+          "duration": 120
+        }
+      ]
+    },
+    {
+      "target": "results",
+      "ms": 248,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3783.4000000953674,
+          "duration": 172
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 148,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 4033.4000000953674,
+          "duration": 68
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 99,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": []
+    }
+  ]
+}

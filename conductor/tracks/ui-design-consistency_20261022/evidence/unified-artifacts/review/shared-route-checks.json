@@ -1,0 +1,30 @@
+[
+  {
+    "width": 1440,
+    "groupRestore": "核查目标源码 · 第 2 项",
+    "scrollRestore": 430,
+    "processRestore": {
+      "heading": "报告",
+      "scroll": 430
+    },
+    "query": "CVE-2025",
+    "returnRestore": {
+      "heading": "报告",
+      "scroll": 430
+    }
+  },
+  {
+    "width": 1024,
+    "groupRestore": "核查目标源码 · 第 2 项",
+    "scrollRestore": 430,
+    "processRestore": {
+      "heading": "报告",
+      "scroll": 430
+    },
+    "query": "CVE-2025",
+    "returnRestore": {
+      "heading": "报告",
+      "scroll": 430
+    }
+  }
+]

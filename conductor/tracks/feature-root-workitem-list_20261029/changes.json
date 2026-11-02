@@ -1,0 +1,59 @@
+{
+  "scope": "相对本track启动；不包含其他已有未提交原型增量",
+  "changes": [
+    {
+      "path": "docs/task-navigation-contract.md",
+      "before": "f4d89693f8f59646ef4637b34f670bb4ec9001e286f4210e1392ea218b9664c0",
+      "after": "26993916826739b0558ee0dd8bc2ce506779b383931b36e14452c0c7beca61e1",
+      "change": "modified"
+    },
+    {
+      "path": "src/client/AGENTS.md",
+      "before": "5a58f30f777e4bc359c9b262675b7296951ff836383dbc8dcb7affb156d680f7",
+      "after": "aac5bf49bed10049999c413813dd468a19e816c6c4d64d192ba4be8369def98d",
+      "change": "modified"
+    },
+    {
+      "path": "src/client/features/work-items/WorkHome.css",
+      "before": "b5a9844db3aa18779ec90d6f742bc6258182eeb0d913918195f5e14ea4f9c55e",
+      "after": "68b412a50d9e2be8dc235b73280f4d16177871f00369994f4406d747793ac9d1",
+      "change": "modified"
+    },
+    {
+      "path": "src/client/features/work-items/WorkItems.tsx",
+      "before": "fa217c54a4be564c005a07a0b4c76e13425fe8015cd7be9816a074ce2fe4b1c6",
+      "after": "3a718ab35a8bd0ef2624367ecd65582eba2553c840fc7e6024e29a97a81a0594",
+      "change": "modified"
+    },
+    {
+      "path": "src/server/work-items/AGENTS.md",
+      "before": "7156b45cec55a3aed1cc668094edffbeb9128352ff0342c1db4890e8b0a95294",
+      "after": "5a9ebf70aa05d95e22a10dcc6cf09ab1ddf43b16dd813760e9e86c59d82c07d3",
+      "change": "modified"
+    },
+    {
+      "path": "src/server/work-items/queries.ts",
+      "before": "34c62a9d6d9918ebf66b43bd460fd8abe41069dea2019801b6643c87e98c0d01",
+      "after": "4158a7112f73ec4848881e537d2b7932fbf9713e80c730d0b332cc8fbdc5f084",
+      "change": "modified"
+    },
+    {
+      "path": "tests/AGENTS.md",
+      "before": "da1e379f87cfd5591cd6162926bc34f013b2c277aa6addb428195fc4e43a415a",
+      "after": "a778c128389903356cc0d39e30c5604f826a2d5335a4653032937afcdfb19ef1",
+      "change": "modified"
+    },
+    {
+      "path": "tests/browser/workitem-composition-roots.spec.ts",
+      "before": null,
+      "after": "8ac06b6bc4093576b26349995cc93412959a0c453f4b4ecca1f5aaabf81231e8",
+      "change": "added"
+    },
+    {
+      "path": "tests/workitem-root-list.test.ts",
+      "before": null,
+      "after": "c499571d33b730f09e236502b1c5701fe6336a33d613694c8cb272d35328324b",
+      "change": "added"
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "source": {
+    "workId": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+    "runId": "f1625072-f7cc-480d-bb6e-ea16c213c0e3",
+    "definitionId": "065291f9-79c2-4d5b-81bc-896d494ba198"
+  },
+  "status": "cancelled",
+  "inputs": {
+    "input": [
+      {
+        "sampleId": "M01",
+        "value": "调查任务：CVE-2025-27516；组件线索：Jinja2。请通过真实 WebSearch MCP 收集官方公告、受影响版本、修复依据与触发条件，保留实际取得的来源正文。业务范围限定 SCC chatops-api、adr-api；两者在 cve-fix 已有扫描索引中有 Jinja2 依赖线索，具体记录在 A 完成后交给 B。本轮不读取旧影响 manifest 当作新判定，不修改业务源码或业务环境。",
+        "materialIds": [
+          "M01"
+        ],
+        "sourceResultIds": []
+      }
+    ]
+  },
+  "results": [
+    {
+      "id": "2338ce52-5737-4ae8-a2c0-4e4082727ef0",
+      "nodeId": "frame",
+      "status": "completed",
+      "input": {
+        "input": [
+          {
+            "sampleId": "M01",
+            "value": "调查任务：CVE-2025-27516；组件线索：Jinja2。请通过真实 WebSearch MCP 收集官方公告、受影响版本、修复依据与触发条件，保留实际取得的来源正文。业务范围限定 SCC chatops-api、adr-api；两者在 cve-fix 已有扫描索引中有 Jinja2 依赖线索，具体记录在 A 完成后交给 B。本轮不读取旧影响 manifest 当作新判定，不修改业务源码或业务环境。",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": []
+          }
+        ]
+      },
+      "outputs": {
+        "output": [
+          {
+            "value": {
+              "cve_id": "CVE-2025-27516",
+              "component": "Jinja2",
+              "business_scope": [
+                "SCC/chatops-api",
+                "SCC/adr-api"
+              ],
+              "questions": [
+                "CVE-2025-27516 的官方公告（NVD、GitHub Advisory、Pallets 官方发布说明）正文如何描述该漏洞，CVSS 评分与引用来源是什么？（需经真实 WebSearch 取得并保留原文）",
+                "受影响的 Jinja2 版本范围与首个修复版本分别是什么？扫描索引记录的 Jinja2-2.10.1（Jinja2-2.10.1-py2.py3-none-any.whl）是否落在受影响范围内？",
+                "该漏洞的触发条件是什么（何种模板渲染方式或沙箱配置下可被利用）？",
+                "chatops-api 与 adr-api 运行环境实际安装的 Jinja2 版本是多少，与 requirements.txt 声明是否一致？（本轮不修改业务源码或业务环境）",
+                "chatops-api、adr-api 是否存在会触发该漏洞的 Jinja2 调用路径（是否渲染不可信输入的模板）？",
+                "官方建议的修复/升级方案是什么？升级到修复版本对两个系统是否有兼容性影响？"
+              ],
+              "provided_facts": [
+                "M01 原文：'调查任务：CVE-2025-27516；组件线索：Jinja2。'——漏洞编号与组件为任务输入线索，不构成漏洞已成立的证据。",
+                "M01 原文：'业务范围限定 SCC chatops-api、adr-api；两者在 cve-fix 已有扫描索引中有 Jinja2 依赖线索，具体记录在 A 完成后交给 B。'",
+                "workItem.data.businessClueSource 指向 /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl，该文件实际存在（共 1820 行），已实际读取核验。",
+                "该索引第 1682 行存在 CVE-2025-27516 条目：\"vulnId\": \"CVE-2025-27516\"，\"library\": \"Jinja2-2.10.1-py2.py3-none-any.whl\"，\"isTraced\": true，\"project\": \"update-request6.txt\"，\"assignedPerson\": \"余昌发\"。",
+                "该条目 traceSource 含 chatops-api 直接依赖记录（逐字）：'dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/Subscription/chatops/chatops-api/chatops-api/requirements.txt'。",
+                "该条目 traceSource 含 adr-api 直接依赖记录（逐字）：'dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/requirements.txt' 与 'dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/test-requirements.txt'。",
+                "同一条目还列出范围外系统（如 'CMP/SCC/SS/python-securityscoreclient/python-securityscoreclient/requirements.txt'、'CMP/SCC/ThirdParty/aDR/python-adrapiclient/python-adr-api-client/requirements.txt' 等），说明索引为线索性记录；本轮调查范围仍按 M01 限定为 SCC chatops-api、adr-api。",
+                "M01 约束原文：'本轮不读取旧影响 manifest 当作新判定，不修改业务源码或业务环境。'",
+                "条目原文已存为清洗制品 cleaned-cve-2025-27516-clue-lines.jsonl（含源文件与行号），供下游复核与 A→B 交接。"
+              ],
+              "missing_evidence_reasons": [
+                "官方公告正文缺失：本次输入仅有 M01 任务文本，本轮未取得 WebSearch MCP 实际检索结果（无 URL 或实际取得的来源正文），故漏洞描述、受影响版本范围、修复版本、触发条件均未知，不能由模型记忆补写。",
+                "实际安装版本未知：扫描索引仅记录 requirements 声明的构件名（Jinja2-2.10.1-py2.py3-none-any.whl），未提供运行环境安装清单；本轮约束禁止修改业务源码或业务环境，无法现场核实。",
+                "触发路径未知：无 chatops-api、adr-api 对 Jinja2 的调用方式（是否渲染不可信模板、沙箱配置）的任何材料。",
+                "独立影响判定缺失：M01 约束'本轮不读取旧影响 manifest 当作新判定'，故不能以任何旧 manifest 作为本轮影响结论；扫描索引条目仅作依赖线索使用。",
+                "具体记录移交未完成：M01 注明'具体记录在 A 完成后交给 B'，本次仅按 workItem.data.businessClueSource 直接核验了索引原文，完整记录仍待移交环节。"
+              ]
+            },
+            "sampleId": "M01",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": [
+              "2338ce52-5737-4ae8-a2c0-4e4082727ef0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "f7264bb9-3230-4607-b2b6-6a2020aff439",
+      "nodeId": "sources",
+      "status": "cancelled",
+      "input": {
+        "input": [
+          {
+            "value": {
+              "cve_id": "CVE-2025-27516",
+              "component": "Jinja2",
+              "business_scope": [
+                "SCC/chatops-api",
+                "SCC/adr-api"
+              ],
+              "questions": [
+                "CVE-2025-27516 的官方公告（NVD、GitHub Advisory、Pallets 官方发布说明）正文如何描述该漏洞，CVSS 评分与引用来源是什么？（需经真实 WebSearch 取得并保留原文）",
+                "受影响的 Jinja2 版本范围与首个修复版本分别是什么？扫描索引记录的 Jinja2-2.10.1（Jinja2-2.10.1-py2.py3-none-any.whl）是否落在受影响范围内？",
+                "该漏洞的触发条件是什么（何种模板渲染方式或沙箱配置下可被利用）？",
+                "chatops-api 与 adr-api 运行环境实际安装的 Jinja2 版本是多少，与 requirements.txt 声明是否一致？（本轮不修改业务源码或业务环境）",
+                "chatops-api、adr-api 是否存在会触发该漏洞的 Jinja2 调用路径（是否渲染不可信输入的模板）？",
+                "官方建议的修复/升级方案是什么？升级到修复版本对两个系统是否有兼容性影响？"
+              ],
+              "provided_facts": [
+                "M01 原文：'调查任务：CVE-2025-27516；组件线索：Jinja2。'——漏洞编号与组件为任务输入线索，不构成漏洞已成立的证据。",
+                "M01 原文：'业务范围限定 SCC chatops-api、adr-api；两者在 cve-fix 已有扫描索引中有 Jinja2 依赖线索，具体记录在 A 完成后交给 B。'",
+                "workItem.data.businessClueSource 指向 /home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl，该文件实际存在（共 1820 行），已实际读取核验。",
+                "该索引第 1682 行存在 CVE-2025-27516 条目：\"vulnId\": \"CVE-2025-27516\"，\"library\": \"Jinja2-2.10.1-py2.py3-none-any.whl\"，\"isTraced\": true，\"project\": \"update-request6.txt\"，\"assignedPerson\": \"余昌发\"。",
+                "该条目 traceSource 含 chatops-api 直接依赖记录（逐字）：'dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/Subscription/chatops/chatops-api/chatops-api/requirements.txt'。",
+                "该条目 traceSource 含 adr-api 直接依赖记录（逐字）：'dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/requirements.txt' 与 'dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/test-requirements.txt'。",
+                "同一条目还列出范围外系统（如 'CMP/SCC/SS/python-securityscoreclient/python-securityscoreclient/requirements.txt'、'CMP/SCC/ThirdParty/aDR/python-adrapiclient/python-adr-api-client/requirements.txt' 等），说明索引为线索性记录；本轮调查范围仍按 M01 限定为 SCC chatops-api、adr-api。",
+                "M01 约束原文：'本轮不读取旧影响 manifest 当作新判定，不修改业务源码或业务环境。'",
+                "条目原文已存为清洗制品 cleaned-cve-2025-27516-clue-lines.jsonl（含源文件与行号），供下游复核与 A→B 交接。"
+              ],
+              "missing_evidence_reasons": [
+                "官方公告正文缺失：本次输入仅有 M01 任务文本，本轮未取得 WebSearch MCP 实际检索结果（无 URL 或实际取得的来源正文），故漏洞描述、受影响版本范围、修复版本、触发条件均未知，不能由模型记忆补写。",
+                "实际安装版本未知：扫描索引仅记录 requirements 声明的构件名（Jinja2-2.10.1-py2.py3-none-any.whl），未提供运行环境安装清单；本轮约束禁止修改业务源码或业务环境，无法现场核实。",
+                "触发路径未知：无 chatops-api、adr-api 对 Jinja2 的调用方式（是否渲染不可信模板、沙箱配置）的任何材料。",
+                "独立影响判定缺失：M01 约束'本轮不读取旧影响 manifest 当作新判定'，故不能以任何旧 manifest 作为本轮影响结论；扫描索引条目仅作依赖线索使用。",
+                "具体记录移交未完成：M01 注明'具体记录在 A 完成后交给 B'，本次仅按 workItem.data.businessClueSource 直接核验了索引原文，完整记录仍待移交环节。"
+              ]
+            },
+            "sampleId": "M01",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": [
+              "2338ce52-5737-4ae8-a2c0-4e4082727ef0"
+            ]
+          }
+        ]
+      },
+      "outputs": {},
+      "error": "已停止"
+    }
+  ]
+}

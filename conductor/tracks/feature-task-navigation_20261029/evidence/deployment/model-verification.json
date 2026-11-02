@@ -1,0 +1,453 @@
+{
+  "checkedAt": "2026-10-29T17:20:01.063302+00:00",
+  "itemId": "ec1f3079-4cfa-499d-acfb-045ca28fceb0",
+  "url": "http://10.134.94.200:4320/items/ec1f3079-4cfa-499d-acfb-045ca28fceb0",
+  "inputKind": "12 fictional records; no security conclusions generated",
+  "views": [
+    {
+      "view": "by_repository",
+      "rowCount": 12,
+      "exactInputPreserved": true,
+      "runId": "4f290cc5-fec8-4f34-8476-fde6deed0abf"
+    },
+    {
+      "view": "record_list",
+      "rowCount": 12,
+      "exactInputPreserved": true,
+      "runId": "4f290cc5-fec8-4f34-8476-fde6deed0abf"
+    }
+  ],
+  "businessStatus": "open",
+  "criteria": [
+    {
+      "id": "2f2623e4-412b-49be-bbcb-276e9be2cc4a",
+      "text": "每条记录已修复或有证据排除；例外需要用户明确确认，未决项保留为缺口。",
+      "met": false,
+      "evidence": ""
+    }
+  ],
+  "sessions": [
+    {
+      "id": "main",
+      "status": "cancelled",
+      "effectiveModel": {
+        "source": "default",
+        "alias": "sangfor/deepseek-v4-flash",
+        "model": "deepseek-v4-flash",
+        "effort": "high"
+      },
+      "toolCalls": [
+        {
+          "toolName": "inspect_work_item",
+          "status": "completed"
+        },
+        {
+          "toolName": "describe_capabilities",
+          "status": "completed"
+        },
+        {
+          "toolName": "read_artifact",
+          "status": "completed"
+        },
+        {
+          "toolName": "ls",
+          "status": "completed"
+        },
+        {
+          "toolName": "inspect_method",
+          "status": "completed"
+        },
+        {
+          "toolName": "find_methods",
+          "status": "completed"
+        },
+        {
+          "toolName": "inspect_method",
+          "status": "completed"
+        },
+        {
+          "toolName": "inspect_method",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "failed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "failed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "failed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "failed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "failed"
+        }
+      ]
+    },
+    {
+      "id": "3585076f-f30d-463d-8fea-c721e801dda9",
+      "status": "completed",
+      "effectiveModel": {
+        "source": "default",
+        "alias": "sangfor/deepseek-v4-flash",
+        "model": "deepseek-v4-flash",
+        "effort": "high"
+      },
+      "toolCalls": [
+        {
+          "toolName": "inspect_work_item",
+          "status": "completed"
+        },
+        {
+          "toolName": "ls",
+          "status": "completed"
+        },
+        {
+          "toolName": "read",
+          "status": "completed"
+        },
+        {
+          "toolName": "read_artifact",
+          "status": "completed"
+        },
+        {
+          "toolName": "describe_capabilities",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "failed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "inspect_method",
+          "status": "completed"
+        },
+        {
+          "toolName": "find_methods",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "save_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_ui_plan",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_ui_plan",
+          "status": "completed"
+        },
+        {
+          "toolName": "execute",
+          "status": "completed"
+        },
+        {
+          "toolName": "inspect_run",
+          "status": "completed"
+        },
+        {
+          "toolName": "save_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "execute",
+          "status": "failed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "add_input",
+          "status": "completed"
+        },
+        {
+          "toolName": "execute",
+          "status": "completed"
+        },
+        {
+          "toolName": "inspect_run",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "save_flow",
+          "status": "completed"
+        },
+        {
+          "toolName": "execute",
+          "status": "completed"
+        },
+        {
+          "toolName": "inspect_run",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_ui_plan",
+          "status": "completed"
+        },
+        {
+          "toolName": "check_ui_plan",
+          "status": "completed"
+        },
+        {
+          "toolName": "inspect_run",
+          "status": "completed"
+        },
+        {
+          "toolName": "save_ui_plan",
+          "status": "completed"
+        },
+        {
+          "toolName": "publish_ui_plan",
+          "status": "completed"
+        },
+        {
+          "toolName": "inspect_work_item",
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "id": "9b218824-d42a-40f4-b1f1-c39b6bb0f67a",
+      "status": "failed",
+      "definitionId": "46d1d889-af32-403f-90ff-55d56f1868eb",
+      "nodes": [
+        {
+          "nodeId": "records",
+          "status": "failed",
+          "error": "输入不符合 schema：data/0 must be object",
+          "outputs": {}
+        },
+        {
+          "nodeId": "grouped",
+          "status": "failed",
+          "error": "输入不符合 schema：data/input/0 must be object",
+          "outputs": {}
+        }
+      ]
+    },
+    {
+      "id": "01d7330a-4ffe-4a78-b691-daf1851c395d",
+      "status": "failed",
+      "definitionId": "66c3e5b7-cbfa-4a4d-b586-45f777362790",
+      "nodes": [
+        {
+          "nodeId": "records",
+          "status": "failed",
+          "error": "整体成果不符合 schema：data must be object",
+          "outputs": {}
+        },
+        {
+          "nodeId": "grouped",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "4f290cc5-fec8-4f34-8476-fde6deed0abf",
+      "status": "completed",
+      "definitionId": "00d7e4a4-6862-4f48-b878-48b3a5c7922a",
+      "nodes": [
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "grouped",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 3
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        },
+        {
+          "nodeId": "records",
+          "status": "completed",
+          "error": null,
+          "outputs": {
+            "output": 1
+          }
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Initial autonomous planning did not succeed; initial conversation cancelled after repeated invalid nested Definition submissions.",
+    "A new conversation with a reduced scope succeeded after tool feedback and two failed runs.",
+    "No actual CVE research, repository remediation, audit acceptance or business action-to-method output return was validated."
+  ]
+}

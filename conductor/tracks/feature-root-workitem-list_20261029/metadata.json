@@ -1,0 +1,20 @@
+{
+  "track_id": "feature-root-workitem-list_20261029",
+  "type": "feature",
+  "status": "complete",
+  "created_at": "2026-10-29",
+  "updated_at": "2026-10-29",
+  "phase": "deployed-to-managed-instance",
+  "executor": "root",
+  "subagents_allowed": false,
+  "workspace": "/home/mike/projs/fork/dynamic-flow-workitem-composition",
+  "authorization": "用户同意顶层列表不展示子项并明确要求修复",
+  "depends_on": [
+    "feature-task-navigation_20261029"
+  ],
+  "completed_at": "2026-10-29",
+  "next_step": "4320已切换，旧批次保持暂停；切换、真实模型验收和规划稳定性限制见导航track的deployment.md。",
+  "deployed_at": "2026-10-29",
+  "deployment_target": "/home/mike/projs/fork/dynamic-flow",
+  "deployment_url": "http://10.134.94.200:4320"
+}

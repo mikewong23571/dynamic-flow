@@ -18,7 +18,7 @@ const definition: Definition = {
       id: 'investigate',
       label: '调查',
       kind: 'agent',
-      mode: 'all',
+      operation: 'aggregate',
       task: '调查',
       contract: {
         responsibility: '核对公告',
@@ -46,43 +46,47 @@ async function fixture(t: TestContext) {
       key,
       title: key,
       goal: '确认范围',
-      workflowId: work.id,
       materials: ['原始公告'],
       criteria: ['核验'],
     });
   const launch = (item: WorkItemView, runId = 'run-1') =>
-    items.launch(item.id, async (input) => {
-      const run: Run = {
-        id: runId,
-        definitionId,
-        scope: 'full',
-        inputs: {},
-        workItem: input,
-        effectMode: 'commit',
-        status: 'running',
-        stopRequested: false,
-        nodeStates: { investigate: 'running' },
-        results: [
-          {
-            id: 'result-' + runId,
-            runId,
-            definitionId,
-            nodeId: 'investigate',
-            instanceId: 'instance',
-            input: {},
-            outputs: {},
-            status: 'running',
-            activities: [],
-            startedAt: new Date().toISOString(),
-          },
-        ],
-        startedAt: new Date().toISOString(),
-      };
-      await files.change(work.id, (w) => {
-        w.runs.push(run);
-      });
-      return { workId: work.id, runId, definitionId };
-    });
+    items.launch(
+      item.id,
+      async (input) => {
+        const run: Run = {
+          materials: input.materials,
+          id: runId,
+          definitionId,
+          scope: 'full',
+          inputs: {},
+          workItem: input,
+          effectMode: 'commit',
+          status: 'running',
+          stopRequested: false,
+          nodeStates: { investigate: 'running' },
+          results: [
+            {
+              id: 'result-' + runId,
+              runId,
+              definitionId,
+              nodeId: 'investigate',
+              instanceId: 'instance',
+              input: {},
+              outputs: {},
+              status: 'running',
+              activities: [],
+              startedAt: new Date().toISOString(),
+            },
+          ],
+          startedAt: new Date().toISOString(),
+        };
+        await files.change(work.id, (w) => {
+          w.runs.push(run);
+        });
+        return { workId: work.id, runId, definitionId };
+      },
+      item.revision,
+    );
   return { root, files, items, work, definitionId, create, launch };
 }
 
@@ -119,6 +123,7 @@ test('global summary precedes search/pending filters and follows completion/reop
   const expected = {
     total: 10,
     pending: 8,
+    review: 0,
     open: 2,
     running: 3,
     waiting: 1,
@@ -362,7 +367,7 @@ test('active nodes project every parallel and saved expanded step from frozen de
         id: 'plan',
         label: '调查责任',
         kind: 'dynamic',
-        mode: 'all',
+
         task: '规划',
         dynamic: { boundary: '调查', maxNodes: 4 },
       },
@@ -450,7 +455,7 @@ test('milestones, new methods and reopening clear stale instructions; save failu
       id: 'milestone',
       label: '里程碑',
       kind: 'milestone',
-      mode: 'all',
+
       milestone: { stage: '复核', summary: '完成分析' },
     },
     {},
@@ -471,7 +476,23 @@ test('milestones, new methods and reopening clear stale instructions; save failu
     blocker: '缺确认',
   });
   const other = await createWorkService(f.files).createWork('新方法', []);
-  view = await f.items.method(item.id, other.id);
+  const otherVersion = await f.files.writeDefinition(other.id, definition);
+  await f.files.change(other.id, (work) => {
+    work.definitionIds.push(otherVersion);
+    work.draftId = otherVersion;
+  });
+  const application = await createApplication({ dataRoot: f.root });
+  t.after(() => {
+    application.batches.close();
+    application.runs.close();
+  });
+  await application.composition.useMethod(
+    item.id,
+    (await f.items.get(item.id)).revision,
+    other.id,
+    otherVersion,
+  );
+  view = await f.items.get(item.id);
   assert.equal(view.blocker, undefined);
   assert.equal(view.nextAction, undefined);
   await f.items.reportProgress(item.id, {
@@ -499,14 +520,21 @@ test('milestones, new methods and reopening clear stale instructions; save failu
   view = await f.items.reopen(item.id, '新证据');
   assert.equal(view.blocker, undefined);
   assert.equal(view.nextAction, undefined);
+  await f.launch(view, 'save-failure-run');
+  await f.files.change(f.work.id, (work) => {
+    work.runs.at(-1)!.status = 'completed';
+  });
+  view = await f.items.get(item.id);
   const destination = join(f.root, 'work-items', item.id + '.json');
   const failing = createWorkItems(f.root, {
     ...f.files,
     read: async (id) => {
-      const work = await f.files.read(id);
-      await rename(destination, destination + '.backup');
-      await mkdir(destination);
-      return work;
+      const value = await f.files.read(id);
+      if (id === f.work.id) {
+        await rename(destination, destination + '.backup');
+        await mkdir(destination);
+      }
+      return value;
     },
   });
   // The source read happens after reading the item, then atomic save genuinely fails.
@@ -588,12 +616,23 @@ for (const failOutput of [false, true])
         ],
       };
       const id = await server.flow.saveDraft(f.work.id, undefined, def);
+      const prepared = await server.composition.useMethod(
+        item.id,
+        (await server.items.get(item.id)).revision,
+        f.work.id,
+        id,
+        undefined,
+        { input: [{ kind: 'material', materialId: 'M01' }] },
+      );
       const response = await server.app.request(
         '/api/items/' + item.id + '/actions',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'run', definitionId: id }),
+          body: JSON.stringify({
+            action: 'run',
+            baseRevision: prepared.item.revision,
+          }),
         },
       );
       assert.equal(response.status, 200, await response.clone().text());
@@ -653,7 +692,7 @@ test('expanded ordinary parallel agents report independently for two items shari
     id: 'merge',
     label: '汇合',
     kind: 'function',
-    mode: 'all',
+
     functionName: 'merge',
     inputNames: ['a', 'b'],
     contract: definition.nodes[0].contract,
@@ -720,12 +759,23 @@ test('expanded ordinary parallel agents report independently for two items shari
   t.after(() => server.runs.close());
   const id = await server.flow.saveDraft(f.work.id, undefined, dynamic);
   const launch = async (item: WorkItemView) => {
+    const prepared = await server.composition.useMethod(
+      item.id,
+      (await server.items.get(item.id)).revision,
+      f.work.id,
+      id,
+      undefined,
+      { input: [{ kind: 'material', materialId: 'M01' }] },
+    );
     const response = await server.app.request(
       '/api/items/' + item.id + '/actions',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'run', definitionId: id }),
+        body: JSON.stringify({
+          action: 'run',
+          baseRevision: prepared.item.revision,
+        }),
       },
     );
     assert.equal(response.status, 200, await response.clone().text());
@@ -827,4 +877,144 @@ test('stop while a definition is being read prevents a late HTTP-source report f
     (await f.items.get(item.id)).history.some((h) => h.kind === 'progress'),
     false,
   );
+});
+
+test('formal static single step exposes Pi progress tool; historical-input preview does not', async (t) => {
+  const f = await fixture(t),
+    item = await f.create('SINGLE-PI');
+  await seedCatalog(f.root, {
+    baseUrl: 'http://test.invalid',
+    model: 'fixture',
+    apiKey: 'test-only',
+  });
+  const toolsSeen: string[][] = [];
+  const server = await createApplication({
+    dataRoot: f.root,
+    runSession: async (input) => {
+      toolsSeen.push(input.tools.map((tool) => tool.name));
+      const tool = input.tools.find((tool) => tool.name === 'report_progress');
+      if (toolsSeen.length === 1) {
+        assert.ok(tool);
+        await tool.execute(
+          'single-report',
+          {
+            stage: '单步核对',
+            summary: '已检查本次公告',
+            materialIds: ['M01'],
+          },
+          input.signal,
+          undefined,
+          {} as never,
+        );
+      } else assert.equal(tool, undefined);
+      return '{"answer":"原始公告"}';
+    },
+  });
+  t.after(() => server.runs.close());
+  const version = await server.flow.saveDraft(f.work.id, undefined, {
+    ...definition,
+    nodes: [
+      {
+        ...definition.nodes[0],
+        expectedOutput: { type: 'object', required: ['answer'] },
+      },
+    ],
+  });
+  const prepared = await server.composition.useMethod(
+    item.id,
+    (await server.items.get(item.id)).revision,
+    f.work.id,
+    version,
+    { nodeId: 'investigate' },
+    { input: [{ kind: 'material', materialId: 'M01' }] },
+  );
+  const started = await server.app.request(`/api/items/${item.id}/actions`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      action: 'run',
+      baseRevision: prepared.item.revision,
+    }),
+  });
+  assert.equal(started.status, 200, await started.clone().text());
+  const launched = (await started.json()) as WorkItemView;
+  await server.runs.wait(launched.execution!.runId);
+  const current = await server.items.get(item.id);
+  assert.equal(current.stage, '单步核对');
+  assert.equal(current.status, 'open');
+  const run = (await server.files.read(item.workId)).runs.at(-1)!;
+  assert.equal(run.effectMode, 'commit');
+  const preview = await server.app.request(
+    `/api/works/${item.workId}/actions`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        action: 'run',
+        definitionId: run.definitionId,
+        scope: { nodeId: 'investigate' },
+        sampleSource: { runId: run.id, resultIds: [run.results[0].id] },
+      }),
+    },
+  );
+  assert.equal(preview.status, 200, await preview.clone().text());
+  const previewRun = (await server.files.read(item.workId)).runs.at(-1)!;
+  await server.runs.wait(previewRun.id);
+  assert.equal(
+    (await server.files.read(item.workId)).runs.at(-1)!.effectMode,
+    'preview',
+  );
+  assert.equal(toolsSeen.length, 2);
+  assert.equal(
+    (await server.items.get(item.id)).history.filter(
+      (entry) => entry.kind === 'progress',
+    ).length,
+    1,
+  );
+});
+
+test('completed execution is review even with evidence gaps; reopening separates new intent and JSON counters are rejected', async (t) => {
+  const f = await fixture(t);
+  const item = await f.create('REVIEW');
+  await f.launch(item, 'review-run');
+  await f.files.change(f.work.id, (w) => {
+    w.runs.find((run) => run.id === 'review-run')!.status = 'completed';
+  });
+  let reviewed = await f.items.get(item.id);
+  reviewed = await f.items.reportProgress(item.id, {
+    id: 'gap',
+    expectedRevision: reviewed.revision,
+    stage: '证据待复核',
+    summary: '执行已结束，扫描版本仍需补证。',
+    blocker: '缺少扫描版本',
+  });
+  assert.equal(reviewed.effectiveStatus, 'review');
+  const page = await f.items.list({ status: 'review' });
+  assert.equal(page.total, 1);
+  assert.equal(page.summary.review, 1);
+  assert.equal(page.summary.open, 0);
+  assert.equal(page.summary.attention, 0);
+  const before = reviewed.revision;
+  await assert.rejects(
+    f.items.reportProgress(item.id, {
+      id: 'bad-json',
+      expectedRevision: before,
+      stage: '结束',
+      summary: '{"completed":20}',
+    }),
+    /可读的业务说明/,
+  );
+  assert.equal((await f.items.get(item.id)).revision, before);
+  await f.items.criteria(
+    item.id,
+    reviewed.criteria.map((c) => ({
+      ...c,
+      met: true,
+      evidence: '已人工复核并记录缺口的处理依据',
+    })),
+  );
+  await f.items.complete(item.id);
+  const reopened = await f.items.reopen(item.id, '新证据需要再次处理');
+  assert.equal(reopened.effectiveStatus, 'open');
+  assert.equal((await f.items.list({ status: 'review' })).total, 0);
 });

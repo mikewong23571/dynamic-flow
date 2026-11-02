@@ -4,7 +4,7 @@
 
 - 入口：`index.ts` → FileStore / createFiles；serializeDefinition 写应用生成的 JS 字面量，readDefinition 读取该固定格式，不执行任意代码。
 - Work 元数据、材料、运行、比较、消息和 ViewState 位于 `<root>/<workId>/work.json`；不可变定义位于 definitions，原始文件与 cleaned- 制品位于 uploads。
-- change 是按工作串行的原子保存及通知入口；onServerStart 只做启动状态修复，等待调度由 runs.recover 负责。
+- change 是按工作串行的原子保存及通知入口；read 按work.json磁盘版本缓存解析并合并同版并发读，每次返回独立副本。成功写入使该缓存失效，磁盘stat版本变化也重新读取。onServerStart 只做启动状态修复，等待调度由 runs.recover 负责。
 - 工作项文件由 work-items 自己管理，模型设置由 assistant/settings 管理；不要把它们误移进 work.json。
 - 验证入口：`tests/state.test.ts`、`tests/canvas-view-state.test.ts`、`tests/lifecycle-process.test.ts`、`tests/profile-import.test.ts`；文件测试使用临时目录，数据边界见 [data/AGENTS.md](../../../data/AGENTS.md)。
 
@@ -45,7 +45,7 @@
 
 ## 2026-09-20 实现交接
 
-已实现 `createFiles(root): FileStore`，确切类型见本目录 index.ts。工作在 `<root>/<workId>/work.json`，不可变定义在 `definitions/<id>.js`；定义文件只解析应用生成的 `export default` 字面量，不执行任意 JS。用户上传的原始文件与剖析产生的 cleaned- 清洗制品都在 `uploads/<name>`，只取 basename、原子写入，同名覆盖；`uploadPath` 供会话软链，`listUploads` 供节点会话列举链接，本目录不解析格式。`change` 按工作串行，先原子替换文件再通知；读取返回独立对象。`onServerStart` 仅由服务启动调用，读取/页面刷新不调用。
+已实现 `createFiles(root): FileStore`，确切类型见本目录 index.ts。工作在 `<root>/<workId>/work.json`，不可变定义在 `definitions/<id>.js`；定义文件只解析应用生成的 `export default` 字面量，不执行任意 JS。用户上传的原始文件与剖析产生的 cleaned- 清洗制品都在 `uploads/<name>`，只取 basename、原子写入，同名覆盖；`uploadPath` 供会话软链，`listUploads` 供节点会话列举链接，本目录不解析格式。`change` 按工作串行，先原子替换文件再通知；读取返回独立对象；当前实现缓存同一磁盘版本的解析结果并structuredClone交付，不共享调用方可变对象。`onServerStart` 仅由服务启动调用，读取/页面刷新不调用。
 
 域内证据：`pnpm exec tsx --test tests/state.test.ts` 使用真实临时目录验证重开、隔离读取、串行写、目录权限导致的真实写失败、定义目录故障与启动中断。完成结果保留；未完成运行、实例、比较和作者消息标中断。
 
@@ -58,3 +58,14 @@
 waiting 不属于 onServerStart 的中断集合；其截止时间、事件及已完成结果完整保留，由 runs.recover 恢复调度。running/queued 的不确定执行仍标 interrupted，runs.resume 仅补未完成实例；已完成实例不可抹除。文件层不调用模型、不触发业务更新、不自行运行定时任务。
 
 Run.expansions 与逐轮 NodeResult 随原 work.json 原子保存，不新增展开文件仓库。原始不可变 Definition 与实际展开区分；恢复先读取保存的展开再继续相同运行。
+
+2026-10-23规模复验：共享方法约62MB时多路摘要/详情重复解析造成可见延迟；本轮只加入磁盘版本缓存及同版读合并，不改文件布局。`tests/state.test.ts`验证独立副本、写入/失败通知和启动语义，`tests/workitem-decomposition.test.ts`补充摘要缓存写入失效与外部fixture首次读取。性能证据在feature-workitem-decomposition_20261023，浏览器实测与模块测量分开。
+
+Work内可选assistantConversations元数据与消息conversationId通过既有change原子保存，不增设消息文件库。Pi历史目录由assistant模块决定：main保留assistant/work-item，新会话位于assistant/work-item-conversations/<id>；只读workspace清单不触发迁移。
+
+
+2026-10-30读取投影：select(id, pureProjector)与list(pureProjector)先在已解析版本上选取字段，再复制选中结果；投影函数只读，不得修改缓存对象或返回异步值。read仍返回完整独立副本，version读取磁盘版本而不复制正文。目录、运行状态摘要及启动扫描使用投影，避免只为标题复制整份历史。外部磁盘版本改变仍重新解析。证据见feature-workspace-performance_20261030。
+
+`changeRun` 与 `change` 共用同一 Work 串行队列和原子写入，只深拷贝目标 Run；编辑/写入失败不修改缓存原值。运行器单次读取用 select 定位 Run，不为读取一个实例复制整份方法历史。磁盘格式不变，仍整体原子保存。
+
+不可变definitions/<id>.js按workId+definitionId复用解析Promise（最多128份），读取仍structuredClone保证调用方副本隔离；读取失败移除对应缓存。只有保存新版本才有新定义身份，不支持原地修改固定版本文件来变更运行语义。业务work.json仍按磁盘版本失效，二者不混用。

@@ -4,14 +4,14 @@
   overflow: auto;
   display: flex;
   flex-direction: column;
-  background: var(--canvas);
+  background: var(--paper);
 }
 .management-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 30px 32px 26px;
+  padding: 24px 32px;
   border-bottom: 1px solid var(--line);
 }
 .management-title {
@@ -20,9 +20,9 @@
   gap: 12px;
 }
 .management-title h1 {
-  font-size: 23px;
+  font-size: 22px;
   font-weight: 600;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.025em;
 }
 .management-count {
   border: 1px solid var(--line);
@@ -65,8 +65,9 @@
 }
 .management-table-wrap {
   margin: 0 32px;
-  border: 1px solid var(--line);
-  border-radius: 7px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -85,7 +86,7 @@
   background: none;
 }
 .management-table td {
-  padding: 10px 16px;
+  padding: 14px 16px;
   vertical-align: middle;
   white-space: normal;
 }
@@ -154,12 +155,12 @@
 }
 .management-pagination {
   flex-shrink: 0;
-  background: var(--canvas);
+  background: var(--paper);
   display: flex;
   align-items: center;
   gap: 22px;
   margin-top: auto;
-  padding: 22px 32px;
+  padding: 20px 32px;
   color: var(--muted);
   font-size: 11px;
 }
@@ -217,5 +218,58 @@
   }
   .management-pagination {
     flex-wrap: wrap;
+  }
+}
+
+/* Full-width object lists share one content grid; the home start area stays separate. */
+.management-content {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 24px 32px;
+  overflow: auto;
+}
+.management-content .management-toolbar {
+  padding: 0 0 20px;
+  margin: 0;
+  flex: none;
+}
+.management-content .management-table-wrap {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.management-content .management-table th {
+  padding: 0 12px;
+  height: 36px;
+}
+.management-content .management-table td {
+  padding: 14px 12px;
+}
+.management-content .management-table tr {
+  border-bottom: 1px solid var(--line);
+}
+.management-content .management-table tbody tr:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.management-content .management-pagination {
+  margin-top: 16px;
+  padding: 0;
+}
+.management-content .library-body {
+  flex: 0 0 auto;
+}
+.management-content .library-pinned {
+  margin: 0 0 20px;
+}
+.management-content .library-error {
+  margin: 0 0 16px;
+}
+@media (max-width: 1200px) {
+  .management-content {
+    padding: 24px;
   }
 }

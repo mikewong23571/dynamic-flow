@@ -5,6 +5,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createFiles } from '../src/server/files/index.ts';
 import { createWorkService } from '../src/server/work/index.ts';
+import { createApplication } from '../src/server/index.ts';
+import { createFlow } from '../src/server/flow/index.ts';
+import type { Definition } from '../src/shared/records.ts';
 import { createWorkItems } from '../src/server/work-items/index.ts';
 
 test('业务身份、完成依据和跨方法历史独立于运行', async () => {
@@ -15,21 +18,48 @@ test('业务身份、完成依据和跨方法历史独立于运行', async () =>
     const first = await methods.createWork('调查方法', ['方法示例']);
     const second = await methods.createWork('复核方法', ['复核示例']);
     const items = createWorkItems(root, files);
+    const flow = createFlow(files);
+    const definition: Definition = {
+      schemaVersion: 1,
+      inputs: ['materials'],
+      nodes: [
+        {
+          id: 'identity',
+          label: '保留输入',
+          kind: 'function',
+          operation: 'map',
+          functionName: 'identity',
+        },
+      ],
+      edges: [{ from: ['$input', 'materials'], to: ['identity', 'input'] }],
+      outputs: { output: ['identity', 'output'] },
+    };
+    const firstVersion = await flow.saveDraft(first.id, undefined, definition);
+    const secondVersion = await flow.saveDraft(
+      second.id,
+      undefined,
+      definition,
+    );
+    const application = await createApplication({ dataRoot: root });
     const item = await items.create({
       key: 'CVE-DEMO / 产品 A',
       title: '产品 A 影响调查',
       goal: '确认影响并形成有依据的结论',
-      workflowId: first.id,
       criteria: ['已确认影响范围'],
       materials: ['公告明确版本 1 受影响'],
     });
+    await application.composition.useMethod(
+      item.id,
+      item.revision,
+      first.id,
+      firstVersion,
+    );
     await assert.rejects(
       () =>
         items.create({
           key: item.key,
           title: '重复',
           goal: '重复',
-          workflowId: first.id,
           criteria: ['条件'],
           materials: [],
         }),
@@ -59,12 +89,23 @@ test('业务身份、完成依据和跨方法历史独立于运行', async () =>
     );
     await items.reopen(item.id, '收到新版本资料，需要重新核对');
     await items.addEvidence(item.id, ['新公告列出修复版本 2']);
-    await items.method(item.id, second.id);
+    await application.composition.useMethod(
+      item.id,
+      (await items.get(item.id)).revision,
+      second.id,
+      secondVersion,
+    );
     const reopened = await createWorkItems(root, createFiles(root)).get(
       item.id,
     );
     assert.equal(reopened.id, item.id);
-    assert.equal(reopened.workflowId, second.id);
+    assert.equal(reopened.workId, item.workId);
+    const current = await files.read(item.workId);
+    assert.equal(
+      (await files.readDefinition(item.workId, current.draftId!)).nodes[0].call!
+        .workId,
+      second.id,
+    );
     assert.deepEqual(
       reopened.materials.map((m) => m.id),
       ['M01', 'M02'],
@@ -73,9 +114,19 @@ test('业务身份、完成依据和跨方法历史独立于运行', async () =>
     assert.equal(reopened.criteria[0].met, false);
     assert.deepEqual(
       reopened.history.map((h) => h.kind),
-      ['created', 'criteria', 'completed', 'reopened', 'evidence', 'method'],
+      [
+        'created',
+        'method',
+        'criteria',
+        'completed',
+        'reopened',
+        'evidence',
+        'method',
+      ],
     );
     assert.equal((await items.list({ query: '产品 A' })).total, 1);
+    application.batches.close();
+    application.runs.close();
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -93,11 +144,11 @@ test('恢复两次文件写入之间的运行关联，重放业务提交只保�
       key: 'CASE-RECOVERY',
       title: '恢复例子',
       goal: '保留事实',
-      workflowId: method.id,
       materials: ['事项证据'],
       criteria: ['核验'],
     });
     const run: import('../src/shared/records.ts').Run = {
+      materials: [],
       id: 'persisted-before-link',
       definitionId: 'fixed-definition',
       scope: 'full',
@@ -123,7 +174,7 @@ test('恢复两次文件写入之间的运行关联，重放业务提交只保�
       id: 'phase',
       label: '调查',
       kind: 'milestone',
-      mode: 'all',
+
       milestone: { stage: '待核验', summary: '证据已整理' },
     };
     const input = {

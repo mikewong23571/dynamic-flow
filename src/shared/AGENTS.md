@@ -1,83 +1,28 @@
-# 少量共享记录
+# 共享合同
 
-## 快速定位
+共享只保存实际调用双方需要的记录、联合类型和纯函数；不import client/server，不建领域基类或schema平台。
 
-| 文件 | 内容 | 主要消费者 |
+| 入口 | 负责内容 | 调用方 |
 | --- | --- | --- |
-| `records.ts` | Work/WorkItem/Run/Definition/InputItem/NodeResult/Snapshot、模型配置与 ViewState | client 与 server 各业务模块 |
-| `expressions.ts` | 可序列化 Expression/Pattern/PureFunction 联合类型 | Inspector、作者工具、flow 检查与求值 |
-| `node-ports.ts` | nodeInputPorts/collectionFunction/expandedCollectionOutput 纯语义函数 | canvas/inspector、flow、runs |
+| records.ts | Work/WorkItem/Run/Definition、输入/结果/来源、模型目录、布局和运行记录 | 所有模块 |
+| expressions.ts、node-ports.ts | 有限表达式及真实具名端口/集合输出语义 | flow/runs/作者/画布 |
+| openui.ts | 官方OpenUI同源组件规范、原生程序检查、具名合并与只读记录声明 | Renderer及服务端保存/发布/作者 |
+| workitem-composition.ts | ItemWorkspace、固定Delivery、方法能力和联合检查回执 | 工作项服务、HTTP、客户端 |
+| workitem-conversations.ts、workitem-status.ts | 实际会话投影与业务/运行状态派生 | 客户端、工作项 |
+| expansion.ts | 保存展开的执行图投影 | flow/runs/画布 |
 
-改字段时同时核对生产、消费与旧文件重开；单模块内部类型留在模块内。验证按字段所属域从 [测试地图](../../tests/AGENTS.md) 选择，不另造一套只有类型能通过的 shared 测试。下文是关键合同，历史验收记录不代表本次运行结论。
+当前合同见[唯一处理流程](../../docs/workitem-openui-flow.md)。WorkItem只有workId/inputBindings/deliveries/uiProgram一个当前权威；Work拥有方法版本/运行/对话，ownerItemId区分私有与公共。公共方法uiProgramTemplate只在明确复用时复制，不成为工作项当前安排的双写副本。
 
-适用本目录。records.ts 已定义正式应用共用的 Definition、Work、Run、NodeResult、Comparison、Snapshot 和模型设置记录。
+Run保存固定Definition、输入、materials、实例、等待、事件和来源；后续编辑不改旧输入。成功不自动业务结项。InputItem.source是固定输出引用，inputSource是失败补跑的固定输入引用，二者不能混用。Run.retrySource关联旧失败Run；旧Run保持原事实。
 
-## 职责与目标
+普通agent/function明确operation map/flatMap/aggregate；call用map/aggregate及eachPort/广播；集合与控制节点按自身确定语义执行。没有mode或resultOutput专用解释。输出schema表达数据合同，OpenUI程序安排展示/交互，不承担图执行。
 
-让前后端和功能文件对定义、运行、输入来源、结果、比较与事件身份有一致理解。以当前 records.ts、实际调用双方和保存文件为准，只提取确需共享的类型；历史伪代码不作为当前字段合同。
+OpenUI source是唯一当前可写界面。库schema/prompt和记录索引只读派生；Delivery只冻结实际数据源、程序版本及rowKey合同，不另存可写presentation。任意JSON正文不因sourceId/evidence等字段名成为业务证据；明确材料、进展和条件引用在业务服务校验。
 
-## 非目标
+改字段必须同步生产者、消费者、持久化及真实测试；类型相容不能证明含义一致。保留来源、preview/commit、输入修订、条件依据和当前/历史版本的区别；不增加兼容别名来消除类型错误。
 
-不建领域基类、通用 Result/Entity 平台、schema 注册器、验证框架或公共工具杂物目录。单模块内部类型先留在本模块。
+模块验证按tests/AGENTS选择；当前唯一流程回归为workitem-unification.test.ts，OpenUI语法/渲染和模型/浏览器验证见当前track，历史计数不作为本次通过。
 
-## 依赖与交接
+业务可见性纠偏：动态界面贯穿处理过程。read_inputs复用resolveItemInputs；read_children复用已有summary；read_output以本项明确Run和Definition读取阶段产物，与正式Delivery分开。Details/Metric/DataTable只组织真实数据，字段/标签由Assistant安排；现有Records/Report保留固定交付与业务动作。新验证入口tests/workitem-visibility.test.ts、tests/browser/workitem-visibility.spec.ts，实际模型质量与视觉边界见当前track。
 
-TypeScript 类型与少量跨调用方共享的纯语义函数，无外部运行时依赖，不 import client/server。业务字段由使用该字段的模块共同确认，shared 不独自定义业务规则。
-
-## 已验证交接
-
-下文编号只是查阅索引：P 表示具体测试场景，T 表示完整用户验收路线；含义见 [术语与编号](../../docs/glossary.md)。
-
-- [x] 版本、冻结输入与比较有效性的实际读写一致（场景 P07/P14/P16）。
-- [x] 结果来源能跨运行保存与恢复，不只存可变材料引用（场景 P19/P21）。
-- [x] 事件身份定位实例，快照含实际定义，不串不同版本（场景 P30/P31）。
-- [x] 与实际调用方一同验证；类型通过只证明表达相容，不证明数据含义正确。
-
-## 假设与未知
-
-Node/端口、逐项/汇总来源和活动字段在真实执行、比较、HTTP/SSE 与文件恢复中联测，后续仍可按反例调整。不要把所有伪代码字段一次性变成刚性接口，也不要用 any 掩盖真实调用中的歧义；保留反例并同步相邻模块修订。
-
-节点联测使用“材料 → 分类值 → 报告输入”的具体例子，对齐模型业务输出、应用校验和来源包装；不要让调用方猜测 expectedOutput 或 InputItem.value。
-
-具体约定：InputItem 保存 sampleId、value、materialIds 和 sourceResultIds；NodeResult 绑定运行、版本、节点及实例；nodeTotals 是已知批次数。工作标题/归档与 ModelSettings/ModelConfiguration 支持 G1/G2；对外配置只返回 apiKeyConfigured，不返回 apiKey。测试见 tests/ 下模块及 integration。
-
-## 模型目录与选择记录
-
-ModelSelection（alias + 可选 effort）是目录选择的最小记录：全局默认存 ModelSettings.defaultSelection（同一份设置文件，允许"只有选择、尚无手动配置"的文件）；Work.modelSelections.assistant 是本工作对话覆盖，结构留 scope 位（workflow 预留未用）。ModelCatalogEntry/ModelCatalogProvider 是目录公开形状，只有 apiKeyConfigured/headersConfigured，不含密钥与请求头内容。EffectiveModel（source: work/default/manual/env + alias/model/effort）随 ChatMessage 与 NodeResult 可选保存，披露本次实际生效模型；旧数据无这些字段正常读取。NodeExecution.effectiveModel 由 executeNode 在请求开始固定后写入，runs 存进 NodeResult。
-
-产品级验证与边界见 [本轮验收证据](../../conductor/tracks/full-application_20260920/evidence.md)。
-
-## 持续工作项记录
-
-Work 保留方法与样本；WorkItem 是独立业务编号、目标、材料、完成条件和业务历史。ItemRunRef 同时带 workId/runId/definitionId，支持换方法保留历史。Run.workItem 为冻结输入，不跟随工作项后续补证据。RunWait/RunSignal 描述等待与去重消息；effectMode=preview 不提交业务里程碑。运行完成与 WorkItem.completed 分离；完成条件依据与结项时快照存入 ItemHistory.criteria，重开清除 met 但保留旧依据。具体字段与接口见 [生命周期交接](../../conductor/tracks/workitem-lifecycle_20260920/handoff.md)。
-
-## 纯表达式记录
-
-expressions.ts 仅定义 Expression / Pattern / PureFunction 可序列化联合类型；通过 FlowNode.expression 引用，不能携带函数、闭包或运行时实例。结构化编辑、作者工具、flow校验、runs求值共同遵循 [纯函数语义](../../docs/functional-ir.md)。WorkSummary 的 definitionState/nodeCount 为当页真实定义的派生摘要，不是独立可写状态。
-
-## 来源节点
-
-FlowNode.kind 增加 `file`：参数 `file.name` 指向工作 uploads 文件，无入边、输出 `output`（值为文件名，供下游 agent 节点用 Node 运行时读取），runs 不调模型直接产出；有 file 来源节点的定义允许 `inputs` 为空。材料与 `$input` 语义不变：钉死的数据走来源节点，按批换的数据走批次输入。
-
-## 集合端口
-
-node-ports.ts 集中 nodeInputPorts、collectionFunction、expandedCollectionOutput，避免客户端/校验/执行分别维护端口名单。FlowNode.inputNames 表达新 merge/collect 的有序端口，join 定义模式、两侧键路径与重复策略；旧无 inputNames merge 保持兼容。共享纯函数不代替 flow 的外部输入形状校验。具体例子及错误见 [多路组合](../../docs/multi-input.md)。
-
-## 画布展示状态
-
-ViewState.positions / viewport 保存节点位置与视口；可选 showPorts 保存端口显示偏好，可选 routing 保存 `{signature, routes}`。routes 以 `edge-${index}` 标识连线，每条路径为至少两个绝对坐标点。signature 由客户端按图结构、实际几何与节点位置生成，只用于检测路由是否过期；路由与偏好都不是 IR，也不影响输入端口顺序、定义版本或比较有效性。旧数据缺少可选字段仍可读取和保存，后端在 saveLayout 校验路由形状后保存。
-
-## 问题驱动的动态工作流
-
-`Definition.problem` 保存当前 framing/known/unknown/constraints/evidence 文本，随定义版本冻结；`FlowNode.contract` 描述 responsibility/done/rationale/semanticRole，不把文本完成条件当机器证明。`repeat` 是 map 步骤的有限迭代配置，`dynamic` 是有限局部子图规划。`Run.expansions` 保存实际子图；`NodeResult.purpose/iteration/intermediate/repeatDone` 区分规划、逐轮和最终结果。`expansion.ts` 仅将已记录展开投影成同一执行图，原 Definition 不变。具体边界见 [本轮合同](../../docs/semantic-workflow.md)。
-
-## 输入契约与 invoke 留痕（2026-09-21）
-
-Definition.inputContracts（端口 → InputContract{item?, required?, onInvalid?}）是严格入口的声明；未声明端口保持宽松。Run.invocation 记录 invoke 留痕（loose 豁免 / repairedPorts 修复）。旧数据无字段正常读取。
-
-
-## 工作项推进视图
-
-WorkItem.nextAction/blocker 可选，旧记录无需迁移。ItemHistory.kind=progress 保存 stage/nextAction/blocker、原 summary、材料和来源；origin 区分 agent/external，source.instanceId 关联普通执行实例。WorkItemProgressReport 是工作项动作与正式 Agent 回调共用输入，无来源的外部报告必须携带 expectedRevision。报告不等于验证或结项。
-
-WorkItemPage.summary 为筛选前全部工作项的 total/pending 与五种 effectiveStatus 数量；pending 不是持久状态。WorkItemView.execution.activeNodes 是固定 Run 定义与保存展开的只读摘要，含 id/label/responsibility?/parentLabel?。NodeExecution.scope/effectMode 从实际 Run 传入，限定普通 full/commit 工作项执行的报告工具范围；规划、比较和 preview 不授予写入。具体业务校验与验证在 work-items/assistant/runs。
+页面组合合同：Stack、Disclosure、Dialog与ActionButton的主次/禁用属性同源声明；@Each/数据函数使用官方SDK。组件的空title省略重复标题，表格selection与searchable显式开启工具。字段与对象身份仍来自实际数据及业务服务；详情/表单/布局组合不建立新的业务状态或领域页面。

@@ -28,7 +28,7 @@
   --color-accent-foreground: var(--ink);
   --color-destructive: var(--danger);
   --color-border: var(--line);
-  --color-input: var(--line);
+  --color-input: var(--control-border);
   --color-ring: var(--accent);
   --radius-sm: 4px;
   --radius-md: 6px;
@@ -49,10 +49,11 @@
   --ink: #ededed;
   --ink-strong: #ffffff;
   --muted: #a1a1a1;
-  --subtle: #666666;
+  --subtle: #929292;
   --line: rgba(255, 255, 255, 0.08);
   --line-strong: rgba(255, 255, 255, 0.16);
   --line-hover: rgba(255, 255, 255, 0.22);
+  --control-border: #707070;
   --paper: #0a0a0a;
   --surface: #141414;
   --hover: #1f1f1f;
@@ -63,6 +64,8 @@
   --success-soft: #10251a;
   --danger: #ff8080;
   --danger-soft: #2c1517;
+  --review: #c4b5fd;
+  --review-soft: #201b30;
   --warning: #f5c76b;
   --warning-soft: #2b2111;
   --accent-border: #1b3f66;
@@ -85,7 +88,11 @@
 /* 需压过 Tailwind 工具类的存量规则；原生控件迁移完成后随入口一并入层 */
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.45;
+  opacity: 1;
+  color: var(--muted);
+  background: var(--surface);
+  border-color: var(--control-border);
+  box-shadow: none;
 }
 button:focus-visible,
 a:focus-visible {
@@ -130,7 +137,7 @@ a:focus-visible {
     font-size: 13px;
     color: var(--ink);
     background: var(--canvas);
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--control-border);
     border-radius: 6px;
     padding: 8px 10px;
     min-width: 0;
@@ -175,7 +182,7 @@ a:focus-visible {
   :where(select:not([data-slot])) {
     color: var(--ink);
     background: var(--surface);
-    border: 1px solid var(--line);
+    border: 1px solid var(--control-border);
     border-radius: 6px;
     padding: 9px 10px;
     min-width: 0;
@@ -188,6 +195,14 @@ a:focus-visible {
   :where(select:not([data-slot])) {
     padding: 7px 28px 7px 9px;
     max-width: 100%;
+  }
+  /* Native popup menus need an opaque surface, including plain options inside NativeSelect. */
+  :where(select option, select optgroup) {
+    color: var(--ink);
+    background-color: var(--paper);
+  }
+  :where(select option:disabled, select optgroup:disabled) {
+    color: GrayText;
   }
   input[type='checkbox'] {
     accent-color: var(--accent);
@@ -228,80 +243,46 @@ a:focus-visible {
     margin: 0 0 22px;
   }
 }
-/* 兼容层覆盖（.badge / .definition-state）：随兼容层退役前保持未分层 */
-.badge {
+/* 共享状态与元信息：图标、无边框文字、语义色由此统一维护。 */
+.badge,
+.status-label {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  border: 1px solid var(--line);
-  border-radius: 5px;
-  padding: 3px 7px;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
   color: var(--muted);
-  background: var(--surface);
+  background: transparent;
   white-space: nowrap;
   font-size: 11px;
   line-height: 1.4;
 }
-.badge.candidate {
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-color: var(--line);
+.status-label svg {
+  flex-shrink: 0;
 }
-.badge.completed {
+.status-label.completed,
+.status-label.adopted {
   color: var(--success);
-  background: var(--success-soft);
-  border-color: var(--success-border);
 }
-.badge.running,
-.badge.queued {
+.status-label.running,
+.status-label.queued {
   color: var(--accent);
-  background: var(--accent-soft);
-  border-color: var(--accent-border);
 }
-.badge.failed,
-.badge.blocked {
+.status-label.review {
+  color: var(--review);
+}
+.status-label.failed,
+.status-label.blocked,
+.status-label.attention {
   color: var(--danger);
-  background: var(--danger-soft);
-  border-color: var(--danger-border);
 }
-.badge.stopping,
-.badge.interrupted {
+.status-label.stopping,
+.status-label.interrupted,
+.status-label.waiting,
+.status-label.changed,
+.status-label.candidate {
   color: var(--warning);
-  background: var(--warning-soft);
-  border-color: var(--warning-border);
-}
-.badge.cancelled {
-  color: var(--muted);
-  background: var(--surface);
-}
-/* 工作项业务状态；与上面的运行状态同族，集中在这里维护 */
-.badge.waiting {
-  color: var(--warning);
-  background: var(--warning-soft);
-}
-.badge.attention {
-  color: var(--danger);
-  background: var(--danger-soft);
-}
-.badge.open {
-  color: var(--muted);
-  background: var(--surface);
-}
-/* 流水线定义状态：已采用沿用成功色，有新草稿沿用警告色 */
-.definition-state {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 400;
-}
-.definition-state.definition-adopted {
-  color: var(--success);
-  border-color: var(--success-soft);
-  background: var(--success-soft);
-}
-.definition-state.definition-changed {
-  color: var(--warning);
-  border-color: var(--warning-soft);
-  background: var(--warning-soft);
 }
 @layer components {
   .app-shell {
@@ -581,44 +562,16 @@ a:focus-visible {
     flex-direction: column;
     background: var(--paper);
   }
-  .workspace-header {
-    min-height: 68px;
+  .workspace-tab-panel {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 12px 24px;
-    border-bottom: 1px solid var(--line);
-  }
-  .work-title {
+    flex-direction: column;
+    flex: 1;
     min-width: 0;
-  }
-  .eyebrow {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.11em;
-    font-weight: 600;
-  }
-  .work-title h1 {
-    font-size: 18px;
-    line-height: 1.6;
-    letter-spacing: -0.025em;
-    white-space: nowrap;
+    min-height: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: 3px;
-    max-width: 600px;
   }
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: none;
-  }
-  .header-actions select {
-    font-size: 11px;
-    border-color: transparent;
-    max-width: 128px;
+  .workspace-tab-panel[hidden] {
+    display: none;
   }
   .saved {
     color: var(--muted);
@@ -627,62 +580,6 @@ a:focus-visible {
     align-items: center;
     gap: 5px;
     white-space: nowrap;
-  }
-  .workspace-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 46px;
-    padding: 0 20px;
-    border-bottom: 1px solid var(--line);
-  }
-  .tabs {
-    display: flex;
-    gap: 18px;
-    height: 46px;
-  }
-  .tabs button {
-    background: none;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    color: var(--muted);
-    padding: 0 5px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 12px;
-  }
-  .tabs button[aria-selected='true'] {
-    border-bottom-color: var(--ink);
-    color: var(--ink);
-    font-weight: 500;
-  }
-  .tabs button > span {
-    background: var(--surface);
-    color: var(--muted);
-    font-size: 10px;
-    border-radius: 4px;
-    padding: 1px 5px;
-  }
-  .bar-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .workspace-content {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    min-width: 0;
-  }
-  .main-content {
-    min-width: 0;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background: var(--paper);
-    overflow: hidden;
   }
   .canvas-toolbar {
     min-height: 48px;
@@ -791,22 +688,6 @@ a:focus-visible {
     font-size: 10px;
     min-height: 25px;
   }
-  .node-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-variant-numeric: tabular-nums;
-  }
-  .node-status.completed {
-    color: var(--success);
-  }
-  .node-status.running {
-    color: var(--accent);
-  }
-  .node-status.failed,
-  .node-status.blocked {
-    color: var(--danger);
-  }
   .node-final {
     margin-left: 8px;
     padding-left: 8px;
@@ -856,52 +737,6 @@ a:focus-visible {
   border-color: var(--accent);
 }
 @layer components {
-  .context-panel {
-    width: 342px;
-    flex: none;
-    display: flex;
-    flex-direction: column;
-    border-left: 1px solid var(--line);
-    background: var(--paper);
-    min-height: 0;
-    position: relative;
-  }
-  .panel-resize-handle {
-    position: absolute;
-    left: -3px;
-    top: 0;
-    bottom: 0;
-    width: 7px;
-    cursor: col-resize;
-    z-index: 5;
-  }
-  .panel-resize-handle:hover,
-  .panel-resize-handle:active {
-    background: color-mix(in srgb, var(--accent) 35%, transparent);
-  }
-  .panel-tabs {
-    display: flex;
-    height: 48px;
-    flex: none;
-    gap: 18px;
-    padding: 0 22px;
-    border-bottom: 1px solid var(--line);
-  }
-  .panel-tabs button {
-    border: 0;
-    border-bottom: 2px solid transparent;
-    background: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .panel-tabs button.selected {
-    color: var(--ink);
-    border-bottom-color: var(--ink);
-    font-weight: 500;
-  }
   .scroll {
     overflow: auto;
     min-height: 0;
@@ -1032,12 +867,14 @@ a:focus-visible {
   }
 }
 .thread {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
 }
 .chat-scroll {
+  min-height: 0;
   overflow: auto;
   flex: 1;
   padding: 20px;
@@ -1134,7 +971,7 @@ a:focus-visible {
     margin-bottom: 28px;
     font-size: 14px;
   }
-  .empty {
+  .empty-state {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1145,13 +982,13 @@ a:focus-visible {
     min-height: 180px;
     text-align: center;
   }
-  .empty h3 {
+  .empty-state h3 {
     font-size: 19px;
     letter-spacing: -0.035em;
     font-weight: 500;
     color: var(--muted);
   }
-  .empty p {
+  .empty-state p {
     color: var(--muted);
     font-size: 12px;
     max-width: 390px;
@@ -1325,6 +1162,39 @@ a:focus-visible {
     border-radius: 7px;
     padding: 20px;
     overflow: auto;
+  }
+  .run-business-context {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    padding: 12px 0 20px;
+    font-size: 12px;
+  }
+  .run-business-title {
+    min-width: 0;
+    flex: 1 1 260px;
+  }
+  .run-business-title strong {
+    display: block;
+    line-height: 1.6;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .run-business-title small {
+    display: block;
+    max-width: 64ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .run-business-context > span {
+    color: var(--muted);
+    line-height: 1.6;
   }
   .results-view {
     display: flex;
@@ -1642,25 +1512,8 @@ a:focus-visible {
       padding-left: 12px;
       padding-right: 12px;
     }
-    .context-panel {
-      width: 302px;
-    }
-    .workspace-header {
-      padding: 17px 21px;
-      min-height: 68px;
-    }
-    .work-title h1 {
-      max-width: 330px;
-      font-size: 16px;
-    }
     .saved {
       display: none;
-    }
-    .header-actions {
-      gap: 6px;
-    }
-    .header-actions select {
-      max-width: 111px;
     }
     .canvas-toolbar {
       padding: 12px;
@@ -1673,24 +1526,11 @@ a:focus-visible {
     padding: 6px;
   }
   @layer components {
-    .workspace-bar {
-      padding: 0 16px;
-    }
-    .tabs {
-      gap: 11px;
-    }
-    .tabs button {
-      font-size: 11px;
-    }
   }
   .bar-actions .badge {
     font-size: 9px;
   }
   @layer components {
-    .panel-tabs {
-      padding: 0 18px;
-      gap: 14px;
-    }
     .inspector {
       padding: 22px 18px;
     }
@@ -1723,20 +1563,6 @@ a:focus-visible {
     .sidebar {
       width: 192px;
     }
-    .context-panel {
-      width: 284px;
-    }
-    .workspace-header {
-      gap: 10px;
-      padding: 15px 16px;
-    }
-    .work-title h1 {
-      max-width: 245px;
-    }
-    .header-actions select {
-      max-width: 100px;
-      font-size: 10px;
-    }
   }
   .header-actions .button {
     font-size: 11px;
@@ -1759,18 +1585,6 @@ a:focus-visible {
     gap: 0;
   }
   @layer components {
-    .bar-actions {
-      gap: 2px;
-    }
-    .workspace-bar {
-      padding: 0 12px;
-    }
-    .tabs {
-      gap: 5px;
-    }
-    .tabs button {
-      padding: 0 3px;
-    }
     .candidate-bar {
       gap: 6px;
       padding: 9px 12px;
@@ -1780,13 +1594,6 @@ a:focus-visible {
     }
     .candidate-bar > div > span:last-child {
       max-width: 24vw;
-    }
-    .panel-tabs {
-      gap: 12px;
-      padding: 0 15px;
-    }
-    .panel-tabs button {
-      font-size: 11px;
     }
     .inspector {
       padding: 20px 17px;
@@ -1811,6 +1618,7 @@ a:focus-visible {
 }
 /* Assistant messages keep request context and saved effects next to the reply. */
 .assistant-context {
+  flex: none;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -2042,6 +1850,7 @@ a:focus-visible {
   color: var(--muted);
 }
 .composer {
+  flex: none;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -2130,7 +1939,7 @@ a:focus-visible {
   min-width: 430px;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12px;
+  font-size: var(--prose-table-font-size, 12px);
   line-height: 1.75;
 }
 .markdown-table-scroll th {
@@ -2424,4 +2233,16 @@ a:focus-visible {
   .catalog-model-editor-head + .settings-grid {
     margin-top: 10px;
   }
+}
+
+/* The same Assistant keeps its composer when the work-item side panel docks. */
+.chat-scroll[hidden] {
+  display: none;
+}
+.thread[data-presentation='composer'] .composer {
+  margin: 0 16px 12px;
+}
+.thread[data-presentation='composer'] .composer textarea {
+  min-height: 40px;
+  max-height: 160px;
 }

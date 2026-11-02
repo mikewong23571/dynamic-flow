@@ -1,0 +1,624 @@
+{
+  "finished": {
+    "id": "237a0e38-bffd-41cd-b95f-4d384386c392",
+    "key": "WI-20261022-adf153",
+    "title": "真实验收 · 客户反馈整理",
+    "goal": "整理客户反馈，分类并形成有原文依据的建议；明确报告实际覆盖范围。",
+    "data": {},
+    "revision": 13,
+    "materials": [
+      {
+        "id": "M01",
+        "text": "界面很顺手，但导出报告经常失败，影响交付。"
+      },
+      {
+        "id": "M02",
+        "text": "希望支持批量导出，逐条操作太慢。"
+      },
+      {
+        "id": "M03",
+        "text": "搜索比以前快很多，团队很满意。"
+      }
+    ],
+    "criteria": [
+      {
+        "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+        "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围；未处理 M02",
+        "met": true,
+        "evidence": "报告明确只收到两条分类记录，引用导出失败和搜索改善原文；M02 批量导出需求尚未处理，本次完成范围仅为选定两条。",
+        "references": [
+          {
+            "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+            "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+            "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+            "resultId": "11aad442-8327-4e3e-95cd-460a270a0be4",
+            "label": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+            "nodeId": "report",
+            "instanceId": "report:all:0"
+          }
+        ]
+      }
+    ],
+    "status": "completed",
+    "stage": "已结项",
+    "summary": "所有完成条件已确认并记录依据。",
+    "runs": [
+      {
+        "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+        "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+        "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9"
+      },
+      {
+        "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+        "runId": "28dd0280-348f-454c-8346-6227f6286f0d",
+        "definitionId": "84fc3677-d668-47af-972b-18d51353a68f"
+      },
+      {
+        "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+        "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+        "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf"
+      }
+    ],
+    "history": [
+      {
+        "id": "87501f25-b80a-4aa8-9e75-748ea12b6770",
+        "at": "2026-10-22T11:55:46.712Z",
+        "kind": "created",
+        "summary": "登记工作项：真实验收 · 客户反馈整理"
+      },
+      {
+        "id": "cba14464-fb1d-4064-9bf5-b356adeffa04",
+        "at": "2026-10-22T11:55:47.009Z",
+        "kind": "method",
+        "summary": "建立处理方法"
+      },
+      {
+        "id": "857a23f4-0be9-44d2-b274-dd85ec86f330",
+        "at": "2026-10-22T11:58:41.111Z",
+        "kind": "run",
+        "summary": "发起正式推进",
+        "source": {
+          "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+          "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+          "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9"
+        }
+      },
+      {
+        "id": "progress:[\"ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d\",\"classify:M01:0\",\"call_9f9cfa2c02e848f09b8511f0\"]",
+        "at": "2026-10-22T11:59:10.113Z",
+        "kind": "progress",
+        "summary": "已对本次输入的唯一反馈 M01 完成分类：原文逐字保留，判定为“问题”，依据为导出报告经常失败并影响交付的功能缺陷（含正面修饰但主体为问题）。",
+        "origin": "agent",
+        "progress": {
+          "stage": "逐条分类",
+          "nextAction": "等待汇总节点整合各条分类结果形成报告"
+        },
+        "source": {
+          "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+          "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+          "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9",
+          "nodeId": "classify",
+          "instanceId": "classify:M01:0"
+        },
+        "materialIds": [
+          "M01"
+        ]
+      },
+      {
+        "id": "8ade2887-0d00-484d-a902-adde5ba422a4",
+        "at": "2026-10-22T12:18:43.770Z",
+        "kind": "run",
+        "summary": "发起正式推进",
+        "source": {
+          "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+          "runId": "28dd0280-348f-454c-8346-6227f6286f0d",
+          "definitionId": "84fc3677-d668-47af-972b-18d51353a68f"
+        }
+      },
+      {
+        "id": "progress:[\"28dd0280-348f-454c-8346-6227f6286f0d\",\"report:all:0\",\"call_3b539827b51d48de9185b6d8\"]",
+        "at": "2026-10-22T12:19:23.806Z",
+        "kind": "progress",
+        "summary": "已将本次输入的 2 条分类结果（M01 问题、M03 称赞，需求类 0 条）整批汇总为 Markdown 报告，含逐条原文引用、有依据的改进建议及覆盖范围声明（2/2 全覆盖）。",
+        "origin": "agent",
+        "progress": {
+          "stage": "汇总报告完成",
+          "nextAction": "输出最终 Markdown 汇总报告并等待用户验收。"
+        },
+        "source": {
+          "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+          "runId": "28dd0280-348f-454c-8346-6227f6286f0d",
+          "definitionId": "84fc3677-d668-47af-972b-18d51353a68f",
+          "nodeId": "report",
+          "instanceId": "report:all:0"
+        },
+        "materialIds": [
+          "M01",
+          "M03"
+        ]
+      },
+      {
+        "id": "a46358b3-1f5f-4be5-ba1d-443ef828bb86",
+        "at": "2026-10-22T12:22:47.082Z",
+        "kind": "method",
+        "summary": "建立处理方法"
+      },
+      {
+        "id": "e9250fad-1dc8-4825-9713-917045bb9ceb",
+        "at": "2026-10-22T12:27:54.576Z",
+        "kind": "run",
+        "summary": "发起正式推进",
+        "source": {
+          "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+          "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+          "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf"
+        }
+      },
+      {
+        "id": "progress:[\"24b60bc4-21e5-40a1-b55f-7766a43c41e6\",\"report:all:0\",\"call_41a08dff96dc4c82bb2bdf67\"]",
+        "at": "2026-10-22T12:28:11.658Z",
+        "kind": "progress",
+        "summary": "整批接收 2 条已完成分类记录（M03 称赞、M01 问题），原文已与材料核对一致，生成按类别分组、逐字引用原文并声明实际覆盖范围的 Markdown 验收报告。",
+        "origin": "agent",
+        "progress": {
+          "stage": "验收报告已生成",
+          "nextAction": "等待用户验收确认；如后续补充新记录可按同一格式增补报告。"
+        },
+        "source": {
+          "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+          "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+          "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+          "nodeId": "report",
+          "instanceId": "report:all:0"
+        },
+        "materialIds": [
+          "M01",
+          "M03"
+        ]
+      },
+      {
+        "id": "19812393-78e4-4de1-9099-af69dd949223",
+        "at": "2026-10-22T12:29:52.994Z",
+        "kind": "criteria",
+        "summary": "保存完成条件 0 / 1",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围",
+            "met": false,
+            "evidence": ""
+          }
+        ]
+      },
+      {
+        "id": "17ffb756-4f73-4f0e-9fba-1b8adf87ac61",
+        "at": "2026-10-22T12:29:53.155Z",
+        "kind": "criteria",
+        "summary": "保存完成条件 1 / 1",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围",
+            "met": true,
+            "evidence": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+            "references": [
+              {
+                "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+                "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+                "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+                "resultId": "11aad442-8327-4e3e-95cd-460a270a0be4",
+                "label": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+                "nodeId": "report",
+                "instanceId": "report:all:0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "af33f4e1-dddc-4bab-9f75-1f476d619e0c",
+        "at": "2026-10-22T12:29:53.241Z",
+        "kind": "criteria",
+        "summary": "保存完成条件 0 / 1",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围；未处理 M02",
+            "met": false,
+            "evidence": ""
+          }
+        ]
+      },
+      {
+        "id": "99016128-2e11-443d-bbfc-5064d0365f8b",
+        "at": "2026-10-22T12:29:53.440Z",
+        "kind": "criteria",
+        "summary": "保存完成条件 1 / 1",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围；未处理 M02",
+            "met": true,
+            "evidence": "报告明确只收到两条分类记录，引用导出失败和搜索改善原文；M02 批量导出需求尚未处理，本次完成范围仅为选定两条。",
+            "references": [
+              {
+                "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+                "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+                "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+                "resultId": "11aad442-8327-4e3e-95cd-460a270a0be4",
+                "label": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+                "nodeId": "report",
+                "instanceId": "report:all:0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bad3f64b-d78c-4af0-89fb-32ca607a9d52",
+        "at": "2026-10-22T12:29:53.509Z",
+        "kind": "completed",
+        "summary": "所有完成条件已确认并记录依据。",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围；未处理 M02",
+            "met": true,
+            "evidence": "报告明确只收到两条分类记录，引用导出失败和搜索改善原文；M02 批量导出需求尚未处理，本次完成范围仅为选定两条。",
+            "references": [
+              {
+                "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+                "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+                "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+                "resultId": "11aad442-8327-4e3e-95cd-460a270a0be4",
+                "label": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+                "nodeId": "report",
+                "instanceId": "report:all:0"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "createdAt": "2026-10-22T11:55:46.711Z",
+    "updatedAt": "2026-10-22T12:29:53.509Z",
+    "progressAt": "2026-10-22T12:29:53.509Z",
+    "workflowId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+    "effectiveStatus": "completed",
+    "execution": {
+      "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+      "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+      "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+      "status": "completed",
+      "waits": [],
+      "inputRevision": 6,
+      "activeNodes": []
+    }
+  },
+  "reopened": {
+    "id": "237a0e38-bffd-41cd-b95f-4d384386c392",
+    "key": "WI-20261022-adf153",
+    "title": "真实验收 · 客户反馈整理",
+    "goal": "整理客户反馈，分类并形成有原文依据的建议；明确报告实际覆盖范围。",
+    "data": {},
+    "revision": 15,
+    "materials": [
+      {
+        "id": "M01",
+        "text": "界面很顺手，但导出报告经常失败，影响交付。"
+      },
+      {
+        "id": "M02",
+        "text": "希望支持批量导出，逐条操作太慢。"
+      },
+      {
+        "id": "M03",
+        "text": "搜索比以前快很多，团队很满意。"
+      },
+      {
+        "id": "M04",
+        "text": "新增反馈：批量下载需要重试"
+      }
+    ],
+    "criteria": [
+      {
+        "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+        "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围；未处理 M02",
+        "met": false,
+        "evidence": "报告明确只收到两条分类记录，引用导出失败和搜索改善原文；M02 批量导出需求尚未处理，本次完成范围仅为选定两条。",
+        "references": [
+          {
+            "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+            "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+            "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+            "resultId": "11aad442-8327-4e3e-95cd-460a270a0be4",
+            "label": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+            "nodeId": "report",
+            "instanceId": "report:all:0"
+          }
+        ]
+      }
+    ],
+    "status": "open",
+    "stage": "待重新评估",
+    "summary": "收到新增反馈，继续核查；保留本次两条反馈报告及结项依据。",
+    "runs": [
+      {
+        "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+        "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+        "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9"
+      },
+      {
+        "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+        "runId": "28dd0280-348f-454c-8346-6227f6286f0d",
+        "definitionId": "84fc3677-d668-47af-972b-18d51353a68f"
+      },
+      {
+        "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+        "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+        "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf"
+      }
+    ],
+    "history": [
+      {
+        "id": "87501f25-b80a-4aa8-9e75-748ea12b6770",
+        "at": "2026-10-22T11:55:46.712Z",
+        "kind": "created",
+        "summary": "登记工作项：真实验收 · 客户反馈整理"
+      },
+      {
+        "id": "cba14464-fb1d-4064-9bf5-b356adeffa04",
+        "at": "2026-10-22T11:55:47.009Z",
+        "kind": "method",
+        "summary": "建立处理方法"
+      },
+      {
+        "id": "857a23f4-0be9-44d2-b274-dd85ec86f330",
+        "at": "2026-10-22T11:58:41.111Z",
+        "kind": "run",
+        "summary": "发起正式推进",
+        "source": {
+          "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+          "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+          "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9"
+        }
+      },
+      {
+        "id": "progress:[\"ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d\",\"classify:M01:0\",\"call_9f9cfa2c02e848f09b8511f0\"]",
+        "at": "2026-10-22T11:59:10.113Z",
+        "kind": "progress",
+        "summary": "已对本次输入的唯一反馈 M01 完成分类：原文逐字保留，判定为“问题”，依据为导出报告经常失败并影响交付的功能缺陷（含正面修饰但主体为问题）。",
+        "origin": "agent",
+        "progress": {
+          "stage": "逐条分类",
+          "nextAction": "等待汇总节点整合各条分类结果形成报告"
+        },
+        "source": {
+          "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+          "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+          "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9",
+          "nodeId": "classify",
+          "instanceId": "classify:M01:0"
+        },
+        "materialIds": [
+          "M01"
+        ]
+      },
+      {
+        "id": "8ade2887-0d00-484d-a902-adde5ba422a4",
+        "at": "2026-10-22T12:18:43.770Z",
+        "kind": "run",
+        "summary": "发起正式推进",
+        "source": {
+          "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+          "runId": "28dd0280-348f-454c-8346-6227f6286f0d",
+          "definitionId": "84fc3677-d668-47af-972b-18d51353a68f"
+        }
+      },
+      {
+        "id": "progress:[\"28dd0280-348f-454c-8346-6227f6286f0d\",\"report:all:0\",\"call_3b539827b51d48de9185b6d8\"]",
+        "at": "2026-10-22T12:19:23.806Z",
+        "kind": "progress",
+        "summary": "已将本次输入的 2 条分类结果（M01 问题、M03 称赞，需求类 0 条）整批汇总为 Markdown 报告，含逐条原文引用、有依据的改进建议及覆盖范围声明（2/2 全覆盖）。",
+        "origin": "agent",
+        "progress": {
+          "stage": "汇总报告完成",
+          "nextAction": "输出最终 Markdown 汇总报告并等待用户验收。"
+        },
+        "source": {
+          "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+          "runId": "28dd0280-348f-454c-8346-6227f6286f0d",
+          "definitionId": "84fc3677-d668-47af-972b-18d51353a68f",
+          "nodeId": "report",
+          "instanceId": "report:all:0"
+        },
+        "materialIds": [
+          "M01",
+          "M03"
+        ]
+      },
+      {
+        "id": "a46358b3-1f5f-4be5-ba1d-443ef828bb86",
+        "at": "2026-10-22T12:22:47.082Z",
+        "kind": "method",
+        "summary": "建立处理方法"
+      },
+      {
+        "id": "e9250fad-1dc8-4825-9713-917045bb9ceb",
+        "at": "2026-10-22T12:27:54.576Z",
+        "kind": "run",
+        "summary": "发起正式推进",
+        "source": {
+          "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+          "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+          "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf"
+        }
+      },
+      {
+        "id": "progress:[\"24b60bc4-21e5-40a1-b55f-7766a43c41e6\",\"report:all:0\",\"call_41a08dff96dc4c82bb2bdf67\"]",
+        "at": "2026-10-22T12:28:11.658Z",
+        "kind": "progress",
+        "summary": "整批接收 2 条已完成分类记录（M03 称赞、M01 问题），原文已与材料核对一致，生成按类别分组、逐字引用原文并声明实际覆盖范围的 Markdown 验收报告。",
+        "origin": "agent",
+        "progress": {
+          "stage": "验收报告已生成",
+          "nextAction": "等待用户验收确认；如后续补充新记录可按同一格式增补报告。"
+        },
+        "source": {
+          "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+          "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+          "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+          "nodeId": "report",
+          "instanceId": "report:all:0"
+        },
+        "materialIds": [
+          "M01",
+          "M03"
+        ]
+      },
+      {
+        "id": "19812393-78e4-4de1-9099-af69dd949223",
+        "at": "2026-10-22T12:29:52.994Z",
+        "kind": "criteria",
+        "summary": "保存完成条件 0 / 1",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围",
+            "met": false,
+            "evidence": ""
+          }
+        ]
+      },
+      {
+        "id": "17ffb756-4f73-4f0e-9fba-1b8adf87ac61",
+        "at": "2026-10-22T12:29:53.155Z",
+        "kind": "criteria",
+        "summary": "保存完成条件 1 / 1",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围",
+            "met": true,
+            "evidence": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+            "references": [
+              {
+                "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+                "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+                "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+                "resultId": "11aad442-8327-4e3e-95cd-460a270a0be4",
+                "label": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+                "nodeId": "report",
+                "instanceId": "report:all:0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "af33f4e1-dddc-4bab-9f75-1f476d619e0c",
+        "at": "2026-10-22T12:29:53.241Z",
+        "kind": "criteria",
+        "summary": "保存完成条件 0 / 1",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围；未处理 M02",
+            "met": false,
+            "evidence": ""
+          }
+        ]
+      },
+      {
+        "id": "99016128-2e11-443d-bbfc-5064d0365f8b",
+        "at": "2026-10-22T12:29:53.440Z",
+        "kind": "criteria",
+        "summary": "保存完成条件 1 / 1",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围；未处理 M02",
+            "met": true,
+            "evidence": "报告明确只收到两条分类记录，引用导出失败和搜索改善原文；M02 批量导出需求尚未处理，本次完成范围仅为选定两条。",
+            "references": [
+              {
+                "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+                "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+                "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+                "resultId": "11aad442-8327-4e3e-95cd-460a270a0be4",
+                "label": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+                "nodeId": "report",
+                "instanceId": "report:all:0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bad3f64b-d78c-4af0-89fb-32ca607a9d52",
+        "at": "2026-10-22T12:29:53.509Z",
+        "kind": "completed",
+        "summary": "所有完成条件已确认并记录依据。",
+        "criteria": [
+          {
+            "id": "991eca8f-12fa-4a78-ad33-883577b47fa0",
+            "text": "报告保留所选两条反馈原文与分类，明确本次覆盖范围；未处理 M02",
+            "met": true,
+            "evidence": "报告明确只收到两条分类记录，引用导出失败和搜索改善原文；M02 批量导出需求尚未处理，本次完成范围仅为选定两条。",
+            "references": [
+              {
+                "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+                "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+                "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+                "resultId": "11aad442-8327-4e3e-95cd-460a270a0be4",
+                "label": "分类成果报告 · 第 3 轮 · 生成分类成果报告",
+                "nodeId": "report",
+                "instanceId": "report:all:0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "e9bf4ea8-d32d-453a-82b2-fe1abf9d0987",
+        "at": "2026-10-22T12:29:53.775Z",
+        "kind": "reopened",
+        "summary": "收到新增反馈，继续核查；保留本次两条反馈报告及结项依据。"
+      },
+      {
+        "id": "359b11d1-8924-4bfc-b402-d990063ee72d",
+        "at": "2026-10-22T12:29:54.012Z",
+        "kind": "evidence",
+        "summary": "补充 1 条证据",
+        "materialIds": [
+          "M04"
+        ]
+      }
+    ],
+    "createdAt": "2026-10-22T11:55:46.711Z",
+    "updatedAt": "2026-10-22T12:29:54.012Z",
+    "progressAt": "2026-10-22T12:29:54.012Z",
+    "workflowId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+    "effectiveStatus": "open",
+    "execution": {
+      "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+      "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+      "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+      "status": "completed",
+      "waits": [],
+      "inputRevision": 6,
+      "activeNodes": []
+    }
+  },
+  "errors": [],
+  "measurements": [
+    {
+      "action": "打开工作项至成果动作可见",
+      "ms": 202
+    },
+    {
+      "action": "来源返回至报告动作可见",
+      "ms": 75
+    }
+  ]
+}

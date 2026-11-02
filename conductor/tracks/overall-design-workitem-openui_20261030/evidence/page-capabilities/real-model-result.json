@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-02",
+  "itemId": "0daa2a26-b002-4ea8-8c87-b4c9ff3a5b5f",
+  "origin": "natural business request; no prewritten definition or UI",
+  "model": "DeepSeek V4 Flash / high",
+  "feedbackRounds": 2,
+  "inputOperation": {
+    "beforeProgramId": "4a248007-48de-4c6e-b793-55bd98c73bbe",
+    "afterProgramId": "4a248007-48de-4c6e-b793-55bd98c73bbe",
+    "programUnchanged": true,
+    "oldRunUnchanged": true,
+    "submittedValue": {
+      "kind": "supplement",
+      "service": "服务乙",
+      "owner": "周宁",
+      "version": "2.2",
+      "deploymentChecklist": true,
+      "note": "补交服务乙版本2.2部署清单：包含部署步骤、配置项和回滚步骤，供本项资料核对使用。"
+    },
+    "runs": [
+      {
+        "id": "efd0efad-d63d-40e3-a071-5380f264f4a6",
+        "status": "completed"
+      },
+      {
+        "id": "3cae9f3e-5ba0-47d0-a1e6-3a30f34c55bb",
+        "status": "completed"
+      }
+    ]
+  },
+  "presentationRefinement": {
+    "programId": "9ce1f6c9-d5e4-4a35-a777-a1a9f46a100e",
+    "definitionUnchanged": true,
+    "runsUnchanged": true,
+    "inputsUnchanged": true,
+    "criteriaUnchanged": true
+  },
+  "businessStatus": "open",
+  "criteriaMet": 0,
+  "initialToolFailures": [
+    {
+      "tool": "save_ui_program",
+      "error": "{\"error\":\"界面已变化，请重新读取。\",\"code\":\"UI_PROGRAM_CONFLICT\"}"
+    },
+    {
+      "tool": "save_ui_program",
+      "error": "{\"error\":\"工作项版本已变化，请读取最新状态后重试。\",\"code\":\"REVISION_CONFLICT\"}"
+    },
+    {
+      "tool": "save_ui_program",
+      "error": "{\"error\":\"界面已变化，请重新读取。\",\"code\":\"UI_PROGRAM_CONFLICT\"}"
+    },
+    {
+      "tool": "save_ui_program",
+      "error": "{\"error\":\"界面已变化，请重新读取。\",\"code\":\"UI_PROGRAM_CONFLICT\"}"
+    },
+    {
+      "tool": "publish_delivery",
+      "error": "{\"error\":\"当前程序没有声明该输出。\",\"code\":\"DELIVERY_OUTPUT_MISSING\"}"
+    }
+  ]
+}

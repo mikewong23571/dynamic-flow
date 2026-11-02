@@ -65,6 +65,7 @@ export function CanvasPane({
             <option value="dynamic">局部动态展开</option>
             <option value="branch">条件分流</option>
             <option value="wait">等待事件</option>
+            <option value="create-items">建立子项</option>
             <option value="milestone">业务里程碑</option>
           </select>
           <Button onClick={addNode}>

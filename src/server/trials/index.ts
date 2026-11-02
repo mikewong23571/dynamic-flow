@@ -1,9 +1,15 @@
+import { nodeOperation } from '../../shared/node-ports.ts';
+import { readRunSamples } from '../work/run-samples.ts';
 import { randomUUID } from 'node:crypto';
 import type { FileStore } from '../files/index.ts';
 import type { RunService } from '../runs/index.ts';
 import { nodeInputPorts, validateInputs } from '../runs/index.ts';
 import { validateForRun } from '../flow/index.ts';
-import type { Comparison, Inputs } from '../../shared/records.ts';
+import type {
+  Comparison,
+  Inputs,
+  RunSampleSource,
+} from '../../shared/records.ts';
 export function createTrials(files: FileStore, runs: RunService) {
   const jobs = new Map<string, Promise<void>>();
   async function compare(
@@ -13,6 +19,7 @@ export function createTrials(files: FileStore, runs: RunService) {
       candidateId: string;
       nodeId: string;
       inputs: Inputs;
+      sampleSource?: RunSampleSource;
     },
   ) {
     const id = randomUUID();
@@ -30,20 +37,31 @@ export function createTrials(files: FileStore, runs: RunService) {
       if (!oldNode || !newNode)
         throw Error('所选节点不在两个版本中，请重新选择比较范围。');
       if (
-        oldNode.mode !== newNode.mode ||
+        nodeOperation(oldNode) !== nodeOperation(newNode) ||
         JSON.stringify(nodeInputPorts(oldNode)) !==
           JSON.stringify(nodeInputPorts(newNode))
       )
         throw Error(
           '两个版本的执行模式或输入端口不同，不能对齐比较。请调整节点或重新选择范围。',
         );
-      validateInputs(options.inputs, nodeInputPorts(newNode));
+      const prepared = options.sampleSource
+        ? readRunSamples(work, options.sampleSource, options.nodeId)
+        : {
+            inputs: options.inputs,
+            workItem: undefined,
+            inputSources: undefined,
+            sampleSource: undefined,
+          };
+      validateInputs(prepared.inputs, nodeInputPorts(newNode));
       const comparison: Comparison = {
         id,
         baselineId,
         candidateId: options.candidateId,
         nodeId: options.nodeId,
-        frozenInputs: structuredClone(options.inputs),
+        frozenInputs: structuredClone(prepared.inputs),
+        workItem: prepared.workItem,
+        inputSources: prepared.inputSources,
+        sampleSource: prepared.sampleSource,
         status: 'queued',
         stopRequested: false,
         createdAt: new Date().toISOString(),
@@ -90,6 +108,10 @@ export function createTrials(files: FileStore, runs: RunService) {
         definitionId,
         scope: { nodeId: c.nodeId },
         inputs: c.frozenInputs,
+        workItem: c.workItem,
+        inputSources: c.inputSources,
+        sampleSource: c.sampleSource,
+        effectMode: 'preview',
         comparisonId: c.id,
       });
       const updated = await files.change(workId, (w) => {

@@ -1,0 +1,40 @@
+[
+  {
+    "output": "scope",
+    "actionId": "supplement_check",
+    "recordId": "worker-D",
+    "targetHasUiTemplate": false,
+    "targetOutputs": [
+      "impact",
+      "changes",
+      "audit",
+      "completion"
+    ],
+    "currentOutputs": [
+      "alertAudit",
+      "batchSummary",
+      "openGaps",
+      "repoChanges",
+      "scope"
+    ]
+  },
+  {
+    "output": "openGaps",
+    "actionId": "confirm_exception",
+    "recordId": "scan-08-exception",
+    "targetHasUiTemplate": false,
+    "targetOutputs": [
+      "impact",
+      "changes",
+      "audit",
+      "completion"
+    ],
+    "currentOutputs": [
+      "alertAudit",
+      "batchSummary",
+      "openGaps",
+      "repoChanges",
+      "scope"
+    ]
+  }
+]

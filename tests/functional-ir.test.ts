@@ -307,7 +307,7 @@ const node = (
   id: 'transform',
   label: '变换',
   kind: 'function',
-  mode: 'all',
+
   operation: 'aggregate',
   functionName: 'expression',
   expression,
@@ -382,7 +382,13 @@ test('saved and reopened definitions run pure expressions, preserve source order
     id,
     definition([
       node(pipeline, { expectedOutput: { type: 'string' } }),
-      { id: 'agent', label: '下游', kind: 'agent', mode: 'all', task: 'never' },
+      {
+        id: 'agent',
+        label: '下游',
+        kind: 'agent',
+        operation: 'aggregate',
+        task: 'never',
+      },
     ]),
   );
   const failedId = await runs.start(work.id, {
@@ -470,7 +476,7 @@ test('remaining strict pure functions, Unicode names, nested patterns and scope 
   );
 });
 
-test('node map preserves arrays; node flatMap expands once with ordered provenance; legacy remains unchanged', async (t) => {
+test('node map preserves arrays; node flatMap expands once with ordered provenance; explicit identity uses map', async (t) => {
   const root = await mkdtemp(join(tmpdir(), 'functional-modes-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const files = createFiles(root),
@@ -504,7 +510,7 @@ test('node map preserves arrays; node flatMap expands once with ordered provenan
     items: [variable('input'), call('add', variable('input'), literal(10))],
   };
   const mapped = await run(
-    node(expression, { mode: 'each', operation: 'map', concurrency: 2 }),
+    node(expression, { operation: 'map', concurrency: 2 }),
   );
   assert.deepEqual(
     mapped.results.flatMap((r) => r.outputs.output).map((i) => i.value),
@@ -514,7 +520,7 @@ test('node map preserves arrays; node flatMap expands once with ordered provenan
     ],
   );
   const expanded = await run(
-    node(expression, { mode: 'each', operation: 'flatMap', concurrency: 2 }),
+    node(expression, { operation: 'flatMap', concurrency: 2 }),
   );
   assert.deepEqual(
     expanded.results.flatMap((r) => r.outputs.output).map((i) => i.value),
@@ -534,19 +540,19 @@ test('node map preserves arrays; node flatMap expands once with ordered provenan
       r.outputs.output.every((i) => i.sourceResultIds.includes(r.id)),
     ),
   );
-  const legacy = await run({
-    id: 'legacy',
-    label: '旧函数',
+  const identity = await run({
+    id: 'identity',
+    label: '原样传递',
     kind: 'function',
-    mode: 'all',
+    operation: 'map',
     functionName: 'identity',
   });
   assert.deepEqual(
-    legacy.results.flatMap((r) => r.outputs.output).map((i) => i.value),
+    identity.results.flatMap((r) => r.outputs.output).map((i) => i.value),
     [1, 2],
   );
   const failed = await run(
-    node(variable('input', ['missing']), { mode: 'each', operation: 'map' }),
+    node(variable('input', ['missing']), { operation: 'map' }),
   );
   assert.equal(failed.status, 'failed');
   assert.ok(
@@ -584,7 +590,6 @@ test('incomplete expression draft is editable, but cannot run; expression input 
     invalid,
     definition([
       node(variable('input'), {
-        mode: 'each',
         operation: 'map',
         inputSchema: { type: 'number' },
       }),

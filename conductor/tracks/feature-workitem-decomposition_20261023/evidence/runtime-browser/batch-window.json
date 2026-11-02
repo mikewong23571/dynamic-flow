@@ -1,0 +1,11 @@
+{
+  "newStartLimit": 2,
+  "waitingReleased": 2,
+  "interruptedReleased": 2,
+  "resumeUsesOriginalRun": true,
+  "signalUsesOriginalRun": true,
+  "runPeak": 4,
+  "agentPeak": 8,
+  "submittedRuns": 6,
+  "pausedUnsubmitted": 2
+}

@@ -1,0 +1,10 @@
+{
+  "sourceRoot": "/tmp/flowcraft-journey-live-wX8hUA",
+  "targetRoot": "/tmp/flowcraft-journey-live-5UwsPp",
+  "workIds": [
+    "c639d11d-6e43-4b53-a886-bb1f0be37251",
+    "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab"
+  ],
+  "itemId": "237a0e38-bffd-41cd-b95f-4d384386c392",
+  "reason": "Final build review uses completed feedback data; existing CVE max model continues separately."
+}

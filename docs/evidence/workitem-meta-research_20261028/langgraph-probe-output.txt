@@ -1,0 +1,14 @@
+failed_superstep {"state_rows": [{"id": 0, "status": "ok"}, {"id": 2, "status": "ok"}], "checkpoint_rows": [], "pending_count": 5, "calls": {"0": 1, "1": 1, "2": 1}, "collector_calls": 0, "task_error": [null, "ValueError('one controlled failure')", null]}
+fanout {"catch": false, "rows": [{"id": 0, "status": "ok"}, {"id": 1, "status": "ok"}, {"id": 2, "status": "ok"}], "calls": {"0": 1, "1": 2, "2": 1}, "collector_calls": 1}
+fanout {"catch": true, "rows": [{"id": 0, "status": "ok"}, {"id": 1, "status": "failed"}, {"id": 2, "status": "ok"}], "calls": {"0": 1, "1": 1, "2": 1}, "collector_calls": 1}
+barrier {"mode": "separate", "collector_calls": 2, "observations": [["a", "b", "c"], ["a", "b", "c", "b2"]], "final": {"rows": ["a", "b", "c", "b2"]}}
+barrier {"mode": "list", "collector_calls": 1, "observations": [["a", "b", "c", "b2"]], "final": {"rows": ["a", "b", "c", "b2"]}}
+barrier {"mode": "defer", "collector_calls": 1, "observations": [["a", "b", "c", "b2"]], "final": {"rows": ["a", "b", "c", "b2"]}}
+barrier {"mode": "list_missing", "collector_calls": 0, "observations": [], "final": {"rows": ["a", "b", "b2"]}}
+nested_interrupt {"protected_task": false, "calls": {"parent_wrapper": 2, "effect": 2, "child_early": 1, "child_before_interrupt": 2}, "first_interrupt": true, "result": {"rows": ["approved"]}}
+nested_interrupt {"protected_task": true, "calls": {"parent_wrapper": 2, "effect": 1, "child_early": 1, "child_before_interrupt": 2}, "first_interrupt": true, "result": {"rows": ["approved"]}}
+source /tmp/flowcraft-orchestration-research/venv/lib/python3.12/site-packages/langgraph/types.py 062583a1c0af9833477935a9a78d336408cc9a33c425722a1191e000d032107a
+source /tmp/flowcraft-orchestration-research/venv/lib/python3.12/site-packages/langgraph/pregel/_runner.py a04dbd6f354cc29186bc04e66f01cac0e8c9c59f7945cfe390ccae20b4e37132
+source /tmp/flowcraft-orchestration-research/venv/lib/python3.12/site-packages/langgraph/pregel/_loop.py b122f38f691b41759c350480a481a12200bf19ece0359a5ca2a99febda1f5c64
+source /tmp/flowcraft-orchestration-research/venv/lib/python3.12/site-packages/langgraph/channels/binop.py 775399a9680071cf662b4a131ab80aa36fe8b8302270361d1e8e9e0d709df80f
+version 1.2.18

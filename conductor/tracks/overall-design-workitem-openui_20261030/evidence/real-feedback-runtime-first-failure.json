@@ -1,0 +1,90 @@
+{
+  "scenario": "feedback",
+  "itemId": "7a43065a-6aab-4069-862f-d7aec559e480",
+  "runId": "2c4de8b8-65d5-4b23-b344-d4f5a2395e05",
+  "status": "failed-not-accepted",
+  "cause": "implicit summaryOutput validation overrides the node expectedOutput contract",
+  "definitionId": "76962522-5459-4fae-ba4b-ec9d191b4392",
+  "nodeStates": {
+    "normalize": "completed",
+    "triage": "completed",
+    "correlate": "completed",
+    "flatten": "completed",
+    "enrich": "completed",
+    "finalize": "completed",
+    "summary": "failed"
+  },
+  "failures": [
+    {
+      "nodeId": "summary",
+      "error": "本轮结果摘要不符合 schema：data must have required property 'title'；data must have required property 'summary'；data must have required property 'scope'；data must NOT have additional properties；data must NOT have additional properties"
+    }
+  ],
+  "successfulModelSteps": [
+    {
+      "nodeId": "triage",
+      "instanceId": "triage:3eda551d-e4f2-45d5-b258-97ab2a89891e:0",
+      "effectiveModel": {
+        "source": "default",
+        "alias": "sangfor/deepseek-v4-flash",
+        "model": "deepseek-v4-flash",
+        "effort": "high"
+      },
+      "toolStatuses": [
+        {
+          "name": "submit_result",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "nodeId": "triage",
+      "instanceId": "triage:700ee87c-d095-4db8-b02c-eea9f6e14689:1",
+      "effectiveModel": {
+        "source": "default",
+        "alias": "sangfor/deepseek-v4-flash",
+        "model": "deepseek-v4-flash",
+        "effort": "high"
+      },
+      "toolStatuses": [
+        {
+          "name": "submit_result",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "nodeId": "triage",
+      "instanceId": "triage:53d771d5-085b-49da-84c4-6847a175c975:2",
+      "effectiveModel": {
+        "source": "default",
+        "alias": "sangfor/deepseek-v4-flash",
+        "model": "deepseek-v4-flash",
+        "effort": "high"
+      },
+      "toolStatuses": [
+        {
+          "name": "submit_result",
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "uiProgramId": "5d4bb03f-c92a-4945-8091-ea7e0cd571da",
+  "summaryOutput": "summary",
+  "summaryNodeSchema": {
+    "properties": {
+      "pending": {
+        "type": "number"
+      },
+      "total": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "total",
+      "pending"
+    ],
+    "type": "object"
+  }
+}

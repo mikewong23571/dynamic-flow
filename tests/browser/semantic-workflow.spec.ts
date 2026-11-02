@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { selectCanvasNode } from './canvas-actions';
+import { test, expect } from './fixtures';
 import { serve } from '@hono/node-server';
 import type { Server } from 'node:http';
 import { mkdtemp, rm, mkdir } from 'node:fs/promises';
@@ -24,7 +25,7 @@ const child: Definition = {
     {
       id: 'review',
       kind: 'function',
-      mode: 'each',
+
       operation: 'map',
       functionName: 'identity',
       label: '核对实际材料',
@@ -83,7 +84,7 @@ for (const width of [1440, 1024])
           id: 'investigate',
           label: '决定局部调查',
           kind: 'dynamic',
-          mode: 'all',
+
           operation: 'aggregate',
           task: '确定调查方法',
           contract,
@@ -100,11 +101,12 @@ for (const width of [1440, 1024])
         })
       ).ok(),
     ).toBeTruthy();
-    await page.addInitScript(
-      (id) => localStorage.setItem('dynamic-flow.work', id),
-      id,
-    );
-    await page.goto(url);
+    await page.goto(`${url}/methods/${id}`);
+    const closePanel = page.getByRole('button', {
+      name: '收起侧栏',
+      exact: true,
+    });
+    if (await closePanel.count()) await closePanel.click();
     await page.getByRole('button', { name: '问题与依据', exact: true }).click();
     await page.getByLabel('当前问题', { exact: true }).fill('依赖影响尚待确认');
     await page.getByLabel('已知事实', { exact: true }).fill('收到一份公告');
@@ -115,7 +117,7 @@ for (const width of [1440, 1024])
     await expect(
       page.getByRole('button', { name: '保存修改', exact: true }),
     ).toHaveCount(0);
-    await page.locator('.react-flow__node[data-id="investigate"]').click();
+    await selectCanvasNode(page, 'investigate');
     await expect(
       page.getByRole('textbox', { name: '展开边界', exact: true }),
     ).toHaveValue('只核对当前材料');
@@ -130,7 +132,7 @@ for (const width of [1440, 1024])
       page.getByRole('button', { name: '问题与依据', exact: true }),
     ).toBeVisible();
     const evidence = resolve(
-      'conductor/tracks/semantic-workflow_20260921/artifacts',
+      process.env.FLOWCRAFT_EVIDENCE_DIR || 'test-results/semantic-workflow',
     );
     await mkdir(evidence, { recursive: true });
     await page.screenshot({ path: join(evidence, `contract-${width}.png`) });
@@ -146,14 +148,46 @@ for (const width of [1440, 1024])
       )
       .toBe('completed');
     await expect(
-      page.getByText('实际展开 · 决定局部调查', { exact: true }),
-    ).toBeVisible();
+      page.getByText('本次固定的问题认知', { exact: true }),
+    ).toHaveCount(0);
     await expect(
-      page.getByRole('button', { name: '把展开写为候选', exact: true }),
+      page.getByText('实际展开 · 决定局部调查', { exact: true }),
+    ).toHaveCount(0);
+    await page.getByRole('button', { name: '查看过程', exact: true }).click();
+    await expect(page.locator('.run-inspector')).toBeVisible();
+    await expect(
+      page.getByRole('navigation', { name: '处理环节' }),
+    ).toContainText('核对实际材料');
+    await expect(
+      page.getByRole('button', { name: '保存为候选做法', exact: true }),
     ).toBeEnabled();
+    await expect(
+      page.locator('.results-view .run-reference-fields'),
+    ).toHaveCount(0);
+    await page
+      .locator('.results-view')
+      .getByRole('tab', { name: '输入与依据', exact: true })
+      .click();
+    await page.getByRole('button', { name: '运行依据', exact: true }).click();
+    const basis = page.getByRole('dialog', { name: '运行依据', exact: true });
+    await expect(basis).toContainText('依赖影响尚待确认');
+    await expect(basis).toContainText('M01 公告');
+    await page.screenshot({ path: join(evidence, `run-basis-${width}.png`) });
+    await basis.getByRole('button', { name: '关闭', exact: true }).click();
+    await page
+      .locator('.results-view')
+      .getByText('环节要求', { exact: true })
+      .click();
+    await expect(
+      page.locator('.results-view .run-reference-fields'),
+    ).toContainText('核对材料并说明依据');
+    await page
+      .locator('.results-view')
+      .getByRole('tab', { name: /^产物/ })
+      .click();
     await page.screenshot({ path: join(evidence, `expanded-${width}.png`) });
     await page
-      .getByRole('button', { name: '把展开写为候选', exact: true })
+      .getByRole('button', { name: '保存为候选做法', exact: true })
       .click();
     await expect
       .poll(async () => {
@@ -170,9 +204,7 @@ for (const width of [1440, 1024])
     await expect(
       page.locator('.react-flow__node[data-id="investigate/review"]'),
     ).toBeVisible();
-    await page
-      .locator('.react-flow__node[data-id="investigate/review"]')
-      .click();
+    await selectCanvasNode(page, 'investigate/review');
     await page.getByText('有限迭代', { exact: true }).click();
     await page.getByLabel('重复改善此步骤', { exact: true }).check();
     await page.getByLabel('最多轮次', { exact: true }).fill('2');
@@ -188,7 +220,25 @@ for (const width of [1440, 1024])
           ).work.runs.at(-1)?.status,
       )
       .toBe('completed');
+    await page
+      .getByRole('button', { name: '查看过程', exact: true })
+      .first()
+      .click();
+    await page
+      .getByRole('navigation', { name: '处理环节' })
+      .getByRole('button', { name: /核对实际材料/ })
+      .click();
     await expect(page.getByText('第 2 轮', { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: '执行实例', exact: true }),
+    ).toBeVisible();
+    await page.getByRole('tab', { name: '流程', exact: true }).click();
+    const progress = page.locator(
+      '.react-flow__node[data-id="investigate/review"] .status-label',
+    );
+    await expect(progress).toHaveAttribute('title', /已完成/);
+    await expect(progress).toContainText('已完成');
+    await page.getByRole('tab', { name: /运行结果/ }).click();
     await page.screenshot({ path: join(evidence, `repeat-${width}.png`) });
     expect(
       await page.evaluate(

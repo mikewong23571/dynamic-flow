@@ -1,5 +1,10 @@
 import { Play, GitCompareArrows } from 'lucide-react';
-import type { FlowNode, Inputs, Work } from '../../../shared/records';
+import type {
+  FlowNode,
+  Inputs,
+  Work,
+  RunSampleSource,
+} from '../../../shared/records';
 import { inputPorts } from '../../core/inputs';
 import { short, portLabel } from '../../core/format';
 import { Button, Modal } from '../../components/ui';
@@ -14,6 +19,8 @@ export function TrialDialog({
   work,
   inputMode,
   setInputMode,
+  sampleSource,
+  setSampleSource,
   samplePort,
   setSamplePort,
   selectedNode,
@@ -31,8 +38,10 @@ export function TrialDialog({
   onOpenChange: (open: boolean) => void;
   selected?: FlowNode;
   work?: Work;
-  inputMode: 'materials' | 'results';
-  setInputMode: (mode: 'materials' | 'results') => void;
+  inputMode: 'materials' | 'results' | 'run';
+  setInputMode: (mode: 'materials' | 'results' | 'run') => void;
+  sampleSource?: RunSampleSource;
+  setSampleSource: (source: RunSampleSource) => void;
   samplePort: string;
   setSamplePort: (port: string) => void;
   selectedNode?: string;
@@ -61,10 +70,11 @@ export function TrialDialog({
           <select
             value={inputMode}
             onChange={(e) =>
-              setInputMode(e.target.value as 'materials' | 'results')
+              setInputMode(e.target.value as 'materials' | 'results' | 'run')
             }
           >
-            <option value="materials">原始材料</option>
+            {sampleSource && <option value="run">这次运行的原始输入</option>}
+            <option value="materials">方法样例材料</option>
             <option value="results">已选历史结果</option>
           </select>
         </label>
@@ -82,7 +92,59 @@ export function TrialDialog({
           </select>
         </label>
       </div>
-      {inputMode === 'materials' ? (
+      {inputMode === 'run' ? (
+        <div className="sample-picker">
+          {work?.runs
+            .find((run) => run.id === sampleSource?.runId)
+            ?.results.filter(
+              (result) =>
+                result.nodeId === selectedNode &&
+                !result.purpose &&
+                !result.intermediate,
+            )
+            .map((result) => (
+              <label key={result.id} className="check-row">
+                <input
+                  type="checkbox"
+                  aria-label={`原始输入 ${Object.values(result.input)
+                    .flat()
+                    .map((entry) => entry.sampleId)
+                    .join('、')}`}
+                  checked={sampleSource?.resultIds.includes(result.id) || false}
+                  onChange={() => {
+                    if (!sampleSource) return;
+                    const selectedIds = new Set(sampleSource.resultIds);
+                    if (selectedIds.has(result.id))
+                      selectedIds.delete(result.id);
+                    else selectedIds.add(result.id);
+                    setSampleSource({
+                      runId: sampleSource.runId,
+                      resultIds: work.runs
+                        .find((run) => run.id === sampleSource.runId)!
+                        .results.filter(
+                          (entry) =>
+                            entry.nodeId === selectedNode &&
+                            selectedIds.has(entry.id),
+                        )
+                        .map((entry) => entry.id),
+                    });
+                  }}
+                />
+                <span>
+                  {Object.values(result.input)
+                    .flat()
+                    .map((entry) =>
+                      typeof entry.value === 'string'
+                        ? entry.value
+                        : JSON.stringify(entry.value),
+                    )
+                    .join(' / ')}
+                </span>
+              </label>
+            ))}
+          <InputContent inputs={inputs} />
+        </div>
+      ) : inputMode === 'materials' ? (
         <div className="sample-picker">
           {work?.materials.map((m) => (
             <label key={m.id} className="check-row">

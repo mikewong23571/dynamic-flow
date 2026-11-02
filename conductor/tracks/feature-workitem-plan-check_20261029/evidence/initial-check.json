@@ -1,0 +1,50 @@
+{
+  "checked": {
+    "itemRevision": 4,
+    "definitionId": "29e43b46-620d-4ec3-a813-5f7677d10505"
+  },
+  "canExecute": false,
+  "canPublish": false,
+  "issues": [
+    {
+      "area": "flow",
+      "code": "NODE_OUTPUT_SCHEMA_MISMATCH",
+      "path": "nodes.copy.expectedOutput",
+      "message": "透传节点实际输出不符合 schema：data must be object",
+      "expected": "object",
+      "actual": "array",
+      "hint": "identity 保留调用参数的单位；调整 map/aggregate 或输出合同。"
+    },
+    {
+      "area": "ui",
+      "code": "UI_PLAN_MISSING",
+      "path": "uiPlan",
+      "message": "尚未安排成果视图。",
+      "hint": "提供 views、inputs 及真实输出绑定；可以先保存流程再安排界面。"
+    }
+  ],
+  "unchecked": [
+    {
+      "area": "run",
+      "code": "OUTPUTS_UNVERIFIED",
+      "path": "run",
+      "message": "尚未指定真实运行，输出内容与实际界面数据仍未验证。",
+      "hint": "得到执行授权后运行，检查终态，再携带明确 runId 检查发布。"
+    },
+    {
+      "area": "state",
+      "code": "BUSINESS_ACCEPTANCE_UNVERIFIED",
+      "path": "item.criteria",
+      "message": "本工具不确认业务事实、完成依据或结项；仍需证据与用户复核。"
+    }
+  ],
+  "inputs": [
+    {
+      "port": "records",
+      "count": 2,
+      "types": [
+        "object"
+      ]
+    }
+  ]
+}

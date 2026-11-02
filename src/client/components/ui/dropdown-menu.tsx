@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useContentVisibility } from '../ContentVisibility';
 import { cn } from '@/client/lib/utils';
 import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react';
 import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
@@ -35,6 +36,8 @@ function DropdownMenuContent({
   sideOffset = 4,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+  const visible = useContentVisibility();
+  if (!visible) return null;
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content

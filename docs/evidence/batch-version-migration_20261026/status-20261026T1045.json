@@ -1,0 +1,57 @@
+{
+  "at": "2026-10-26T10:45:21.253274+00:00",
+  "coordinatorAlive": true,
+  "coordinatorPid": "3436385",
+  "pipelineRunCount": 44,
+  "latestBatchStates": {
+    "completed": 18,
+    "running": 2
+  },
+  "completedTargets": 192,
+  "totalTargets": 211,
+  "active": [
+    {
+      "cve": "CVE-2021-34552",
+      "completedTargets": 25,
+      "totalTargets": 31,
+      "runningNode": "verify",
+      "instanceStartedAt": "2026-10-26T10:43:25.991Z",
+      "recentTools": [
+        {
+          "tool": "sourcegraph_read_file",
+          "status": "completed"
+        },
+        {
+          "tool": "sourcegraph_keyword_search",
+          "status": "completed"
+        },
+        {
+          "tool": "sourcegraph_read_file",
+          "status": "running"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2020-5312",
+      "completedTargets": 18,
+      "totalTargets": 31,
+      "runningNode": "verify",
+      "instanceStartedAt": "2026-10-26T10:43:30.999Z",
+      "recentTools": [
+        {
+          "tool": "sourcegraph_keyword_search",
+          "status": "running"
+        },
+        {
+          "tool": "sourcegraph_read_file",
+          "status": "completed"
+        },
+        {
+          "tool": "sourcegraph_read_file",
+          "status": "running"
+        }
+      ]
+    }
+  ],
+  "exportUpdatedAt": "2026-10-26T10:44:51.367Z"
+}

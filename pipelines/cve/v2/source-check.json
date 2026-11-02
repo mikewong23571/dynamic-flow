@@ -1,0 +1,789 @@
+{
+  "title": "仓库漏洞核查",
+  "goal": "按外部指定仓库与版本，核查漏洞触发条件是否在该版本源码中成立，逐目标给出证据和结论。",
+  "definition": {
+    "schemaVersion": 1,
+    "inputs": [
+      "facts",
+      "targets"
+    ],
+    "inputContracts": {
+      "facts": {
+        "item": {
+          "type": "object"
+        }
+      },
+      "targets": {
+        "item": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "nodes": [
+      {
+        "id": "facts",
+        "label": "准备共用事实",
+        "kind": "function",
+        "operation": "aggregate",
+        "functionName": "expression",
+        "expression": {
+          "kind": "object",
+          "fields": {
+            "pair": {
+              "kind": "literal",
+              "value": "current-facts"
+            },
+            "facts": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                0
+              ]
+            }
+          }
+        },
+        "inputSchema": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        }
+      },
+      {
+        "id": "targets",
+        "label": "准备独立目标",
+        "kind": "function",
+        "operation": "map",
+        "functionName": "expression",
+        "expression": {
+          "kind": "object",
+          "fields": {
+            "pair": {
+              "kind": "literal",
+              "value": "current-facts"
+            },
+            "target": {
+              "kind": "variable",
+              "name": "input"
+            }
+          }
+        }
+      },
+      {
+        "id": "pair",
+        "label": "逐目标配对事实",
+        "kind": "function",
+        "operation": "aggregate",
+        "functionName": "join",
+        "join": {
+          "type": "inner",
+          "leftKey": [
+            "pair"
+          ],
+          "rightKey": [
+            "pair"
+          ],
+          "duplicates": "all"
+        }
+      },
+      {
+        "id": "input",
+        "label": "取出单目标输入",
+        "kind": "function",
+        "operation": "map",
+        "functionName": "expression",
+        "expression": {
+          "kind": "object",
+          "fields": {
+            "facts": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "right",
+                "facts"
+              ]
+            },
+            "target": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "left",
+                "target"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": "verify",
+        "label": "核查目标源码",
+        "kind": "agent",
+        "operation": "map",
+        "concurrency": 1,
+        "tools": {
+          "builtin": [],
+          "mcp": [
+            "sourcegraph"
+          ]
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "facts": {
+              "type": "object"
+            },
+            "target": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "facts",
+            "target"
+          ],
+          "additionalProperties": false
+        },
+        "task": "输入包含漏洞facts与一条用户指定的仓库/ref文字。理解目标，所有Sourcegraph代码搜索和读取均明确限定用户指定的仓库与ref；可直接使用分支名。保留工具实际返回的commit用于证据追溯，避免省略版本约束而混入默认分支。依据漏洞机制自主核查依赖版本、相关调用和触发路径，给出该目标的独立源码结论。evidence逐条记录文件、行号、commit、实际源码摘录和它支持的判断；requestedRef保留用户版本要求。若无法取得指定ref的关键源码，明确缺失证据；工具未返回commit时为null。结论只针对该仓库指定版本，unknown只列本目标影响判断尚缺的源码证据。 受影响需证实相关版本与触发路径成立；不受影响需有修复版本或缺失必要触发条件的源码证据；关键条件未查清时为证据不足，不能仅凭关键词零匹配排除。",
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string"
+            },
+            "repository": {
+              "type": "string"
+            },
+            "requestedRef": {
+              "type": "string"
+            },
+            "commit": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "conclusion": {
+              "type": "string",
+              "enum": [
+                "受影响",
+                "不受影响",
+                "证据不足"
+              ]
+            },
+            "reason": {
+              "type": "string"
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string"
+                  },
+                  "lines": {
+                    "type": "string"
+                  },
+                  "commit": {
+                    "type": "string"
+                  },
+                  "excerpt": {
+                    "type": "string"
+                  },
+                  "finding": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "file",
+                  "lines",
+                  "commit",
+                  "excerpt",
+                  "finding"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "unknown": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "target",
+            "repository",
+            "requestedRef",
+            "commit",
+            "conclusion",
+            "reason",
+            "evidence",
+            "unknown"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "report",
+        "label": "汇集核查结论",
+        "kind": "function",
+        "operation": "aggregate",
+        "functionName": "identity",
+        "inputSchema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "requestedRef": {
+                "type": "string"
+              },
+              "commit": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "conclusion": {
+                "type": "string",
+                "enum": [
+                  "受影响",
+                  "不受影响",
+                  "证据不足"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    },
+                    "lines": {
+                      "type": "string"
+                    },
+                    "commit": {
+                      "type": "string"
+                    },
+                    "excerpt": {
+                      "type": "string"
+                    },
+                    "finding": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "file",
+                    "lines",
+                    "commit",
+                    "excerpt",
+                    "finding"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "unknown": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "target",
+              "repository",
+              "requestedRef",
+              "commit",
+              "conclusion",
+              "reason",
+              "evidence",
+              "unknown"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "expectedOutput": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "requestedRef": {
+                "type": "string"
+              },
+              "commit": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "conclusion": {
+                "type": "string",
+                "enum": [
+                  "受影响",
+                  "不受影响",
+                  "证据不足"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    },
+                    "lines": {
+                      "type": "string"
+                    },
+                    "commit": {
+                      "type": "string"
+                    },
+                    "excerpt": {
+                      "type": "string"
+                    },
+                    "finding": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "file",
+                    "lines",
+                    "commit",
+                    "excerpt",
+                    "finding"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "unknown": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "target",
+              "repository",
+              "requestedRef",
+              "commit",
+              "conclusion",
+              "reason",
+              "evidence",
+              "unknown"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      {
+        "id": "summary",
+        "label": "汇总本轮结果",
+        "kind": "function",
+        "operation": "aggregate",
+        "expression": {
+          "kind": "object",
+          "fields": {
+            "title": {
+              "kind": "literal",
+              "value": "本轮源码核查结果已汇集"
+            },
+            "summary": {
+              "kind": "literal",
+              "value": "已汇集本轮选定目标的逐项核查记录。下方统计各记录的判断，具体结论与依据仍需人工复核。"
+            },
+            "scope": {
+              "kind": "literal",
+              "value": "仅覆盖本轮固定输入所选目标；不代表其它轮次或全部业务范围。"
+            },
+            "metrics": {
+              "kind": "array",
+              "items": [
+                {
+                  "kind": "object",
+                  "fields": {
+                    "label": {
+                      "kind": "literal",
+                      "value": "本轮核查结果"
+                    },
+                    "value": {
+                      "kind": "call",
+                      "function": "length",
+                      "args": [
+                        {
+                          "kind": "variable",
+                          "name": "input",
+                          "path": [
+                            0
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "kind": "object",
+                  "fields": {
+                    "label": {
+                      "kind": "literal",
+                      "value": "受影响"
+                    },
+                    "value": {
+                      "kind": "call",
+                      "function": "length",
+                      "args": [
+                        {
+                          "kind": "filter",
+                          "input": {
+                            "kind": "variable",
+                            "name": "input",
+                            "path": [
+                              0
+                            ]
+                          },
+                          "binding": {
+                            "kind": "bind",
+                            "name": "record"
+                          },
+                          "predicate": {
+                            "kind": "call",
+                            "function": "equal",
+                            "args": [
+                              {
+                                "kind": "variable",
+                                "name": "record",
+                                "path": [
+                                  "conclusion"
+                                ]
+                              },
+                              {
+                                "kind": "literal",
+                                "value": "受影响"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "kind": "object",
+                  "fields": {
+                    "label": {
+                      "kind": "literal",
+                      "value": "不受影响"
+                    },
+                    "value": {
+                      "kind": "call",
+                      "function": "length",
+                      "args": [
+                        {
+                          "kind": "filter",
+                          "input": {
+                            "kind": "variable",
+                            "name": "input",
+                            "path": [
+                              0
+                            ]
+                          },
+                          "binding": {
+                            "kind": "bind",
+                            "name": "record"
+                          },
+                          "predicate": {
+                            "kind": "call",
+                            "function": "equal",
+                            "args": [
+                              {
+                                "kind": "variable",
+                                "name": "record",
+                                "path": [
+                                  "conclusion"
+                                ]
+                              },
+                              {
+                                "kind": "literal",
+                                "value": "不受影响"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "kind": "object",
+                  "fields": {
+                    "label": {
+                      "kind": "literal",
+                      "value": "证据不足"
+                    },
+                    "value": {
+                      "kind": "call",
+                      "function": "length",
+                      "args": [
+                        {
+                          "kind": "filter",
+                          "input": {
+                            "kind": "variable",
+                            "name": "input",
+                            "path": [
+                              0
+                            ]
+                          },
+                          "binding": {
+                            "kind": "bind",
+                            "name": "record"
+                          },
+                          "predicate": {
+                            "kind": "call",
+                            "function": "equal",
+                            "args": [
+                              {
+                                "kind": "variable",
+                                "name": "record",
+                                "path": [
+                                  "conclusion"
+                                ]
+                              },
+                              {
+                                "kind": "literal",
+                                "value": "证据不足"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "limitations": {
+              "kind": "literal",
+              "value": [
+                "核查结果是否足以支持业务结论仍需复核；运行完成不等于业务结项。"
+              ]
+            },
+            "nextAction": {
+              "kind": "literal",
+              "value": "复核逐项成果；证据不足时建立补证子项，确认受影响时建立整改子项，处理完成后再核对完成条件。"
+            }
+          }
+        },
+        "expectedOutput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "summary",
+            "scope"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "summary": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "scope": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "metrics": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "value"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nextAction": {
+              "type": "string"
+            }
+          }
+        },
+        "functionName": "expression"
+      }
+    ],
+    "edges": [
+      {
+        "from": [
+          "$input",
+          "facts"
+        ],
+        "to": [
+          "facts",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "$input",
+          "targets"
+        ],
+        "to": [
+          "targets",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "targets",
+          "output"
+        ],
+        "to": [
+          "pair",
+          "left"
+        ]
+      },
+      {
+        "from": [
+          "facts",
+          "output"
+        ],
+        "to": [
+          "pair",
+          "right"
+        ]
+      },
+      {
+        "from": [
+          "pair",
+          "output"
+        ],
+        "to": [
+          "input",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "input",
+          "output"
+        ],
+        "to": [
+          "verify",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "verify",
+          "output"
+        ],
+        "to": [
+          "report",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "report",
+          "output"
+        ],
+        "to": [
+          "summary",
+          "input"
+        ]
+      }
+    ],
+    "outputs": {
+      "checks": [
+        "verify",
+        "output"
+      ],
+      "report": [
+        "report",
+        "output"
+      ],
+      "summary": [
+        "summary",
+        "output"
+      ]
+    },
+    "summaryOutput": "summary"
+  },
+  "view": {
+    "positions": {
+      "facts": {
+        "x": 0,
+        "y": 0
+      },
+      "targets": {
+        "x": 0,
+        "y": 240
+      },
+      "pair": {
+        "x": 320,
+        "y": 120
+      },
+      "input": {
+        "x": 640,
+        "y": 120
+      },
+      "verify": {
+        "x": 960,
+        "y": 120
+      },
+      "report": {
+        "x": 1280,
+        "y": 120
+      },
+      "summary": {
+        "x": 1600,
+        "y": 120
+      }
+    }
+  }
+}

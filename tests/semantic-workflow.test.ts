@@ -25,7 +25,7 @@ const leaf: FlowNode = {
   label: '提取证据',
   kind: 'function',
   functionName: 'identity',
-  mode: 'each',
+
   operation: 'map',
   contract,
 };
@@ -43,7 +43,7 @@ const dynamic: FlowNode = {
   id: 'investigate',
   label: '局部调查',
   kind: 'dynamic',
-  mode: 'all',
+
   operation: 'aggregate',
   task: '根据材料确定调查步骤',
   contract,
@@ -265,7 +265,7 @@ test('动态展开中的等待跨运行器重开，规划和成功步骤不重�
       id: 'wait',
       label: '等待补证',
       kind: 'wait',
-      mode: 'all',
+
       wait: { event: 'evidence', reason: '缺少依据' },
       contract,
     },
@@ -413,7 +413,7 @@ test('不同输入迭代轮数不同，等待恢复后仍保持输入顺序', as
     {
       id: 'pause',
       kind: 'wait',
-      mode: 'all',
+
       label: '等待',
       wait: { event: 'continue', reason: '复核' },
     },
@@ -465,7 +465,7 @@ test('动态整批产物的比较沿来源回到原样本，不显示成功规�
     graph([dynamic]),
     async () =>
       graph([
-        { ...leaf, id: 'summary', mode: 'all', operation: 'aggregate' },
+        { ...leaf, id: 'summary', operation: 'aggregate' },
       ]) as unknown as Json,
   );
   try {

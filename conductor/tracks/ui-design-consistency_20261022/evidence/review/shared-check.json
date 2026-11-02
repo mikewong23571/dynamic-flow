@@ -1,0 +1,26 @@
+[
+  {
+    "width": 1440,
+    "search": true,
+    "statusFilter": true,
+    "dialogFocus": true,
+    "menuKeyboard": true,
+    "nodeConfiguration": true,
+    "assistantDraft": true,
+    "overflow": false,
+    "errors": [],
+    "blockedWrites": []
+  },
+  {
+    "width": 1024,
+    "search": true,
+    "statusFilter": true,
+    "dialogFocus": true,
+    "menuKeyboard": true,
+    "nodeConfiguration": true,
+    "assistantDraft": true,
+    "overflow": false,
+    "errors": [],
+    "blockedWrites": []
+  }
+]

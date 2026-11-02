@@ -1,0 +1,7 @@
+binding:
+  owner: mike
+  session_id: current-root
+  host: dev-mike
+  released: true
+  started_at: 2026-10-22T18:25:48.055602+00:00
+  released_at: 2026-10-22T18:56:17.188807+00:00

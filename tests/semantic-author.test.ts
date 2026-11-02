@@ -35,7 +35,7 @@ test('作者局部工具只提交目标步骤，保留问题认知与其它结�
       {
         id: 'step',
         kind: 'agent',
-        mode: 'each',
+        operation: 'map',
         task: '调查',
         label: '调查',
         contract,
@@ -139,7 +139,7 @@ test('作者局部工具只提交目标步骤，保留问题认知与其它结�
     node: {
       ...context.node,
       kind: 'dynamic',
-      mode: 'all',
+
       dynamic: { boundary: '局部', maxNodes: 3 },
     },
   });

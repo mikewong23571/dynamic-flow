@@ -1,0 +1,284 @@
+@layer components {
+  .workspace-header {
+    height: 74px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .workspace-location {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    min-height: 15px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .workspace-location > .eyebrow,
+  .workspace-version {
+    flex: none;
+  }
+  .workspace-task-context {
+    display: flex;
+    gap: 7px;
+    min-width: 0;
+    align-items: center;
+  }
+  .workspace-task-context > span {
+    flex: none;
+    color: var(--subtle);
+  }
+  .workspace-task-context a {
+    color: var(--muted);
+    min-width: 0;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .workspace-task-context a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+  .work-title {
+    min-width: 0;
+    flex: 1;
+  }
+  .workspace-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .eyebrow {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.11em;
+    font-weight: 600;
+  }
+  .work-title h1 {
+    min-width: 0;
+    margin: 2px 0 0;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: -0.025em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .workspace-title-row > .status-label {
+    flex: none;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: none;
+  }
+  .header-actions select {
+    font-size: 11px;
+    border-color: transparent;
+    max-width: 128px;
+  }
+  .workspace-bar {
+    height: 46px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .workspace-tabs-list [role='tab'] > .workspace-tab-count {
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 10px;
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  .bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: none;
+  }
+  .workspace-view-tabs {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    gap: 0;
+    overflow: hidden;
+  }
+  .workspace-content {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .main-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--paper);
+  }
+  .workspace-context-host {
+    display: flex;
+    flex: none;
+    min-height: 0;
+  }
+  .context-panel {
+    position: relative;
+    width: 342px;
+    flex: none;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--line);
+    background: var(--paper);
+  }
+  .panel-resize-handle {
+    position: absolute;
+    left: -3px;
+    top: 0;
+    bottom: 0;
+    width: 7px;
+    cursor: col-resize;
+    touch-action: none;
+    z-index: 20;
+    outline: none;
+  }
+  .panel-resize-handle:hover,
+  .panel-resize-handle:active,
+  .panel-resize-handle:focus-visible {
+    background: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  .panel-tabs {
+    display: flex;
+    align-items: stretch;
+    height: 48px;
+    flex: none;
+    gap: 18px;
+    padding: 0 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .panel-tabs button,
+  .panel-heading {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .panel-tabs button.selected,
+  .panel-heading {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .panel-tabs button.selected {
+    border-bottom-color: var(--ink);
+  }
+  .workspace-content[data-panel-layout='dock'] {
+    flex-direction: column;
+  }
+  .context-panel[data-mode='dock'] {
+    width: auto;
+    height: auto;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .context-panel[data-mode='dock'] .panel-tabs {
+    height: 32px;
+    padding: 0 16px;
+    border-bottom: 0;
+  }
+  @media (max-width: 1200px) {
+    .workspace-header {
+      padding: 12px 20px;
+    }
+    .workspace-location {
+      gap: 8px;
+    }
+    .workspace-task-context a {
+      max-width: 180px;
+    }
+    .work-title h1 {
+      font-size: 16px;
+    }
+    .header-actions {
+      gap: 6px;
+    }
+    .header-actions select {
+      max-width: 111px;
+    }
+    .workspace-bar {
+      padding: 0 16px;
+    }
+    .context-panel[data-mode='side'] {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 12;
+      width: 384px;
+      max-width: calc(100% - 24px);
+      border-left-color: var(--line-strong);
+      box-shadow: -16px 0 35px #0008;
+    }
+    .panel-tabs {
+      padding: 0 18px;
+      gap: 14px;
+    }
+  }
+  @media (max-width: 1050px) {
+    .workspace-header {
+      padding: 12px 16px;
+    }
+    .workspace-bar {
+      padding: 0 12px;
+    }
+    .bar-actions {
+      gap: 4px;
+    }
+    .header-actions select {
+      max-width: 100px;
+      font-size: 10px;
+    }
+    .panel-tabs {
+      padding: 0 15px;
+      gap: 12px;
+    }
+  }
+}
+@layer components {
+  .workspace-panel-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .workspace-panel-body[hidden] {
+    display: none;
+  }
+  .workspace-panel-body > .inspector {
+    overflow: auto;
+    min-height: 0;
+  }
+}

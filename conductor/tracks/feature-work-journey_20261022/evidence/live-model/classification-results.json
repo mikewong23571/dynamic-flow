@@ -1,0 +1,72 @@
+[
+  {
+    "source": {
+      "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+      "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+      "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9",
+      "resultId": "1ab4646f-050d-4852-be61-550f091e0a29",
+      "nodeId": "classify",
+      "port": "output",
+      "index": 0
+    },
+    "input": {
+      "input": [
+        {
+          "sampleId": "M01",
+          "value": "界面很顺手，但导出报告经常失败，影响交付。",
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "output": {
+      "original": "界面很顺手，但导出报告经常失败，影响交付。",
+      "category": "问题",
+      "reason": "反馈主体指出导出报告经常失败并影响交付，属于功能缺陷问题，开头的正面评价不改变其以问题为主的性质。"
+    },
+    "effectMode": "commit",
+    "effectiveModel": {
+      "source": "default",
+      "alias": "sangfor/glm-5.3-flash",
+      "model": "glm-5.3-flash",
+      "effort": "max"
+    }
+  },
+  {
+    "source": {
+      "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+      "runId": "2e6ef635-78df-4188-8326-3d48b899a6f3",
+      "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9",
+      "resultId": "8fa0861f-17f5-44f7-8cb6-7e866de5137c",
+      "nodeId": "classify",
+      "port": "output",
+      "index": 0
+    },
+    "input": {
+      "input": [
+        {
+          "sampleId": "M03",
+          "value": "搜索比以前快很多，团队很满意。",
+          "materialIds": [
+            "M03"
+          ],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "output": {
+      "original": "搜索比以前快很多，团队很满意。",
+      "category": "称赞",
+      "reason": "反馈明确表达对搜索速度提升的正面评价与满意情绪（\"快很多\"\"很满意\"），未提出问题或新需求，属于称赞。"
+    },
+    "effectMode": "preview",
+    "effectiveModel": {
+      "source": "default",
+      "alias": "sangfor/glm-5.3-flash",
+      "model": "glm-5.3-flash",
+      "effort": "max"
+    }
+  }
+]

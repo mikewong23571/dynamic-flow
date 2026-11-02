@@ -1,0 +1,34 @@
+[
+  {
+    "width": 1440,
+    "mountedInitially": 1,
+    "before": 430,
+    "restored": 430,
+    "processReturned": {
+      "scroll": 0,
+      "heading": "报告"
+    },
+    "query": "CVE-2025",
+    "reentered": {
+      "scroll": 0,
+      "heading": "报告"
+    },
+    "overflow": false
+  },
+  {
+    "width": 1024,
+    "mountedInitially": 1,
+    "before": 430,
+    "restored": 430,
+    "processReturned": {
+      "scroll": 0,
+      "heading": "报告"
+    },
+    "query": "CVE-2025",
+    "reentered": {
+      "scroll": 0,
+      "heading": "报告"
+    },
+    "overflow": false
+  }
+]

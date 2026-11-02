@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { selectCanvasNode } from './canvas-actions';
+import { test, expect } from './fixtures';
 import type { Snapshot } from '../../src/shared/records';
 
 for (const width of [1440, 1024]) {
@@ -31,7 +32,7 @@ for (const width of [1440, 1024]) {
                   id: 'step',
                   label: '整理材料',
                   kind: 'function',
-                  mode: 'each',
+                  operation: 'map',
                   functionName: 'identity',
                 },
               ],
@@ -48,9 +49,7 @@ for (const width of [1440, 1024]) {
       await expect(opened).toBeVisible();
       await expect(entries).toHaveCount(0);
       const openFromLibrary = async (title: string) => {
-        await page
-          .getByRole('button', { name: '全部流水线', exact: true })
-          .click();
+        await page.getByRole('link', { name: '流水线', exact: true }).click();
         const library = page.getByRole('region', { name: '流水线管理' });
         await library
           .getByRole('textbox', { name: '搜索标题或目标' })
@@ -58,7 +57,7 @@ for (const width of [1440, 1024]) {
         await library
           .getByRole('button', { name: '搜索', exact: true })
           .click();
-        await library.getByRole('button', { name: title, exact: true }).click();
+        await library.getByRole('link', { name: title, exact: true }).click();
         await expect(
           page.getByRole('heading', { name: title, exact: true }),
         ).toBeVisible();
@@ -67,9 +66,7 @@ for (const width of [1440, 1024]) {
       // Open order differs from the library's updatedAt order, and exceeds the old five-row limit.
       for (const title of titles) await openFromLibrary(title);
       await expect(entries).toHaveText(titles);
-      await opened
-        .getByRole('button', { name: titles[1], exact: true })
-        .click();
+      await opened.getByRole('link', { name: titles[1], exact: true }).click();
       await expect(entries).toHaveText(titles);
       await page.getByRole('button', { name: '运行流程', exact: true }).click();
       await expect
@@ -96,10 +93,7 @@ for (const width of [1440, 1024]) {
       await openFromLibrary(titles[1]);
       await expect(entries).toHaveText(titles);
       // Keep unsaved edits when closing and reopening an entry.
-      await page
-        .locator('.workflow-node')
-        .getByText('整理材料', { exact: true })
-        .click();
+      await selectCanvasNode(page, 'step');
       await page
         .getByLabel('步骤名称', { exact: true })
         .fill('关闭后仍保留的草稿');
@@ -126,10 +120,7 @@ for (const width of [1440, 1024]) {
       );
       await page.reload();
       await expect(entries).toHaveText([...titles.slice(2), titles[1]]);
-      await page
-        .locator('.workflow-node')
-        .getByText('关闭后仍保留的草稿', { exact: true })
-        .click();
+      await selectCanvasNode(page, 'step');
       await expect(page.getByLabel('步骤名称', { exact: true })).toHaveValue(
         '关闭后仍保留的草稿',
       );
@@ -167,62 +158,60 @@ for (const width of [1440, 1024]) {
   });
 }
 
-test('旧当前工作迁移，关闭最后入口后迟到快照不恢复入口', async ({
+test('URL打开当前工作，关闭最后入口后迟到快照不恢复入口', async ({
   page,
   request,
 }) => {
   const response = await request.post('/api/works', {
     data: {
-      goal: `旧入口迁移 ${Date.now().toString(36)}`,
+      goal: `URL入口 ${Date.now().toString(36)}`,
       materials: ['保留材料'],
     },
   });
   expect(response.status()).toBe(201);
   const { work } = (await response.json()) as Snapshot;
   try {
-    await page.addInitScript((id) => {
-      if (!sessionStorage.getItem('legacy-seeded')) {
-        localStorage.setItem('dynamic-flow.work', id);
-        sessionStorage.setItem('legacy-seeded', 'true');
-      }
-    }, work.id);
-    await page.goto('/');
+    await page.goto(`/methods/${work.id}`);
     const opened = page.getByRole('navigation', { name: '已打开的流水线' });
     await expect(opened.locator('.work-item')).toHaveText([work.title!]);
     await expect(
       page.getByRole('heading', { name: work.title!, exact: true }),
     ).toBeVisible();
-    // Hold a real same-work refetch, then close via the keyboard before it returns.
+    // Hold the actual overview request on reload, then close before it returns.
     let release!: () => void;
     const held = new Promise<void>((resolve) => {
       release = resolve;
     });
-    let requested!: () => void;
-    const started = new Promise<void>((resolve) => {
-      requested = resolve;
-    });
-    await page.route(`**/api/works/${work.id}`, async (route) => {
-      const response = await route.fetch();
-      requested();
-      await held;
-      await route.fulfill({ response });
-    });
-    await opened
-      .getByRole('button', { name: work.title!, exact: true })
-      .click();
-    await started;
-    const close = opened.getByRole('button', {
-      name: `关闭流水线 ${work.title}`,
-      exact: true,
-    });
-    await close.focus();
-    await close.press('Enter');
-    await expect(opened.locator('.work-item')).toHaveCount(0);
-    const finished = page.waitForResponse((response) =>
-      response.url().endsWith(`/api/works/${work.id}`),
+    let requested = false;
+    let settled = false;
+    await page.route(
+      new RegExp(`/api/works/${work.id}(?:\\?.*)?$`),
+      async (route) => {
+        const response = await route.fetch();
+        requested = true;
+        await held;
+        try {
+          await route.fulfill({ response });
+        } catch {
+          /* Closing cancels this request. */
+        }
+        settled = true;
+      },
     );
-    release();
-    await finished;
+    try {
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await expect.poll(() => requested).toBe(true);
+      const close = opened.getByRole('button', {
+        name: `关闭流水线 ${work.title}`,
+        exact: true,
+      });
+      await close.focus();
+      await close.press('Enter');
+      await expect(opened.locator('.work-item')).toHaveCount(0);
+    } finally {
+      release();
+    }
+    await expect.poll(() => settled).toBe(true);
     await expect(
       page.getByRole('region', { name: '流水线管理' }),
     ).toBeVisible();

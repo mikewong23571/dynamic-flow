@@ -25,7 +25,7 @@ export function CollectionEditor({
         n.id === node.id
           ? {
               ...n,
-              mode: 'all',
+
               operation: 'aggregate',
               join: {
                 type: 'inner',

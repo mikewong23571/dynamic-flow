@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-22T07:52:16.865Z",
+  "work": "5cb210fc-f700-43bd-9946-736d869db90b",
+  "width": 1440,
+  "errors": [],
+  "measurements": [
+    {
+      "target": "results",
+      "ms": 2869,
+      "dom": 7391,
+      "prose": 1076,
+      "longTasks": [
+        {
+          "start": 501.2000000476837,
+          "duration": 196
+        },
+        {
+          "start": 700.4000000953674,
+          "duration": 189
+        },
+        {
+          "start": 1255.9000000953674,
+          "duration": 110
+        },
+        {
+          "start": 1668.6000001430511,
+          "duration": 435
+        },
+        {
+          "start": 2103.9000000953674,
+          "duration": 659
+        },
+        {
+          "start": 2937.4000000953674,
+          "duration": 67
+        },
+        {
+          "start": 3045.2999999523163,
+          "duration": 2554
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 177,
+      "dom": 232,
+      "prose": 0,
+      "longTasks": [
+        {
+          "start": 5745.100000143051,
+          "duration": 79
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 614,
+      "dom": 740,
+      "prose": 0,
+      "longTasks": [
+        {
+          "start": 5893.900000095367,
+          "duration": 163
+        },
+        {
+          "start": 6057.5,
+          "duration": 378
+        }
+      ]
+    },
+    {
+      "target": "results",
+      "ms": 2415,
+      "dom": 7391,
+      "prose": 1076,
+      "longTasks": [
+        {
+          "start": 6512.900000095367,
+          "duration": 2327
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 687,
+      "dom": 740,
+      "prose": 0,
+      "longTasks": [
+        {
+          "start": 8960.5,
+          "duration": 185
+        },
+        {
+          "start": 9146.200000047684,
+          "duration": 410
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 82,
+      "dom": 232,
+      "prose": 0,
+      "longTasks": []
+    }
+  ]
+}

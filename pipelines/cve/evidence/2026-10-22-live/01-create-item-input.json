@@ -1,0 +1,24 @@
+{
+  "key": "CVE-2025-27516:SCC-chatops-adr:Flowcraft测试-024932",
+  "title": "CVE-2025-27516 · SCC chatops/ADR 真实流水线测试",
+  "goal": "收集 CVE-2025-27516 的可复核漏洞材料，并基于 cve-fix 真实业务线索核查 SCC chatops-api、adr-api 两个系统的实际影响，展示两条方法的输入、输出与产物交接。",
+  "workflowId": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+  "criteria": [
+    "漏洞关键事实及触发条件有可复核来源。",
+    "chatops-api、adr-api 两项均有判断或明确列出的证据缺口。",
+    "材料结果、交接来源和最终影响报告可查看并经人工复核。"
+  ],
+  "materials": [
+    "调查任务：CVE-2025-27516；组件线索：Jinja2。请通过真实 WebSearch MCP 收集官方公告、受影响版本、修复依据与触发条件，保留实际取得的来源正文。业务范围限定 SCC chatops-api、adr-api；两者在 cve-fix 已有扫描索引中有 Jinja2 依赖线索，具体记录在 A 完成后交给 B。本轮不读取旧影响 manifest 当作新判定，不修改业务源码或业务环境。"
+  ],
+  "data": {
+    "cveId": "CVE-2025-27516",
+    "library": "Jinja2",
+    "businessScope": [
+      "SCC/chatops-api",
+      "SCC/adr-api"
+    ],
+    "testPurpose": "真实模型和真实检索的双流水线输入输出展示",
+    "businessClueSource": "/home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl"
+  }
+}

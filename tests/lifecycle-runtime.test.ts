@@ -19,7 +19,7 @@ const agent: FlowNode = {
   id: 'classify',
   label: '分类',
   kind: 'agent',
-  mode: 'each',
+
   task: '分类',
   operation: 'map',
   expectedOutput: {
@@ -32,14 +32,14 @@ const milestone: FlowNode = {
   id: 'progress',
   label: '进展',
   kind: 'milestone',
-  mode: 'all',
+
   milestone: { stage: '已调查', summary: '证据已收集' },
 };
 const wait: FlowNode = {
   id: 'wait',
   label: '等待公告',
   kind: 'wait',
-  mode: 'all',
+
   wait: { event: 'advisory', reason: '等待厂商', timeoutSeconds: 86400 },
 };
 function chain(nodes: FlowNode[]): Definition {
@@ -311,7 +311,7 @@ test('有限并发和输入顺序，map 数组不展开，flatMap 显式展开�
       id: 'aggregate',
       kind: 'agent',
       label: '汇总',
-      mode: 'all',
+
       operation: 'aggregate',
       task: '汇总',
       inputSchema: {
@@ -772,7 +772,7 @@ test('等待/里程碑整批输出 schema 不把透传元素误判成数组，�
         label: '逐项透传',
         kind: 'function',
         functionName: 'identity',
-        mode: 'each',
+
         operation: 'map',
         inputSchema: { type: 'string' },
         expectedOutput: { type: 'string' },
@@ -815,7 +815,7 @@ test('分支整批输出不符合 expectedOutput 时失败，不能向任一分�
         id: 'branch',
         label: '条件分流',
         kind: 'branch',
-        mode: 'all',
+
         condition: { field: '', operator: 'exists' },
         inputSchema: { type: 'array', items: { type: 'string' } },
         expectedOutput: { type: 'array', items: { type: 'integer' } },

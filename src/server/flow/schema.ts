@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv, { type ValidateFunction } from 'ajv';
 import type { Json } from '../../shared/records.ts';
 
 const ajv = new Ajv({
@@ -8,9 +8,29 @@ const ajv = new Ajv({
   allowUnionTypes: true,
   coerceTypes: false,
 });
+// Persisted definitions are parsed as new objects. Cache by content, not object identity.
+// Drafts share this bounded cache; Ajv must not retain each temporary schema object too.
+const validators = new Map<string, ValidateFunction>();
+const maxValidators = 128;
+function compiled(schema: Json): ValidateFunction {
+  const key = JSON.stringify(schema);
+  const saved = validators.get(key);
+  if (saved) return saved;
+  let validate: ValidateFunction;
+  try {
+    validate = ajv.compile(schema as object | boolean);
+  } finally {
+    if (schema && typeof schema === 'object')
+      ajv.removeSchema(schema as object);
+  }
+  if (validators.size >= maxValidators)
+    validators.delete(validators.keys().next().value!);
+  validators.set(key, validate!);
+  return validate!;
+}
 export function schemaIssue(schema: Json): string | undefined {
   try {
-    ajv.compile(schema as object | boolean);
+    compiled(schema);
   } catch (error) {
     return error instanceof Error ? error.message : String(error);
   }
@@ -21,7 +41,7 @@ export function validateValue(
   label: string,
 ) {
   if (schema === undefined) return;
-  const validate = ajv.compile(schema as object | boolean);
+  const validate = compiled(schema);
   if (!validate(value))
     throw Error(
       `${label}不符合 schema：${ajv.errorsText(validate.errors, { separator: '；' })}`,

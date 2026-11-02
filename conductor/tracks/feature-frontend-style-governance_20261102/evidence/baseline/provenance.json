@@ -1,0 +1,18 @@
+{
+  "captured_at": "2026-11-02T07:47:41.001088+00:00",
+  "repository": "/home/mike/projs/fork/dynamic-flow",
+  "head": "6fa6e9d47c9e3286d96884aa28f02e368ef2e2bd",
+  "baseline_kind": "dirty-working-tree-snapshot",
+  "source_fingerprint": "ee184d6961a76c1684bd1b53b01d0e6c8b1fa97c88152d348c9f0556a2c73955",
+  "isolated_snapshot": "/tmp/flowcraft-ui-audit-hr5h73ih",
+  "node": "v25.4.0",
+  "session_id": "01a19b2c-465b-76b0-a943-d99461da3233",
+  "agent": "codex",
+  "data": "Synthetic deterministic fixtures only; temporary per-worker dataRoot and random loopback ports; no models.toml secrets or hosted data copied.",
+  "validation": [
+    "Isolated Vite production build passed",
+    "One exploratory style audit passed with known failures measured",
+    "Two hierarchy audit cases passed at 1440x900 and 1024x768; focus restoration measured false, not asserted as passing acceptance"
+  ],
+  "protected_instance": "4320/4321 and flowcraft.service untouched"
+}

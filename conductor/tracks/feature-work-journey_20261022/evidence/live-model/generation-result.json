@@ -1,0 +1,13 @@
+{
+  "methodId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+  "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9",
+  "title": "反馈分类与汇总",
+  "message": "已保存草稿《反馈分类与汇总》：两个静态步骤——逐条分类（每条输出 original/category/reason，类别限定问题、需求或称赞）和整批汇总（Markdown 建议报告，引用原文并声明覆盖条数），均只依赖本次材料、不写死内容。两个可检查输出为“分类结果”和“建议报告”，下一步可在提供材料后试运行验证分类与报告质量。",
+  "effectiveModel": {
+    "source": "default",
+    "alias": "sangfor/glm-5.3-flash",
+    "model": "glm-5.3-flash",
+    "effort": "max"
+  },
+  "completedAt": "2026-10-22T11:57:55.946Z"
+}

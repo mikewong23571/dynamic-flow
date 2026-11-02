@@ -9,6 +9,7 @@ import { createFlow } from '../src/server/flow/index.ts';
 import { createWorkService } from '../src/server/work/index.ts';
 import { createAssistant } from '../src/server/assistant/index.ts';
 import { seedCatalog } from './catalog-fixture.ts';
+import { runResultSummarySchema } from '../src/shared/result-summary';
 import type { Definition } from '../src/shared/records.ts';
 
 test('作者工具承载纯表达式；无效局部绑定被拒绝，修正后实际保存并可重开', async (t) => {
@@ -28,7 +29,7 @@ test('作者工具承载纯表达式；无效局部绑定被拒绝，修正后�
         label: '汇总得分',
         kind: 'function',
         functionName: 'expression',
-        mode: 'all',
+
         operation: 'aggregate',
         inputSchema: { type: 'array', items: { type: 'number' } },
         expectedOutput: { type: 'number' },
@@ -52,6 +53,26 @@ test('作者工具承载纯表达式；无效局部绑定被拒绝，修正后�
     edges: [{ from: ['$input', 'scores'], to: ['sum', 'input'] }],
     outputs: { total: ['sum', 'output'] },
   };
+  definition.nodes.push({
+    id: 'overview',
+    label: '结果摘要',
+    kind: 'function',
+    functionName: 'expression',
+
+    operation: 'aggregate',
+    expectedOutput: runResultSummarySchema,
+    expression: {
+      kind: 'literal',
+      value: {
+        title: '得分汇总',
+        summary: '本轮得分已汇集，详情见得分产物。',
+        scope: '仅本轮固定样本',
+      },
+    },
+  });
+  definition.edges.push({ from: ['sum', 'output'], to: ['overview', 'input'] });
+  definition.outputs.overview = ['overview', 'output'];
+  definition.summaryOutput = 'overview';
   const paths = await seedCatalog(root, {
     baseUrl: 'http://test.invalid',
     model: 'fixture',
@@ -62,6 +83,7 @@ test('作者工具承载纯表达式；无效局部绑定被拒绝，修正后�
     runSession: async (input) => {
       assert.match(input.systemPrompt, /reduce.*initial/);
       assert.match(input.systemPrompt, /otherwise/);
+      assert.match(input.systemPrompt, /summaryOutput/);
       const tool = input.tools.find((tool) => tool.name === 'update_flow')!;
       const validate = new Ajv({ strict: false }).compile(tool.parameters);
       assert.equal(

@@ -1,0 +1,26 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index c1b28d1283125e9a52ff6038177a78d5adf08caa..d513529e9fac51f88e5f397a0e818b5035b908f5 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -592,7 +592,7 @@ function useStreamingObservability({ response, isStreaming, result, errorsRef, e
+ //#region src/hooks/useOpenUIState.ts
+ /** Unwrap { value, componentType } wrapper from form field entries. Returns raw value. */
+ function unwrapFieldValue(v) {
+-	if (v && typeof v === "object" && !Array.isArray(v) && "value" in v) return v.value;
++	if (v && typeof v === "object" && !Array.isArray(v) && "value" in v && "componentType" in v && Object.keys(v).length === 2) return v.value;
+ 	return v;
+ }
+ /**
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 600a301ad60ca1a2d8429bda4cbdb57e1d522c3f..670b7f3de28c2c9d9879c970ba90e6b1dbcf9bfb 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -568,7 +568,7 @@ function useStreamingObservability({ response, isStreaming, result, errorsRef, e
+ //#region src/hooks/useOpenUIState.ts
+ /** Unwrap { value, componentType } wrapper from form field entries. Returns raw value. */
+ function unwrapFieldValue(v) {
+-	if (v && typeof v === "object" && !Array.isArray(v) && "value" in v) return v.value;
++	if (v && typeof v === "object" && !Array.isArray(v) && "value" in v && "componentType" in v && Object.keys(v).length === 2) return v.value;
+ 	return v;
+ }
+ /**

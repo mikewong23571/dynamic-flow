@@ -1,0 +1,86 @@
+{
+  "scenario": "external-source",
+  "itemId": "22183501-2dc0-484a-a08d-8e6353dd7bc4",
+  "runId": "bb7593ae-3ef6-43c5-a684-b0259aa448e1",
+  "status": "failed-not-accepted",
+  "cause": "implicit summaryOutput validation overrides the node expectedOutput contract",
+  "definitionId": "7185e732-ba6f-4b4b-adb4-fc8424f5af1b",
+  "nodeStates": {
+    "explode": "completed",
+    "review": "completed",
+    "record": "completed",
+    "finalize": "failed"
+  },
+  "failures": [
+    {
+      "nodeId": "finalize",
+      "error": "本轮结果摘要不符合 schema：data must be object"
+    }
+  ],
+  "successfulModelSteps": [
+    {
+      "nodeId": "review",
+      "instanceId": "review:0311d5ee-0772-4e1e-bcf8-e747a0f30f3f:0:0",
+      "effectiveModel": {
+        "source": "default",
+        "alias": "sangfor/deepseek-v4-flash",
+        "model": "deepseek-v4-flash",
+        "effort": "high"
+      },
+      "toolStatuses": [
+        {
+          "name": "websearch_fetchWebContent",
+          "status": "completed"
+        },
+        {
+          "name": "websearch_search",
+          "status": "completed"
+        },
+        {
+          "name": "submit_result",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "nodeId": "review",
+      "instanceId": "review:0311d5ee-0772-4e1e-bcf8-e747a0f30f3f:1:1",
+      "effectiveModel": {
+        "source": "default",
+        "alias": "sangfor/deepseek-v4-flash",
+        "model": "deepseek-v4-flash",
+        "effort": "high"
+      },
+      "toolStatuses": [
+        {
+          "name": "websearch_fetchWebContent",
+          "status": "completed"
+        },
+        {
+          "name": "websearch_search",
+          "status": "completed"
+        },
+        {
+          "name": "submit_result",
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "uiProgramId": "a8bc495c-457c-4294-a873-0fe097900bb8",
+  "summaryOutput": "records",
+  "summaryNodeSchema": {
+    "items": {
+      "properties": {
+        "rowKey": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rowKey"
+      ],
+      "type": "object"
+    },
+    "type": "array"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "scope": "isolated preview",
+  "model": {
+    "alias": "sangfor/deepseek-v4-flash",
+    "provider": "sangfor",
+    "model": "deepseek-v4-flash",
+    "displayName": "DeepSeek V4 Flash",
+    "protocol": "anthropic-messages",
+    "contextWindow": 1048576,
+    "supportedEfforts": [
+      "low",
+      "high",
+      "max"
+    ],
+    "defaultEffort": "high",
+    "apiKeyConfigured": true
+  },
+  "selection": {
+    "alias": "sangfor/deepseek-v4-flash",
+    "effort": "high"
+  }
+}

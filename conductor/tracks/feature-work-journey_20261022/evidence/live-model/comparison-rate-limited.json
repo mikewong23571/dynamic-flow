@@ -1,0 +1,177 @@
+{
+  "comparison": {
+    "id": "67b65f97-d11c-453b-88d5-8f109d64d1af",
+    "baselineId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9",
+    "candidateId": "84fc3677-d668-47af-972b-18d51353a68f",
+    "nodeId": "classify",
+    "frozenInputs": {
+      "input": [
+        {
+          "sampleId": "M01",
+          "value": "界面很顺手，但导出报告经常失败，影响交付。",
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        },
+        {
+          "sampleId": "M03",
+          "value": "搜索比以前快很多，团队很满意。",
+          "materialIds": [
+            "M03"
+          ],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "workItem": {
+      "id": "237a0e38-bffd-41cd-b95f-4d384386c392",
+      "key": "WI-20261022-adf153",
+      "title": "真实验收 · 客户反馈整理",
+      "goal": "整理客户反馈，分类并形成有原文依据的建议；明确报告实际覆盖范围。",
+      "revision": 1,
+      "data": {},
+      "materials": [
+        {
+          "id": "M01",
+          "text": "界面很顺手，但导出报告经常失败，影响交付。"
+        },
+        {
+          "id": "M03",
+          "text": "搜索比以前快很多，团队很满意。"
+        }
+      ]
+    },
+    "inputSources": [],
+    "sampleSource": {
+      "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+      "resultIds": [
+        "1ab4646f-050d-4852-be61-550f091e0a29",
+        "367eba0b-7ad8-47c6-905e-9a33095b5be0"
+      ]
+    },
+    "status": "completed",
+    "stopRequested": false,
+    "createdAt": "2026-10-22T12:10:45.444Z",
+    "baselineRunId": "1146b372-c8fd-4551-bcab-9c7aaade6126",
+    "candidateRunId": "063af1bf-98b7-49ff-9060-74f791372698"
+  },
+  "runs": [
+    {
+      "id": "1146b372-c8fd-4551-bcab-9c7aaade6126",
+      "status": "failed",
+      "inputs": {
+        "input": [
+          {
+            "sampleId": "M01",
+            "value": "界面很顺手，但导出报告经常失败，影响交付。",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": []
+          },
+          {
+            "sampleId": "M03",
+            "value": "搜索比以前快很多，团队很满意。",
+            "materialIds": [
+              "M03"
+            ],
+            "sourceResultIds": []
+          }
+        ]
+      },
+      "results": [
+        {
+          "node": "classify",
+          "status": "completed",
+          "outputs": {
+            "output": [
+              {
+                "value": {
+                  "original": "界面很顺手，但导出报告经常失败，影响交付。",
+                  "category": "问题",
+                  "reason": "反馈核心在于导出报告经常失败并影响交付，属于需要解决的功能缺陷，故归为问题。"
+                },
+                "sampleId": "M01",
+                "materialIds": [
+                  "M01"
+                ],
+                "sourceResultIds": [
+                  "fc6563ce-f4ad-4fc5-9f2e-91762ce59d96"
+                ]
+              }
+            ]
+          },
+          "effectiveModel": {
+            "source": "default",
+            "alias": "sangfor/glm-5.3-flash",
+            "model": "glm-5.3-flash",
+            "effort": "max"
+          }
+        },
+        {
+          "node": "classify",
+          "status": "failed",
+          "error": "MCP 服务连接失败，请检查服务状态和凭据。",
+          "outputs": {},
+          "effectiveModel": {
+            "source": "default",
+            "alias": "sangfor/glm-5.3-flash",
+            "model": "glm-5.3-flash",
+            "effort": "max"
+          }
+        }
+      ]
+    },
+    {
+      "id": "063af1bf-98b7-49ff-9060-74f791372698",
+      "status": "failed",
+      "inputs": {
+        "input": [
+          {
+            "sampleId": "M01",
+            "value": "界面很顺手，但导出报告经常失败，影响交付。",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": []
+          },
+          {
+            "sampleId": "M03",
+            "value": "搜索比以前快很多，团队很满意。",
+            "materialIds": [
+              "M03"
+            ],
+            "sourceResultIds": []
+          }
+        ]
+      },
+      "results": [
+        {
+          "node": "classify",
+          "status": "failed",
+          "error": "MCP 服务连接失败，请检查服务状态和凭据。",
+          "outputs": {},
+          "effectiveModel": {
+            "source": "default",
+            "alias": "sangfor/glm-5.3-flash",
+            "model": "glm-5.3-flash",
+            "effort": "max"
+          }
+        },
+        {
+          "node": "classify",
+          "status": "failed",
+          "error": "MCP 服务连接失败，请检查服务状态和凭据。",
+          "outputs": {},
+          "effectiveModel": {
+            "source": "default",
+            "alias": "sangfor/glm-5.3-flash",
+            "model": "glm-5.3-flash",
+            "effort": "max"
+          }
+        }
+      ]
+    }
+  ]
+}

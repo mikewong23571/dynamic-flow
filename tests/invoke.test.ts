@@ -19,7 +19,7 @@ const definition: Definition = {
       id: 'step',
       label: '整理材料',
       kind: 'function',
-      mode: 'each',
+      operation: 'map',
       functionName: 'identity',
     },
   ],
@@ -27,9 +27,11 @@ const definition: Definition = {
   outputs: { result: ['step', 'output'] },
 };
 
-async function fixture(options: {
-  runSession?: (input: { prompt: string }) => Promise<string>;
-} = {}) {
+async function fixture(
+  options: {
+    runSession?: (input: { prompt: string }) => Promise<string>;
+  } = {},
+) {
   const root = await mkdtemp(join(tmpdir(), 'invoke-test-'));
   // interpret 修复环走真实模型配置解析；测试目录种子目录，替身 runner 不产生真实调用。
   await seedCatalog(root, {
@@ -74,13 +76,21 @@ async function fixture(options: {
     return adopted.body.work;
   };
   const adoptCurrent = async (workId: string) => {
-    const snap = await (await server.app.request(`/api/works/${workId}`)).json();
+    const snap = await (
+      await server.app.request(`/api/works/${workId}`)
+    ).json();
     return send(`/api/works/${workId}/actions`, {
       action: 'adopt',
       definitionId: snap.work.draftId,
     });
   };
-  return { server, send, createWork, adoptCurrent, clean: () => rm(root, { recursive: true, force: true }) };
+  return {
+    server,
+    send,
+    createWork,
+    adoptCurrent,
+    clean: () => rm(root, { recursive: true, force: true }),
+  };
 }
 
 test('invoke: adopted 缺省、裸值包装、wait 同步返回输出', async () => {
@@ -224,7 +234,9 @@ test('invoke: 未采用版本/未知端口/无 wait 异步', async () => {
       const snap = await (
         await f.server.app.request(`/api/works/${work.id}`)
       ).json();
-      const run = snap.work.runs.find((r: { id: string }) => r.id === asyncRes.body.runId);
+      const run = snap.work.runs.find(
+        (r: { id: string }) => r.id === asyncRes.body.runId,
+      );
       if (run && ['completed', 'failed', 'cancelled'].includes(run.status))
         break;
       await new Promise((r) => setTimeout(r, 20));

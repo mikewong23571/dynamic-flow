@@ -1,0 +1,43 @@
+{
+  "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+  "definitionId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9",
+  "inputs": {
+    "materials": [
+      {
+        "sampleId": "M01",
+        "value": "界面很顺手，但导出报告经常失败，影响交付。",
+        "materialIds": [
+          "M01"
+        ],
+        "sourceResultIds": []
+      },
+      {
+        "sampleId": "M03",
+        "value": "搜索比以前快很多，团队很满意。",
+        "materialIds": [
+          "M03"
+        ],
+        "sourceResultIds": []
+      }
+    ]
+  },
+  "workItem": {
+    "id": "237a0e38-bffd-41cd-b95f-4d384386c392",
+    "key": "WI-20261022-adf153",
+    "title": "真实验收 · 客户反馈整理",
+    "goal": "整理客户反馈，分类并形成有原文依据的建议；明确报告实际覆盖范围。",
+    "revision": 1,
+    "data": {},
+    "materials": [
+      {
+        "id": "M01",
+        "text": "界面很顺手，但导出报告经常失败，影响交付。"
+      },
+      {
+        "id": "M03",
+        "text": "搜索比以前快很多，团队很满意。"
+      }
+    ]
+  },
+  "uiErrors": []
+}

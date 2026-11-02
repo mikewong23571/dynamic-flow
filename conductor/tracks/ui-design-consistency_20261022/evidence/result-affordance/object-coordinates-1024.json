@@ -1,0 +1,68 @@
+{
+  "tableLayout": "fixed",
+  "entries": [
+    {
+      "justify": "flex-start",
+      "textAlign": "left",
+      "titleX": 678.859375,
+      "iconX": 657.859375,
+      "top": 293.484375,
+      "height": 45.5
+    },
+    {
+      "justify": "flex-start",
+      "textAlign": "left",
+      "titleX": 678.859375,
+      "iconX": 657.859375,
+      "top": 348.984375,
+      "height": 28
+    }
+  ],
+  "cells": [
+    {
+      "top": 282.484375,
+      "verticalAlign": "top",
+      "textAlign": "left",
+      "paddingTop": "10.5px",
+      "width": 168.515625
+    },
+    {
+      "top": 282.484375,
+      "verticalAlign": "top",
+      "textAlign": "left",
+      "paddingTop": "10.5px",
+      "width": 153.1875
+    },
+    {
+      "top": 282.484375,
+      "verticalAlign": "top",
+      "textAlign": "left",
+      "paddingTop": "10.5px",
+      "width": 91.90625
+    },
+    {
+      "top": 282.484375,
+      "verticalAlign": "top",
+      "textAlign": "left",
+      "paddingTop": "10.5px",
+      "width": 245.109375
+    },
+    {
+      "top": 282.484375,
+      "verticalAlign": "top",
+      "textAlign": "left",
+      "paddingTop": "10.5px",
+      "width": 107.28125
+    }
+  ],
+  "headAlign": [
+    "left",
+    "left",
+    "left",
+    "left",
+    "left"
+  ],
+  "actionTop": 293.484375,
+  "actionTextTop": 299.359375,
+  "objectTextTop": 298.734375
+}

@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-23",
+  "status": "passed",
+  "checks": "Local links, template placeholders, required documents and standards, new status, registry links, completed reference tracks",
+  "documents": [
+    {
+      "file": "index.md",
+      "bytes": 1103
+    },
+    {
+      "file": "spec.md",
+      "bytes": 5879
+    },
+    {
+      "file": "plan.md",
+      "bytes": 7946
+    },
+    {
+      "file": "design.md",
+      "bytes": 18332
+    },
+    {
+      "file": "research.md",
+      "bytes": 9210
+    },
+    {
+      "file": "implementation.md",
+      "bytes": 12172
+    },
+    {
+      "file": "acceptance.md",
+      "bytes": 8627
+    },
+    {
+      "file": "documentation.md",
+      "bytes": 3807
+    },
+    {
+      "file": "evidence.md",
+      "bytes": 1353
+    },
+    {
+      "file": "standards/README.md",
+      "bytes": 782
+    },
+    {
+      "file": "evidence/track-review.md",
+      "bytes": 8718
+    }
+  ],
+  "brokenLinks": [],
+  "sourceHead": "6fa6e9d47c9e3286d96884aa28f02e368ef2e2bd",
+  "sourceBasis": "current dirty working tree, not clean HEAD",
+  "sourceHashes": {
+    "src/shared/records.ts": "3f46db56883df465699fd3cddfb9b0593e1a680d8de4d00694fe2b10bfd579b3",
+    "src/server/work-items/index.ts": "0eb053a94eb62b43087d5ee7c2524b60c8407671404028a70d41785d73e75606",
+    "src/server/work-items/run-inputs.ts": "0ae6197a2f37d7ba1ed3b00837d4102bf6da956fa214251efd910ba9c9830ac9",
+    "src/server/index.ts": "7a942aae793f5b3dfa78fb5f3558ed21263490211b0131e6bfc7f74d92a3fbc5",
+    "src/server/runs/index.ts": "51d126723e1c1cf5cfd45939a60fca6363a816667eb01e51d6f570c180426d59",
+    "src/client/features/work-items/WorkItems.tsx": "3f16958e655cbfedd06fa11a324893bc6752626f009d3dbc78bde4840d7c91b2",
+    "src/client/features/work-items/PrepareItemRun.tsx": "867f3b3483522182483096c7221421b606dcc2bcb9d62413fbb199e24dc4f25c",
+    "src/client/features/results/Results.tsx": "d15219b5fc495f614bca4fe2eda79fa52b6c7c846dea6aa9f9bb9b3efb20cc82"
+  },
+  "notRun": [
+    "application tests",
+    "browser acceptance",
+    "real models",
+    "capacity benchmark"
+  ],
+  "finalState": {
+    "status": "new",
+    "bindingReleased": true,
+    "phase0Complete": true,
+    "implementationStarted": false
+  }
+}

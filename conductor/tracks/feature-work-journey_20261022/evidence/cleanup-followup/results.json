@@ -1,0 +1,29 @@
+[
+  {
+    "width": 1440,
+    "heights": [
+      69,
+      69,
+      69,
+      69,
+      69,
+      68.5
+    ],
+    "deletedEntryRemoved": true
+  },
+  {
+    "width": 1024,
+    "heights": [
+      69,
+      69,
+      69,
+      69,
+      69,
+      68.5
+    ],
+    "deletedEntryRemoved": true
+  },
+  {
+    "temporaryFailurePreservesEntry": true
+  }
+]

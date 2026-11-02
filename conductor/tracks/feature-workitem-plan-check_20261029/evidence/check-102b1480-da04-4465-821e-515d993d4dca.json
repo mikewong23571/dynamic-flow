@@ -1,0 +1,22 @@
+{
+  "checked": {
+    "itemRevision": 0
+  },
+  "canExecute": false,
+  "canPublish": false,
+  "issues": [
+    {
+      "area": "state",
+      "code": "WORKSPACE_NOT_READY",
+      "path": "workspace",
+      "message": "尚未建立工作项处理空间。",
+      "hint": "先通过工作项入口建立处理空间，再检查方案。"
+    }
+  ],
+  "unchecked": [],
+  "inputs": [],
+  "publication": {
+    "current": false,
+    "missingOutputs": []
+  }
+}

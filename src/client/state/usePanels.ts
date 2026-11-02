@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import type { FlowNode } from '../../shared/records';
 
 /** 面板、标签页与各对话框开关；创建工作与添加材料的表单输入。 */
-export function usePanels(hasWork: boolean) {
+export function usePanels(workId: string) {
   const [panel, setPanel] = useState<'inspector' | 'assistant' | null>(
     'assistant',
   );
   const [tab, setTab] = useState<'canvas' | 'results' | 'compare'>('canvas');
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [libraryOpen, setLibraryOpen] = useState(!hasWork);
+  const [libraryOpen, setLibraryOpen] = useState(!workId);
   const [libraryRevision, setLibraryRevision] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
   const [goal, setGoal] = useState(
@@ -17,16 +17,64 @@ export function usePanels(hasWork: boolean) {
   const [materialText, setMaterialText] = useState(
     () => localStorage.getItem('dynamic-flow.materials') || '',
   );
-  const [addOpen, setAddOpen] = useState(false);
-  const [newMaterials, setNewMaterials] = useState('');
-  const [trialOpen, setTrialOpen] = useState(false);
-  const [continueOpen, setContinueOpen] = useState(false);
-  const [continueNode, setContinueNode] = useState('');
-  const [candidateSource, setCandidateSource] = useState<string>();
-  const [sourceChoice, setSourceChoice] = useState('');
-  const [replaceDraft, setReplaceDraft] = useState(false);
-  const [codeOpen, setCodeOpen] = useState(false);
-  const [invokeOpen, setInvokeOpen] = useState(false);
+  // Business dialogs belong to one method, including their open state.
+  type MethodDialogs = {
+    addOpen: boolean;
+    newMaterials: string;
+    trialOpen: boolean;
+    continueOpen: boolean;
+    continueNode: string;
+    candidateSource: string | undefined;
+    sourceChoice: string;
+    replaceDraft: boolean;
+    codeOpen: boolean;
+    invokeOpen: boolean;
+  };
+  const [dialogs, setDialogs] = useState<Record<string, MethodDialogs>>({});
+  const currentDialogs = dialogs[workId] || {
+    addOpen: false,
+    newMaterials: '',
+    trialOpen: false,
+    continueOpen: false,
+    continueNode: '',
+    candidateSource: undefined,
+    sourceChoice: '',
+    replaceDraft: false,
+    codeOpen: false,
+    invokeOpen: false,
+  };
+  function setDialog<K extends keyof MethodDialogs>(
+    key: K,
+    value: MethodDialogs[K],
+  ) {
+    setDialogs((previous) => ({
+      ...previous,
+      [workId]: { ...(previous[workId] || currentDialogs), [key]: value },
+    }));
+  }
+  const {
+    addOpen,
+    newMaterials,
+    trialOpen,
+    continueOpen,
+    continueNode,
+    candidateSource,
+    sourceChoice,
+    replaceDraft,
+    codeOpen,
+    invokeOpen,
+  } = currentDialogs;
+  const setAddOpen = (value: boolean) => setDialog('addOpen', value);
+  const setNewMaterials = (value: string) => setDialog('newMaterials', value);
+  const setTrialOpen = (value: boolean) => setDialog('trialOpen', value);
+  const setContinueOpen = (value: boolean) => setDialog('continueOpen', value);
+  const setContinueNode = (value: string) => setDialog('continueNode', value);
+  const setCandidateSource = (value: string | undefined) =>
+    setDialog('candidateSource', value);
+  const setSourceChoice = (value: string) => setDialog('sourceChoice', value);
+  const setReplaceDraft = (value: boolean) => setDialog('replaceDraft', value);
+  const setCodeOpen = (value: boolean) => setDialog('codeOpen', value);
+  const setInvokeOpen = (value: boolean) => setDialog('invokeOpen', value);
   const [addKind, setAddKind] = useState<FlowNode['kind']>('function');
   useEffect(() => {
     localStorage.setItem('dynamic-flow.goal', goal);

@@ -1,0 +1,53 @@
+{
+  "backup": "/home/mike/.local/state/flowcraft/backups/thin-workitem-20261030T060913Z",
+  "completedRunsUnchanged": 556,
+  "inFlightProtected": 2,
+  "resumedRunIds": [
+    "7fff66b5-ad9f-4834-b29c-ce343873c07b",
+    "67f9b0ca-ce1e-4673-ba85-a8fe60829f3c"
+  ],
+  "resumedBatches": [
+    "a167ff61-05a1-4da8-b5eb-b9d2785821f6"
+  ],
+  "files": [
+    "src/server/flow/overview.ts",
+    "src/server/flow/index.ts",
+    "src/server/files/index.ts",
+    "src/server/runs/index.ts",
+    "src/server/index.ts",
+    "src/server/work-items/composition.ts",
+    "src/server/assistant/workitem.ts",
+    "src/shared/records.ts",
+    "src/shared/workitem-composition.ts",
+    "src/client/core/api.ts",
+    "src/client/state/useConnection.ts",
+    "src/client/features/results/RemoteContent.tsx",
+    "src/client/features/results/ArtifactValue.tsx",
+    "src/client/features/results/RunInspector.tsx",
+    "src/client/features/results/RunArtifact.tsx",
+    "src/client/features/results/result-overview-model.ts",
+    "src/client/features/results/RunArtifactsPage.tsx",
+    "src/client/features/results/RunProcess.tsx",
+    "src/client/features/results/Comparison.tsx",
+    "src/client/features/assistant/AssistantMessage.tsx",
+    "src/client/components/MaterialDialog.tsx",
+    "src/client/features/work-items/WorkItemDetail.tsx",
+    "src/client/features/work-items/WorkItems.tsx",
+    "src/client/features/work-items/composition/CompositionDeliveries.tsx",
+    "src/client/features/work-items/composition/CompositionInputs.tsx",
+    "src/client/features/work-items/composition/PlannedInputs.tsx",
+    "src/client/features/work-items/composition/DeliveryView.tsx",
+    "src/client/features/work-items/composition/RecordTable.tsx",
+    "src/client/features/work-items/composition/PublishDelivery.tsx",
+    "src/client/features/work-items/composition/delivery-browser-state.ts",
+    "pipelines/cve/v2/publish-batch-result.ts",
+    "src/client/AGENTS.md",
+    "src/server/files/AGENTS.md",
+    "src/server/flow/AGENTS.md",
+    "src/server/work-items/AGENTS.md",
+    "docs/design.md",
+    "tests/bounded-workspace.test.ts",
+    "tests/cve-interface.test.ts"
+  ],
+  "deployedAt": "2026-10-30T06:09:50.061830+00:00"
+}

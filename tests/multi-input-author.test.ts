@@ -26,7 +26,7 @@ for (const functionName of ['merge', 'collect', 'join'] as const) {
       label: '组合结果',
       kind: 'function',
       functionName,
-      mode: 'all',
+
       operation: 'aggregate',
       ...(functionName === 'join'
         ? {

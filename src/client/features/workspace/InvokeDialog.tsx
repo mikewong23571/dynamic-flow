@@ -10,7 +10,10 @@ import { errorCode, errorText } from '../../core/format';
 import { Button, Modal } from '../../components/ui';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
-import { NativeSelect, NativeSelectOption } from '../../components/ui/native-select';
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from '../../components/ui/native-select';
 
 function blankEntries(fields: InvokeField[]): Record<string, string[]> {
   return Object.fromEntries(
@@ -68,11 +71,13 @@ export function InvokeDialog({
   open,
   onOpenChange,
   definition,
+  identity,
   invokeWork,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   definition: Definition;
+  identity?: string;
   invokeWork: (
     inputs: Record<string, unknown[]>,
     loose: boolean,
@@ -118,7 +123,8 @@ export function InvokeDialog({
     } catch (reason) {
       const message = errorText(reason);
       setErrors([message]);
-      if (!loose) setContractBlocked(errorCode(reason) === 'contract_violation');
+      if (!loose)
+        setContractBlocked(errorCode(reason) === 'contract_violation');
     } finally {
       setSubmitting(false);
     }
@@ -129,7 +135,7 @@ export function InvokeDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="直接输入运行"
-      description="按输入端口直接提供内容，不经过材料选择；输入随本次运行固定保存。"
+      description={identity}
     >
       <div className="stack">
         {!fields.length && (
@@ -145,9 +151,7 @@ export function InvokeDialog({
               <strong>{field.port}</strong>
               <span className="muted">
                 {field.required ? '必填' : '可选'}
-                {field.kind === 'json' && field.contract?.item
-                  ? ' · JSON'
-                  : ''}
+                {field.kind === 'json' && field.contract?.item ? ' · JSON' : ''}
               </span>
             </div>
             {(raw[field.port] ?? []).map((entry, index) => (

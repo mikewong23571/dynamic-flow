@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import type { Snapshot, WorkPage } from '../../src/shared/records';
 
 test('工作列表搜索、分页、重命名、归档恢复与重新打开', async ({
@@ -19,7 +19,7 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
   }
   try {
     await page.goto('/');
-    await page.getByRole('button', { name: '全部流水线', exact: true }).click();
+    await page.getByRole('link', { name: '流水线', exact: true }).click();
     const library = page.getByRole('region', {
       name: '流水线管理',
       exact: true,
@@ -28,7 +28,7 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
       .getByRole('textbox', { name: '搜索标题或目标', exact: true })
       .fill(prefix);
     await library.getByRole('button', { name: '搜索', exact: true }).click();
-    await expect(library).toContainText('共 12 项');
+    await expect(library.locator('.management-count')).toHaveText('12');
     await expect(library.locator('.library-item')).toHaveCount(10);
     await expect(library).toContainText('第 1 / 2 页');
     await library.getByRole('button', { name: '下一页', exact: true }).click();
@@ -40,7 +40,9 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
       .getByRole('combobox', { name: '每页条目数', exact: true })
       .selectOption('20');
     await expect(library.locator('.library-item')).toHaveCount(12);
-    await expect(library).toContainText('第 1 / 1 页');
+    await expect(
+      library.getByRole('button', { name: '下一页', exact: true }),
+    ).toHaveCount(0);
 
     const current = (await (
       await request.get(
@@ -71,7 +73,7 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
     await expect(
       page
         .locator('.work-list')
-        .getByRole('button', { name: newTitle, exact: true }),
+        .getByRole('link', { name: newTitle, exact: true }),
     ).toHaveCount(0);
     const renamed = (await (
       await request.get(`/api/works/${target.id}`)
@@ -92,12 +94,12 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
       .getByRole('button', { name: `更多操作 ${newTitle}`, exact: true })
       .click();
     await page.getByRole('menuitem', { name: '归档', exact: true }).click();
-    await expect(library).toContainText('共 11 项');
+    await expect(library.locator('.management-count')).toHaveText('11');
     await expect(
       library.getByRole('heading', { name: newTitle, exact: true }),
     ).toHaveCount(0);
     await library.getByRole('tab', { name: '已归档', exact: true }).click();
-    await expect(library).toContainText('共 1 项');
+    await expect(library.locator('.management-count')).toHaveText('1');
     await expect(
       library.getByRole('heading', { name: newTitle, exact: true }),
     ).toBeVisible();
@@ -105,9 +107,9 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
       .getByRole('button', { name: `更多操作 ${newTitle}`, exact: true })
       .click();
     await page.getByRole('menuitem', { name: '恢复', exact: true }).click();
-    await expect(library).toContainText('共 0 项');
+    await expect(library.locator('.management-count')).toHaveText('0');
     await library.getByRole('tab', { name: '未归档', exact: true }).click();
-    await expect(library).toContainText('共 12 项');
+    await expect(library.locator('.management-count')).toHaveText('12');
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBeLessThanOrEqual(1024);
@@ -117,7 +119,7 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
         name: `更多操作 ${newTitle}`,
         exact: true,
       }),
-      library.getByRole('button', { name: '下一页' }),
+      library.getByRole('heading', { name: '流水线', exact: true }),
     ]) {
       const box = await control.boundingBox();
       expect(box).not.toBeNull();
@@ -128,7 +130,7 @@ test('工作列表搜索、分页、重命名、归档恢复与重新打开', as
       body: await page.screenshot(),
       contentType: 'image/png',
     });
-    await library.getByRole('button', { name: newTitle, exact: true }).click();
+    await library.getByRole('link', { name: newTitle, exact: true }).click();
     await expect(
       page
         .locator('.work-title')

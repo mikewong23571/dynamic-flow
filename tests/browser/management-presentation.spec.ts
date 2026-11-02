@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import type { WorkItemView } from '../../src/shared/records';
 
 // Presentation fixtures only: lifecycle behavior is exercised by workitems.spec.ts.
@@ -28,7 +28,9 @@ function rows(): WorkItemView[] {
       revision: 1,
       data: {},
       materials: [],
-      workflowId: 'presentation-method',
+      workId: 'presentation-method',
+      inputBindings: {},
+      deliveries: [],
       status: effectiveStatus === 'completed' ? 'completed' : 'open',
       effectiveStatus,
       stage:
@@ -82,8 +84,10 @@ function rows(): WorkItemView[] {
 for (const width of [1440, 1024])
   test(`管理列表层级、分页、稳定轮询与键盘 ${width}`, async ({
     page,
+    application,
   }, testInfo) => {
     await page.setViewportSize({ width, height: width === 1024 ? 768 : 900 });
+    await application.work.createWork('键盘导航验收方法', []);
     const fixture = rows();
     let calls = 0;
     await page.route('**/api/items?*', async (route) => {
@@ -108,11 +112,22 @@ for (const width of [1440, 1024])
           .length,
         completed: fixture.filter((row) => row.status === 'completed').length,
       };
-      await route.fulfill({ json: { items, total: items.length, summary } });
+      const pageNumber = Number(url.searchParams.get('page') || 1);
+      const pageSize = Number(url.searchParams.get('pageSize') || 10);
+      await route.fulfill({
+        json: {
+          items: items.slice(
+            (pageNumber - 1) * pageSize,
+            pageNumber * pageSize,
+          ),
+          total: items.length,
+          summary,
+        },
+      });
     });
     await page.goto('/');
-    await page.getByRole('button', { name: '工作项', exact: true }).click();
-    const table = page.locator('.items-table');
+    await page.getByRole('link', { name: '工作项', exact: true }).click();
+    const table = page.getByRole('table', { name: '已有工作项', exact: true });
     await expect(table.locator('tbody tr')).toHaveCount(10);
     const ids = await table
       .locator('tbody tr')
@@ -128,14 +143,14 @@ for (const width of [1440, 1024])
         .evaluateAll((els) => els.map((el) => el.getAttribute('data-item-id'))),
     ).toEqual(ids);
     await expect(table.getByText('所有完成条件已确认并记录依据。')).toHaveCount(
-      0,
+      2,
     );
     await expect(
       table
         .locator('tr[data-item-id="presentation-4"]')
         .getByText('已结项', { exact: true }),
     ).toHaveCount(1);
-    await expect(table.getByText('失败', { exact: true })).toHaveCount(2);
+    await expect(table.getByText('需处理', { exact: true })).toHaveCount(2);
     await search.fill('');
     await page.getByRole('button', { name: '下一页', exact: true }).click();
     await expect(table.locator('tbody tr')).toHaveCount(2);
@@ -147,11 +162,11 @@ for (const width of [1440, 1024])
     ).toBeLessThanOrEqual(width);
     await testInfo.attach(`management-items-${width}`, {
       body: await page.screenshot({
-        path: `conductor/tracks/functional-ir-management_20260920/artifacts/management-items-${width}.png`,
+        path: `test-results/openui-evidence/management-items-${width}.png`,
       }),
       contentType: 'image/png',
     });
-    await page.getByRole('button', { name: '全部流水线', exact: true }).click();
+    await page.getByRole('link', { name: '流水线', exact: true }).click();
     const active = page.getByRole('tab', { name: '未归档', exact: true });
     await active.focus();
     await active.press('ArrowRight');
@@ -170,7 +185,7 @@ for (const width of [1440, 1024])
     await expect(menu).toBeFocused();
     await testInfo.attach(`management-flows-${width}`, {
       body: await page.screenshot({
-        path: `conductor/tracks/functional-ir-management_20260920/artifacts/management-flows-${width}.png`,
+        path: `test-results/openui-evidence/management-flows-${width}.png`,
       }),
       contentType: 'image/png',
     });

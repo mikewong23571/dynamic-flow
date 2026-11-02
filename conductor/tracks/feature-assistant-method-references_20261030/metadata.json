@@ -1,0 +1,17 @@
+{
+  "track_id": "feature-assistant-method-references_20261030",
+  "type": "feature",
+  "status": "complete",
+  "executor": "root",
+  "created_at": "2026-10-30",
+  "workspace": "/home/mike/projs/fork/dynamic-flow-workitem-composition",
+  "subagents_allowed": false,
+  "depends_on": [
+    "feature-workspace-performance_20261030",
+    "feature-workitem-plan-check_20261029"
+  ],
+  "phase": "deployed-to-managed-instance",
+  "completed_at": "2026-10-30",
+  "deployment_url": "http://10.134.94.200:4320",
+  "backup_path": "/home/mike/.local/state/flowcraft/backups/method-references-20261030T030238Z"
+}

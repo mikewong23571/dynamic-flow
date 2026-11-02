@@ -52,13 +52,21 @@ export function validateInvocation(
   for (const [port, contract] of Object.entries(contracts)) {
     const values = inputs[port] ?? [];
     if (contract.required !== false && values.length === 0) {
-      issues.push({ port, index: -1, message: `端口「${port}」必须提供输入。` });
+      issues.push({
+        port,
+        index: -1,
+        message: `端口「${port}」必须提供输入。`,
+      });
       continue;
     }
     if (!contract.item) continue;
     values.forEach((value, index) => {
       try {
-        validateValue(contract.item as Json, value as Json, `端口「${port}」第 ${index + 1} 条`);
+        validateValue(
+          contract.item as Json,
+          value as Json,
+          `端口「${port}」第 ${index + 1} 条`,
+        );
       } catch (error) {
         issues.push({
           port,

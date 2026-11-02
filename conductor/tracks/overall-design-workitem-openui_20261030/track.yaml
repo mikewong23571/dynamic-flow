@@ -1,0 +1,18 @@
+schema_version: "2.1"
+track: overall-design-workitem-openui_20261030
+type: overall-design
+status: in-progress
+module: work-items/openui
+owner: mike
+created_at: 2026-10-30
+updated_at: 2026-10-30
+depends_on: []
+repo_scope: null
+notes:
+  - 用户授权落地唯一业务流程及OpenUI正式框架集成的总体设计track。
+  - 用户允许彻底删除被淘汰业务方式的代码和数据；不要求兼容或迁移旧业务数据。
+  - 2026-10-30用户授权闭环整个track，无需用户再审核，实施/清理/验证/交付持续推进。
+  - 沿用本仓conductor/tracks与workflow.md；不迁移Conductor基础设施或新增多仓骨架。
+  - 无登记阻塞依赖；已完成审查及现有故事为输入，用户本轮决定优先于旧选型。
+  - 规范按原型范围裁剪，适用性见standards/scope.md；不引入未来需求或生产治理。
+  - 用户随后否定界面方案；上一版已部署并清理授权旧数据，当前保持进行中，先重做连续业务工作面再回接动态生成。

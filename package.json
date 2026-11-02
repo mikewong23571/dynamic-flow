@@ -4,14 +4,14 @@
   "type": "module",
   "packageManager": "pnpm@10.32.1",
   "scripts": {
-    "dev": "concurrently -k -n api,web \"pnpm dev:api\" \"pnpm dev:web\"",
-    "dev:api": "tsx watch src/server/index.ts",
+    "dev": "pnpm dev:services",
+    "dev:api": "PORT=${PORT:-${FLOWCRAFT_API_PORT:-4331}} FLOWCRAFT_DATA_ROOT=${FLOWCRAFT_DATA_ROOT:-.flowcraft-dev-data} tsx watch src/server/index.ts",
     "dev:web": "vite --config vite.config.ts",
     "typecheck": "tsc --project tsconfig.spike.json --noEmit && pnpm typecheck:app",
     "build": "vite build",
     "test": "tsx --test tests/*.test.ts",
     "test:browser": "playwright test --config playwright.config.ts",
-    "preview": "vite preview",
+    "preview": "HOST=${HOST:-0.0.0.0} FLOWCRAFT_API_PORT=${FLOWCRAFT_API_PORT:-4335} FLOWCRAFT_DATA_ROOT=${FLOWCRAFT_DATA_ROOT:-.flowcraft-preview-data} tsx src/server/index.ts",
     "format": "pnpm format:app && prettier --write package.json index.html",
     "format:check": "pnpm format:check:app && prettier --check package.json index.html",
     "typecheck:app": "tsc --project tsconfig.app.json --noEmit",
@@ -25,7 +25,9 @@
     "spike:test:browser": "playwright test --config examples/component-spike/playwright.config.ts",
     "spike:preview": "vite preview --config examples/component-spike/vite.config.ts --host 127.0.0.1 --port 4319",
     "spike:format": "prettier --write \"examples/component-spike/**/*.{ts,tsx,css,html}\" package.json tsconfig.json components.json",
-    "spike:format:check": "prettier --check \"examples/component-spike/**/*.{ts,tsx,css,html}\" package.json tsconfig.json components.json"
+    "spike:format:check": "prettier --check \"examples/component-spike/**/*.{ts,tsx,css,html}\" package.json tsconfig.json components.json",
+    "dev:services": "concurrently -k -n api,web \"pnpm dev:api\" \"pnpm dev:web\"",
+    "dev:managed": "FLOWCRAFT_WEB_PORT=4320 FLOWCRAFT_API_PORT=4321 PORT=4321 HOST=0.0.0.0 FLOWCRAFT_DATA_ROOT=data pnpm dev:services"
   },
   "dependencies": {
     "@assistant-ui/react": "0.15.21",
@@ -34,7 +36,10 @@
     "@earendil-works/pi-coding-agent": "0.85.1",
     "@fontsource-variable/geist": "5.3.0",
     "@hono/node-server": "2.1.1",
+    "@modelcontextprotocol/sdk": "1.32.1",
     "@monaco-editor/react": "4.7.0",
+    "@openuidev/lang-core": "1.0.2",
+    "@openuidev/react-lang": "1.0.2",
     "@tanstack/react-table": "9.2.4",
     "@uiw/react-json-view": "2.0.0-alpha.43",
     "@xyflow/react": "12.11.6",
@@ -47,6 +52,7 @@
     "lucide-react": "1.47.0",
     "mammoth": "^1.12.3",
     "monaco-editor": "0.56.0",
+    "pi-mcp-adapter": "2.13.0",
     "radix-ui": "1.6.7",
     "react": "19.3.0",
     "react-arborist": "3.16.0",
@@ -57,7 +63,8 @@
     "smol-toml": "^1.8.0",
     "tailwind-merge": "3.7.0",
     "unpdf": "^1.8.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",

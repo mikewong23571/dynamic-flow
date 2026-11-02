@@ -1,0 +1,2 @@
+import { defineConfig } from '/home/mike/projs/fork/dynamic-flow/node_modules/@playwright/test/index.mjs';
+export default defineConfig({testDir:'/home/mike/projs/fork/dynamic-flow/tests/browser',testMatch:'same-work-reopen.spec.ts',timeout:60000,expect:{timeout:10000},workers:1,use:{baseURL:'http://127.0.0.1:34321',headless:true,viewport:{width:1440,height:900},screenshot:'only-on-failure'},reporter:[['line']],outputDir:'/tmp/flowcraft-draft-results'});

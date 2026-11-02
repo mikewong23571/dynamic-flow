@@ -17,7 +17,9 @@ import type {
 const d: Definition = {
   schemaVersion: 1,
   inputs: ['materials'],
-  nodes: [{ id: 'a', kind: 'agent', mode: 'each', label: '分类', task: '旧' }],
+  nodes: [
+    { id: 'a', kind: 'agent', operation: 'map', label: '分类', task: '旧' },
+  ],
   edges: [{ from: ['$input', 'materials'], to: ['a', 'input'] }],
   outputs: { out: ['a', 'output'] },
 };

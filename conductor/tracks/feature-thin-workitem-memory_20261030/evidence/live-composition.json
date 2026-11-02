@@ -1,0 +1,39 @@
+{
+  "itemId": "102b1480-da04-4465-821e-515d993d4dca",
+  "originalDefinitionId": "0c1ad3bc-406d-4254-971e-88c6c26c71be",
+  "definitionId": "6ac31590-df7d-4d44-a208-ddbe16dacd30",
+  "runId": "46bcaf27-cfba-47e0-a4d8-b93a5b8511e4",
+  "nodeCount": 5,
+  "methods": {
+    "prepare": {
+      "workId": "189f037d-2d24-4e97-949d-3adb07e4871a",
+      "definitionId": "181f285d-9a36-4168-8c4c-484bbfa1ce11",
+      "title": "漏洞研究输入整理"
+    },
+    "choose": {
+      "workId": "bf8c681c-da60-48ae-bf0b-f28b26407e5c",
+      "definitionId": "d322671a-52b1-417f-85cd-5a61a0fc7ecc",
+      "title": "漏洞事实汇合与选择"
+    },
+    "deliver": {
+      "workId": "929ca30f-fe8d-42e8-920e-ca82492f7247",
+      "definitionId": "16900cc8-0158-4671-80fa-febc35c9d6b4",
+      "title": "仓库核查成果整理"
+    }
+  },
+  "equal": {
+    "check_gaps": 1,
+    "progress": 4,
+    "research_groups": 480,
+    "research_records": 480,
+    "scope_batches": 2,
+    "scope_records": 1084,
+    "verification_checks": 0
+  },
+  "nestedCalls": [
+    "prepare",
+    "choose",
+    "deliver"
+  ],
+  "agentCalls": 0
+}

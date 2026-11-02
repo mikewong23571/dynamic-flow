@@ -1,0 +1,24 @@
+{
+  "createdAt": "2026-10-23T04:33:22.861Z",
+  "workId": "786836f5-fde0-4fc9-93cc-b77eeb4a7fd3",
+  "parentId": "2d825b74-ce02-4528-a1cc-e9a45d0dbf38",
+  "key": "DEMO-FEEDBACK",
+  "runId": "efbfe799-ee45-4bb3-a845-e4ceda47e4b5",
+  "children": [
+    {
+      "id": "425032fd-8e29-4faa-8e0d-257caa39a066",
+      "title": "示例 · 调查客户乙订单编号搜索无结果问题",
+      "status": "open"
+    },
+    {
+      "id": "80b7f968-6ed2-4953-b03c-74d5916ebf68",
+      "title": "示例 · 调查客户甲月报导出失败问题",
+      "status": "open"
+    }
+  ],
+  "source": "Preserved real GLM high candidate output; demo title prefix and stable trackingKey added. New Run executes identity and create-items, without new model call or investigation conclusions.",
+  "browser": {
+    "errors": [],
+    "parentAndChildVerified": true
+  }
+}

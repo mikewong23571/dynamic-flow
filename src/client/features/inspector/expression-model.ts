@@ -1,4 +1,8 @@
-import type { Expression, Pattern, PureFunction } from '../../../shared/expressions';
+import type {
+  Expression,
+  Pattern,
+  PureFunction,
+} from '../../../shared/expressions';
 export const expressionNames: Record<Expression['kind'], string> = {
   variable: '取值',
   literal: '常量',

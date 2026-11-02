@@ -24,7 +24,7 @@ async function setup(t: TestContext) {
         id: 'first',
         label: '结果',
         kind: 'function',
-        mode: 'each',
+        operation: 'map',
         functionName: 'identity',
       },
     ],

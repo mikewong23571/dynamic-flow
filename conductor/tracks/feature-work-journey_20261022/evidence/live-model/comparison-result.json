@@ -1,0 +1,279 @@
+{
+  "comparison": {
+    "id": "8ca5ff39-ebd0-4425-9836-f5b30e20eea4",
+    "baselineId": "bd4df9c7-cb11-4733-9152-ab7bcba6d2d9",
+    "candidateId": "84fc3677-d668-47af-972b-18d51353a68f",
+    "nodeId": "classify",
+    "frozenInputs": {
+      "input": [
+        {
+          "sampleId": "M01",
+          "value": "界面很顺手，但导出报告经常失败，影响交付。",
+          "materialIds": [
+            "M01"
+          ],
+          "sourceResultIds": []
+        },
+        {
+          "sampleId": "M03",
+          "value": "搜索比以前快很多，团队很满意。",
+          "materialIds": [
+            "M03"
+          ],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "workItem": {
+      "id": "237a0e38-bffd-41cd-b95f-4d384386c392",
+      "key": "WI-20261022-adf153",
+      "title": "真实验收 · 客户反馈整理",
+      "goal": "整理客户反馈，分类并形成有原文依据的建议；明确报告实际覆盖范围。",
+      "revision": 1,
+      "data": {},
+      "materials": [
+        {
+          "id": "M01",
+          "text": "界面很顺手，但导出报告经常失败，影响交付。"
+        },
+        {
+          "id": "M03",
+          "text": "搜索比以前快很多，团队很满意。"
+        }
+      ]
+    },
+    "inputSources": [],
+    "sampleSource": {
+      "runId": "ea5e76bf-4b3a-46bf-bf65-b1fe82785d2d",
+      "resultIds": [
+        "1ab4646f-050d-4852-be61-550f091e0a29",
+        "367eba0b-7ad8-47c6-905e-9a33095b5be0"
+      ]
+    },
+    "status": "completed",
+    "stopRequested": false,
+    "createdAt": "2026-10-22T12:15:04.417Z",
+    "baselineRunId": "dc939b8d-7802-4623-8151-a400cb966131",
+    "candidateRunId": "8ff28984-5ffa-4480-a0a1-e23fb9e01615"
+  },
+  "runs": [
+    {
+      "id": "dc939b8d-7802-4623-8151-a400cb966131",
+      "status": "completed",
+      "inputs": {
+        "input": [
+          {
+            "sampleId": "M01",
+            "value": "界面很顺手，但导出报告经常失败，影响交付。",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": []
+          },
+          {
+            "sampleId": "M03",
+            "value": "搜索比以前快很多，团队很满意。",
+            "materialIds": [
+              "M03"
+            ],
+            "sourceResultIds": []
+          }
+        ]
+      },
+      "effectMode": "preview",
+      "results": [
+        {
+          "id": "25f0ee51-4dc2-440c-ae47-008c207fab0f",
+          "nodeId": "classify",
+          "status": "completed",
+          "input": {
+            "input": [
+              {
+                "sampleId": "M01",
+                "value": "界面很顺手，但导出报告经常失败，影响交付。",
+                "materialIds": [
+                  "M01"
+                ],
+                "sourceResultIds": []
+              }
+            ]
+          },
+          "outputs": {
+            "output": [
+              {
+                "value": {
+                  "original": "界面很顺手，但导出报告经常失败，影响交付。",
+                  "category": "问题",
+                  "reason": "反馈核心是指出导出报告经常失败并影响交付的功能缺陷，'界面很顺手'只是转折前的铺垫，故归为问题。"
+                },
+                "sampleId": "M01",
+                "materialIds": [
+                  "M01"
+                ],
+                "sourceResultIds": [
+                  "25f0ee51-4dc2-440c-ae47-008c207fab0f"
+                ]
+              }
+            ]
+          },
+          "effectiveModel": {
+            "source": "default",
+            "alias": "sangfor/glm-5.3-flash",
+            "model": "glm-5.3-flash",
+            "effort": "max"
+          }
+        },
+        {
+          "id": "49fe6cdd-80f8-4827-9241-862963b9bafa",
+          "nodeId": "classify",
+          "status": "completed",
+          "input": {
+            "input": [
+              {
+                "sampleId": "M03",
+                "value": "搜索比以前快很多，团队很满意。",
+                "materialIds": [
+                  "M03"
+                ],
+                "sourceResultIds": []
+              }
+            ]
+          },
+          "outputs": {
+            "output": [
+              {
+                "value": {
+                  "original": "搜索比以前快很多，团队很满意。",
+                  "category": "称赞",
+                  "reason": "该反馈以'快很多''很满意'等表述表达对搜索性能提升的正面评价与满意态度，属于称赞。"
+                },
+                "sampleId": "M03",
+                "materialIds": [
+                  "M03"
+                ],
+                "sourceResultIds": [
+                  "49fe6cdd-80f8-4827-9241-862963b9bafa"
+                ]
+              }
+            ]
+          },
+          "effectiveModel": {
+            "source": "default",
+            "alias": "sangfor/glm-5.3-flash",
+            "model": "glm-5.3-flash",
+            "effort": "max"
+          }
+        }
+      ]
+    },
+    {
+      "id": "8ff28984-5ffa-4480-a0a1-e23fb9e01615",
+      "status": "completed",
+      "inputs": {
+        "input": [
+          {
+            "sampleId": "M01",
+            "value": "界面很顺手，但导出报告经常失败，影响交付。",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": []
+          },
+          {
+            "sampleId": "M03",
+            "value": "搜索比以前快很多，团队很满意。",
+            "materialIds": [
+              "M03"
+            ],
+            "sourceResultIds": []
+          }
+        ]
+      },
+      "effectMode": "preview",
+      "results": [
+        {
+          "id": "a85b02dc-612a-486d-8ac6-0af6ddb7fa4a",
+          "nodeId": "classify",
+          "status": "completed",
+          "input": {
+            "input": [
+              {
+                "sampleId": "M01",
+                "value": "界面很顺手，但导出报告经常失败，影响交付。",
+                "materialIds": [
+                  "M01"
+                ],
+                "sourceResultIds": []
+              }
+            ]
+          },
+          "outputs": {
+            "output": [
+              {
+                "value": {
+                  "original": "界面很顺手，但导出报告经常失败，影响交付。",
+                  "category": "问题",
+                  "reason": "正面依据：界面很顺手；问题或需求依据：导出报告经常失败，影响交付。"
+                },
+                "sampleId": "M01",
+                "materialIds": [
+                  "M01"
+                ],
+                "sourceResultIds": [
+                  "a85b02dc-612a-486d-8ac6-0af6ddb7fa4a"
+                ]
+              }
+            ]
+          },
+          "effectiveModel": {
+            "source": "default",
+            "alias": "sangfor/glm-5.3-flash",
+            "model": "glm-5.3-flash",
+            "effort": "max"
+          }
+        },
+        {
+          "id": "d4b0aa40-e6f2-4c96-8018-d0da4e812c8c",
+          "nodeId": "classify",
+          "status": "completed",
+          "input": {
+            "input": [
+              {
+                "sampleId": "M03",
+                "value": "搜索比以前快很多，团队很满意。",
+                "materialIds": [
+                  "M03"
+                ],
+                "sourceResultIds": []
+              }
+            ]
+          },
+          "outputs": {
+            "output": [
+              {
+                "value": {
+                  "original": "搜索比以前快很多，团队很满意。",
+                  "category": "称赞",
+                  "reason": "正面依据：搜索比以前快很多，团队很满意。；问题或需求依据：无"
+                },
+                "sampleId": "M03",
+                "materialIds": [
+                  "M03"
+                ],
+                "sourceResultIds": [
+                  "d4b0aa40-e6f2-4c96-8018-d0da4e812c8c"
+                ]
+              }
+            ]
+          },
+          "effectiveModel": {
+            "source": "default",
+            "alias": "sangfor/glm-5.3-flash",
+            "model": "glm-5.3-flash",
+            "effort": "max"
+          }
+        }
+      ]
+    }
+  ]
+}

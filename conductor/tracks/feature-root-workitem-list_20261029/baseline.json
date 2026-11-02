@@ -1,0 +1,9 @@
+{
+  "src/server/work-items/queries.ts": "34c62a9d6d9918ebf66b43bd460fd8abe41069dea2019801b6643c87e98c0d01",
+  "src/client/features/work-items/WorkItems.tsx": "fa217c54a4be564c005a07a0b4c76e13425fe8015cd7be9816a074ce2fe4b1c6",
+  "src/client/features/work-items/WorkHome.css": "b5a9844db3aa18779ec90d6f742bc6258182eeb0d913918195f5e14ea4f9c55e",
+  "src/client/AGENTS.md": "5a58f30f777e4bc359c9b262675b7296951ff836383dbc8dcb7affb156d680f7",
+  "src/server/work-items/AGENTS.md": "7156b45cec55a3aed1cc668094edffbeb9128352ff0342c1db4890e8b0a95294",
+  "docs/task-navigation-contract.md": "f4d89693f8f59646ef4637b34f670bb4ec9001e286f4210e1392ea218b9664c0",
+  "tests/AGENTS.md": "da1e379f87cfd5591cd6162926bc34f013b2c277aa6addb428195fc4e43a415a"
+}

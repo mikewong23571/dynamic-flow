@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-22T07:58:57.716Z",
+  "work": "5cb210fc-f700-43bd-9946-736d869db90b",
+  "width": 1440,
+  "errors": [],
+  "measurements": [
+    {
+      "target": "results",
+      "ms": 515,
+      "dom": 1347,
+      "prose": 6,
+      "longTasks": [
+        {
+          "start": 486.90000009536743,
+          "duration": 204
+        },
+        {
+          "start": 695.2999999523163,
+          "duration": 193
+        },
+        {
+          "start": 935.2000000476837,
+          "duration": 50
+        },
+        {
+          "start": 1267.7000000476837,
+          "duration": 116
+        },
+        {
+          "start": 1706.2000000476837,
+          "duration": 449
+        },
+        {
+          "start": 2155.4000000953674,
+          "duration": 650
+        },
+        {
+          "start": 2979.2999999523163,
+          "duration": 74
+        },
+        {
+          "start": 3084.7999999523163,
+          "duration": 234
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 181,
+      "dom": 1350,
+      "prose": 6,
+      "longTasks": [
+        {
+          "start": 3401.2999999523163,
+          "duration": 111
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 231,
+      "dom": 1350,
+      "prose": 6,
+      "longTasks": [
+        {
+          "start": 3584.2000000476837,
+          "duration": 130
+        }
+      ]
+    },
+    {
+      "target": "results",
+      "ms": 232,
+      "dom": 1350,
+      "prose": 6,
+      "longTasks": [
+        {
+          "start": 3817.5,
+          "duration": 162
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 149,
+      "dom": 1350,
+      "prose": 6,
+      "longTasks": [
+        {
+          "start": 4052.2000000476837,
+          "duration": 59
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 99,
+      "dom": 1350,
+      "prose": 6,
+      "longTasks": []
+    }
+  ]
+}

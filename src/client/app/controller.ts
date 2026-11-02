@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Snapshot } from '../../shared/records';
 import { api, upload } from '../core/api';
 import { runAction } from '../core/action';
@@ -8,16 +8,20 @@ import { useDraft } from '../state/useDraft';
 import { useSelection } from '../state/useSelection';
 import { usePanels } from '../state/usePanels';
 import { useActions } from '../state/useActions';
+import { readRoute, type AppRoute, type MethodTab } from './navigation';
 
 /**
  * 工作区组合根：连接、草稿、选择、面板、动作按依赖顺序组合，
  * 返回形状即各组件依赖的 WorkspaceController。
  */
-export function useWorkspace() {
+export function useWorkspace(
+  route: AppRoute,
+  navigate: (route: AppRoute, replace?: boolean) => void,
+) {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
-  const connection = useConnection(setError);
+  const connection = useConnection(setError, route.kind === 'method');
   const draft = useDraft(
     connection.snapshot,
     connection.snapshotRef,
@@ -29,7 +33,10 @@ export function useWorkspace() {
     draft.definition,
     draft,
   );
-  const panels = usePanels(!!connection.workId);
+  const panels = usePanels(connection.workId);
+  useEffect(() => {
+    if (!connection.workId) panels.setLibraryOpen(true);
+  }, [connection.workId, panels.setLibraryOpen]);
   const actions = useActions({
     setBusy,
     setError,
@@ -40,6 +47,7 @@ export function useWorkspace() {
     work: connection.work,
     snapshot: connection.snapshot,
     definition: draft.definition,
+    definitionRef: draft.definitionRef,
     baseId: draft.baseId,
     setDirty: draft.setDirty,
     setLocalDefinition: draft.setLocalDefinition,
@@ -49,18 +57,33 @@ export function useWorkspace() {
     inputs: selection.inputs,
     selectedMaterials: selection.selectedMaterials,
     selectedResults: selection.selectedResults,
+    inputMode: selection.inputMode,
+    setInputMode: selection.setInputMode,
+    sampleSource: selection.sampleSource,
+    setSampleSource: selection.setSampleSource,
     setSelectedNode: selection.setSelectedNode,
     setSelectedRun: selection.setSelectedRun,
     setPreviewInputs: selection.setPreviewInputs,
     setPanel: panels.setPanel,
-    setTab: panels.setTab,
+    setTab,
     setTrialOpen: panels.setTrialOpen,
     setCandidateSource: panels.setCandidateSource,
     setSourceChoice: panels.setSourceChoice,
     setReplaceDraft: panels.setReplaceDraft,
     addKind: panels.addKind,
   });
-  function openWork(id: string) {
+  function openWork(id: string, updateLocation = true) {
+    if (updateLocation) {
+      const current = readRoute(new URL(window.location.href));
+      navigate({
+        kind: 'method',
+        id,
+        tab: 'canvas',
+        ...(current.kind === 'method'
+          ? { fromItem: current.fromItem, fromTab: current.fromTab }
+          : {}),
+      });
+    }
     panels.setLibraryOpen(false);
     setError('');
     setNotice('');
@@ -68,7 +91,9 @@ export function useWorkspace() {
       connection.refetch(id);
       return;
     }
+    selection.flushContext();
     connection.switchTo(id);
+    setBusy(false);
     draft.resetDraft();
     selection.resetSelection();
     panels.setTab('canvas');
@@ -79,13 +104,63 @@ export function useWorkspace() {
     connection.closeEntry(id);
     if (id !== connection.workId) return;
     const next = connection.works[index + 1] || connection.works[index - 1];
+    selection.flushContext();
     connection.switchTo(next?.id || '');
+    setBusy(false);
     draft.resetDraft();
     selection.resetSelection();
     panels.setTab('canvas');
     if (!next) panels.setLibraryOpen(true);
+    if (route.kind === 'method' && route.id === id) {
+      navigate(
+        next
+          ? { kind: 'method', id: next.id, tab: 'canvas' }
+          : { kind: 'methods' },
+        true,
+      );
+    }
     setError('');
     setNotice('');
+  }
+  // Browser traversal selects saved objects only; it never replays an action.
+  useEffect(() => {
+    if (route.kind === 'method') {
+      openWork(route.id, false);
+      panels.setTab(route.tab || 'canvas');
+    } else if (route.kind === 'methods') panels.setLibraryOpen(true);
+  }, [route]);
+  useEffect(() => {
+    if (
+      route.kind === 'method' &&
+      route.runId &&
+      connection.work?.id === route.id
+    )
+      selection.setSelectedRun(route.runId);
+  }, [route, connection.work?.id]);
+  function setTab(next: MethodTab) {
+    if (connection.activeWorkId.current !== connection.workId) return;
+    panels.setTab(next);
+    const current = readRoute(new URL(window.location.href));
+    if (current.kind === 'method' && current.id === connection.workId)
+      navigate({
+        ...current,
+        tab: next,
+        runId: next === 'results' ? current.runId : undefined,
+        resultView: next === 'results' ? current.resultView : undefined,
+      });
+  }
+  function setSelectedRun(next: React.SetStateAction<string | undefined>) {
+    if (connection.activeWorkId.current !== connection.workId) return;
+    const id = typeof next === 'function' ? next(selection.selectedRun) : next;
+    selection.setSelectedRun(id);
+    const current = readRoute(new URL(window.location.href));
+    if (
+      current.kind === 'method' &&
+      current.id === connection.workId &&
+      current.tab === 'results' &&
+      id
+    )
+      navigate({ ...current, runId: id });
   }
   async function create(file?: File): Promise<boolean> {
     const pasted = splitMaterials(panels.materialText);
@@ -132,6 +207,8 @@ export function useWorkspace() {
     ...draft,
     ...selection,
     ...panels,
+    setTab,
+    setSelectedRun,
     ...actions,
     openWork,
     closeWork,

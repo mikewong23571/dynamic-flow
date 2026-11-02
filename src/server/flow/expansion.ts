@@ -14,6 +14,8 @@ export function validateExpansion(value: unknown, node: FlowNode): Definition {
     throw Error('动态子图只接受 input 输入和 output 输出。');
   if (definition.nodes.some((n) => n.kind === 'dynamic'))
     throw Error('动态提案必须落到具体步骤，不能继续 Dynamic。');
+  if (definition.nodes.some((n) => n.kind === 'create-items'))
+    throw Error('动态提案不能增加建立子项的业务动作；请在方法中明确配置。');
   if (!definition.nodes.some((n) => ['agent', 'function'].includes(n.kind)))
     throw Error('动态提案缺少具体工作。');
   if (definition.nodes.some((n) => !n.contract))

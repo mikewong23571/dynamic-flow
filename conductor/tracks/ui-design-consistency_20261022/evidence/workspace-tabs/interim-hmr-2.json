@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-22T08:44:08.308Z",
+  "work": "5cb210fc-f700-43bd-9946-736d869db90b",
+  "width": 1440,
+  "errors": [],
+  "measurements": [
+    {
+      "target": "results",
+      "ms": 584,
+      "dom": 999,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 513.8000001907349,
+          "duration": 207
+        },
+        {
+          "start": 725.2000000476837,
+          "duration": 201
+        },
+        {
+          "start": 975.5,
+          "duration": 51
+        },
+        {
+          "start": 1260.3000001907349,
+          "duration": 131
+        },
+        {
+          "start": 1450.2000000476837,
+          "duration": 54
+        },
+        {
+          "start": 1710.1000001430511,
+          "duration": 475
+        },
+        {
+          "start": 2185.2000000476837,
+          "duration": 659
+        },
+        {
+          "start": 3033.9000000953674,
+          "duration": 120
+        },
+        {
+          "start": 3165.5,
+          "duration": 266
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 147,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3514.7000000476837,
+          "duration": 87
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 198,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3664.7000000476837,
+          "duration": 115
+        }
+      ]
+    },
+    {
+      "target": "results",
+      "ms": 132,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3865.9000000953674,
+          "duration": 57
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 147,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3998.600000143051,
+          "duration": 61
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 181,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 4148,
+          "duration": 111
+        }
+      ]
+    }
+  ]
+}

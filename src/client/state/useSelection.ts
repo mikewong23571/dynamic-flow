@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Definition, Inputs, Snapshot, Work } from '../../shared/records';
+import type {
+  Definition,
+  Inputs,
+  Snapshot,
+  Work,
+  RunSampleSource,
+} from '../../shared/records';
 import { localInputs, materialInputs, inputPorts } from '../core/inputs';
 
 interface LocalContext {
@@ -8,7 +14,8 @@ interface LocalContext {
   selectedNode?: string;
   selectedRun?: string;
   selectedResults?: string[];
-  inputMode?: 'materials' | 'results';
+  sampleSource?: RunSampleSource;
+  inputMode?: 'materials' | 'results' | 'run';
   samplePort?: string;
   assistantDraft?: string;
   pendingDraft?: { definition: Definition; baseId?: string };
@@ -34,9 +41,10 @@ export function useSelection(
   const [sampleSelection, setSampleSelection] = useState<
     Record<string, string[]>
   >({});
-  const [inputMode, setInputMode] = useState<'materials' | 'results'>(
+  const [inputMode, setInputMode] = useState<'materials' | 'results' | 'run'>(
     'materials',
   );
+  const [sampleSource, setSampleSource] = useState<RunSampleSource>();
   const [samplePort, setSamplePort] = useState('input');
   const [runDefinition, setRunDefinition] = useState<'adopted' | 'draft'>(
     'adopted',
@@ -80,15 +88,29 @@ export function useSelection(
   const selectedNodeSamples = selectedNode
     ? (sampleSelection[selectedNode] ?? selectedMaterials)
     : selectedMaterials;
-  const inputs = localInputs(
-    selected,
-    inputMode === 'results'
-      ? previewInputs || {}
-      : work
-        ? materialInputs(work, selectedNodeSamples)
-        : {},
-    samplePort,
-  );
+  const historicalInputs: Inputs = {};
+  for (const result of work?.runs.find((run) => run.id === sampleSource?.runId)
+    ?.results || []) {
+    if (
+      result.nodeId !== selectedNode ||
+      !sampleSource?.resultIds.includes(result.id)
+    )
+      continue;
+    for (const [port, entries] of Object.entries(result.input))
+      (historicalInputs[port] ??= []).push(...entries);
+  }
+  const inputs =
+    inputMode === 'run'
+      ? historicalInputs
+      : localInputs(
+          selected,
+          inputMode === 'results'
+            ? previewInputs || {}
+            : work
+              ? materialInputs(work, selectedNodeSamples)
+              : {},
+          samplePort,
+        );
   const currentRun =
     work?.runs.find((r) => r.id === selectedRun) ||
     work?.runs[work.runs.length - 1];
@@ -123,9 +145,18 @@ export function useSelection(
       setSelectedRun(saved.selectedRun);
       setSelectedResults(saved.selectedResults || []);
       setInputMode(saved.inputMode || 'materials');
+      setSampleSource(saved.sampleSource);
       setSamplePort(saved.samplePort || 'input');
       setAssistantDraft(saved.assistantDraft || '');
-      if (saved.pendingDraft) {
+      // A save can finish while another method is open. Do not revive an
+      // identical, already saved graph as a stale pending draft.
+      const savedDefinition =
+        snapshot?.definitions[work.draftId || work.adoptedId || ''];
+      if (
+        saved.pendingDraft &&
+        JSON.stringify(saved.pendingDraft.definition) !==
+          JSON.stringify(savedDefinition)
+      ) {
         draft.setLocalDefinition(saved.pendingDraft.definition);
         draft.baseId.current = saved.pendingDraft.baseId;
         draft.setDirty(true);
@@ -141,6 +172,7 @@ export function useSelection(
         selectedRun,
         selectedResults,
         inputMode,
+        sampleSource,
         samplePort,
         assistantDraft,
         pendingDraft:
@@ -162,6 +194,7 @@ export function useSelection(
     selectedRun,
     selectedResults,
     inputMode,
+    sampleSource,
     samplePort,
     assistantDraft,
     draft.dirty,
@@ -173,6 +206,7 @@ export function useSelection(
     contextForWork.current = '';
     setSelectedNode(undefined);
     setSelectedRun(undefined);
+    setSampleSource(undefined);
     setSelectedResults([]);
     setSampleSelection({});
     setSelectedMaterials([]);
@@ -185,6 +219,8 @@ export function useSelection(
     setSampleSelection,
     inputMode,
     setInputMode,
+    sampleSource,
+    setSampleSource,
     samplePort,
     setSamplePort,
     runDefinition,
@@ -205,5 +241,6 @@ export function useSelection(
     currentRun,
     comparison,
     resetSelection,
+    flushContext,
   };
 }

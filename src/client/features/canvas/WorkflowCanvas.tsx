@@ -13,13 +13,21 @@ import {
 import '@xyflow/react/dist/style.css';
 import { LayoutGrid, Focus, ListTree, LoaderCircle } from 'lucide-react';
 import type { Definition, Run, ViewState } from '../../../shared/records';
-import { WorkflowNode, type CanvasData } from './WorkflowNode';
+import {
+  WorkflowNode,
+  type CanvasData,
+  type CanvasMethodReference,
+} from './WorkflowNode';
 import { WorkflowEdge } from './WorkflowEdge';
 import { focusedEdges, canvasFitOptions, type PortFocus } from './canvas-view';
 import { useCanvasLayout } from './useCanvasLayout';
 import { inputPorts, outputPorts } from '../../core/inputs';
 import { nodeTotal } from '../../core/results';
-import { isFinalOutput, nodeLabel, hasBatchInputs } from '../../core/definition';
+import {
+  isFinalOutput,
+  nodeLabel,
+  hasBatchInputs,
+} from '../../core/definition';
 import { portLabel } from '../../core/format';
 import { Button } from '../../components/ui';
 import './WorkflowCanvas.css';
@@ -34,6 +42,12 @@ type Props = {
   onLayout: (view: ViewState) => void;
   run?: Run;
   disabled?: boolean;
+  visible?: boolean;
+  presentation?: 'business';
+  nativeLabels?: boolean;
+  outputTitles?: Record<string, string>;
+  methodReferences?: Record<string, CanvasMethodReference>;
+  onInspectNode?: (nodeId: string) => void;
 };
 const nodeTypes = { workflow: WorkflowNode };
 const edgeTypes = { routed: WorkflowEdge };
@@ -53,6 +67,12 @@ function Canvas({
   onLayout,
   run,
   disabled,
+  visible = true,
+  presentation,
+  nativeLabels,
+  outputTitles,
+  methodReferences,
+  onInspectNode,
 }: Props) {
   const [portFocus, setPortFocus] = useState<PortFocus>();
   const [edgeFocus, setEdgeFocus] = useState<string>();
@@ -91,7 +111,9 @@ function Canvas({
               type: 'workflow' as const,
               position: view.positions.$input || { x: 35, y: 35 },
               data: {
-                label: '工作材料',
+                label: presentation === 'business' ? '本轮输入' : '工作材料',
+                business: presentation === 'business',
+                nativeLabels,
                 ports: definition.inputs,
                 onPortFocus: hoverPort,
               },
@@ -109,17 +131,56 @@ function Canvas({
         selected: node.id === selected,
         data: {
           label: node.label,
+          business: presentation === 'business',
+          nativeLabels,
+          outputLabels:
+            presentation === 'business'
+              ? Object.fromEntries(
+                  outputPorts(node).map((port) => [
+                    port,
+                    Object.entries(definition.outputs)
+                      .filter(
+                        ([, ref]) => ref[0] === node.id && ref[1] === port,
+                      )
+                      .map(([name]) => outputTitles?.[name] || portLabel(name))
+                      .join(' / ') || portLabel(port),
+                  ]),
+                )
+              : undefined,
+          finalPorts:
+            presentation === 'business'
+              ? Object.values(definition.outputs)
+                  .filter(([id]) => id === node.id)
+                  .map(([, port]) => port)
+              : undefined,
           node,
+          methodReference: methodReferences?.[node.id],
           onPortFocus: hoverPort,
           status: run?.nodeStates[node.id],
           final: isFinalOutput(definition, node.id),
           progress: run?.results.some((r) => r.nodeId === node.id)
             ? `${run.results.filter((r) => r.nodeId === node.id && r.status === 'completed' && !r.intermediate && !r.purpose).length} / ${nodeTotal(run, node.id)}`
             : undefined,
+          onInspect:
+            onInspectNode &&
+            run?.results.some((result) => result.nodeId === node.id)
+              ? () => onInspectNode(node.id)
+              : undefined,
         },
       })),
     ],
-    [view.positions, definition, selected, run, hoverPort],
+    [
+      view.positions,
+      definition,
+      selected,
+      run,
+      hoverPort,
+      presentation,
+      nativeLabels,
+      outputTitles,
+      methodReferences,
+      onInspectNode,
+    ],
   );
   const [nodes, setNodes] = useState(makeNodes);
   useEffect(() => {
@@ -140,7 +201,15 @@ function Canvas({
     saveLayout,
     manualMove,
     togglePorts,
-  } = useCanvasLayout({ definition, view, nodes, setNodes, onLayout });
+  } = useCanvasLayout({
+    definition,
+    view,
+    nodes,
+    setNodes,
+    onLayout,
+    enabled: visible,
+    layerSpacing: presentation === 'business' ? 64 : 104,
+  });
   function connect(c: Connection) {
     if (!c.source || !c.target || !c.sourceHandle || !c.targetHandle) return;
     onChange({
@@ -170,7 +239,7 @@ function Canvas({
     return ids;
   }, [definition, highlighted, portFocus, selected]);
   const description = (e: Definition['edges'][number]) =>
-    `${nodeLabel(definition, e.from[0])} · ${portLabel(e.from[1])} → ${nodeLabel(definition, e.to[0])} · ${portLabel(e.to[1])}`;
+    `${nodeLabel(definition, e.from[0])} · ${nativeLabels ? e.from[1] : portLabel(e.from[1])} → ${nodeLabel(definition, e.to[0])} · ${nativeLabels ? e.to[1] : portLabel(e.to[1])}`;
   const edges = useMemo(
     () =>
       definition.edges.map((e, i) => ({
@@ -180,11 +249,13 @@ function Canvas({
         sourceHandle: e.from[1],
         targetHandle: e.to[1],
         label:
-          e.from[1] === 'matched'
-            ? '符合条件'
-            : e.from[1] === 'unmatched'
-              ? '其他材料'
-              : undefined,
+          presentation === 'business' || nativeLabels
+            ? undefined
+            : e.from[1] === 'matched'
+              ? '符合条件'
+              : e.from[1] === 'unmatched'
+                ? '其他材料'
+                : undefined,
         type: 'routed',
         data: {
           points: validRoutes?.[`edge-${i}`],
@@ -199,7 +270,15 @@ function Canvas({
         markerEnd: { type: MarkerType.ArrowClosed },
         animated: run?.nodeStates[e.to[0]] === 'running',
       })),
-    [definition, active, highlighted, validRoutes, run],
+    [
+      definition,
+      active,
+      highlighted,
+      validRoutes,
+      run,
+      presentation,
+      nativeLabels,
+    ],
   );
   const displayNodes = useMemo(
     () =>
@@ -249,7 +328,7 @@ function Canvas({
         }}
         onMoveEnd={(_, viewport) => saveLayout(viewport)}
         nodesConnectable={!disabled}
-        deleteKeyCode={['Backspace', 'Delete']}
+        deleteKeyCode={disabled ? null : ['Backspace', 'Delete']}
         edgesFocusable={!disabled}
         defaultViewport={view.viewport || { x: 25, y: 30, zoom: 1 }}
         minZoom={0.2}
@@ -283,16 +362,18 @@ function Canvas({
               <Focus size={14} />
               <span>聚焦连接</span>
             </Button>
-            <Button
-              variant="ghost"
-              aria-label="显示端口"
-              title="始终显示端口名称"
-              aria-pressed={showPorts}
-              onClick={togglePorts}
-            >
-              <ListTree size={14} />
-              <span>显示端口</span>
-            </Button>
+            {presentation !== 'business' && (
+              <Button
+                variant="ghost"
+                aria-label="显示端口"
+                title="始终显示端口名称"
+                aria-pressed={showPorts}
+                onClick={togglePorts}
+              >
+                <ListTree size={14} />
+                <span>显示端口</span>
+              </Button>
+            )}
           </div>
         </Panel>
         {layoutError && (

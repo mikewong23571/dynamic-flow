@@ -1,0 +1,2 @@
+patchedDependencies:
+  '@openuidev/react-lang@1.0.2': patches/@openuidev__react-lang@1.0.2.patch
