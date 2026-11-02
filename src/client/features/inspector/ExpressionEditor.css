@@ -53,9 +53,7 @@
   .expression-field input,
   .expression-field select,
   .expression-field textarea {
-    color: var(--ink);
     width: 100%;
-    font-size: var(--text-small);
     min-width: 0;
   }
   .expression-entry {

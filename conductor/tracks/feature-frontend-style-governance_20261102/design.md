@@ -1,6 +1,6 @@
 # 治理方案与迁移地图
 
-本文为本 track 的目标方案，尚未实施；当前事实见 [audit.md](audit.md)。长期规则在实施验证后写回既有 client AGENTS、ui README 和 DESIGN-NOTES，本文保留任务决策，不维护平行规范。
+本文记录本 track 的治理方案，已进入实施与验证；当前事实见 [audit.md](audit.md)。长期规则在实施验证后写回既有 client AGENTS、ui README 和 DESIGN-NOTES，本文保留任务决策，不维护平行规范。
 
 ## 1. 组件层次与样式所有权
 

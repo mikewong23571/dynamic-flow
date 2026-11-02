@@ -38,3 +38,17 @@ export function FormActions({ className, ...props }: ComponentProps<'div'>) {
     />
   );
 }
+
+/** Explicit field group preserves native fieldset disabling without styling every fieldset. */
+export function FormFields({
+  className,
+  ...props
+}: ComponentProps<'fieldset'>) {
+  return (
+    <fieldset
+      data-slot="form-fields"
+      className={cn('form-fields m-0 min-w-0 border-0 p-0', className)}
+      {...props}
+    />
+  );
+}

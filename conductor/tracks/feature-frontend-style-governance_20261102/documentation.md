@@ -2,11 +2,15 @@
 
 ## 当前状态
 
-- 当前里程碑：Phase 0 深入审查与规划完成，track.status=new，Phase 1–5 待实施。
-- 用户已认可系统治理方向，并要求先深入审查再建 track；本轮没有执行产品改造、提交/push 或部署。
+- 当前里程碑：用户已授权主动闭环 Phase 1–5，独立 worktree 实施/验证中；原仓源码及用户未提交现场保持。
+- 初建阶段仅审查建档；随后用户授权实施 Phase 1–5。当前按逻辑单元本地提交，不自动 push 或部署托管实例。
 - 已完成：102 TSX/20 CSS 盘点、重点调用双方核对、隔离构建、1 条初查路线、2 条两尺寸深入审查路线、代表截图实看、四明确 spec、方案与分阶段计划。
-- 下一步：进入本 track 的 Phase 1，重读当前源码差异后建立独立实施目录，从公共控件/字段样板开始。
-- 已复现问题：缩窗遮挡、局部间距失效、新旧尺寸及 wrapper 宽度差异、受控任务弹窗焦点回到 BODY。治理未开始，均不能标为已修复。
+- 当前断点：Phase 1–4 实施与验证完成；Phase 5 验证完成，正在整理持续预览并等待父会话独立 review。
+- 已修复：缩窗动作遮挡、字段/控件尺寸与 wrapper 宽度、失效局部层叠、受控任务焦点回 BODY 与隐藏页面材料 Portal 泄漏；最终断言及限制见下方实施证据。
+
+## 初建审查记录（历史状态）
+
+以下建档决定与验证是实施授权之前的记录；后续当前状态以实施段和证据 README 为准。
 
 ## 决策记录
 
@@ -59,3 +63,17 @@
 单一 Button API 及调用方映射、标准32/紧凑28控制高度、Select包装fill/fit、Field/FormActions、所有自有CSS分层和vendor导入已接通。原生可编辑输入已迁移，checkbox/file及业务导航保留。共有3条新回归改前失败，改后和已实看截图的稳定区域golden重跑均通过；类型与构建通过。Modal使用公开application布局，避免DialogContent默认utilities压住640/860/920/1040等组合宽度；材料reader保持自己的Dialog原语布局。公共WorkspaceFrame按视口切停靠，保留用户展开偏好；受控任务焦点已回到触发动作。Phase2完整状态与Phase3相邻路线仍待后续验证，未据局部成功提前勾完。
 
 证据见 evidence/implementation/foundation-*.txt；截图在 tests/browser/style-governance.spec.ts-snapshots/。已实际查看字段两尺寸与任务弹窗640宽度，接下来补成功/失效触发和方法侧栏交接，并执行全模块相邻路线。
+
+## 受控任务交接与夹具诊断
+
+普通受控任务Escape原来回BODY的产品反例已修复，成功提交/关闭回原动作和失效动作回任务标题均有回归。扩展失效动作测试曾使用普通getByRole计数0作为移除屏障；Radix在弹窗打开期间aria-hide背景，此断言提前通过，Escape发生在客户端接纳新程序之前。该失败属于A类夹具观察错误，已改includeHidden等待实际DOM移除；不能把中间“DOM复用”推测写为产品根因。最终日志明确旧trigger disconnected、新Dialog完成关闭后activeElement=H1。临时console已移除。
+
+材料reader是直接Dialog组合，单独发现其打开时切Tab/后退仍泄漏Portal的具体反例；新增失败回归后由DialogPortal与MaterialDialog控制可见性，保留材料阅读状态，返回原页后可继续阅读/关闭。共享useTaskDialogFocus由Modal和材料reader共同使用，避免再次分别遗漏任务交接。广回归先冻结构建再运行；一次因调试重构建而中断的旧轮次不计最终验收。
+
+隔离环境清理：snapshot基线曾误跟踪node_modules环境symlink；当前仅从Git索引移除这条记录，实际依赖仍由独立node_modules链接覆盖目录只读复用。为最小CSS检查明确登记PostCSS开发依赖，lock仅增加对应importer三行，没有更改原仓依赖或用户数据。
+
+## Phase 2–5 当前检查点
+
+单一控件API及全部正式入口迁移、26个自有CSS文件分层/拥有者、共享字段组UA reset、最小静态守卫与稳定截图基线已落实。Phase 1本地提交6ebd59bdd34a85a83256a51a0ed6265cea7f83b4；后续治理为第二逻辑单元，交付diff相对99cef65快照。当前14条治理与8条受影响导航回归22/22通过，无update-snapshots；冻结构建的55条既有浏览器路线及24条模块测试通过。55条与最终重跑分轮保留，不把重复测试累加。没有执行真实模型/用户数据验收，未push或部署托管实例。
+
+材料Portal反例已用明确flow→inputs的真实SPA历史重新验证：去除可见性约束后，在底层flow已选中的前提下旧Dialog仍存在，恢复约束后通过。旧的裸URL回退前提不确定，未作为产品缺陷证据；当前evidence/implementation/material-visibility-red.txt仅保留有效红测。Fieldset默认padding造成的组内缩进已由FormFields自身reset并补bounding断言，更新golden后实看。详细验收映射、迁移残余和分轮产物见evidence/implementation/README.md。

@@ -1,0 +1,32 @@
+✔ ELK routes three sources to collect, merge and join without overlaps or changing IR (352.210138ms)
+✔ dynamic and identically named input/output ports keep measured positions with disconnected nodes and draft edges (78.704794ms)
+✔ unmeasured nodes and invalid port geometry reject with a specific node instead of producing fabricated positions (2.075223ms)
+✔ 画布路由和端口偏好真实保存重开，定义版本与比较保持不变 (75.700046ms)
+✔ 坏画布偏好和路由明确拒绝，磁盘布局与保存通知不受影响 (31.051637ms)
+✔ 旧画布位置和视口仍可保存，无连接的空路由也有效 (15.204043ms)
+✔ 真实多行材料拆分及空行保留语义 (2.600356ms)
+✔ 同输入比较忽略列表顺序但检测内容、来源、端口与版本变化 (15.660184ms)
+✔ 完整与局部运行显式选择端口和材料，不混入未选择材料 (0.777439ms)
+✔ SSE拒绝同工作旧revision，切工作接受新快照 (0.258237ms)
+✔ 删节点同时清理连接和流程输出，不留下不可见引用 (0.573888ms)
+✔ 合并试验显式提供两端口并保留空分支，端口显示不改变协议名 (0.471786ms)
+✔ 等待端口同时保留输入透传和事件，删除时不留下事件引用 (2.580018ms)
+✔ 数据变换默认值与画布摘要区分节点调用和数组组合 (6.506986ms)
+✔ catalog editor merge assigns edited models to the provider being saved (6.025071ms)
+✔ 固定方法的具名输出可继续连接下一个方法，画布不退回output端口 (1.725871ms)
+✔ 迟到A保存不能写入B的定义、baseId、dirty或busy/error (36.464715ms)
+✔ 旧对象失败不能在新对象呈现错误或解除其忙状态 (0.932152ms)
+✔ 同对象保存期间的新编辑保持未保存，同时更新其保存基线 (0.705439ms)
+✔ native OpenUI library produces the prompt/schema and derives frozen record identity from saved source (10.669277ms)
+✔ saved native programs reject incomplete components, unknown references, and Query writes (2.393181ms)
+✔ native named merge changes one statement, preserves mutations and binding variables (3.061067ms)
+✔ business observation is independent of delivery and requires live reads rather than a saved status snapshot (2.230774ms)
+✔ native composition supports per-record contextual actions without adding business pages (1.44878ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1227.328441

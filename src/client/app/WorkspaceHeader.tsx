@@ -79,6 +79,7 @@ export function WorkspaceHeader({
             </span>
           )}
           <NativeSelect
+            size="sm"
             layout="fit"
             aria-label="运行使用的做法"
             value={runDefinition}

@@ -1,4 +1,4 @@
-import { FormActions } from '../../components/ui/field';
+import { FormActions, FormFields } from '../../components/ui/field';
 import {
   createContext,
   useContext,
@@ -89,6 +89,7 @@ function ActionRenderer({ props }: ComponentRenderProps) {
     trigger = useTriggerAction();
   return (
     <Button
+      className="self-start"
       variant={
         props.emphasis === 'primary'
           ? 'default'
@@ -430,10 +431,7 @@ function InputRenderer({ props, renderNode }: ComponentRenderProps) {
     <section className="declared-input-form openui-content">
       {props.title ? <h2>{String(props.title)}</h2> : null}
       {schema ? (
-        <fieldset
-          className="border-0 p-0 min-w-0"
-          disabled={env.readonly || env.busy}
-        >
+        <FormFields disabled={env.readonly || env.busy}>
           <InputFields
             schema={schema}
             value={input.value || {}}
@@ -456,7 +454,7 @@ function InputRenderer({ props, renderNode }: ComponentRenderProps) {
               </div>
             )}
           <FormActions>{renderNode(props.submit)}</FormActions>
-        </fieldset>
+        </FormFields>
       ) : (
         <p role="status" className="meta-text">
           当前方法尚未声明此输入合同，请让Assistant补齐。

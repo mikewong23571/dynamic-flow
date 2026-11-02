@@ -14,7 +14,8 @@ import {
   CheckCheck,
   type LucideIcon,
 } from 'lucide-react';
-import { useRef, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { useTaskDialogFocus } from './useTaskDialogFocus';
 import { statusNames } from '../core/format';
 import { Badge as PrimitiveBadge } from './ui/badge';
 import {
@@ -103,56 +104,12 @@ export function Modal({
   children: ReactNode;
 }) {
   const visible = useContentVisibility();
-  const returnFocus = useRef<HTMLElement | null>(null);
-  const returnContext = useRef<HTMLElement | null>(null);
+  const focus = useTaskDialogFocus(onCloseAutoFocus);
   return (
     <Dialog open={open && visible} onOpenChange={onOpenChange}>
       <DialogContent
         layout="application"
-        onOpenAutoFocus={() => {
-          returnFocus.current =
-            document.activeElement instanceof HTMLElement
-              ? document.activeElement
-              : null;
-          returnContext.current =
-            returnFocus.current?.closest<HTMLElement>(
-              '.composition-workspace, .workspace',
-            ) || null;
-        }}
-        onCloseAutoFocus={(event) => {
-          onCloseAutoFocus?.(event);
-          if (event.defaultPrevented) return;
-          if (!visible) {
-            event.preventDefault();
-            return;
-          }
-          const target = returnFocus.current;
-          if (
-            target?.isConnected &&
-            target.getClientRects().length &&
-            !target.closest('[hidden], [inert]') &&
-            !target.matches(':disabled, [aria-disabled="true"]')
-          ) {
-            event.preventDefault();
-            target.focus({ preventScroll: true });
-          } else {
-            const fallback = Array.from(
-              (returnContext.current?.isConnected
-                ? returnContext.current
-                : document
-              ).querySelectorAll<HTMLElement>('.workspace-header h1, main'),
-            ).find(
-              (element) =>
-                element.getClientRects().length &&
-                !element.closest('[hidden], [inert]'),
-            );
-            if (fallback) {
-              event.preventDefault();
-              fallback.tabIndex = -1;
-              fallback.focus({ preventScroll: true });
-            }
-          }
-        }}
+        {...focus}
         aria-label={title}
         aria-labelledby={undefined}
         className={['modal', className].filter(Boolean).join(' ')}

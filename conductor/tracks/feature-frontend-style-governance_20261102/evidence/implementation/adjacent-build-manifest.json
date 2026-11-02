@@ -1,0 +1,8 @@
+{
+  "html": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0\" />\n    <meta name=\"color-scheme\" content=\"dark\" />\n    <meta name=\"theme-color\" content=\"#171923\" />\n    <title>Flow · 工作流工作台</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-BjnJCHEs.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-CCWnE-47.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+  "asset_hashes": {
+    "dist/assets/index-CCWnE-47.css": "12f2bdcde36b5b9350175c014ecda14d4f51aaa54cc0f4e292b27906ca425957",
+    "dist/assets/index-BjnJCHEs.js": "84be567b464896896b6afdb5f09ee7771e2c5fb01f75cb7f092ed34b7a47c527"
+  },
+  "scope": "55 adjacent cases passed before the final material portal visibility fix; final affected routes rerun separately"
+}

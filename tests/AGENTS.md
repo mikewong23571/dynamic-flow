@@ -6,6 +6,7 @@
 
 | 改动 | tests/入口 |
 | --- | --- |
+| 组件样式层次、字段尺寸/间距、缩窗命中和任务焦点 | browser/style-governance.spec.ts；pnpm check:styles |
 | 文件/定义保存、冲突、材料维护 | state.test.ts、workspace-performance.test.ts |
 | 普通运行、显式operation、失败诊断重试 | runs.test.ts、functional-ir.test.ts、multi-input.test.ts |
 | 嵌套call、逐端口映射/广播及精确来源 | composition-runtime.test.ts、method-references.test.ts |
@@ -56,3 +57,5 @@ pnpm exec playwright test tests/browser/openui-lifecycle.spec.ts --output /tmp/f
 - 失败保留具体输入、实际/预期、最小修复及验证。有效业务断言迁到当前路线；被明确取消的旧GUI布局/接口可以退役，但要记录承接矩阵，不靠删失败用例宣称能力通过。
 - 测试文件行为用真实临时目录；不要修改或清空已有用户数据。`pnpm typecheck`还检查旧实验，错误归属需分开。
 - 修复后只扩大到受影响相邻模块；通过后无新增疑点无需反复重跑。
+
+样式回归：style-governance.spec.ts-snapshots只固定稳定字段区域与任务弹窗，时间/对象ID不纳入golden。更新前先看实际图和差异，确认有意变更后才使用--update-snapshots；命中检查只针对已启用动作。Radix弹窗打开期间aria-hide背景，验证触发对象真正移除须includeHidden并等客户端接纳新快照，不能把普通getByRole的不可见计数当DOM移除。

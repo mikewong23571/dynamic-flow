@@ -29,13 +29,17 @@ export function WorkspaceNotices({
       {error && (
         <div className="error-banner" role="alert">
           {error}
-          <button onClick={() => setError('')}>关闭</button>
+          <Button variant="ghost" size="sm" onClick={() => setError('')}>
+            关闭
+          </Button>
         </div>
       )}
       {notice && (
         <div className="notice" role="status">
           {notice}
-          <button onClick={() => setNotice('')}>关闭</button>
+          <Button variant="ghost" size="sm" onClick={() => setNotice('')}>
+            关闭
+          </Button>
         </div>
       )}
       {configuration && !configuration.ready && (

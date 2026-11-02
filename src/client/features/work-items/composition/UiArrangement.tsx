@@ -126,7 +126,7 @@ export function UiArrangement({
             OpenUI 描述
             <Textarea
               ref={editor}
-              className="field-sizing-fixed font-mono"
+              className="ui-arrangement-source field-sizing-fixed font-mono"
               rows={20}
               value={source}
               onChange={(event) => setSource(event.target.value)}

@@ -1,3 +1,4 @@
+import './NodeInspector.css';
 import { Textarea } from '../../components/ui/textarea';
 import { Input } from '../../components/ui/input';
 import { Field } from '../../components/ui/field';

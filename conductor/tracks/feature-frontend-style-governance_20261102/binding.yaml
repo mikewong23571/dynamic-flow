@@ -6,6 +6,6 @@ binding:
   pid: 3224766
   started_at: 2026-11-02T07:47:41.001088+00:00
   released: false
-# 当前会话仅完成审查与规划；后续实施须进入本track，不覆盖其它会话的track。
+# 当前会话已获授权实施Phase1–5；后续实施须进入本track，不覆盖其它会话的track。
 # pid为已校验存活的Codex app-server；线程身份由真实session_id区分。
 # heartbeat只表示最近一次本会话活动，不承诺后台定时心跳；30分钟未更新按stale处理。

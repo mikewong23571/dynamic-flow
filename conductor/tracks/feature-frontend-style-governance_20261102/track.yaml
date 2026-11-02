@@ -10,10 +10,10 @@ updated_at: 2026-11-02
 repo_scope: null
 step_id: null
 notes:
-  - 用户已认可系统治理方向，本轮授权深入审查后新建track；仅完成审查与规划，未授权自动发布或实施整个track。
-  - Phase 0审查完成；Phase 1–5待实施，不将审查脚本通过计为缺陷修复或视觉验收通过。
+  - 初建时仅授权深入审查与建档；后续用户已明确授权主动闭环Phase1–5，允许逻辑单元本地提交，不自动push/部署。
+  - Phase 0–4完成；Phase 5验证完成，等待最终review与预览交接；不将审查脚本通过计为修复验收。
   - 沿用项目conductor/tracks、workflow.md与单仓约定，不迁移Conductor工作区，不创建多仓scope或母仓。
-  - 本轮文档规划不创建代码worktree；实施前按根AGENTS建立与托管实例隔离、包含经核对源码的工作目录。
+  - 实施worktree为dynamic-flow-style-governance，基线99cef65冻结原有未提交源码；原仓现场保持，不自动push/部署。
   - 无用户登记的阻塞依赖；现有OpenUI整体track与历史视觉track作为上下文，只读且不改其绑定。
   - 当前无workspace.yaml或显式步骤选择，step_id保留null，不伪造平台步骤。
   - 源码基线是带既有未提交修改的工作区快照；HEAD仅作追溯标记，源码SHA见evidence/baseline/component-inventory.json。

@@ -1,3 +1,4 @@
+import './ModelSettings.css';
 import { NativeSelect } from '../../components/ui/native-select';
 import { Field } from '../../components/ui/field';
 import { useEffect, useState } from 'react';

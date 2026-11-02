@@ -30,13 +30,13 @@
 
 ## 改动点
 
-本仓 dynamic-flow 为唯一代码范围；沿用单仓工作流，无外部仓库或多仓母仓。本轮实际仅写本 track 与两个 Conductor 索引，以下为后续实施预期范围。
+本仓 dynamic-flow 为唯一代码范围；沿用单仓工作流，无外部仓库或多仓母仓。产品改造只在独立 worktree；原仓源码和用户未提交现场保持。以下为已授权实施范围。
 
 | 仓库 id | 模块 / 路径 | 改动说明 |
 | --- | --- | --- |
 | dynamic-flow（宿主仓） | src/client/styles.css、main.tsx、index.html | token、reset、层顺序、暗色策略；按拥有者迁移规则，维持入口顺序 |
 | dynamic-flow | src/client/components/ui/、components/ui.tsx | 控件尺寸/状态与单一 Button API；包装层布局接口；保留业务 Badge 和 Modal 的合理职责 |
-| dynamic-flow | components/WorkspaceFrame.*、Management.*、MaterialCard.*、MaterialDialog.* | 共享结构、响应式、字段/动作区组合、浮层焦点与材料阅读 |
+| dynamic-flow | components/WorkspaceFrame.*、Management.*、MaterialCard.*、MaterialDialog.*、useTaskDialogFocus.ts | 共享结构、响应式、字段/动作区组合、浮层焦点与材料阅读 |
 | dynamic-flow | app/、features/workspace/、features/settings/ | 方法工作区、列表入口、创建/调用/试运行与设置表单 |
 | dynamic-flow | features/openui/、features/work-items/ | 原生组合、InputFields、RecordTable、任务表单、Assistant 停靠和条件/子项弹窗 |
 | dynamic-flow | features/inspector/、canvas/、assistant/、results/ | 保留专用呈现，收敛公共控件和重复外观；限定第三方适配 |

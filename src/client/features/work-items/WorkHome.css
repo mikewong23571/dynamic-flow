@@ -51,16 +51,6 @@
   .work-start-form:focus-within {
     border-color: var(--accent);
   }
-  .work-start-form > textarea {
-    border: 0;
-    box-shadow: none;
-    outline: none;
-    background: transparent;
-    resize: vertical;
-    min-height: 88px;
-    font-size: var(--text-body);
-    padding: 2px;
-  }
   .work-start-form footer {
     display: flex;
     align-items: center;

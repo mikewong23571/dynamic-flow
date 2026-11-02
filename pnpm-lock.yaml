@@ -140,6 +140,9 @@ importers:
       concurrently:
         specifier: 10.0.5
         version: 10.0.5
+      postcss:
+        specifier: 8.5.28
+        version: 8.5.28
       prettier:
         specifier: 3.9.8
         version: 3.9.8

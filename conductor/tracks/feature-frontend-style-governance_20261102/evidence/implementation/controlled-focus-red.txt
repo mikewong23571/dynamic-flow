@@ -1,0 +1,49 @@
+
+Running 1 test using 1 worker
+
+(node:1686299) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/browser/focus-before.spec.ts:54:32 › deep UI hierarchy audit 1440 (4.2s)
+
+
+  1) tests/browser/focus-before.spec.ts:54:32 › deep UI hierarchy audit 1440 ───────────────────────
+
+    Error: expect(locator).toBeFocused() failed
+
+    Locator:  locator('[data-openui-renderer="official"]').locator('section').filter({ has: getByRole('heading', { name: '第二项', exact: true }) }).getByRole('button', { name: '补充说明', exact: true })
+    Expected: focused
+    Received: inactive
+    Timeout:  1000ms
+
+    Call log:
+      - Expect "toBeFocused" locator('[data-openui-renderer="official"]').locator('section').filter({ has: getByRole('heading', { name: '第二项', exact: true }) }).getByRole('button', { name: '补充说明', exact: true }) with timeout 1000ms
+      - waiting for locator('[data-openui-renderer="official"]').locator('section').filter({ has: getByRole('heading', { name: '第二项', exact: true }) }).getByRole('button', { name: '补充说明', exact: true })
+        11 × locator resolved to <button data-slot="button" data-size="default" data-variant="outline" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm leading-none font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]…>补充说明</button>
+           - unexpected value "inactive"
+
+
+      88 |  await page.keyboard.press('Escape');await expect(dialog).not.toBeVisible();
+      89 |  await expect.poll(()=>trigger.evaluate(el=>el===document.activeElement),{timeout:1000}).toBe(true).catch(()=>{});
+    > 90 |  await expect(trigger).toBeFocused({timeout:1000});
+         |                        ^
+      91 |  metrics.focusRestored=await trigger.evaluate(el=>el===document.activeElement);
+      92 |  metrics.focusAfterClose=await page.evaluate(()=>({tag:document.activeElement?.tagName,role:document.activeElement?.getAttribute('role'),label:document.activeElement?.getAttribute('aria-label')}));
+      93 |  await ui.getByRole('button',{name:'处理这些内容',exact:true}).click();
+        at /tmp/flowcraft-ui-audit-hr5h73ih/tests/browser/focus-before.spec.ts:90:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../style-focus-red/focus-before-deep-UI-hierarchy-audit-1440/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../style-focus-red/focus-before-deep-UI-hierarchy-audit-1440/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../style-focus-red/focus-before-deep-UI-hierarchy-audit-1440/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../style-focus-red/focus-before-deep-UI-hierarchy-audit-1440/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/browser/focus-before.spec.ts:54:32 › deep UI hierarchy audit 1440 ────────────────────────

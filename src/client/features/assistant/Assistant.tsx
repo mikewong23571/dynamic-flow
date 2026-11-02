@@ -1,3 +1,4 @@
+import './Assistant.css';
 import { FormActions } from '../../components/ui/field';
 import {
   useCallback,
@@ -384,6 +385,7 @@ export function Assistant({
           <ComposerPrimitive.Root className="composer">
             {composerContext}
             <ComposerPrimitive.Input
+              className="composer-input"
               ref={composerInputRef}
               aria-label="对话修改"
               // IME composition 期间父级 setState 的重渲染会被 Chromium

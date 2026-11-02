@@ -1,3 +1,4 @@
+import './Prose.css';
 import type { ReactNode } from 'react';
 export function MarkdownTable({ children }: { children?: ReactNode }) {
   return (

@@ -1,3 +1,4 @@
+import './App.css';
 import type { RunFocus } from '../features/results/run-inspector-model';
 import { memo, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { DeferredContent } from '../components/DeferredContent';

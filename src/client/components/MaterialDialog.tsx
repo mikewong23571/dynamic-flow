@@ -1,3 +1,5 @@
+import { useContentVisibility } from './ContentVisibility';
+import { useTaskDialogFocus } from './useTaskDialogFocus';
 import { useMemo, useState, type ReactNode } from 'react';
 import { Copy, FileText, X } from 'lucide-react';
 import type { WorkItemInput } from '../../shared/records';
@@ -34,6 +36,15 @@ export function MaterialDialog({
   onSource?: () => void;
   onRestoreFocus?: () => void;
 }) {
+  const focus = useTaskDialogFocus(
+    onRestoreFocus
+      ? (event) => {
+          event.preventDefault();
+          onRestoreFocus();
+        }
+      : undefined,
+  );
+  const visible = useContentVisibility();
   const [view, setView] = useState<'content' | 'raw'>('content');
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState('');
@@ -42,19 +53,12 @@ export function MaterialDialog({
     [material?.text],
   );
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open && visible} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent
         showCloseButton={false}
         className="material-reader bg-[var(--paper)] flex h-[min(720px,calc(100dvh-48px))] w-[min(960px,calc(100vw-48px))] max-w-[min(960px,calc(100vw-48px))] sm:max-w-[min(960px,calc(100vw-48px))] flex-col gap-0 overflow-hidden p-0"
-        onCloseAutoFocus={
-          onRestoreFocus
-            ? (event) => {
-                event.preventDefault();
-                onRestoreFocus();
-              }
-            : undefined
-        }
+        {...focus}
       >
         <DialogHeader className="material-reader-header flex-row items-start gap-3 space-y-0 text-left">
           <div className="material-reader-icon">

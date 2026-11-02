@@ -1,0 +1,179 @@
+@layer components {
+  .settings-topline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 21px 0;
+  }
+  .settings-topline > span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--muted);
+    font-size: var(--text-small);
+  }
+  .settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-field);
+  }
+  .settings-grid .form-field {
+    margin-top: 0;
+  }
+  .settings-divider {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-inline);
+    padding: 17px 0;
+    border-top: 1px solid var(--line);
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: var(--text-meta);
+  }
+  .settings-saved {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+  .settings-hint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 0;
+  }
+  .settings-warning {
+    padding: 10px 12px;
+    background: var(--warning-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+    font-size: var(--text-meta);
+    line-height: 1.7;
+    color: var(--warning);
+    margin-top: 12px;
+  }
+  .model-settings .form-actions {
+    margin-top: 20px;
+  }
+  .model-settings .form-field {
+    margin-top: 0;
+  }
+  .model-settings .settings-grid,
+  .model-settings .settings-row {
+    margin-bottom: 16px;
+  }
+  .model-settings .settings-grid .form-field,
+  .model-settings .settings-row .form-field {
+    margin-bottom: 0;
+  }
+  .settings-row {
+    display: block;
+  }
+  .settings-grid-wide {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+  .settings-grid-headers {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  }
+  .settings-grid-action {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .model-settings .settings-topline {
+    margin: 13px 0 19px;
+  }
+  .model-settings .settings-divider {
+    padding: 13px 0;
+    margin-top: 1px;
+  }
+  .catalog-manager {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-group);
+    margin-bottom: 16px;
+  }
+  .catalog-provider {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-card);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-inline);
+  }
+  .catalog-provider > header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline);
+  }
+  .catalog-provider > header > strong,
+  .catalog-provider > header > .badge {
+    flex-shrink: 0;
+  }
+  .catalog-provider-url {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .catalog-provider-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .catalog-model {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-inline);
+    border-top: 1px solid var(--line);
+    padding-top: 8px;
+    font-size: var(--text-small);
+  }
+  .catalog-model-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-control);
+    flex-shrink: 0;
+  }
+  .catalog-test-ok {
+    color: var(--success);
+    font-size: var(--text-meta);
+  }
+  .catalog-model-editor {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .catalog-model-editor-head {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .catalog-model-editor-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--text-small);
+  }
+  .catalog-model-editor-head + .settings-grid {
+    margin-top: 10px;
+  }
+  .effort-checks {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px 14px;
+    min-height: 34px;
+    font-weight: 400;
+  }
+}

@@ -57,6 +57,7 @@ export function CanvasPane({
       <div className="canvas-toolbar">
         <div className="inline-group">
           <NativeSelect
+            size="sm"
             layout="fit"
             aria-label="新步骤类型"
             value={addKind}

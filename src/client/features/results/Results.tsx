@@ -1,3 +1,4 @@
+import './Results.css';
 import { useEffect, useMemo, useState, type ComponentProps } from 'react';
 import type { WorkItemSummaryPage } from '../../../shared/records';
 import type { ResultView } from '../../app/navigation';

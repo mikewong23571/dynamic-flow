@@ -1,0 +1,76 @@
+@layer components {
+  .prose {
+    font-size: var(--text-control);
+    line-height: 1.9;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .prose h1 {
+    font-size: 22px;
+    margin: 14px 0;
+  }
+  .prose h2 {
+    font-size: var(--text-heading);
+    margin: 18px 0 10px;
+  }
+  .prose h3 {
+    font-size: var(--text-section);
+    margin: 15px 0 8px;
+  }
+  .prose p {
+    margin: 8px 0;
+  }
+  .prose ul,
+  .prose ol {
+    padding-left: 22px;
+  }
+  .prose li {
+    margin: 4px 0;
+  }
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .prose pre {
+    overflow: auto;
+    font-size: var(--text-meta);
+  }
+  .compare-row .prose {
+    font-size: var(--text-small);
+  }
+  .markdown-table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 16px 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+  }
+  .markdown-table-scroll table {
+    width: 100%;
+    min-width: 430px;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: var(--prose-table-font-size, 12px);
+    line-height: 1.75;
+  }
+  .markdown-table-scroll th {
+    font-weight: 550;
+    color: var(--muted);
+    background: var(--surface);
+    white-space: nowrap;
+  }
+  .markdown-table-scroll th,
+  .markdown-table-scroll td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px 13px;
+    vertical-align: top;
+    min-width: 95px;
+  }
+  .markdown-table-scroll tr:last-child td {
+    border-bottom: 0;
+  }
+  .markdown-table-scroll td {
+    color: var(--ink);
+  }
+}

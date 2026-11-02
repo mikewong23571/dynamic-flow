@@ -1,0 +1,74 @@
+@layer components {
+  .inspector {
+    padding: 25px 23px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-field);
+  }
+  .inspector .section-heading h2 {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .inspector .section-heading {
+    margin-bottom: 22px;
+  }
+  .details {
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    margin: 8px 0 20px;
+    font-size: var(--text-small);
+  }
+  .details summary {
+    cursor: pointer;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .connections {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 15px;
+  }
+  .connections > div {
+    display: flex;
+    gap: var(--space-control);
+    align-items: center;
+    font-size: var(--text-meta);
+    line-height: 1.5;
+  }
+  .connections > div > span {
+    flex: 1;
+    overflow-wrap: anywhere;
+  }
+  .connections small {
+    display: block;
+    font-size: 9px;
+  }
+  .connections svg {
+    color: var(--muted);
+    flex: none;
+  }
+  .panel-bottom {
+    padding: 16px 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--canvas);
+  }
+  @media (max-width: 1200px) {
+    .inspector {
+      padding: 22px 18px;
+    }
+  }
+  @media (max-width: 1050px) {
+    .inspector {
+      padding: 20px 17px;
+    }
+  }
+  .inspector > .section-heading,
+  .inspector > .details {
+    margin-block: 0;
+  }
+}

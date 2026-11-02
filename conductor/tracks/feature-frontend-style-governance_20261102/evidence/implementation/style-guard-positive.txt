@@ -1,0 +1,6 @@
+src/client/style-contract-probe.css:1: owned rule requires an explicit cascade layer
+src/client/style-contract-probe.css:1: primitive appearance belongs to its public variant/size API
+src/client/style-contract-probe.css:1: literal color belongs to the root theme tokens
+src/client/style-contract-probe.css:1: primitive appearance belongs to its public variant/size API
+src/client/style-contract-probe.tsx:1: palette utility color must use a semantic theme role
+src/client/style-contract-probe.tsx:1: import Button from components/ui/button
