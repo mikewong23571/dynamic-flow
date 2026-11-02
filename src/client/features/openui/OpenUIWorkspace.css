@@ -4,26 +4,26 @@
   .openui-view {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: var(--space-section);
     min-width: 0;
   }
   .openui-section,
   .openui-content {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--space-group);
     min-width: 0;
   }
   .openui-section > h2,
   .openui-content > h2 {
     margin: 0;
-    font-size: 15px;
+    font-size: var(--text-section);
     font-weight: 500;
   }
   .openui-stack {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--space-field);
     min-width: 0;
   }
   .openui-stack-horizontal {
@@ -50,16 +50,16 @@
     gap: 10px;
   }
   .openui-content .declared-record-detail dt {
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .declared-input-form {
     margin: 0;
   }
-  .declared-input-form .field {
+  .declared-input-form .form-field {
     margin: 0;
   }
-  .declared-input-form .modal-actions {
-    margin-top: 4px;
+  .declared-input-form .form-actions {
+    margin-top: 0;
   }
   .openui-metric {
     margin: 0;
@@ -67,7 +67,7 @@
   }
   .openui-metric dt {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .openui-metric dd {
     margin: 4px 0 0;
@@ -77,7 +77,7 @@
   .openui-disclosure > summary {
     cursor: pointer;
     color: var(--muted);
-    font-size: 13px;
+    font-size: var(--text-control);
   }
   .openui-disclosure[open] > summary {
     margin-bottom: 16px;

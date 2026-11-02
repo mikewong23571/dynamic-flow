@@ -1,0 +1,10 @@
+
+Running 3 tests using 1 worker
+
+(node:1685722) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/browser/style-governance.spec.ts:121:3 › style contracts and controlled task focus 1440 (2.5s)
+  ✓  2 tests/browser/style-governance.spec.ts:121:3 › style contracts and controlled task focus 1024 (2.0s)
+  ✓  3 tests/browser/style-governance.spec.ts:193:1 › resizing preserves action reachability and user panel preference (1.5s)
+
+  3 passed (10.9s)

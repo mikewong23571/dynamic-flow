@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Json } from '../../../shared/records';
-import { Badge, Button } from '../../components/ui';
+import { Badge } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -44,7 +45,7 @@ export function RunGroupNavigation({
             {item.label}
           </span>
           {item.count !== undefined && item.count > 1 && (
-            <span className="muted">{item.count}</span>
+            <span className="meta-text">{item.count}</span>
           )}
           <Badge status={item.status} iconOnly />
         </button>
@@ -78,6 +79,7 @@ export function RunInstancePicker({
   return (
     <div className="item-instance-select">
       <Button
+        size="sm"
         variant="ghost"
         aria-label="上一项成果"
         disabled={current <= 0}
@@ -88,7 +90,7 @@ export function RunInstancePicker({
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button aria-label="执行实例" variant="ghost">
+          <Button size="sm" aria-label="执行实例" variant="ghost">
             {selected?.label || '选择实例'} / {items.length} 项{' '}
             <ChevronDown size={14} />
           </Button>
@@ -126,6 +128,7 @@ export function RunInstancePicker({
         </DropdownMenuContent>
       </DropdownMenu>
       <Button
+        size="sm"
         variant="ghost"
         aria-label="下一项成果"
         disabled={current < 0 || current >= items.length - 1}

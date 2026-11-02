@@ -40,7 +40,7 @@ export function MethodPreview({
       }}
     >
       <div className="composition-method-preview-heading">
-        <span className="muted">
+        <span className="meta-text">
           固定版本 <code>{reference.definitionId.slice(0, 8)}</code>
         </span>
         {method && (

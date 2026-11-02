@@ -18,19 +18,19 @@
   .item-progress-line {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-inline);
     min-width: 0;
   }
   .item-stage {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--ink);
   }
   /* 与状态 badge 并列时阶段文字退为次要 */
   .item-progress-line .badge ~ .item-stage {
-    font-size: 11px;
+    font-size: var(--text-meta);
     color: var(--muted);
   }
   .item-execution {
@@ -38,7 +38,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--muted);
   }
   .item-execution.attention {
@@ -46,7 +46,7 @@
   }
   .item-key {
     color: var(--muted);
-    font-size: 11px;
+    font-size: var(--text-meta);
     font-variant-numeric: tabular-nums;
   }
   .item-narrow-date {
@@ -73,22 +73,19 @@
       display: block;
     }
   }
-}
-.items-page > .management-table-wrap {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-}
-.items-page > .management-heading,
-.items-page > .management-toolbar {
-  flex-shrink: 0;
-}
-
-@layer components {
+  .items-page > .management-table-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+  .items-page > .management-heading,
+  .items-page > .management-toolbar {
+    flex-shrink: 0;
+  }
   .prepare-material {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: var(--space-group);
     padding: 14px 0;
     border-bottom: 1px solid var(--line);
   }
@@ -103,7 +100,7 @@
   .prepare-material summary {
     display: flex;
     align-items: baseline;
-    gap: 12px;
+    gap: var(--space-group);
     cursor: pointer;
   }
   .prepare-material-chevron {
@@ -132,9 +129,6 @@
     font: inherit;
     line-height: 1.7;
   }
-}
-
-@layer components {
   .criterion-reference {
     max-width: 100%;
     height: auto;
@@ -144,65 +138,66 @@
 }
 
 /* Dialog sizing follows the existing unlayered .modal compatibility rule. */
-.modal.item-candidates-dialog {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  width: min(960px, 94vw);
-  max-width: min(960px, 94vw);
-}
-.item-candidates-dialog > .stack {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-.candidate-list-scroll {
-  min-height: 0;
-  flex: 1;
-  max-height: calc(88vh - 300px);
-  overflow: auto;
+@layer components {
+  .modal.item-candidates-dialog {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: min(960px, 94vw);
+    max-width: min(960px, 94vw);
+  }
+  .item-candidates-dialog > .stack {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .candidate-list-scroll {
+    min-height: 0;
+    flex: 1;
+    max-height: calc(88vh - 300px);
+    overflow: auto;
+  }
 }
 
 /* Scoped layout overrides for the unlayered full-page Management toolbar. */
-.item-relations > .section-heading {
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-.item-relations > .management-toolbar {
-  display: grid;
-  grid-template-columns: minmax(240px, 1fr) auto;
-  gap: 12px;
-  padding: 0;
-  margin-bottom: 16px;
-}
-.item-relations > .management-toolbar > .management-search {
-  width: 100%;
-  max-width: 520px;
-  min-width: 0;
-}
-.item-relations .management-search > [data-slot='button'] {
-  height: 32px;
-}
-.item-relations-filters {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-}
-.item-relations > .management-pagination {
-  padding: 16px 0 0;
-}
-@media (max-width: 900px) {
+@layer components {
+  .item-relations > .section-heading {
+    gap: var(--space-group);
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
   .item-relations > .management-toolbar {
-    grid-template-columns: minmax(0, 1fr);
+    display: grid;
+    grid-template-columns: minmax(240px, 1fr) auto;
+    gap: var(--space-group);
+    padding: 0;
+    margin-bottom: 16px;
   }
   .item-relations > .management-toolbar > .management-search {
-    max-width: none;
+    width: 100%;
+    max-width: 520px;
+    min-width: 0;
   }
   .item-relations-filters {
-    justify-content: flex-start;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-inline);
+  }
+  .item-relations > .management-pagination {
+    padding: 16px 0 0;
+  }
+  @media (max-width: 900px) {
+    .item-relations > .management-toolbar {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .item-relations > .management-toolbar > .management-search {
+      max-width: none;
+    }
+    .item-relations-filters {
+      justify-content: flex-start;
+    }
   }
 }

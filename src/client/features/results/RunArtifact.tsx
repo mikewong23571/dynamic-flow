@@ -4,7 +4,8 @@ import {
 } from '../../components/DeferredContent';
 import { useState, type ReactNode } from 'react';
 import type { NodeResult, Run } from '../../../shared/records';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import {
   Tabs,
   TabsContent,
@@ -89,7 +90,11 @@ export function RunArtifact({
         }
       />
       {result.call && (
-        <Button variant="ghost" onClick={() => onNavigate(result.call!)}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => onNavigate(result.call!)}
+        >
           查看方法内执行
         </Button>
       )}
@@ -121,7 +126,7 @@ export function RunArtifact({
                   </DeferredDetails>
                 )}
                 {!values.length && (
-                  <p className="muted">
+                  <p className="meta-text">
                     {result.status === 'running'
                       ? '正在处理，尚无产物。报告进展可在业务记录中查看。'
                       : '此实例没有产物。'}
@@ -183,7 +188,11 @@ export function RunArtifact({
             {() => (
               <>
                 {!!basis?.length && (
-                  <Button variant="ghost" onClick={() => setBasisOpen(true)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setBasisOpen(true)}
+                  >
                     运行依据
                   </Button>
                 )}
@@ -229,7 +238,7 @@ export function RunArtifact({
                         >
                           {() => (
                             <>
-                              <p className="muted">
+                              <p className="meta-text">
                                 关联原始材料：
                                 {input.materialIds.length
                                   ? input.materialIds.join('、')
@@ -254,14 +263,14 @@ export function RunArtifact({
           <DeferredContent active={tab === 'activity'}>
             {() => (
               <>
-                <p className="muted">
+                <p className="meta-text">
                   {dateTime(result.startedAt)} →{' '}
                   {result.finishedAt
                     ? dateTime(result.finishedAt)
                     : statusNames[result.status]}
                 </p>
                 {result.effectiveModel && (
-                  <p className="muted">
+                  <p className="meta-text">
                     {effectiveModelLabel(result.effectiveModel)}
                   </p>
                 )}

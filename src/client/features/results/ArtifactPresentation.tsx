@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react';
 import { Copy } from 'lucide-react';
 import type { Json, NodeResult } from '../../../shared/records';
-import { Badge, Button } from '../../components/ui';
+import { Badge } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 
 export function ArtifactHeading({
   heading,
@@ -32,6 +33,7 @@ export function ArtifactHeading({
         {actions}
         {copyValue !== undefined && (
           <Button
+            size="sm"
             variant="ghost"
             onClick={() => {
               setCopyError('');
@@ -67,6 +69,7 @@ export function ArtifactViewControls({
   return (
     <div className="artifact-value-mode">
       <Button
+        size="sm"
         variant="ghost"
         aria-pressed={value === 'content'}
         onClick={() => onChange('content')}
@@ -74,6 +77,7 @@ export function ArtifactViewControls({
         查看内容
       </Button>
       <Button
+        size="sm"
         variant="ghost"
         aria-pressed={value === 'raw'}
         onClick={() => onChange('raw')}

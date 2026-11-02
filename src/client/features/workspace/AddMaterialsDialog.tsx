@@ -1,9 +1,13 @@
+import { Textarea } from '../../components/ui/textarea';
+import { FormActions } from '../../components/ui/field';
+import { Field } from '../../components/ui/field';
 import { useMemo, useState } from 'react';
 import type { Snapshot, Work } from '../../../shared/records';
 import { splitMaterials } from '../../core/format';
 import { upload } from '../../core/api';
 import { runAction } from '../../core/action';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 
 /** 添加新材料：粘贴拆分后加入并选中，或上传文件由助手剖析。 */
 export function AddMaterialsDialog({
@@ -43,18 +47,19 @@ export function AddMaterialsDialog({
       title="添加新材料"
       description="新材料加入本工作；历史运行与报告保留原输入。"
     >
-      <label className="field">
+      <Field>
         每行一条材料
-        <textarea
+        <Textarea
           rows={7}
           value={newMaterials}
           onChange={(e) => setNewMaterials(e.target.value)}
         />
-      </label>
-      <p className="muted">将添加 {pendingMaterials.length} 条</p>
-      <div className="modal-actions">
+      </Field>
+      <p className="meta-text">将添加 {pendingMaterials.length} 条</p>
+      <FormActions>
         <Button
-          variant="primary"
+          size="sm"
+          variant="default"
           disabled={busy || !pendingMaterials.length}
           onClick={async () => {
             const old = new Set(work?.materials.map((m) => m.id));
@@ -74,8 +79,8 @@ export function AddMaterialsDialog({
         >
           添加并选中新材料
         </Button>
-      </div>
-      <label className="field">
+      </FormActions>
+      <Field>
         或上传文件，由助手剖析并登记洞见
         <input
           type="file"
@@ -85,11 +90,12 @@ export function AddMaterialsDialog({
             setUploadError('');
           }}
         />
-      </label>
+      </Field>
       {uploadError && <p className="inline-error">{uploadError}</p>}
-      <div className="modal-actions">
+      <FormActions>
         <Button
-          variant="primary"
+          size="sm"
+          variant="default"
           disabled={busy || !uploadFile}
           onClick={() =>
             void runAction(
@@ -109,7 +115,7 @@ export function AddMaterialsDialog({
         >
           上传并导入
         </Button>
-      </div>
+      </FormActions>
     </Modal>
   );
 }

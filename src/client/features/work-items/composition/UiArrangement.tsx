@@ -1,3 +1,4 @@
+import { Field } from '../../../components/ui/field';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, MessageSquare } from 'lucide-react';
 import {
@@ -65,7 +66,7 @@ export function UiArrangement({
           返回成果
         </Button>
         <strong>OpenUI 界面安排</strong>
-        <span className="muted">{dirty ? '未保存修改' : '已保存'}</span>
+        <span className="meta-text">{dirty ? '未保存修改' : '已保存'}</span>
         <Button
           disabled={busy || !dirty}
           onClick={() =>
@@ -121,7 +122,7 @@ export function UiArrangement({
           ))}
         </nav>
         <div className="ui-arrangement-editor">
-          <label className="field">
+          <Field>
             OpenUI 描述
             <Textarea
               ref={editor}
@@ -131,7 +132,7 @@ export function UiArrangement({
               onChange={(event) => setSource(event.target.value)}
               aria-label="OpenUI 描述"
             />
-          </label>
+          </Field>
           <Button
             variant="outline"
             disabled={dirty}

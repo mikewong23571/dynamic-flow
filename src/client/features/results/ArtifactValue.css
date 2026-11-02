@@ -28,7 +28,7 @@
     gap: 18px;
     padding: 12px 0;
     border-bottom: 1px solid var(--line);
-    font-size: 13px;
+    font-size: var(--text-control);
   }
   .artifact-field > span {
     color: var(--muted);
@@ -45,7 +45,7 @@
   }
   .artifact-fields > details > summary {
     cursor: pointer;
-    font-size: 13px;
+    font-size: var(--text-control);
   }
   .artifact-fields > details > summary strong {
     font-weight: 500;
@@ -54,7 +54,7 @@
   }
   .artifact-fields > details > summary span {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .artifact-fields > details[open] > summary {
     margin-bottom: 14px;
@@ -63,14 +63,14 @@
   .artifact-raw {
     max-height: 58vh;
     overflow: auto;
-    font-size: 13px;
+    font-size: var(--text-control);
     overflow-wrap: anywhere;
   }
   .artifact-raw {
     white-space: pre-wrap;
     padding: 14px;
     border: 1px solid var(--line-strong);
-    border-radius: 6px;
+    border-radius: var(--radius-control);
   }
   .artifact-collection-tools input:not([type='checkbox']) {
     min-width: 120px;
@@ -79,7 +79,7 @@
   }
   .artifact-collection-tools > span {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .artifact-table th button {
     color: inherit;
@@ -91,7 +91,7 @@
   }
   .artifact-table th,
   .artifact-table td {
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .artifact-table .artifact-cell {
     display: block;
@@ -110,12 +110,12 @@
     padding: 16px;
     margin-bottom: 16px;
     border: 1px solid var(--line-strong);
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     background: var(--surface);
   }
   .artifact-row-detail h4 {
     margin: 0 0 10px;
-    font-size: 13px;
+    font-size: var(--text-control);
   }
   .artifact-comparison {
     min-width: 0;
@@ -126,7 +126,7 @@
     max-width: 320px;
     white-space: normal;
     overflow-wrap: anywhere;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .artifact-comparison summary {
     cursor: pointer;
@@ -141,7 +141,7 @@
     --prose-table-font-size: 13px;
     max-width: 76ch;
     margin-inline: auto;
-    font-size: 14px;
+    font-size: var(--text-body);
     line-height: 1.8;
   }
   .artifact-text .prose {

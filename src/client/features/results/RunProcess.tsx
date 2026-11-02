@@ -1,3 +1,4 @@
+import { NativeSelect } from '../../components/ui/native-select';
 import { useEffect, useState, type ReactNode } from 'react';
 import { RunInspector } from './RunInspector';
 import type { RunFocus } from './run-inspector-model';
@@ -14,7 +15,8 @@ import type {
   Run,
 } from '../../../shared/records';
 import { active, short, statusNames } from '../../core/format';
-import { Badge, Button, Empty } from '../../components/ui';
+import { Badge, Empty } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -28,7 +30,7 @@ export function InputContent({ inputs }: { inputs: Inputs }) {
       {Object.entries(inputs).map(([port, items]) => (
         <div key={port}>
           {Object.keys(inputs).length > 1 && <h4>端口 · {port}</h4>}
-          {items.length === 0 && <span className="muted">无输入</span>}
+          {items.length === 0 && <span className="meta-text">无输入</span>}
           {items.map((item, i) => (
             <div className="sample-content" key={`${item.sampleId}-${i}`}>
               <span className="sample-id">
@@ -95,7 +97,7 @@ export function RunProcess({
       <Empty title="还没有运行结果">
         <p>选择材料，运行流程后将在这里看到逐条进展。</p>
         {onInvoke && (
-          <Button variant="primary" onClick={onInvoke}>
+          <Button size="sm" variant="default" onClick={onInvoke}>
             直接输入运行
           </Button>
         )}
@@ -120,7 +122,8 @@ export function RunProcess({
             <div className="results-toolbar">
               <label>
                 运行记录
-                <select
+                <NativeSelect
+                  layout="fit"
                   aria-label="运行记录"
                   value={run.id}
                   onChange={(e) => {
@@ -145,11 +148,13 @@ export function RunProcess({
                       {r.invocation?.repairedPorts?.length ? ' · 自动修复' : ''}
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
               </label>
               <Badge status={run.status} />
               {active(run.status) && (
                 <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => void onAction('stopRun', { runId: run.id })}
                   disabled={run.stopRequested}
                 >
@@ -273,17 +278,19 @@ export function RunProcess({
         <div className="selection-bar">
           <span>跨运行已选 {selectedResults.length} 条结果</span>
           <Button
+            variant="outline"
+            size="sm"
             onClick={() =>
               void onAction('keepResults', { resultIds: selectedResults })
             }
           >
             保留所选结果
           </Button>
-          <Button variant="primary" onClick={onContinue}>
+          <Button size="sm" variant="default" onClick={onContinue}>
             用所选结果续做
             <ArrowRight size={15} />
           </Button>
-          <Button variant="ghost" onClick={() => onSelectResults([])}>
+          <Button size="sm" variant="ghost" onClick={() => onSelectResults([])}>
             清除
           </Button>
         </div>
@@ -344,7 +351,9 @@ export function MethodResultActions({
         </label>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost">更多</Button>
+            <Button size="sm" variant="ghost">
+              更多
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
@@ -381,6 +390,7 @@ export function MethodResultActions({
         选择
       </label>
       <Button
+        size="sm"
         variant="ghost"
         onClick={() =>
           onCandidate(
@@ -397,6 +407,8 @@ export function MethodResultActions({
         ) && (
           <>
             <Button
+              variant="outline"
+              size="sm"
               onClick={() =>
                 void onAction('retry', {
                   runId: run.id,
@@ -408,7 +420,7 @@ export function MethodResultActions({
               用所选做法重试此输入
             </Button>
             {result.effectiveModel && onOpenSettings && (
-              <Button variant="ghost" onClick={onOpenSettings}>
+              <Button size="sm" variant="ghost" onClick={onOpenSettings}>
                 检查模型设置
               </Button>
             )}
@@ -416,6 +428,7 @@ export function MethodResultActions({
         )}
       {!usageOnly && expansion && (
         <Button
+          size="sm"
           variant="ghost"
           disabled={
             run.nodeStates[expansion.nodeId] !== 'completed' ||
@@ -436,6 +449,7 @@ export function MethodResultActions({
       )}
       {result.status === 'completed' && !result.purpose && (
         <Button
+          size="sm"
           variant="ghost"
           onClick={() =>
             void onAction('keepResults', { resultIds: [result.id] })

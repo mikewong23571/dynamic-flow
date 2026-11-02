@@ -1,3 +1,5 @@
+import { FormActions } from '../../components/ui/field';
+import { Field } from '../../components/ui/field';
 import { useEffect, useRef, useState } from 'react';
 import type {
   ItemPreparation,
@@ -6,7 +8,8 @@ import type {
 } from '../../../shared/records';
 import { api } from '../../core/api';
 import { errorText, workTitle, statusNames } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { NativeSelect } from '../../components/ui/native-select';
 import {
   Table,
@@ -215,7 +218,7 @@ export function BatchItemRun({
       }}
     >
       <div className="stack">
-        <label className="field">
+        <Field>
           处理方法
           <NativeSelect
             value={methodId}
@@ -234,7 +237,7 @@ export function BatchItemRun({
               </option>
             ))}
           </NativeSelect>
-        </label>
+        </Field>
         <div className="inline-group">
           <span>已启动 {rows.filter((row) => row.runId).length}</span>
           <span>可启动 {ready}</span>
@@ -273,7 +276,13 @@ export function BatchItemRun({
                               : '未准备')}
                   </TableCell>
                   <TableCell>
-                    <Button onClick={() => onOpen(row.id)}>查看</Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onOpen(row.id)}
+                    >
+                      查看
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -285,25 +294,34 @@ export function BatchItemRun({
             {batchError}
           </p>
         )}
-        <div className="modal-actions">
+        <FormActions>
           <Button
+            variant="outline"
+            size="sm"
             disabled={!!batchId || running || preparing}
             onClick={() => void prepare()}
           >
             准备输入
           </Button>
           {running ? (
-            <Button onClick={() => void pauseBatch()}>暂停启动</Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void pauseBatch()}
+            >
+              暂停启动
+            </Button>
           ) : (
             <Button
-              variant="primary"
+              size="sm"
+              variant="default"
               disabled={!!batchId || !ready || preparing}
               onClick={() => void startBatch()}
             >
               启动就绪项
             </Button>
           )}
-        </div>
+        </FormActions>
       </div>
     </Modal>
   );

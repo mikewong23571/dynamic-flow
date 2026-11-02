@@ -23,7 +23,8 @@ import { ObjectLink } from '../components/ObjectLink';
 import { CandidateBar } from './CandidateBar';
 import { CanvasPane } from './CanvasPane';
 import { ContextPanel } from './ContextPanel';
-import { Empty, Button } from '../components/ui';
+import { Empty } from '../components/ui';
+import { Button } from '../components/ui/button';
 import { WorkspaceHeader } from './WorkspaceHeader';
 import { WorkspaceNotices } from './WorkspaceNotices';
 import { WorkspaceTabs } from './WorkspaceTabs';
@@ -295,7 +296,8 @@ export default function Workspace() {
                 {error && <p role="alert">{error}</p>}
                 {taskContext}
                 <Button
-                  variant="secondary"
+                  size="sm"
+                  variant="outline"
                   onClick={() => navigate({ kind: 'methods' })}
                 >
                   流水线列表

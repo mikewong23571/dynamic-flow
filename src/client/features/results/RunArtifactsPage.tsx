@@ -3,7 +3,7 @@ import { isRunResultSummary } from '../../../shared/result-summary';
 import type { Definition } from '../../../shared/records';
 import { memo, useEffect, useRef, useState, type ComponentProps } from 'react';
 import type { Run } from '../../../shared/records';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { ArtifactValue } from './ArtifactValue';
 import { ArtifactHeading, ArtifactViewControls } from './ArtifactPresentation';
 import { RunGroupNavigation, RunInstancePicker } from './RunSelection';
@@ -103,7 +103,7 @@ export const RunArtifactsPage = memo(
         hidden={!active}
         data-run-id={run.id}
       >
-        <div className="muted mb-4 text-xs">{identity}</div>
+        <div className="meta-text mb-4 text-xs">{identity}</div>
         {summary && <RunSummary summary={summary} />}
         {(groups.length > 1 || (!selected && groups.length > 0)) && (
           <RunGroupNavigation
@@ -156,9 +156,17 @@ export const RunArtifactsPage = memo(
               <ArtifactHeading
                 heading="运行成果"
                 result={{ status: run.status }}
-                actions={<Button onClick={() => onProcess()}>查看过程</Button>}
+                actions={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onProcess()}
+                  >
+                    查看过程
+                  </Button>
+                }
               />
-              <p className="muted">此运行尚无可查看的成果。</p>
+              <p className="meta-text">此运行尚无可查看的成果。</p>
             </div>
           )}
           {artifacts
@@ -207,7 +215,9 @@ const ArtifactReader = memo(
           copyValue={artifact.contentUrl ? undefined : artifact.value}
           actions={
             <>
-              <Button onClick={onProcess}>查看过程</Button>
+              <Button variant="outline" size="sm" onClick={onProcess}>
+                查看过程
+              </Button>
               <MethodResultActions
                 usageOnly
                 work={work}
@@ -244,6 +254,8 @@ const ArtifactReader = memo(
           <div className="selection-bar">
             <span>已选 {controls.selectedResults.length} 份成果</span>
             <Button
+              variant="outline"
+              size="sm"
               onClick={() =>
                 void controls.onAction('keepResults', {
                   resultIds: controls.selectedResults,
@@ -252,7 +264,9 @@ const ArtifactReader = memo(
             >
               保留所选结果
             </Button>
-            <Button onClick={controls.onContinue}>用所选结果续做</Button>
+            <Button variant="outline" size="sm" onClick={controls.onContinue}>
+              用所选结果续做
+            </Button>
           </div>
         )}
       </section>

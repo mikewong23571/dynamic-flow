@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 import type { Work } from '../../shared/records';
 import { short } from '../core/format';
-import { Badge, Button } from '../components/ui';
+import { Badge } from '../components/ui';
+import { Button } from '../components/ui/button';
 import {
   WorkspaceNavigation,
   WorkspaceTabList,
@@ -44,6 +45,7 @@ export function WorkspaceTabs({
           </Badge>
           {tab === 'canvas' && (
             <Button
+              size="sm"
               variant="ghost"
               aria-label={panel ? '收起侧栏' : '打开侧栏'}
               onClick={() => setPanel(panel ? null : 'inspector')}

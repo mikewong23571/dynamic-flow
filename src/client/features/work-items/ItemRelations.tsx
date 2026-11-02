@@ -147,7 +147,7 @@ export function ItemRelations({
     <section className="item-section item-relations" aria-label="子项与待办">
       {data && !empty && (
         <div className="children-task-toolbar">
-          <span className="muted">{data.total} 项</span>
+          <span className="meta-text">{data.total} 项</span>
           <div className="inline-group">
             <Button
               size="sm"

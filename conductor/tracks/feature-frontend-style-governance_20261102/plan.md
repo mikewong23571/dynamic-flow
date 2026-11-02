@@ -1,6 +1,6 @@
 # 实施计划
 
-状态：Phase 0 已完成，其余待实施。本轮仅深入审查与建档，不自动开始产品编码。四明确见 [spec.md](spec.md)，方案见 [design.md](design.md)。每任务以实际证据勾选；当前无本 track 实现提交，不能填写其它工作区已有提交作为交付 SHA。
+状态：用户已授权主动闭环 Phase 1–5，现于独立 worktree 实施；Phase 0 已完成。四明确见 [spec.md](spec.md)，方案见 [design.md](design.md)。每任务以实际证据勾选；当前无本 track 实现提交，不能填写其它工作区已有提交作为交付 SHA。
 
 ## Phase 0：深入审查与基线（本轮完成）
 
@@ -13,13 +13,13 @@
 
 ## Phase 1：基础与组合样板
 
-- [ ] 建立与托管实例隔离的实施目录，核对当前源码、审查基线及同时修改情况，建立修改前证据。
+- [x] 建立与托管实例隔离的实施目录，核对当前源码、审查基线及同时修改情况，建立修改前证据。
   - 验证：不能从干净 HEAD 创建副本而遗漏当前未提交实现；端口/代理/dataRoot/构建路径明确。长期预览使用独立 worktree 和 .flowcraft-preview-data。
-- [ ] 落实有限 token、层顺序和实际暗色策略；保持基础继承、原生 option 背景与第三方基线。
+- [x] 落实有限 token、层顺序和实际暗色策略；保持基础继承、原生 option 背景与第三方基线。
   - 验证：两尺寸字号、控件高度、状态色/边界/焦点 computed style；根字号维持 14px；不批量开启原来未生效的 dark 分支。
-- [ ] 收敛 Button API 与标准/紧凑尺寸，统一 Input/Textarea/NativeSelect 的尺寸和字段填满接口；先迁移管理工具栏与 InputFields。
+- [x] 收敛 Button API 与标准/紧凑尺寸，统一 Input/Textarea/NativeSelect 的尺寸和字段填满接口；先迁移管理工具栏与 InputFields。
   - 验证：同行对齐；primary/secondary/quiet/danger、disabled、focus、aria-invalid；ref/asChild/事件保持；包装层宽度及键盘选择正确。
-- [ ] 按真实重复需求收敛 Field/FormActions 与 Modal 组合，修复 F02 局部声明失效。
+- [x] 按真实重复需求收敛 Field/FormActions 与 Modal 组合，修复 F02 局部声明失效。
   - 验证：页内、Section/Stack 内、弹窗内的 InputFields 无叠加页面 margin；帮助/错误/长标签可读；局部和 utilities 覆盖顺序符合合同。
 
 ## Phase 2：骨架与浮层交接

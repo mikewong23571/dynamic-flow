@@ -1,3 +1,4 @@
+import { FormActions } from '../../components/ui/field';
 import {
   useCallback,
   useMemo,
@@ -26,7 +27,8 @@ import type {
 } from '../../../shared/records';
 import { runAction } from '../../core/action';
 import { active } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import {
   ModelSelectorRoot,
   ModelSelectorTrigger,
@@ -467,8 +469,9 @@ export function Assistant({
               {running ? (
                 <ComposerPrimitive.Cancel asChild>
                   <Button
+                    size="sm"
                     aria-label="停止生成"
-                    variant="secondary"
+                    variant="outline"
                     disabled={running.status === 'stopping'}
                   >
                     <Square size={13} />
@@ -478,7 +481,8 @@ export function Assistant({
               ) : (
                 <ComposerPrimitive.Send asChild>
                   <Button
-                    variant="primary"
+                    size="sm"
+                    variant="default"
                     aria-label="发送修改"
                     disabled={disabled || submitting}
                   >
@@ -511,10 +515,17 @@ export function Assistant({
             </p>
           )}
           {error && <p className="inline-error">{error}</p>}
-          <div className="modal-actions">
-            <Button onClick={() => setRetryMessage(undefined)}>返回检查</Button>
+          <FormActions>
             <Button
-              variant="primary"
+              variant="outline"
+              size="sm"
+              onClick={() => setRetryMessage(undefined)}
+            >
+              返回检查
+            </Button>
+            <Button
+              size="sm"
+              variant="default"
               disabled={
                 submitting ||
                 disabled ||
@@ -525,7 +536,7 @@ export function Assistant({
             >
               确认在当前草稿重试
             </Button>
-          </div>
+          </FormActions>
         </Modal>
       </AssistantMessagesContext.Provider>
     </AssistantRuntimeProvider>

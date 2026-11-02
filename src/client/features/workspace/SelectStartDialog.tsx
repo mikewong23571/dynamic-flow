@@ -1,6 +1,9 @@
+import { NativeSelect } from '../../components/ui/native-select';
+import { Field } from '../../components/ui/field';
 import type { Snapshot, Work } from '../../../shared/records';
 import { short } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 
 /** 选择改进的起点：从问题结果或现有版本创建候选做法。 */
 export function SelectStartDialog({
@@ -40,9 +43,9 @@ export function SelectStartDialog({
       title="选择改进的起点"
       description="历史结果属于它自己的做法版本。选择起点后创建候选，不会改写原运行。"
     >
-      <label className="field">
+      <Field>
         起点版本
-        <select
+        <NativeSelect
           value={sourceChoice}
           onChange={(e) => setSourceChoice(e.target.value)}
         >
@@ -60,8 +63,8 @@ export function SelectStartDialog({
               · {short(id)}
             </option>
           ))}
-        </select>
-      </label>
+        </NativeSelect>
+      </Field>
       {work?.draftId &&
         work.draftId !== work.adoptedId &&
         work.draftId !== sourceChoice && (
@@ -76,7 +79,8 @@ export function SelectStartDialog({
         )}
       {dirty && <p className="notice">请先保存未提交的画布修改。</p>}
       <Button
-        variant="primary"
+        size="sm"
+        variant="default"
         disabled={
           busy ||
           dirty ||

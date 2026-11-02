@@ -1,3 +1,5 @@
+import { FormActions } from '../../components/ui/field';
+import { Field } from '../../components/ui/field';
 import { useEffect, useState, useRef } from 'react';
 import type {
   CandidateSource,
@@ -8,7 +10,8 @@ import type {
 } from '../../../shared/records';
 import { api } from '../../core/api';
 import { errorText } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { NativeSelect } from '../../components/ui/native-select';
@@ -180,6 +183,8 @@ export function CandidateItems({
             问题 {total} · 已选 {selected.length}
           </span>
           <Button
+            variant="outline"
+            size="sm"
             disabled={busy}
             onClick={() =>
               setSelected(allIds.filter((id) => !done(id)?.childId))
@@ -188,14 +193,14 @@ export function CandidateItems({
             选择未建立项
           </Button>
         </div>
-        <label className="field">
+        <Field>
           查找可关联的已有子项
           <Input
             value={linkQuery}
             onChange={(e) => setLinkQuery(e.target.value)}
             placeholder="按名称查找"
           />
-        </label>
+        </Field>
         <div className="candidate-list-scroll">
           <Table>
             <TableHeader>
@@ -284,7 +289,11 @@ export function CandidateItems({
                     <TableCell>
                       {receipt?.childId ? (
                         <div className="stack">
-                          <Button onClick={() => onOpen(receipt.childId!)}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onOpen(receipt.childId!)}
+                          >
                             {receipt.status === 'linked'
                               ? '查看关联项'
                               : '查看子项'}
@@ -292,6 +301,8 @@ export function CandidateItems({
                           {(receipt.status === 'linked' ||
                             receipt.status === 'failed') && (
                             <Button
+                              variant="outline"
+                              size="sm"
                               disabled={busy || receipt.inputsAppended}
                               onClick={() =>
                                 void create([candidate.id], false, true)
@@ -342,7 +353,12 @@ export function CandidateItems({
                 <li key={a.id}>{a.title}</li>
               ))}
             </ul>
-            <Button disabled={busy} onClick={() => void create(selected, true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={busy}
+              onClick={() => void create(selected, true)}
+            >
               重开并建立子项
             </Button>
           </div>
@@ -352,10 +368,14 @@ export function CandidateItems({
             {error}
           </p>
         )}
-        <div className="modal-actions">
-          <Button onClick={onClose}>关闭</Button>
+        <FormActions>
+          <Button variant="outline" size="sm" onClick={onClose}>
+            关闭
+          </Button>
           {receipts.some((r) => !r.childId) && (
             <Button
+              variant="outline"
+              size="sm"
               disabled={busy}
               onClick={() =>
                 void create(
@@ -367,13 +387,14 @@ export function CandidateItems({
             </Button>
           )}
           <Button
-            variant="primary"
+            size="sm"
+            variant="default"
             disabled={busy || !selected.length}
             onClick={() => void create()}
           >
             建立所选子项
           </Button>
-        </div>
+        </FormActions>
       </div>
     </Modal>
   );

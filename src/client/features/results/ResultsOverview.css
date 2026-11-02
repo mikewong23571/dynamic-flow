@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: var(--space-field);
     padding: 9px 24px;
     border-bottom: 1px solid var(--line);
     flex: none;
@@ -11,7 +11,7 @@
   .results-navigation-selection {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-inline);
     min-width: 0;
   }
   .results-navigation-selection select {
@@ -23,7 +23,7 @@
     flex-wrap: wrap;
     gap: 10px;
     padding: 12px 24px 0;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--muted);
   }
   .results-run-owner a {
@@ -87,7 +87,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-group);
     margin-bottom: 24px;
   }
   .results-overview-tools > input {
@@ -97,13 +97,13 @@
   }
   .results-overview-table {
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: var(--radius-card);
     background: var(--surface);
     overflow: hidden;
   }
   .results-overview th {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .results-overview td {
     white-space: normal;
@@ -112,20 +112,20 @@
   .results-overview small {
     display: block;
     color: var(--muted);
-    font-size: 11px;
+    font-size: var(--text-meta);
     margin-top: 6px;
   }
   .run-result-actions {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--space-inline);
   }
   .artifact-choice-preview {
     margin: 8px 0 0;
     display: grid;
-    gap: 6px;
-    font-size: 12px;
+    gap: var(--space-control);
+    font-size: var(--text-small);
     line-height: 1.5;
   }
   .artifact-choice-preview > div {
@@ -154,7 +154,7 @@
   }
   .results-destination-body > h2 {
     margin: 24px;
-    font-size: 18px;
+    font-size: var(--text-heading);
   }
   .artifact-destination {
     padding: 24px 32px;
@@ -163,7 +163,7 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--space-group);
     margin-bottom: 20px;
   }
   .artifact-destination > header > div:first-child {
@@ -175,7 +175,7 @@
   }
   .artifact-destination-actions {
     display: flex;
-    gap: 12px;
+    gap: var(--space-group);
     align-items: center;
     flex-wrap: wrap;
     margin-bottom: 0;
@@ -191,8 +191,5 @@
     display: none;
   }
   @media (max-width: 1100px) {
-    .results-overview,
-    .artifact-destination {
-    }
   }
 }

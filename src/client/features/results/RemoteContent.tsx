@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../core/api';
 import { errorText } from '../../core/format';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 
 type Page = {
   text: string;
@@ -34,18 +34,20 @@ export function RemoteContent({ url }: { url: string }) {
     <div className="artifact-value">
       <div className="artifact-value-mode">
         <Button
+          size="sm"
           variant="ghost"
           disabled={!page || offset === 0}
           onClick={() => setOffset(Math.max(0, offset - 20_000))}
         >
           上一段
         </Button>
-        <span className="muted">
+        <span className="meta-text">
           {page
             ? `${page.offset + 1}–${page.offset + page.text.length} / ${page.characters} 字符`
             : '正在读取…'}
         </span>
         <Button
+          size="sm"
           variant="ghost"
           disabled={!page?.hasMore}
           onClick={() => setOffset(offset + 20_000)}
@@ -59,7 +61,7 @@ export function RemoteContent({ url }: { url: string }) {
       {error && (
         <p role="alert">
           {error}{' '}
-          <Button variant="ghost" onClick={() => setRetry(retry + 1)}>
+          <Button size="sm" variant="ghost" onClick={() => setRetry(retry + 1)}>
             重试
           </Button>
         </p>

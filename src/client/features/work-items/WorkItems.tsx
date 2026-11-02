@@ -392,7 +392,7 @@ export function WorkItems({
               </>
             )}
             {data && !loading && previousFilter && (
-              <p className="muted">
+              <p className="meta-text">
                 当前筛选尚未读取成功，保留上次读取的 {data.total} 项。
               </p>
             )}
@@ -413,7 +413,7 @@ export function WorkItems({
                 }
               >
                 {showHome && (
-                  <span className="muted">从上方描述一件事开始。</span>
+                  <span className="meta-text">从上方描述一件事开始。</span>
                 )}
               </Empty>
             ) : (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../core/api';
 import { errorText } from '../../core/format';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 
 type BatchSummary = {
   id: string;
@@ -100,6 +100,8 @@ export function ItemBatchProgress({
             </div>
             {batch.status !== 'completed' && (
               <Button
+                variant="outline"
+                size="sm"
                 disabled={busy}
                 onClick={() =>
                   void act(

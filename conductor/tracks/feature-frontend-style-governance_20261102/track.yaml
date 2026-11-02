@@ -1,7 +1,7 @@
 schema_version: "2.1"
 track: feature-frontend-style-governance_20261102
 type: feature
-status: new
+status: in-progress
 module: client/styles-and-components
 depends_on: []
 owner: mike
@@ -18,3 +18,4 @@ notes:
   - 当前无workspace.yaml或显式步骤选择，step_id保留null，不伪造平台步骤。
   - 源码基线是带既有未提交修改的工作区快照；HEAD仅作追溯标记，源码SHA见evidence/baseline/component-inventory.json。
   - 真实Agent为codex；session_id来自CODEX_THREAD_ID。pid记录已校验存活的本机Codex app-server进程，不冒称独占线程进程。
+  - 2026-11-02用户最新授权直接主动闭环Phase1–5；不自动发布托管实例。

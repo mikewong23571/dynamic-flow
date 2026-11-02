@@ -1,3 +1,5 @@
+import { FormActions } from '../../../components/ui/field';
+import { Field } from '../../../components/ui/field';
 import { api } from '../../../core/api';
 import { useRef, useState } from 'react';
 import { FileText, Plus, Upload, Rows3 } from 'lucide-react';
@@ -115,7 +117,7 @@ export function CompositionInputs({
         </div>
       </TableCell>
       <TableCell>
-        <span className="muted">
+        <span className="meta-text">
           {related ? '结构化表示' : input.source ? '成果接续' : '手动输入'}
           {input.replacesId ? ' · 已修订' : ''}
         </span>
@@ -124,7 +126,7 @@ export function CompositionInputs({
         {used('received', input.id).length ? (
           <span>本轮采用 · {used('received', input.id).join('、')}</span>
         ) : (
-          <span className="muted">未采用</span>
+          <span className="meta-text">未采用</span>
         )}
       </TableCell>
       <TableCell className="composition-input-actions">
@@ -175,7 +177,7 @@ export function CompositionInputs({
       <header className="composition-section-heading">
         <div>
           <h2>资料与输入</h2>
-          <span className="muted">
+          <span className="meta-text">
             {item.materials.length} 份资料 · {received.length} 份接续输入
           </span>
         </div>
@@ -248,7 +250,7 @@ export function CompositionInputs({
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="muted">原始资料</span>
+                    <span className="meta-text">原始资料</span>
                   </TableCell>
                   <TableCell>
                     {used('material', material.id).length ? (
@@ -256,7 +258,7 @@ export function CompositionInputs({
                         本轮采用 · {used('material', material.id).join('、')}
                       </span>
                     ) : (
-                      <span className="muted">未直接采用</span>
+                      <span className="meta-text">未直接采用</span>
                     )}
                   </TableCell>
                   <TableCell className="composition-input-actions">
@@ -325,7 +327,7 @@ export function CompositionInputs({
               .catch((e) => setError(errorText(e)));
           }}
         >
-          <label className="field">
+          <Field>
             材料内容
             <Textarea
               aria-label="材料内容"
@@ -334,9 +336,9 @@ export function CompositionInputs({
               onChange={(e) => setText(e.target.value)}
               required
             />
-          </label>
+          </Field>
           {error && <p role="alert">{error}</p>}
-          <div className="modal-actions">
+          <FormActions>
             <Button
               variant="outline"
               type="button"
@@ -347,7 +349,7 @@ export function CompositionInputs({
             <Button variant="default" disabled={disabled || !text.trim()}>
               保存材料
             </Button>
-          </div>
+          </FormActions>
         </form>
       </Modal>
       {(revising || addingInput) && definition && (
@@ -380,7 +382,7 @@ export function CompositionInputs({
               .catch((e) => setError(errorText(e)));
           }}
         >
-          <label className="field">
+          <Field>
             输入用途
             <NativeSelect
               value={port}
@@ -392,7 +394,7 @@ export function CompositionInputs({
                 </option>
               ))}
             </NativeSelect>
-          </label>
+          </Field>
           {item.materials.map((m) => (
             <label className="check-row" key={m.id}>
               <input
@@ -410,11 +412,11 @@ export function CompositionInputs({
             </label>
           ))}
           {error && <p role="alert">{error}</p>}
-          <div className="modal-actions">
+          <FormActions>
             <Button variant="default" disabled={disabled || !selecting?.length}>
               采用输入
             </Button>
-          </div>
+          </FormActions>
         </form>
       </Modal>
     </section>

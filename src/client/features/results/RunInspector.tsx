@@ -2,7 +2,7 @@ import { api } from '../../core/api';
 import { errorText } from '../../core/format';
 import { useEffect, useState, type ReactNode } from 'react';
 import type { NodeResult, Run } from '../../../shared/records';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { RunGroupNavigation, RunInstancePicker } from './RunSelection';
 import { dateTime, short, workTitle } from '../../core/format';
 import { isFinalOutput } from '../../core/definition';
@@ -137,7 +137,11 @@ export function RunInspector({
       {sourceError && (
         <p role="alert" className="error-banner">
           来源读取失败：{sourceError}{' '}
-          <Button onClick={() => setSourceRetry((value) => value + 1)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSourceRetry((value) => value + 1)}
+          >
             重新读取来源
           </Button>
         </p>
@@ -149,6 +153,7 @@ export function RunInspector({
         <nav className="run-source-trail" aria-label="来源轨迹">
           {(trail.length ? trail : [rootFocus!]).map((entry, index) => (
             <Button
+              size="sm"
               key={`${entry.workId}:${entry.runId}:${index}`}
               variant="ghost"
               onClick={() => {
@@ -224,7 +229,7 @@ export function RunInspector({
           {!result && (
             <>
               <h3>{node?.label || nodeId || '尚无环节'}</h3>
-              <p className="muted">
+              <p className="meta-text">
                 {focus.resultId || focus.instanceId
                   ? '找不到指定的执行实例，未替换为其他结果。'
                   : !participating.has(nodeId || '')

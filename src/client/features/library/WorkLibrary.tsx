@@ -1,3 +1,4 @@
+import { Field } from '../../components/ui/field';
 import { ObjectLink } from '../../components/ObjectLink';
 import { routeHref } from '../../app/navigation';
 import { useEffect, useState, type FormEvent } from 'react';
@@ -420,7 +421,7 @@ export default function WorkLibrary({
           className="library-rename"
           onSubmit={(event) => void rename(event)}
         >
-          <label className="field">
+          <Field>
             流水线标题
             <Input
               autoFocus
@@ -429,7 +430,7 @@ export default function WorkLibrary({
               value={title}
               onChange={(event) => setTitle(event.target.value)}
             />
-          </label>
+          </Field>
           {error && (
             <p className="inline-error" role="alert">
               {error}

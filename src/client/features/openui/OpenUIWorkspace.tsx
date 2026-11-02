@@ -1,3 +1,4 @@
+import { FormActions } from '../../components/ui/field';
 import {
   createContext,
   useContext,
@@ -191,14 +192,14 @@ function DataTableRenderer({ props, renderNode }: ComponentRenderProps) {
               <ArtifactValue value={inspection.value} />
             )}
             {inspection.source && (
-              <div className="modal-actions">
+              <FormActions>
                 <Button
                   variant="outline"
                   onClick={() => env.onSource(inspection.source!)}
                 >
                   查看来源
                 </Button>
-              </div>
+              </FormActions>
             )}
           </>
         )}
@@ -232,7 +233,7 @@ function RecordsRenderer({ props, renderNode }: ComponentRenderProps) {
     return (
       <section className="composition-records openui-content">
         {props.title ? <h2>{String(props.title)}</h2> : null}
-        <p className="muted">尚未绑定此项成果。</p>
+        <p className="meta-text">尚未绑定此项成果。</p>
       </section>
     );
   if (delivery.error) return <p role="alert">{delivery.error}</p>;
@@ -319,7 +320,7 @@ function RecordsRenderer({ props, renderNode }: ComponentRenderProps) {
             ) : (
               <ArtifactValue value={inspection.value} />
             )}
-            <div className="modal-actions">
+            <FormActions>
               {inspection.source && (
                 <Button
                   variant="outline"
@@ -339,7 +340,7 @@ function RecordsRenderer({ props, renderNode }: ComponentRenderProps) {
                   用此记录继续
                 </Button>
               )}
-            </div>
+            </FormActions>
           </>
         )}
       </Modal>
@@ -367,7 +368,7 @@ function ReportRenderer({ props }: ComponentRenderProps) {
           <DeliverySources delivery={delivery} onSource={env.onSource} />
         </>
       ) : (
-        <p className="muted">尚未绑定此项成果。</p>
+        <p className="meta-text">尚未绑定此项成果。</p>
       )}
     </section>
   );
@@ -443,7 +444,7 @@ function InputRenderer({ props, renderNode }: ComponentRenderProps) {
           />
           {env.formRevision?.(formKey) !== undefined &&
             env.formRevision(formKey) !== env.workspace.item.revision && (
-              <div role="status" className="muted">
+              <div role="status" className="meta-text">
                 工作项已变化，当前输入仍基于编辑开始时的版本。
                 <Button
                   type="button"
@@ -454,10 +455,10 @@ function InputRenderer({ props, renderNode }: ComponentRenderProps) {
                 </Button>
               </div>
             )}
-          <div className="modal-actions">{renderNode(props.submit)}</div>
+          <FormActions>{renderNode(props.submit)}</FormActions>
         </fieldset>
       ) : (
-        <p role="status" className="muted">
+        <p role="status" className="meta-text">
           当前方法尚未声明此输入合同，请让Assistant补齐。
         </p>
       )}

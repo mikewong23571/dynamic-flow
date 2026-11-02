@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './ui/dialog';
-import { Button } from './ui';
+import { Button } from './ui/button';
 import './MaterialDialog.css';
 
 export function MaterialDialog({
@@ -75,7 +75,12 @@ export function MaterialDialog({
             </DialogDescription>
           </div>
           <DialogClose asChild>
-            <Button variant="ghost" className="size-8 p-0" aria-label="关闭">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="size-8 p-0"
+              aria-label="关闭"
+            >
               <X size={16} />
             </Button>
           </DialogClose>
@@ -86,6 +91,7 @@ export function MaterialDialog({
             <div className="material-reader-actions">
               {onSource && (
                 <Button
+                  size="sm"
                   variant="ghost"
                   onClick={() => {
                     onOpenChange(false);
@@ -96,6 +102,7 @@ export function MaterialDialog({
                 </Button>
               )}
               <Button
+                size="sm"
                 variant="ghost"
                 disabled={!!material.contentUrl}
                 onClick={async () => {
@@ -135,7 +142,7 @@ export function MaterialDialog({
                     view="content"
                   />
                 ) : (
-                  <p className="muted">
+                  <p className="meta-text">
                     此材料当前不可用，可在环节的固定输入中检查当时内容。
                   </p>
                 )

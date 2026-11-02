@@ -1,3 +1,6 @@
+import { NativeSelect } from '../../components/ui/native-select';
+import { FormActions } from '../../components/ui/field';
+import { Field } from '../../components/ui/field';
 import { Play, GitCompareArrows } from 'lucide-react';
 import type {
   FlowNode,
@@ -7,7 +10,8 @@ import type {
 } from '../../../shared/records';
 import { inputPorts } from '../../core/inputs';
 import { short, portLabel } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 
 import { InputContent } from '../results/Results';
 
@@ -65,9 +69,9 @@ export function TrialDialog({
       description="只处理下面明确选择的输入，不自动运行上游。"
     >
       <div className="inline-group">
-        <label className="field">
+        <Field>
           输入来源
-          <select
+          <NativeSelect
             value={inputMode}
             onChange={(e) =>
               setInputMode(e.target.value as 'materials' | 'results' | 'run')
@@ -76,11 +80,11 @@ export function TrialDialog({
             {sampleSource && <option value="run">这次运行的原始输入</option>}
             <option value="materials">方法样例材料</option>
             <option value="results">已选历史结果</option>
-          </select>
-        </label>
-        <label className="field">
+          </NativeSelect>
+        </Field>
+        <Field>
           目标端口
-          <select
+          <NativeSelect
             value={samplePort}
             onChange={(e) => setSamplePort(e.target.value)}
           >
@@ -89,8 +93,8 @@ export function TrialDialog({
                 {portLabel(p)}
               </option>
             ))}
-          </select>
-        </label>
+          </NativeSelect>
+        </Field>
       </div>
       {inputMode === 'run' ? (
         <div className="sample-picker">
@@ -174,6 +178,8 @@ export function TrialDialog({
             条成功结果。可在「运行结果」勾选。
           </p>
           <Button
+            variant="outline"
+            size="sm"
             disabled={!selectedResults.length}
             onClick={() => void prepareResultInputs()}
           >
@@ -188,12 +194,14 @@ export function TrialDialog({
           本次所选输入送入 {portLabel(samplePort)}；另一端口为空。
         </p>
       )}
-      <p className="muted">
+      <p className="meta-text">
         固定 {Object.values(inputs).flat().length} 条输入 · 候选{' '}
         {short(work?.draftId)}
       </p>
-      <div className="modal-actions">
+      <FormActions>
         <Button
+          variant="outline"
+          size="sm"
           disabled={
             busy ||
             !Object.values(inputs).flat().length ||
@@ -205,14 +213,15 @@ export function TrialDialog({
           比较当前与候选
         </Button>
         <Button
-          variant="primary"
+          size="sm"
+          variant="default"
           disabled={busy || !Object.values(inputs).flat().length}
           onClick={() => void trial()}
         >
           <Play size={15} />
           仅试运行此步骤
         </Button>
-      </div>
+      </FormActions>
     </Modal>
   );
 }

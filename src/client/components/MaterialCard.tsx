@@ -3,7 +3,7 @@ import type { WorkItemInput } from '../../shared/records';
 import { FileText } from 'lucide-react';
 import { materialPresentation } from '../core/material';
 import { MaterialDialog } from './MaterialDialog';
-import { Button } from './ui';
+import { Button } from './ui/button';
 import './MaterialCard.css';
 
 export function MaterialCard({
@@ -44,6 +44,8 @@ export function MaterialCard({
       <div className="material-card-actions">
         {onOpen ? (
           <Button
+            variant="outline"
+            size="sm"
             onClick={onOpen}
             aria-label={`查看材料 ${title}（${material.id}）`}
           >
@@ -56,7 +58,11 @@ export function MaterialCard({
             onOpenChange={setOpen}
             onSource={onSource}
             trigger={
-              <Button aria-label={`查看材料 ${title}（${material.id}）`}>
+              <Button
+                variant="outline"
+                size="sm"
+                aria-label={`查看材料 ${title}（${material.id}）`}
+              >
                 查看材料
               </Button>
             }

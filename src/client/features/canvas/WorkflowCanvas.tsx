@@ -10,7 +10,6 @@ import {
   type Node,
   type Connection,
 } from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
 import { LayoutGrid, Focus, ListTree, LoaderCircle } from 'lucide-react';
 import type { Definition, Run, ViewState } from '../../../shared/records';
 import {
@@ -29,7 +28,7 @@ import {
   hasBatchInputs,
 } from '../../core/definition';
 import { portLabel } from '../../core/format';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import './WorkflowCanvas.css';
 
 type CanvasNode = Node<CanvasData>;
@@ -339,6 +338,7 @@ function Canvas({
         <Panel position="top-right">
           <div className="canvas-actions">
             <Button
+              size="sm"
               variant="ghost"
               aria-label="整理布局"
               title="按依赖整理布局"
@@ -353,6 +353,7 @@ function Canvas({
               <span>{busy ? '整理中' : '整理布局'}</span>
             </Button>
             <Button
+              size="sm"
               variant="ghost"
               aria-label="聚焦连接"
               title="选中节点时突出相关连接"
@@ -364,6 +365,7 @@ function Canvas({
             </Button>
             {presentation !== 'business' && (
               <Button
+                size="sm"
                 variant="ghost"
                 aria-label="显示端口"
                 title="始终显示端口名称"

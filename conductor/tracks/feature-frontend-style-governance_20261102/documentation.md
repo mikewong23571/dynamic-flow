@@ -49,3 +49,13 @@
 ## 变更日志
 
 - 2026-11-02：完成深入审查、四明确 spec、组件层次方案、迁移/回归计划与证据归档；新增 track 登记。
+
+## 2026-11-02 实施启动
+
+用户明确授权主动闭环 Phase 1–5。独立 worktree 为 `/home/mike/projs/fork/dynamic-flow-style-governance`，分支 `feature/frontend-style-governance_20261102`；冻结现有未提交工作区的本地基线提交为 `99cef65b63155322a3f6f3ac684daaadcc760a25`。该提交仅保存此前已存在的源码/资料，不是本 track 的治理改动，后续交付 diff 从它开始。未复制用户 data、models.toml 或运行目录，node_modules 只读复用。产品改动只发生在独立 worktree，不回写托管 watch 工作区。阶段证据与提交在独立 worktree 持续更新，主会话将同步本 track 文档。
+
+## 基础与组合样板
+
+单一 Button API 及调用方映射、标准32/紧凑28控制高度、Select包装fill/fit、Field/FormActions、所有自有CSS分层和vendor导入已接通。原生可编辑输入已迁移，checkbox/file及业务导航保留。共有3条新回归改前失败，改后和已实看截图的稳定区域golden重跑均通过；类型与构建通过。Modal使用公开application布局，避免DialogContent默认utilities压住640/860/920/1040等组合宽度；材料reader保持自己的Dialog原语布局。公共WorkspaceFrame按视口切停靠，保留用户展开偏好；受控任务焦点已回到触发动作。Phase2完整状态与Phase3相邻路线仍待后续验证，未据局部成功提前勾完。
+
+证据见 evidence/implementation/foundation-*.txt；截图在 tests/browser/style-governance.spec.ts-snapshots/。已实际查看字段两尺寸与任务弹窗640宽度，接下来补成功/失效触发和方法侧栏交接，并执行全模块相邻路线。

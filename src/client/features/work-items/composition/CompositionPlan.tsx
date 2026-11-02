@@ -23,7 +23,7 @@ export function CompositionPlan({
     <>
       <div className="composition-plan" aria-label="业务过程规划">
         <div className="composition-plan-heading">
-          <span className="muted">本轮处理目标</span>
+          <span className="meta-text">本轮处理目标</span>
           {problem && (
             <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
               <Info size={14} />
@@ -34,7 +34,7 @@ export function CompositionPlan({
         <p title={problem?.framing || goal}>{problem?.framing || goal}</p>
         {!!Object.keys(definition.outputs).length && (
           <div className="composition-plan-outputs" aria-label="计划交付">
-            <span className="muted">交付</span>
+            <span className="meta-text">交付</span>
             {Object.keys(definition.outputs).map((output) => (
               <span key={output}>
                 <ArrowRight size={13} />
@@ -154,7 +154,7 @@ export function CompositionStep({
               <Button variant="outline" onClick={onMethod}>
                 {method?.title || '查看固定流水线'}
               </Button>
-              <span className="muted">
+              <span className="meta-text">
                 {' '}
                 · 固定版 {node.call?.definitionId.slice(0, 8)}
               </span>
