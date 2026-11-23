@@ -178,11 +178,12 @@ test('Assistant method discovery pages beyond the initial catalog preview', asyn
   const app = await createApplication({
     dataRoot: root,
     runSession: async (input) => {
-      const find = input.tools.find((tool) => tool.name === 'find_methods')!;
+      const methods = input.tools.find((tool) => tool.name === 'methods')!;
       for (const offset of [0, 30]) {
-        const result = await find.execute(
+        const result = await methods.execute(
           'page-' + offset,
           {
+            action: 'find',
             query: '参考方法',
             offset,
             limit: 30,

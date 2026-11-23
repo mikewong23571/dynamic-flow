@@ -129,9 +129,8 @@ export const runPiSession: SessionRunner = async (input) => {
     const settingsManager = SettingsManager.inMemory({
       // 持久会话启用 SDK 自动 compaction（上下文溢出时摘要旧轮次）；一次性会话不需要。
       compaction: { enabled: persistent },
-      // 网关会在长时间思考/长会话中断流（terminated）；模型调用级重试让循环续跑，
-      // 已完成的工具调用不会重放。
-      retry: { enabled: true, maxRetries: 3, baseDelayMs: 2000 },
+      // 网关偶发断流时只做 1 次重试，避免 300s 超时后静默连试 3 轮造成十余分钟假死。
+      retry: { enabled: true, maxRetries: 1, baseDelayMs: 2000 },
     });
     const modelRuntime = await ModelRuntime.create({
       credentials: new InMemoryCredentialStore(),

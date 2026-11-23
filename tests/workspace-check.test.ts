@@ -226,62 +226,68 @@ test('Agent draft checks pass tool transport and repair through the real save pa
           ).content[0].text,
         );
       const ajv = new Ajv({ strict: false });
+      assert.equal(input.tools.length, 9);
       for (const name of [
-        'inspect_child_outputs',
-        'preview_child_output',
-        'select_child_outputs',
+        'inspect_workspace',
+        'methods',
+        'check_workspace',
+        'apply_workspace_plan',
+        'manage_inputs',
+        'run_control',
+        'publish_delivery',
       ])
-        assert.ok(tool(name));
+        assert.ok(tool(name), name);
       assert.equal(
-        ajv.compile(tool('check_flow').parameters)({
+        ajv.compile(tool('check_workspace').parameters)({
           definition: { nodes: [] },
         }),
         true,
       );
       assert.equal(
-        ajv.compile(tool('check_ui_program').parameters)({
+        ajv.compile(tool('check_workspace').parameters)({
           source: 'root = Bad()',
         }),
         true,
       );
       assert.equal(
-        ajv.compile(tool('save_flow').parameters)({
+        ajv.compile(tool('apply_workspace_plan').parameters)({
           baseRevision: 1,
           definition: { nodes: [] },
         }),
         false,
       );
       assert.ok(
-        (await call('check_flow', { definition: { nodes: [] } })).issues.length,
+        (await call('check_workspace', { definition: { nodes: [] } })).issues
+          .length,
       );
       assert.ok(
         (await call('check_workspace', { source: 'root = Bad()' })).issues
           .length,
       );
-      const initial = await call('inspect_work_item', {});
+      const initial = await call('inspect_workspace', {});
       const rejected = await call('check_workspace', {
         definition: { nodes: [] },
         source,
       });
       assert.equal(rejected.canExecute, false);
-      await call('save_flow', {
+      await call('apply_workspace_plan', {
         baseRevision: initial.item.revision,
         definition,
       });
       const result = await call('check_workspace', {});
       assert.ok(result.issues.some((i: any) => i.area === 'inputs'));
       assert.ok(result.unchecked.length);
-      const state = await call('inspect_work_item', {});
-      await call('save_ui_program', {
+      const state = await call('inspect_workspace', {});
+      await call('apply_workspace_plan', {
         baseRevision: state.item.revision,
-        source,
+        uiSource: source,
       });
       await assert.rejects(
         call('publish_delivery', {
           baseRevision: state.item.revision + 1,
           runId: 'not-a-run',
           output: 'rows',
-          programId: (await call('inspect_work_item', {})).uiProgram.id,
+          programId: (await call('inspect_workspace', {})).uiProgram.id,
         }),
         /运行|DELIVERY|run/,
       );

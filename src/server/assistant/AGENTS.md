@@ -20,13 +20,13 @@ workitem.ts中的workItemSystemPrinciples是实际传给工作项Assistant的高
 
 ## 唯一处理路径
 
-工作项作者先inspect_work_item，再查找/读取明确方法合同。save_flow保存本项Definition；已有方法固定为call引用。select_inputs选择原材料，bind_inputs保存精确material/result/received/child/completion引用，add_input/revise_input提交用户补充。不能复制结果正文冒充原材料。
+工作项作者共暴露 9 个高语义能力工具：`describe_capabilities`、`inspect_workspace`、`methods`、`check_workspace`、`apply_workspace_plan`、`manage_inputs`、`run_control`、`publish_delivery`、`set_completion_requirements`。作者先 `inspect_workspace` 与 `methods(action="find"|"inspect")` 核对事实和方法合同，用 `check_workspace` 联合只读检查流程、输入和界面，再用 `apply_workspace_plan` 按单一 `baseRevision` 一次原子提交 `definition`、`selectMaterials`/`inputBindings` 与 `uiSource`/`uiPatch`（服务端自动衔接 `draftId`/`definitionId`/`revision`）。补充或修订结构化输入、绑定精确来源或从固定交付续做使用 `manage_inputs`，不复制结果正文冒充原材料。
 
-原生OpenUI source是唯一界面程序。describe_capabilities返回与实际Renderer共用的组件、schema和读写工具说明；check_ui_program、save_ui_program、update_ui_program复用官方SDK解析与merge。保存必须完整解析，未知组件、未解析声明和Query写工具都拒绝。局部编辑使用同一程序具名声明。作者按当前业务用Section明确分组，相关数据/文字/表单/本组动作可混排，子组可嵌套；平台统一边界和标题层次，Stack只布局，不复制固定页面模板或按内容类型拆组。页面和作者保存都检查baseRevision、expectedProgramId、definitionId；冲突读回，不覆盖。
+原生OpenUI source是唯一界面程序。`describe_capabilities` 返回与实际Renderer共用的组件、schema和读写工具说明；`check_workspace` 与 `apply_workspace_plan` 复用官方SDK解析与merge。保存必须完整解析，未知组件、未解析声明和Query写工具都拒绝。局部编辑使用同一程序具名声明。作者按当前业务用Section明确分组，相关数据/文字/表单/本组动作可混排，子组可嵌套；平台统一边界和标题层次，Stack只布局，不复制固定页面模板或按内容类型拆组。页面和作者保存都检查baseRevision、expectedProgramId、definitionId；冲突读回，不覆盖。
 
 Query只读read_workspace/read_inputs/read_children/read_output/read_delivery；Mutation只在用户动作中调用真实工作项命令。草稿和历史预览仅提供读工具，不能通过挂载执行写命令。Records和Report从固定delivery读取真实成果；记录身份由保存程序派生并冻结rowKey，继续只交deliveryId/recordIds及用户明确输入，不信任客户端记录正文。
 
-execute只启动实际Run。inspect_run确认终态，publish_delivery只发布明确成功commit的指定输出，并传当前programId。continue_records仅准备下一轮，执行仍需明确动作。失败输入补跑形成新的commit；旧失败与旧成功保持原样，汇合必须明确bind_inputs。等待和中断通过signal/resume继续原Run。模型不能确认完成条件或代替人结项。
+`run_control` 负责 `start`/`stop`/`resume`/`signal`/`retry_failed`；`retry_failed` 仅基于失败实例冻结输入新建正式衍生Run，不改写当前主流程草稿 `draftId` 与 `inputBindings`。`inspect_workspace(target="run")` 确认终态；`publish_delivery` 支持单次成功正式Run，也支持 `sources` 显式组合多轮正式成功产物（按 `rowKey` 覆盖并保留每条精确来源）。等待和中断通过 `signal`/`resume` 继续原Run。模型不能确认完成条件或代替人结项。
 
 ## 方法作者与运行
 

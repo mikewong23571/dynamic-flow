@@ -247,43 +247,77 @@ export const openuiWriteTools = [
   'publish_delivery',
   'review',
 ] as const;
-export const openuiInstructions = openuiContract.prompt({
-  preamble:
-    'This is the language reference ONLY for the source/patch arguments of check_ui_program, save_ui_program and update_ui_program. All output-format and edit rules below apply to those program strings. The business Assistant must save programs through tools and give the user a short natural-language final reply about actual saved work, remaining gaps and next action; do not repeat program source in the chat reply.',
-  toolCalls: true,
-  bindings: true,
-  editMode: true,
-  builtinFunctions: true,
-  tools: [...openuiReadTools, ...openuiWriteTools],
-  additionalRules: [
-    'Examples illustrate individual API usages, not a required page structure. Choose presentation from the business needs under the system principles.',
-    'Use native OpenUI Lang. Save the full source with save_ui_program, or patch named statements with update_ui_program. No ItemUiPlan JSON.',
-    'The UI lets the user understand and participate in this particular work throughout processing, not only inspect final delivery. First decide what business questions the user needs answered now, then bind those facts to useful views and actions. Do not make a plan/explanation page the default substitute for a working interface.',
-    'Query may only use read_workspace, read_inputs, read_children, read_output or read_delivery. Mutations may only use submit_input, continue_records, bind_inputs, execute, publish_delivery, review.',
-    'read_workspace({}) returns {item,work,deliveries,...}. item has stage,summary,nextAction,blocker,effectiveStatus,criteria,execution(activeNodes/waits/status/error), and actual history. Business stage is distinct from execution status. Details(title,query.item,[Field(property,businessLabel)]) displays chosen facts. Do not copy these changing facts into TextContent literals.',
-    'read_inputs({inputPort,offset?,limit?}) reads the current explicitly bound input values using the same resolver as execution. Returns {definitionId,revision,rows,sources,total,offset,limit}; rows contains actual bound business values, with their original fields, not label/value or input metadata wrappers. received revisions and source references are resolved by the server, not reconstructed from all old receivedInputs. Use this to show what is already known before execution. A not-yet-run output is not an empty business scope.',
-    'read_children({scope?:"children"|"descendants",status?,query?,page?,pageSize?}) returns the existing scoped {items,total,page,pageSize,summary,scopeSummary,todoTotal}. Summary counts describe the selected scope; rows have id,title,stage,summary,blocker,nextAction,effectiveStatus,childCount,completedChildCount. Use Metric with counts and DataTable with rows as useful to this work; do not create a child dashboard when there are no child tasks.',
-    "read_output({output?,nodeId?,port?,runId?,offset?,limit?}) reads actual stage output from this item's explicitly selected run; omitted runId observes its current execution. Returns {run,rows,sources,total,offset,limit}; run may be null before execution, rows contains only actual completed instance outputs even while the run is running/waiting/failed. Choose either an exported output name or an exact nodeId+port from the fixed Definition. The latter also observes successful stages that are not exported, without changing the old definition. Never guess a different source when the requested stage has not produced results. This is observation, not publication. DataTable can inspect object rows; Details can inspect a chosen object. Preserve sources for further reasoning/actions.",
-    'Input/output rows are paged. Use total for the whole returned scope, existing children summary for child counts, and actual aggregate method output for business counts; never label counts of the current page as global totals. Before execution show pending/unknown for execution-derived findings and statistics; empty Query defaults are loading data, not completed business results.',
-    'All live Query reads must declare a positive refresh interval in seconds, normally 2, using the native fourth argument. This keeps data current without regenerating source or resetting user drafts. Use null/empty defaults while loading, not fabricated business data. read_delivery({output}) reads the fixed published delivery.',
-    'Section(title,children) declares an explicit business group with a light default boundary; related data, text, forms and actions can share one group. Nest Section for real subgroups; the renderer handles heading levels and accessible names. Choose group names/count/content from the current work, never from a fixed page template or child component types. Stack(children,direction?) only arranges content without a business boundary or heading; horizontal wraps at narrow widths. An empty title on content/form components omits their heading when a parent already names them. Disclosure(title,children) holds optional detail. Dialog(title,$open,children) opens via @Set and closes by updating the same binding. Use native @Each(rows,"row", inlineComponentTemplate) for per-record composition and actions; the loop variable only exists inside that inline template. A contextual action can @Set($draft,{id:row.id}) and then @Set($open,true), so one real InputForm edits the chosen record without another business page.',
-    'ActionButton(label,action?,emphasis?,disabled?) uses primary, secondary or quiet emphasis; secondary is the default. disabled is a live boolean. Business labels and placement come from the actual task. Execution remains guarded by the same server command.',
-    'DataTable and Records only show selection checkboxes when selection is explicitly bound. Search is opt-in through the final searchable argument. Their detail reader stays available, while custom per-row presentation/actions can use native @Each and the composition components.',
-    'Records(output,title,rowKey,columns,selection?,actions?,details?,groupBy?,searchable?) reads real saved delivery data. Field(field,label) names an actual top-level field; IDs are non-empty unique strings.',
-    'InputForm(inputPort,title,$draft,button,methodId?,methodDefinitionId?,fields?,output?) uses the real fixed input contract. Optional method IDs select an existing follow-up method; fields limits the form to its real properties. A record follow-up form must name output so its draft resets with that fixed delivery. submit_input takes {inputPort,value:$draft,label?}.',
-    'continue_records takes {output,recordIds:$selected,inputPort?,methodId?,methodDefinitionId?,draft?:$draft,recordField?}. For a follow-up form, draft contains only user fields; the server puts the original record into recordField. Never pass record bodies or rowKey.',
-    'execute takes no business values. publish_delivery takes {runId,output}. review only opens the application acceptance task.',
-    'Keep the UI useful before execution, show missing real data honestly, and use @ToAssistant for requests that require new reasoning.',
-    'The app already provides process inspection and input management. Add business views because the user needs different data or actions, not to repeat goal/process/status explanations. TextContent is for concise guidance; changing status, counts, findings and gaps come from real data bindings. Business labels, fields, grouping and final presentation are chosen for this work, not copied variable names.',
-    'Never use mock/sample business data as fallback, even if the general SDK prompt suggests it. Missing tools or real data stay explicit gaps; use empty/null query defaults, never invented findings or counts.',
-    'Never describe a result as completed because a UI was generated. The app owns real runs, sources, waiting and final confirmation.',
-  ],
-  toolExamples: [
-    // Syntax examples, not a prescribed workspace structure.
-    `root = Workspace("读取内容", [content])\nobserved = Query("read_output", {output: "result"}, {rows: [], sources: []}, 2)\ncontent = DataTable("内容", observed.rows, "id", [Field("id", "编号"), Field("title", "事项")])`,
-    `root = Workspace("处理清单", [handling, supplement])\nhandling = Section("处理事项", [records])\nsupplement = Section("补充资料", [form])\n$selected = []\n$draft = {}\nrecords = Records("records", "", "id", [Field("id", "编号"), Field("title", "事项")], $selected, [next])\nnext = ActionButton("继续所选记录", @Run(continueStep))\ncontinueStep = Mutation("continue_records", {output: "records", recordIds: $selected})\nform = InputForm("request", "", $draft, save)\nsave = ActionButton("保存输入", @Run(saveInput))\nsaveInput = Mutation("submit_input", {inputPort: "request", value: $draft})`,
-  ],
-});
+/**
+ * Compact authoritative OpenUI Lang reference (~3.4 KB) for check_workspace / apply_workspace_plan.
+ * Replaces the verbose ~27 KB generic SDK textbook while keeping 100% alignment with openuiContract.
+ */
+export const openuiInstructions = `OpenUI Lang Reference (ONLY for check_workspace.source and apply_workspace_plan.uiSource/uiPatch; never dump source in chat reply).
+
+## Syntax
+- Statements: \`name = Component(arg1, arg2, ...)\` (positional args; omit trailing optional args or pass \`null\`). Entry statement must be \`root = Workspace(title, children)\`.
+- Reactive UI state: \`$var = initialValue\` (e.g. \`$selected = []\`, \`$draft = {}\`, \`$open = false\`). UI state only; never business truth.
+- Actions: \`@Run(mutationRef)\`, \`@Set($var, expr)\`, \`@ToAssistant("prompt", optionalRef)\`, or sequence \`[@Set(...), @Run(...)]\`.
+- Per-row inline template: \`@Each(rows, "row", Component(...))\` (loop var exists only inside that inline template).
+- Queries (read-only, 4th arg = refresh interval in seconds, use \`2\`): \`q = Query("tool_name", {args}, fallbackDefault, 2)\`. Always use empty/null fallback defaults, never mock/fabricated data.
+- Mutations (write-only, invoked ONLY via \`@Run(...)\`): \`m = Mutation("tool_name", {args})\`.
+- Patching (\`uiPatch\`): submit only the changed/added named statements to merge into the saved program.
+
+## Components (positional args)
+- Workspace(title, children[])
+- Section(title, children[])  // Explicit business group with heading & light boundary; nest for subgroups.
+- Stack(children[], direction?: "vertical"|"horizontal")  // Layout only, no heading/boundary.
+- ViewNavigation(navigation: "tabs"|"select", views: View[])
+- View(title, children[])
+- Disclosure(title, children[])
+- Dialog(title, open: $bool, children[])
+- Field(field, label)  // Top-level property name + business label.
+- TextContent(text)  // Brief static guidance only; never copy changing status/counts/findings into literals.
+- Metric(label, value: string|number|boolean|null)
+- Details(title, value, fields: Field[])  // Selected object fields from live Query.
+- DataTable(title, rows[], rowKey, columns: Field[], selection?: $ids, actions?: ActionButton[], details?: Field[], sources?: unknown[], searchable?: boolean)  // Live stage outputs or child items before publication.
+- Records(output, title, rowKey, columns: Field[], selection?: $ids, actions?: ActionButton[], details?: Field[], groupBy?: string, searchable?: boolean)  // Published fixed Delivery rows; never embed rows.
+- Report(output, title, fields?: Field[])  // Published fixed Delivery report.
+- InputForm(inputPort, title, value: $obj, submit: ActionButton, methodId?, methodDefinitionId?, fields?: string[], output?)  // Renders real inputContracts fields; submit via Mutation("submit_input", {inputPort, value: $obj, label?}).
+- ActionButton(label, action?, emphasis?: "primary"|"secondary"|"quiet", disabled?: boolean)
+
+## Allowed Tools
+- Query (read-only):
+  - \`read_workspace({})\` -> \`{item, work, deliveries}\` (item has statusLabel/stage/summary/nextAction/blocker/effectiveStatus/criteria/execution)
+  - \`read_inputs({inputPort, offset?, limit?})\` -> \`{definitionId, revision, rows, sources, total}\`
+  - \`read_children({scope?: "children"|"descendants", status?, query?, page?, pageSize?})\` -> \`{items, total, summary, scopeSummary, todoTotal}\`
+  - \`read_output({output?, nodeId?, port?, runId?, offset?, limit?})\` -> \`{run, rows, sources, total}\` (observes actual completed stage outputs even before publication)
+  - \`read_delivery({output})\` -> fixed published delivery
+- Mutation (explicit user action only):
+  - \`submit_input({inputPort, value: $draft, label?})\`
+  - \`continue_records({output, recordIds: $selected, inputPort?, methodId?, methodDefinitionId?, draft?: $draft, recordField?})\`
+  - \`bind_inputs({inputBindings})\`, \`execute({})\`, \`publish_delivery({runId, output})\`, \`review({})\`
+
+## Rules
+- Choose views/fields/groupings for this specific work; empty \`title\` omits redundant inner heading inside a named Section.
+- The shell header already shows item status; do not render a redundant status/stage Details card unless the flow tracks real milestone stage/blocker/nextAction. When displaying status in UI, use \`item.statusLabel\` (localized).
+- DataTable/Records show checkboxes only when \`selection\` is bound; search only when \`searchable\` is \`true\`.
+- Never fabricate counts/findings or treat generating UI as business completion.
+
+## Examples
+\`\`\`
+root = Workspace("阶段观察", [sec])
+sec = Section("核查输出", [tbl])
+obs = Query("read_output", {output: "result"}, {rows: [], sources: []}, 2)
+tbl = DataTable("", obs.rows, "id", [Field("id", "编号"), Field("status", "状态")])
+\`\`\`
+\`\`\`
+root = Workspace("处理清单", [handling, supplement])
+handling = Section("处理事项", [records])
+supplement = Section("补充资料", [form])
+$selected = []
+$draft = {}
+records = Records("records", "", "id", [Field("id", "编号"), Field("title", "事项")], $selected, [next])
+next = ActionButton("继续所选记录", @Run(continueStep))
+continueStep = Mutation("continue_records", {output: "records", recordIds: $selected})
+form = InputForm("request", "", $draft, save)
+save = ActionButton("保存输入", @Run(saveInput), "primary")
+saveInput = Mutation("submit_input", {inputPort: "request", value: $draft})
+\`\`\``;
 const parser = createParser(openuiContract.toJSONSchema());
 const problem = (message: string) =>
   Object.assign(Error(message), { code: 'UI_PROGRAM_INVALID' });

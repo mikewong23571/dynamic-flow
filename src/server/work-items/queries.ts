@@ -1,4 +1,8 @@
-import { effectiveItemStatus } from '../../shared/workitem-status';
+import {
+  effectiveItemStatus,
+  hasUnretriedFailures,
+  type RetryRunSummary,
+} from '../../shared/workitem-status';
 import type { FileStore } from '../files/index.ts';
 import type {
   WorkItem,
@@ -70,10 +74,7 @@ export function createItemQueries(
     const works = new Map<
       string,
       Promise<{
-        runs: {
-          id: string;
-          status: import('../../shared/records.ts').Run['status'];
-        }[];
+        runs: Map<string, RetryRunSummary>;
       }>
     >();
     function method(id: string) {
@@ -81,7 +82,22 @@ export function createItemQueries(
         works.set(
           id,
           files.select(id, (work) => ({
-            runs: work.runs.map((r) => ({ id: r.id, status: r.status })),
+            runs: new Map(
+              work.runs.map((r) => {
+                const failedResultIds = r.results
+                  .filter((x) => x.status === 'failed')
+                  .map((x) => x.id);
+                return [
+                  r.id,
+                  {
+                    id: r.id,
+                    status: r.status,
+                    retrySource: r.retrySource,
+                    ...(failedResultIds.length ? { failedResultIds } : {}),
+                  },
+                ] as const;
+              }),
+            ),
           })),
         );
       return works.get(id)!;
@@ -90,10 +106,26 @@ export function createItemQueries(
       items.map(async (item): Promise<WorkItemSummaryRow> => {
         const ref = item.runs.at(-1),
           run = ref
-            ? (await method(ref.workId)).runs.find((r) => r.id === ref.runId)
+            ? (await method(ref.workId)).runs.get(ref.runId)
             : undefined;
         const status = run?.status;
-        const effectiveStatus = effectiveItemStatus(item, status);
+        let unretriedFailures = false;
+        if (run?.status === 'completed' && run.retrySource) {
+          const source = (await method(run.retrySource.workId)).runs.get(
+            run.retrySource.runId,
+          );
+          const related = (
+            await Promise.all(
+              item.runs.map(async (entry) =>
+                (await method(entry.workId)).runs.get(entry.runId),
+              ),
+            )
+          ).filter((entry): entry is RetryRunSummary => !!entry);
+          unretriedFailures = hasUnretriedFailures(run, source, related);
+        }
+        const effectiveStatus = effectiveItemStatus(item, status, {
+          unretriedFailures,
+        });
         const scopeChildren = (children.get(item.id) ?? []).filter(included),
           childCount = scopeChildren.length,
           completedChildCount = scopeChildren.filter(
@@ -104,19 +136,17 @@ export function createItemQueries(
             ? undefined
             : effectiveStatus === 'running'
               ? 'running'
-              : effectiveStatus === 'waiting' || status === 'interrupted'
+              : effectiveStatus === 'waiting'
                 ? 'waiting'
-                : item.blocker
+                : effectiveStatus === 'attention'
                   ? 'blocked'
                   : effectiveStatus === 'review'
                     ? 'review'
-                    : effectiveStatus === 'attention'
-                      ? 'process'
-                      : childCount && childCount === completedChildCount
-                        ? 'confirm'
-                        : !childCount
-                          ? 'process'
-                          : undefined;
+                    : childCount && childCount === completedChildCount
+                      ? 'confirm'
+                      : !childCount
+                        ? 'process'
+                        : undefined;
         const completion =
           item.status === 'completed'
             ? item.history.filter((h) => h.kind === 'completed').at(-1)
@@ -151,6 +181,27 @@ export function createItemQueries(
         };
       }),
     );
+    const activeAncestors = new Set<string>();
+    for (const row of rows) {
+      if (row.effectiveStatus !== 'running') continue;
+      let cursor = byId.get(row.id);
+      while (cursor?.parentId && included(cursor)) {
+        if (activeAncestors.has(cursor.parentId)) break;
+        activeAncestors.add(cursor.parentId);
+        cursor = byId.get(cursor.parentId);
+      }
+    }
+    for (const row of rows) {
+      if (
+        activeAncestors.has(row.id) &&
+        row.status !== 'completed' &&
+        row.effectiveStatus !== 'waiting' &&
+        row.effectiveStatus !== 'running'
+      ) {
+        row.effectiveStatus = 'running';
+        row.todo = 'running';
+      }
+    }
     return { rows, byId };
   }
   async function summaries(

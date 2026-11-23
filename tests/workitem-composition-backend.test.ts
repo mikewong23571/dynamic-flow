@@ -299,12 +299,12 @@ test('work item Pi tools discover methods and save through the page service; tur
           undefined as never,
         ) as Promise<any>;
       };
-      const methods = await call('find_methods', {});
+      const methods = await call('methods', { action: 'find' });
       assert.ok(methods.content[0].text.includes('报价方法'));
       const snapshot = JSON.parse(
-        (await call('inspect_work_item', {})).content[0].text,
+        (await call('inspect_workspace', {})).content[0].text,
       );
-      const saved = await call('save_flow', {
+      const saved = await call('apply_workspace_plan', {
         baseRevision: snapshot.item.revision,
         expectedDraftId: snapshot.work.draftId,
         definition: {
@@ -330,23 +330,29 @@ test('work item Pi tools discover methods and save through the page service; tur
       );
       assert.equal(capabilities.systemPrinciples, workItemSystemPrinciples);
       assert.ok(input.systemPrompt.startsWith(workItemSystemPrinciples));
-      assert.ok(capabilities.openuiSchema);
+      assert.ok(Array.isArray(capabilities.openuiComponents));
+      assert.ok(capabilities.openuiComponents.includes('InputForm'));
       assert.ok(capabilities.openuiInstructions.includes('InputForm'));
       const source =
         'root = Workspace("报价交付", [report])\nreport = Report("report", "报价交付")';
       const checked = JSON.parse(
-        (await call('check_ui_program', { source })).content[0].text,
+        (await call('check_workspace', { source })).content[0].text,
       );
-      assert.equal(checked.valid, true);
+      assert.equal(
+        checked.issues.filter(
+          (i: any) => i.area === 'ui' && i.code !== 'UI_PROGRAM_NOT_SAVED',
+        ).length,
+        0,
+      );
       const beforeSave = JSON.parse(
-        (await call('inspect_work_item', {})).content[0].text,
+        (await call('inspect_workspace', {})).content[0].text,
       );
       assert.equal(beforeSave.item.revision, receipt.item.revision);
       const planned = JSON.parse(
         (
-          await call('save_ui_program', {
+          await call('apply_workspace_plan', {
             baseRevision: receipt.item.revision,
-            source,
+            uiSource: source,
           })
         ).content[0].text,
       );

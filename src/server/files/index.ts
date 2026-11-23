@@ -41,31 +41,106 @@ export function serializeDefinition(definition: Definition): string {
   return `export default ${JSON.stringify(definition, null, 2)};\n`;
 }
 
+/** Disk representation of work.json: runs are stored individually under runs/<runId>.json. */
+interface StoredWork extends Work {
+  runIds?: string[];
+}
+
 export function createFiles(root: string): FileStore {
   const pending = new Map<string, Promise<unknown>>();
   const listeners = new Set<(workId: string) => void>();
   // Cache parsed disk revisions and share concurrent reads; callers still own their copies.
   const reads = new Map<string, { signature: string; value: Promise<Work> }>();
+  // Cache individual externalized Run files by (workId, runId) and file stat signature.
+  const runReads = new Map<
+    string,
+    { signature: string; value: Promise<Run> }
+  >();
   // Definition files are immutable; share parsing while callers receive their own copy.
   const definitions = new Map<string, Promise<Definition>>();
-  async function version(id: string) {
-    const info = await stat(join(root, id, 'work.json'));
+  const runPath = (workId: string, runId: string) =>
+    join(root, workId, 'runs', `${runId}.json`);
+  async function statSignature(path: string): Promise<string> {
+    const info = await stat(path);
     return `${info.ino}:${info.size}:${info.mtimeMs}:${info.ctimeMs}`;
+  }
+  async function version(id: string) {
+    const base = await statSignature(join(root, id, 'work.json'));
+    try {
+      const runsSig = await statSignature(join(root, id, 'runs'));
+      return `${base}|${runsSig}`;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return base;
+      throw error;
+    }
+  }
+  async function readRunFile(workId: string, runId: string): Promise<Run> {
+    const path = runPath(workId, runId);
+    const signature = await statSignature(path);
+    const key = `${workId}:${runId}`;
+    let cached = runReads.get(key);
+    if (!cached || cached.signature !== signature) {
+      const value = readFile(path, 'utf8').then(
+        (text) => JSON.parse(text) as Run,
+      );
+      cached = { signature, value };
+      runReads.set(key, cached);
+      const current = cached;
+      void value.catch(() => {
+        if (runReads.get(key) === current) runReads.delete(key);
+      });
+    }
+    return cached.value;
+  }
+  async function writeRunFile(workId: string, run: Run): Promise<void> {
+    const directory = join(root, workId, 'runs');
+    await mkdir(directory, { recursive: true });
+    const path = runPath(workId, run.id);
+    const snapshot = structuredClone(run);
+    await atomicWrite(path, JSON.stringify(snapshot, null, 2));
+    const signature = await statSignature(path);
+    runReads.set(`${workId}:${run.id}`, {
+      signature,
+      value: Promise.resolve(snapshot),
+    });
+  }
+  async function readWorkWithRuns(id: string): Promise<Work> {
+    const raw = JSON.parse(
+      await readFile(join(root, id, 'work.json'), 'utf8'),
+    ) as StoredWork;
+    if (Array.isArray(raw.runIds)) {
+      const runs = await Promise.all(
+        raw.runIds.map((runId) => readRunFile(id, runId)),
+      );
+      const { runIds: _runIds, ...rest } = raw;
+      return { ...rest, runs };
+    }
+    return raw;
   }
   async function saved(id: string) {
     const signature = await version(id);
     let cached = reads.get(id);
     if (!cached || cached.signature !== signature) {
-      const value = readFile(join(root, id, 'work.json'), 'utf8').then(
-        (text) => JSON.parse(text) as Work,
-      );
+      const value = readWorkWithRuns(id);
       cached = { signature, value };
       reads.set(id, cached);
+      const current = cached;
       void value.catch(() => {
-        if (reads.get(id) === cached) reads.delete(id);
+        if (reads.get(id) === current) reads.delete(id);
       });
     }
     return cached.value;
+  }
+  async function writeWorkShell(work: Work): Promise<void> {
+    const shell: StoredWork = {
+      ...work,
+      runs: [],
+      runIds: work.runs.map((r) => r.id),
+    };
+    await atomicWrite(
+      join(root, work.id, 'work.json'),
+      JSON.stringify(shell, null, 2),
+    );
   }
   const notify = (id: string) => {
     reads.delete(id);
@@ -110,10 +185,9 @@ export function createFiles(root: string): FileStore {
       await mkdir(root, { recursive: true });
       await mkdir(join(root, work.id));
       await mkdir(join(root, work.id, 'definitions'));
-      await atomicWrite(
-        join(root, work.id, 'work.json'),
-        JSON.stringify(work, null, 2),
-      );
+      await mkdir(join(root, work.id, 'runs'));
+      for (const run of work.runs) await writeRunFile(work.id, run);
+      await writeWorkShell(work);
       notify(work.id);
     },
     async read(id) {
@@ -150,30 +224,42 @@ export function createFiles(root: string): FileStore {
         if (index < 0) throw Error('运行不存在');
         const run = structuredClone(original.runs[index]);
         edit(run);
-        const work = {
+        // Only write the single mutated Run file; work.json stays lightweight without run bodies.
+        await writeRunFile(id, run);
+        const work: Work = {
           ...original,
           runs: [...original.runs],
           revision: original.revision + 1,
           updatedAt: new Date().toISOString(),
         };
         work.runs[index] = run;
-        await atomicWrite(
-          join(root, id, 'work.json'),
-          JSON.stringify(work, null, 2),
-        );
+        await writeWorkShell(work);
         notify(id);
       });
     },
     change(id, edit) {
       return serial(id, async () => {
+        const previous = await saved(id);
+        const previousById = new Map(previous.runs.map((r) => [r.id, r]));
         const work = await store.read(id);
         edit(work);
         work.revision += 1;
         work.updatedAt = new Date().toISOString();
-        await atomicWrite(
-          join(root, id, 'work.json'),
-          JSON.stringify(work, null, 2),
-        );
+        // Persist only newly added or modified runs to runs/<runId>.json.
+        const rawShell = JSON.parse(
+          await readFile(join(root, id, 'work.json'), 'utf8'),
+        ) as StoredWork;
+        const alreadyExternalized = Array.isArray(rawShell.runIds);
+        for (const run of work.runs) {
+          const prev = previousById.get(run.id);
+          if (
+            !alreadyExternalized ||
+            !prev ||
+            JSON.stringify(prev) !== JSON.stringify(run)
+          )
+            await writeRunFile(id, run);
+        }
+        await writeWorkShell(work);
         notify(id);
         return structuredClone(work);
       });

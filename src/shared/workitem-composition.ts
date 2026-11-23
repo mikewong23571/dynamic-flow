@@ -7,6 +7,20 @@ import type {
 } from './records.js';
 import type { OpenUIProgram } from './openui.js';
 
+/** One explicit formal run output slice participating in a composed delivery. */
+export interface DeliverySourceSlice {
+  workId: string;
+  runId: string;
+  definitionId: string;
+  /** Declared output name on that run's definition (e.g. "rows"). */
+  output?: string;
+  /** Explicit nodeId and port when combining step/retry outputs directly. */
+  nodeId?: string;
+  port?: string;
+  /** Optional explicit completed result IDs (e.g. succeeded instances from a failed run). */
+  resultIds?: string[];
+}
+
 /** A fixed business output and the program/record identity used to publish it. */
 export interface ItemDelivery {
   id: string;
@@ -17,6 +31,12 @@ export interface ItemDelivery {
   output: string;
   uiProgramId: string;
   recordContract?: { rowKey: string };
+  /**
+   * Optional ordered multi-run source slices for composed delivery.
+   * Later slices override earlier rows with the same recordContract.rowKey
+   * while preserving each row's exact OutputReference source.
+   */
+  composedSources?: DeliverySourceSlice[];
 }
 export interface MethodCapability {
   workId: string;

@@ -28,6 +28,7 @@ import type {
   ItemInputSelection,
 } from '../../shared/records.ts';
 import type {
+  DeliverySourceSlice,
   ItemDelivery,
   ItemDeliveryView,
   ItemWorkspace,
@@ -158,68 +159,179 @@ export function createItemComposition(
     }
     return result;
   }
+  async function verifyRunOwnedByItem(
+    item: WorkItem,
+    workId: string,
+    runId: string,
+  ) {
+    const run = await files.select(workId, (w) =>
+      w.runs.find((r) => r.id === runId),
+    );
+    if (
+      !run ||
+      run.workItem?.id !== item.id ||
+      run.effectMode !== 'commit' ||
+      run.comparisonId
+    )
+      throw fail('DELIVERY_SOURCE_INVALID', '交付来源不属于本工作项正式运行。');
+    let root = run,
+      rootWorkId = workId;
+    const seen = new Set<string>();
+    while (root.parentCall) {
+      const parent = root.parentCall;
+      if (seen.has(parent.runId))
+        throw fail('DELIVERY_SOURCE_INVALID', '交付来源运行关联循环。');
+      seen.add(parent.runId);
+      rootWorkId = parent.workId;
+      const found = await files.select(parent.workId, (w) =>
+        w.runs.find((r) => r.id === parent.runId),
+      );
+      if (!found)
+        throw fail('DELIVERY_SOURCE_INVALID', '交付来源父运行不存在。');
+      root = found;
+    }
+    if (
+      !item.runs.some(
+        (ref) => ref.workId === rootWorkId && ref.runId === root.id,
+      )
+    )
+      throw fail('DELIVERY_SOURCE_INVALID', '交付来源未关联到本工作项。');
+    return run;
+  }
+  async function readDeliverySlice(
+    item: WorkItem,
+    slice: DeliverySourceSlice,
+    requireExplicitOwned = false,
+  ): Promise<{ value: Json; source: OutputReference }[]> {
+    const d = await files.readDefinition(slice.workId, slice.definitionId);
+    let target: [string, string] | undefined;
+    if (slice.nodeId && slice.port) target = [slice.nodeId, slice.port];
+    else if (slice.output) target = d.outputs[slice.output];
+    if (!target) throw fail('DELIVERY_OUTPUT_MISSING', '指定交付输出不存在。');
+    if (requireExplicitOwned)
+      await verifyRunOwnedByItem(item, slice.workId, slice.runId);
+    const [targetNodeId, targetPort] = target;
+    return files.select(slice.workId, (work) => {
+      const run = work.runs.find((r) => r.id === slice.runId);
+      if (
+        !run ||
+        run.workItem?.id !== item.id ||
+        run.definitionId !== slice.definitionId
+      )
+        throw fail('DELIVERY_SOURCE_INVALID', '交付来源不属于本工作项。');
+      if (slice.resultIds?.length) {
+        for (const rid of slice.resultIds) {
+          const found = run.results.find((r) => r.id === rid);
+          if (
+            !found ||
+            found.nodeId !== targetNodeId ||
+            found.status !== 'completed' ||
+            found.purpose ||
+            found.intermediate
+          )
+            throw fail(
+              'DELIVERY_SOURCE_INVALID',
+              `指定来源实例 ${rid} 不存在或未成功完成。`,
+            );
+        }
+      }
+      const allowed = slice.resultIds?.length
+        ? new Set(slice.resultIds)
+        : undefined;
+      return run.results
+        .filter(
+          (r) =>
+            r.nodeId === targetNodeId &&
+            r.status === 'completed' &&
+            !r.purpose &&
+            !r.intermediate &&
+            (!allowed || allowed.has(r.id)),
+        )
+        .flatMap((r) =>
+          (r.outputs[targetPort] ?? []).map((entry, index) => ({
+            value: entry.value,
+            source: {
+              workId: work.id,
+              runId: run.id,
+              resultId: r.id,
+              port: targetPort,
+              index,
+            } satisfies OutputReference,
+          })),
+        );
+    });
+  }
   async function readDelivery(
     item: WorkItem,
     delivery: ItemDelivery,
     columnsOnly = false,
     recordId?: string,
   ): Promise<ItemDeliveryView> {
-    const d = await files.readDefinition(
-        delivery.workId,
-        delivery.definitionId,
-      ),
-      target = d.outputs[delivery.output];
-    if (!target) throw fail('DELIVERY_OUTPUT_MISSING', '指定交付输出不存在。');
-    const entries = await files.select(delivery.workId, (work) => {
-      const run = work.runs.find((r) => r.id === delivery.runId);
-      if (
-        !run ||
-        run.workItem?.id !== item.id ||
-        run.definitionId !== delivery.definitionId
-      )
-        throw fail('DELIVERY_SOURCE_INVALID', '交付来源不属于本工作项。');
-      return run.results
-        .filter(
-          (r) =>
-            r.nodeId === target[0] &&
-            r.status === 'completed' &&
-            !r.purpose &&
-            !r.intermediate,
-        )
-        .flatMap((r) =>
-          (r.outputs[target[1]] ?? []).map((entry, index) => ({
-            value: entry.value,
-            source: {
-              workId: work.id,
-              runId: run.id,
-              resultId: r.id,
-              port: target[1],
-              index,
-            } satisfies OutputReference,
-          })),
-        );
-    });
+    const slices: DeliverySourceSlice[] = delivery.composedSources?.length
+      ? delivery.composedSources
+      : [
+          {
+            workId: delivery.workId,
+            runId: delivery.runId,
+            definitionId: delivery.definitionId,
+            output: delivery.output,
+          },
+        ];
+    const isComposed = !!delivery.composedSources?.length;
     const rows: Json[] = [],
       sources: OutputReference[] = [];
-    for (const entry of entries)
-      for (const value of Array.isArray(entry.value)
-        ? entry.value
-        : [entry.value]) {
-        if (
-          recordId !== undefined &&
-          (!value ||
-            typeof value !== 'object' ||
-            Array.isArray(value) ||
-            value[delivery.recordContract!.rowKey] !== recordId)
-        )
-          continue;
-        rows.push(value);
-        sources.push(entry.source);
-      }
+    const keyIndex =
+      isComposed && delivery.recordContract?.rowKey
+        ? new Map<string, number>()
+        : undefined;
+    for (const slice of slices) {
+      const entries = await readDeliverySlice(item, slice, isComposed);
+      for (const entry of entries)
+        for (const value of Array.isArray(entry.value)
+          ? entry.value
+          : [entry.value]) {
+          if (
+            keyIndex &&
+            value &&
+            typeof value === 'object' &&
+            !Array.isArray(value)
+          ) {
+            const key = value[delivery.recordContract!.rowKey];
+            if (typeof key === 'string' && key.trim()) {
+              const existing = keyIndex.get(key);
+              if (existing !== undefined) {
+                rows[existing] = value;
+                sources[existing] = entry.source;
+                continue;
+              }
+              keyIndex.set(key, rows.length);
+            }
+          }
+          rows.push(value);
+          sources.push(entry.source);
+        }
+    }
+    const filteredRows: Json[] = [],
+      filteredSources: OutputReference[] = [];
+    for (let i = 0; i < rows.length; i++) {
+      const value = rows[i];
+      if (
+        recordId !== undefined &&
+        (!value ||
+          typeof value !== 'object' ||
+          Array.isArray(value) ||
+          value[delivery.recordContract!.rowKey] !== recordId)
+      )
+        continue;
+      filteredRows.push(value);
+      filteredSources.push(sources[i]);
+    }
     // Data is read once. Detailed records remain available by their frozen business ID.
     const large =
-      !!delivery.recordContract && columnsOnly && exceedsInlineBudget(rows);
-    let projected = rows;
+      !!delivery.recordContract &&
+      columnsOnly &&
+      exceedsInlineBudget(filteredRows);
+    let projected = filteredRows;
     if (large) {
       const program =
         item.uiProgram?.id === delivery.uiProgramId
@@ -237,7 +349,7 @@ export function createItemComposition(
         ...(view?.columns.map((c) => c.field) ?? []),
         ...(view?.groupBy ? [view.groupBy] : []),
       ]);
-      projected = rows.map((row) =>
+      projected = filteredRows.map((row) =>
         row && typeof row === 'object' && !Array.isArray(row)
           ? Object.fromEntries(
               [...fields].filter((f) => f in row).map((f) => [f, row[f]]),
@@ -251,10 +363,10 @@ export function createItemComposition(
       recordsOmitted: large,
       value: delivery.recordContract
         ? undefined
-        : rows.length === 1
-          ? rows[0]
-          : rows,
-      sources,
+        : filteredRows.length === 1
+          ? filteredRows[0]
+          : filteredRows,
+      sources: filteredSources,
     };
   }
   async function snapshot(id: string): Promise<ItemWorkspace> {
@@ -636,39 +748,98 @@ export function createItemComposition(
     runId: string,
     output: string,
     programId: string,
+    sources?: DeliverySourceSlice[],
   ) {
     await items.compositionChange(id, baseRevision, async (item) => {
       const w = await privateWork(item),
-        run = w.runs.find((r) => r.id === runId),
         program = item.uiProgram;
       if (!program || program.id !== programId)
         throw fail('UI_PROGRAM_STALE', '请选择当前已保存界面。');
-      if (
-        !run ||
-        run.workItem?.id !== id ||
-        run.status !== 'completed' ||
-        run.effectMode !== 'commit' ||
-        run.scope !== 'full' ||
-        run.comparisonId ||
-        !item.runs.some((r) => r.runId === runId && r.workId === w.id)
-      )
-        throw fail('DELIVERY_SOURCE_INVALID', '请选择本项成功完成的正式运行。');
-      if (program.definitionId !== run.definitionId)
-        throw fail('UI_PROGRAM_STALE', '界面与运行固定版本不同。');
       const parsed = parseOpenUIProgram(program.source),
         view = parsed.records.find((v) => v.output === output);
       if (!parsed.outputs.includes(output))
         throw fail('DELIVERY_OUTPUT_MISSING', '当前程序没有声明该输出。');
-      const delivery: ItemDelivery = {
-        id: randomUUID(),
-        createdAt: new Date().toISOString(),
-        workId: w.id,
-        runId,
-        definitionId: run.definitionId,
-        output,
-        uiProgramId: program.id,
-        ...(view ? { recordContract: { rowKey: view.rowKey } } : {}),
-      };
+      let delivery: ItemDelivery;
+      if (sources !== undefined) {
+        if (!Array.isArray(sources) || !sources.length)
+          throw fail(
+            'DELIVERY_SOURCE_INVALID',
+            '组合交付至少需要一个明确来源。',
+          );
+        const normalized: DeliverySourceSlice[] = [];
+        for (const slice of sources) {
+          if (
+            !slice ||
+            typeof slice.workId !== 'string' ||
+            typeof slice.runId !== 'string' ||
+            typeof slice.definitionId !== 'string'
+          )
+            throw fail('DELIVERY_SOURCE_INVALID', '组合交付来源参数不完整。');
+          const verified = await verifyRunOwnedByItem(
+            item,
+            slice.workId,
+            slice.runId,
+          );
+          if (verified.definitionId !== slice.definitionId)
+            throw fail('DELIVERY_SOURCE_INVALID', '组合交付来源版本不匹配。');
+          // A failed run can only contribute explicitly selected completed instances (never failed ones).
+          if (verified.status !== 'completed' && !slice.resultIds?.length)
+            throw fail(
+              'DELIVERY_SOURCE_INVALID',
+              '未整体成功的运行必须明确指定已成功实例 resultIds。',
+            );
+          normalized.push({
+            workId: slice.workId,
+            runId: slice.runId,
+            definitionId: slice.definitionId,
+            ...(slice.output ? { output: slice.output } : {}),
+            ...(slice.nodeId ? { nodeId: slice.nodeId } : {}),
+            ...(slice.port ? { port: slice.port } : {}),
+            ...(slice.resultIds?.length
+              ? { resultIds: [...slice.resultIds] }
+              : {}),
+          });
+        }
+        const anchor = normalized.at(-1)!;
+        delivery = {
+          id: randomUUID(),
+          createdAt: new Date().toISOString(),
+          workId: anchor.workId,
+          runId: runId || anchor.runId,
+          definitionId: anchor.definitionId,
+          output,
+          uiProgramId: program.id,
+          ...(view ? { recordContract: { rowKey: view.rowKey } } : {}),
+          composedSources: normalized,
+        };
+      } else {
+        const run = w.runs.find((r) => r.id === runId);
+        if (
+          !run ||
+          run.workItem?.id !== id ||
+          run.status !== 'completed' ||
+          run.effectMode !== 'commit' ||
+          run.scope !== 'full' ||
+          run.comparisonId ||
+          !item.runs.some((r) => r.runId === runId && r.workId === w.id)
+        )
+          throw fail(
+            'DELIVERY_SOURCE_INVALID',
+            '请选择本项成功完成的正式运行。',
+          );
+        if (program.definitionId !== run.definitionId)
+          throw fail('UI_PROGRAM_STALE', '界面与运行固定版本不同。');
+        delivery = {
+          id: randomUUID(),
+          createdAt: new Date().toISOString(),
+          workId: w.id,
+          runId,
+          definitionId: run.definitionId,
+          output,
+          uiProgramId: program.id,
+          ...(view ? { recordContract: { rowKey: view.rowKey } } : {}),
+        };
+      }
       validateRows(await readDelivery(item, delivery), view);
       item.deliveries = [
         ...item.deliveries.filter((d) => d.output !== output),

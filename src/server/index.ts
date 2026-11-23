@@ -401,10 +401,20 @@ export async function createApplication(
       201,
     );
   });
-  async function dispatchComposition(
+  /**
+   * Single unified command dispatcher for all WorkItem operations.
+   * Both /api/items/:id/workspace/actions and /api/items/:id/actions delegate here,
+   * differing only in whether lifecycle mutations return an ItemWorkspace snapshot or WorkItemView.
+   */
+  async function dispatchItemAction(
     id: string,
     b: Record<string, unknown>,
+    surface: 'workspace' | 'item' = 'workspace',
   ): Promise<unknown> {
+    const asView = async (itemView?: unknown) =>
+      surface === 'workspace'
+        ? composition.snapshot(id)
+        : (itemView ?? items.get(id));
     switch (b.action) {
       case 'init':
         return composition.init(id);
@@ -476,6 +486,9 @@ export async function createApplication(
           b.runId as string,
           b.output as string,
           b.programId as string,
+          b.sources as
+            | import('../shared/workitem-composition.ts').DeliverySourceSlice[]
+            | undefined,
         );
       case 'continueRecords':
         return composition.continueRecords(
@@ -493,8 +506,8 @@ export async function createApplication(
               }
             : undefined,
         );
-      case 'useMethod':
-        return composition.useMethod(
+      case 'useMethod': {
+        const ws = await composition.useMethod(
           id,
           b.baseRevision as number,
           b.methodId as string,
@@ -502,12 +515,17 @@ export async function createApplication(
           b.scope as { nodeId: string } | undefined,
           b.inputBindings as Record<string, ItemInputSelection[]> | undefined,
         );
+        return surface === 'workspace' ? ws : ws.item;
+      }
       case 'continueFailedInputs':
-        await execution.continueFailedInputs(
-          id,
-          b as unknown as Parameters<typeof execution.continueFailedInputs>[1],
+        return asView(
+          await execution.continueFailedInputs(
+            id,
+            b as unknown as Parameters<
+              typeof execution.continueFailedInputs
+            >[1],
+          ),
         );
-        return composition.snapshot(id);
       case 'bindInputs':
         return composition.bindInputs(
           id,
@@ -523,6 +541,15 @@ export async function createApplication(
         );
       case 'addInput':
       case 'reviseInput':
+        if (
+          b.action === 'reviseInput' &&
+          surface === 'item' &&
+          b.inputPort === undefined
+        )
+          return items.reviseInput(id, {
+            ...b,
+            expectedRevision: b.baseRevision,
+          } as unknown as Parameters<typeof items.reviseInput>[1]);
         return composition.addInput(
           id,
           b.baseRevision as number,
@@ -533,30 +560,34 @@ export async function createApplication(
           b.materialIds as string[] | undefined,
         );
       case 'addEvidence':
-        await items.addEvidence(
-          id,
-          b.materials as string[],
-          b.baseRevision as number,
+        return asView(
+          await items.addEvidence(
+            id,
+            b.materials as string[],
+            b.baseRevision as number | undefined,
+          ),
         );
-        return composition.snapshot(id);
       case 'criteria':
-        await items.criteria(
-          id,
-          b.criteria as CompletionCriterion[],
-          b.baseRevision as number,
+        return asView(
+          await items.criteria(
+            id,
+            b.criteria as CompletionCriterion[],
+            b.baseRevision as number | undefined,
+          ),
         );
-        return composition.snapshot(id);
       case 'complete':
-        await items.complete(id, b.baseRevision as number);
-        return composition.snapshot(id);
-      case 'reopen':
-        await items.reopen(
-          id,
-          b.reason as string,
-          b.confirmReopen === true,
-          b.baseRevision as number,
+        return asView(
+          await items.complete(id, b.baseRevision as number | undefined),
         );
-        return composition.snapshot(id);
+      case 'reopen':
+        return asView(
+          await items.reopen(
+            id,
+            b.reason as string,
+            b.confirmReopen === true,
+            b.baseRevision as number | undefined,
+          ),
+        );
       case 'saveMethod':
         return composition.saveMethod(
           id,
@@ -580,13 +611,44 @@ export async function createApplication(
         await itemAssistant.stop(id, b.requestId as string);
         return composition.snapshot(id);
       case 'run':
-        await execution.runItem(id, b as Partial<WorkItemRunSelection>);
-        return composition.snapshot(id);
+        return asView(
+          await execution.runItem(id, b as Partial<WorkItemRunSelection>),
+        );
       case 'stop':
       case 'resume':
       case 'signal': {
         const item = await items.get(id);
-        if (!item.execution) throw Error('没有可操作的执行。');
+        if (b.action === 'signal') {
+          if (
+            b.runId !== undefined &&
+            item.execution &&
+            b.runId !== item.execution.runId
+          )
+            throw Object.assign(Error('当前运行已变化，请重新检查。'), {
+              code: 'RUN_CONFLICT',
+            });
+          if (b.baseRevision !== undefined && b.baseRevision !== item.revision)
+            throw Object.assign(Error('工作项版本已变化，请重新检查。'), {
+              code: 'REVISION_CONFLICT',
+            });
+          return asView(
+            await items.signal(
+              id,
+              {
+                id: (b.eventId ?? b.id) as string,
+                name: b.name as string,
+                payload: b.payload as Json | undefined,
+              },
+              runs.signal,
+            ),
+          );
+        }
+        if (!item.execution)
+          throw Error(
+            surface === 'workspace'
+              ? '没有可操作的执行。'
+              : '工作项尚未发起运行。',
+          );
         if (b.runId !== undefined && b.runId !== item.execution.runId)
           throw Object.assign(Error('当前运行已变化，请重新检查。'), {
             code: 'RUN_CONFLICT',
@@ -595,27 +657,59 @@ export async function createApplication(
           throw Object.assign(Error('工作项版本已变化，请重新检查。'), {
             code: 'REVISION_CONFLICT',
           });
-        if (b.action === 'signal') {
-          await items.signal(
-            id,
-            {
-              id: b.eventId as string,
-              name: b.name as string,
-              payload: b.payload as Json | undefined,
-            },
-            runs.signal,
-          );
-          return composition.snapshot(id);
-        }
         if (b.action === 'stop')
           await runs.stop(item.execution.workId, item.execution.runId);
         else await runs.resume(item.execution.workId, item.execution.runId);
-        return composition.snapshot(id);
+        return asView();
       }
+      case 'createChildren':
+        return items.createChildren(id, b as unknown as CreateChildrenRequest);
+      case 'candidates':
+        return b.page !== undefined
+          ? items.candidatePage(
+              id,
+              b.source as CandidateSource,
+              Number(b.page),
+              Number(b.pageSize ?? 25),
+            )
+          : items.candidates(id, b.source as CandidateSource);
+      case 'scope':
+        return items.scope(
+          id,
+          b.status as 'included' | 'excluded',
+          b.reason as string,
+          b.confirmReopen === true,
+        );
+      case 'stagePreview':
+        return items.stagePreview(
+          id,
+          b.selection as Extract<ItemInputSelection, { kind: 'child-results' }>,
+        );
+      case 'stageInputs':
+        return items.stageInputs(
+          id,
+          b.scope as
+            import('./work-items/source-scope.ts').StageSourceScope | undefined,
+        );
+      case 'completionInputs':
+        return items.completionInputs(id);
+      case 'reportProgress':
+        return items.reportProgress(id, b as unknown as WorkItemProgressReport);
+      case 'citeCriterion':
+        return items.citeCriterion(
+          id,
+          b.criterionId as string,
+          b.criterionText as string,
+          b.reference as CriterionReference,
+        );
       default:
-        throw Error('未知工作项空间操作。');
+        throw Error(
+          surface === 'workspace' ? '未知工作项空间操作。' : '未知工作项操作。',
+        );
     }
   }
+  const dispatchComposition = (id: string, b: Record<string, unknown>) =>
+    dispatchItemAction(id, b, 'workspace');
   const itemAssistant = createWorkItemAssistant(
     files,
     composition,
@@ -630,170 +724,22 @@ export async function createApplication(
   );
   app.post('/api/items/:id/workspace/actions', async (c) =>
     c.json(
-      await dispatchComposition(
+      await dispatchItemAction(
         c.req.param('id'),
         await c.req.json<Record<string, unknown>>(),
+        'workspace',
       ),
     ),
   );
-  app.post('/api/items/:id/actions', async (c) => {
-    const id = c.req.param('id'),
-      body = await c.req.json<Record<string, unknown>>();
-    switch (body.action) {
-      case 'createChildren':
-        return c.json(
-          await items.createChildren(
-            id,
-            body as unknown as CreateChildrenRequest,
-          ),
-        );
-      case 'candidates':
-        return c.json(
-          body.page !== undefined
-            ? await items.candidatePage(
-                id,
-                body.source as CandidateSource,
-                Number(body.page),
-                Number(body.pageSize ?? 25),
-              )
-            : await items.candidates(id, body.source as CandidateSource),
-        );
-      case 'reviseInput':
-        return c.json(
-          await items.reviseInput(id, {
-            ...body,
-            expectedRevision: body.baseRevision,
-          } as unknown as Parameters<typeof items.reviseInput>[1]),
-        );
-      case 'scope':
-        return c.json(
-          await items.scope(
-            id,
-            body.status as 'included' | 'excluded',
-            body.reason as string,
-            body.confirmReopen === true,
-          ),
-        );
-      case 'stagePreview':
-        return c.json(
-          await items.stagePreview(
-            id,
-            body.selection as Extract<
-              ItemInputSelection,
-              { kind: 'child-results' }
-            >,
-          ),
-        );
-      case 'stageInputs':
-        return c.json(
-          await items.stageInputs(
-            id,
-            body.scope as
-              | import('./work-items/source-scope.ts').StageSourceScope
-              | undefined,
-          ),
-        );
-      case 'completionInputs':
-        return c.json(await items.completionInputs(id));
-      case 'reportProgress':
-        return c.json(
-          await items.reportProgress(
-            id,
-            body as unknown as WorkItemProgressReport,
-          ),
-        );
-      case 'addEvidence':
-        return c.json(
-          await items.addEvidence(
-            id,
-            body.materials as string[],
-            body.baseRevision as number | undefined,
-          ),
-        );
-      case 'citeCriterion':
-        return c.json(
-          await items.citeCriterion(
-            id,
-            body.criterionId as string,
-            body.criterionText as string,
-            body.reference as CriterionReference,
-          ),
-        );
-      case 'criteria':
-        return c.json(
-          await items.criteria(
-            id,
-            body.criteria as CompletionCriterion[],
-            body.baseRevision as number | undefined,
-          ),
-        );
-      case 'complete':
-        return c.json(
-          await items.complete(id, body.baseRevision as number | undefined),
-        );
-      case 'reopen':
-        return c.json(
-          await items.reopen(
-            id,
-            body.reason as string,
-            body.confirmReopen === true,
-            body.baseRevision as number | undefined,
-          ),
-        );
-      case 'run':
-        return c.json(
-          await execution.runItem(id, body as Partial<WorkItemRunSelection>),
-        );
-      case 'useMethod':
-        return c.json(
-          (
-            await composition.useMethod(
-              id,
-              body.baseRevision as number,
-              body.methodId as string,
-              body.definitionId as string,
-              body.scope as { nodeId: string } | undefined,
-              body.inputBindings as
-                Record<string, ItemInputSelection[]> | undefined,
-            )
-          ).item,
-        );
-      case 'continueFailedInputs':
-        return c.json(
-          await execution.continueFailedInputs(
-            id,
-            body as unknown as Parameters<
-              typeof execution.continueFailedInputs
-            >[1],
-          ),
-        );
-      case 'signal':
-        return c.json(
-          await items.signal(
-            id,
-            {
-              id: body.id as string,
-              name: body.name as string,
-              payload: body.payload as Json | undefined,
-            },
-            runs.signal,
-          ),
-        );
-      case 'resume':
-      case 'stop': {
-        const item = await items.get(id),
-          current = item.execution;
-        if (!current) throw Error('工作项尚未发起运行。');
-        if (body.action === 'resume')
-          await runs.resume(current.workId, current.runId);
-        if (body.action === 'stop')
-          await runs.stop(current.workId, current.runId);
-        return c.json(await items.get(id));
-      }
-      default:
-        throw Error('未知工作项操作。');
-    }
-  });
+  app.post('/api/items/:id/actions', async (c) =>
+    c.json(
+      await dispatchItemAction(
+        c.req.param('id'),
+        await c.req.json<Record<string, unknown>>(),
+        'item',
+      ),
+    ),
+  );
   app.get('/api/works', async (c) =>
     c.json(
       await work.listWorks({

@@ -37,7 +37,7 @@ import type { createItemComposition } from '../work-items/composition.ts';
 type Composition = ReturnType<typeof createItemComposition>;
 export const workItemFlowGuide = `Definition根输入不是节点。inputs声明端口名，例如inputs:["materials"]；外部输入边必须from:["$input","materials"]，连接到真实节点端口to:["step","input"]。中间边from:["step","output"]；outputs:{result:["step","output"]}映射最终节点输出。不要创建名为materials的假节点，也不要把输入变成file节点；file只用于真实已上传文件。
 最小无领域图例：{schemaVersion:1,inputs:["materials"],nodes:[{id:"step",label:"保留输入",kind:"function",functionName:"identity",operation:"map"}],edges:[{from:["$input","materials"],to:["step","input"]}],outputs:{result:["step","output"]}}。这只是端口接线例子，实际步骤按用户目标设计。
-先check_flow并save_flow保存真实根输入及inputContracts，再select_inputs绑定已有原材料或add_input提交声明端口的新值。add_input不能写到尚未保存的端口。原材料value是文本字符串；add_input每次保存一个JSON值，数组仍是一条输入。map/flatMap节点消费单值，aggregate消费数组，节点运行不能把输入包装元数据当value字段。`;
+先用check_workspace联合检查草案/输入/界面，再用apply_workspace_plan一次原子提交definition、输入绑定和uiSource/uiPatch（服务端自动衔接draftId/definitionId/revision）。原材料value是文本字符串；manage_inputs(action="add")每次保存一个JSON值，数组仍是一条输入。map/flatMap节点消费单值，aggregate消费数组，节点运行不能把输入包装元数据当value字段。`;
 export const workItemSystemPrinciples = `系统准则
 你在一个持续业务工作系统内协助用户。系统提供业务身份、材料与来源、可保存的处理方法、真实执行、进展及成果、可交互的业务界面；你负责在这些能力内组织当前工作。
 
@@ -52,17 +52,16 @@ export const workItemSystemPrinciples = `系统准则
 
 export const workItemInstructions = `${workItemSystemPrinciples}
 
-能力使用说明
-先inspect_work_item读取实际材料、定义、输入绑定、界面和Run；用find_methods/inspect_method发现并固定引用已有方法。人和Assistant修改同一Definition。
+能力使用说明（9 个核心能力）
+1. 读取事实：inspect_workspace 支持 target=summary/run/artifact/scope/child_outputs/child_preview；methods(action="find"|"inspect"|"save") 发现、核查或参数化提取可复用流水线。
 ${workItemFlowGuide}
-确定性处理用function。save_flow保存处理关系；select_inputs选择原材料；bind_inputs保存精确material/result/received/child/completion引用；add_input提交补充。普通节点operation=map/flatMap/aggregate；call只用map/aggregate，call.map用eachPort明确逐项端口，其他端口广播。计划的problem和节点contract说明实际职责与产物。
-业务进展跨Run/子项，需要保存的阶段使用milestone/report_progress。读取当前明确绑定输入使用read_inputs，不统计receivedInputs历史充当当前范围；读取workspace、子项、固定Run阶段产物和交付的具体合同由describe_capabilities提供。
-涉及界面安排的每一轮先describe_capabilities取得当前同源OpenUI组件/工具说明，再check_ui_program并save_ui_program。source是唯一当前安排，局部修改用update_ui_program具名patch。字段和表单采用本业务名称，inputContracts用户字段提供可读title。具体组件由阅读/操作需要选择，不为覆盖能力目录逐一放进页面。
-相关数据、说明、表单与本组动作可放在同一个Section业务分组，组名、数量和内容按本项需要决定；子任务可嵌套Section。平台统一分界和标题层次，Stack只排布，不按表格/表单类型拆组或套固定页面模板。
-每个写工具传最新baseRevision；save_flow传expectedDraftId；保存界面传definitionId；修改已有界面时expectedProgramId取inspect_work_item返回的uiProgram.id，首次保存时省略expectedProgramId。冲突读回不覆盖。uiFocus为用户关注的已保存声明，优先局部修改，不因此重规划或运行。
-检查使用check_flow/check_workspace。execute只启动，inspect_run确认终态；发布固定交付时对明确成功commit的runId/output调用publish_delivery并读回检查，不把发布当作观察阶段产物的前提。失败输入补跑为新commit，旧Run保持；旧/新成功显式选来源汇合。等待signal、中断resume继续原固定Run。
-continue_records仅准备明确下一轮输入，不自动执行；子项阶段成果显式发现/预览/选择，默认直属，跨层scope=descendants，保留精确Run/result/port/index。完成要求可由你定义，实际依据确认和结项由人操作。
-OpenUI语言说明只用于工具source/patch参数，不在聊天重复源码或大段技术交接。最终回复简述实际已保存/执行的工作、未解决事项与下一步。`;
+2. 确定性处理用function。普通节点operation=map/flatMap/aggregate；call只用map/aggregate，call.map用eachPort明确逐项端口，其他端口广播。计划的problem和节点contract说明实际职责与产物。业务进展跨Run/子项时使用milestone/report_progress。
+3. 方案校验与一次提交：涉及界面安排的每一轮先describe_capabilities取得同源OpenUI合同；用check_workspace做只读联合检查（flow/inputs/ui/run）；再用apply_workspace_plan按当前baseRevision一次提交definition、selectMaterials/inputBindings与uiSource/uiPatch，服务端自动衔接版本。修改已有界面时传expectedProgramId（首次保存省略），局部调整优先uiPatch。
+4. 界面组织：相关数据、说明、表单与本组动作可放在同一个Section业务分组，子任务可嵌套Section；平台统一边界和标题层次，Stack只排布。uiFocus为用户关注的已保存声明，优先局部修改。
+5. 输入与续做：manage_inputs 支持 action=add/revise/select_materials/bind/select_child_outputs/continue_records，保留精确来源，不复制结果正文冒充原材料。
+6. 执行与交付：run_control 支持 action=start/stop/resume/signal/retry_failed；retry_failed只对失败输入新建正式衍生Run，不改写当前主流程草稿和输入绑定。publish_delivery支持单Run发布，也支持sources多轮组合交付（旧成功实例+补查新成功按rowKey覆盖并保留精确来源）。
+7. 完成要求：set_completion_requirements定义完成条件，保持未确认，实际依据确认和结项由人操作。
+OpenUI语言说明只用于工具参数，不在聊天重复源码或大段技术交接。最终回复简述实际已保存/执行的工作、未解决事项与下一步。`;
 
 export function createWorkItemAssistant(
   files: FileStore,
@@ -282,6 +281,7 @@ export function createWorkItemAssistant(
               ),
               uiProgram: value.uiProgram,
               savedWorkId: value.savedWorkId,
+              ...(value.applied ? { applied: value.applied } : {}),
             };
           }
           return {
@@ -336,246 +336,130 @@ export function createWorkItemAssistant(
             { minItems: 1 },
           ),
         });
+        const deliverySliceSchema = Type.Object({
+          workId: Type.String(),
+          runId: Type.String(),
+          definitionId: Type.String(),
+          output: Type.Optional(Type.String()),
+          nodeId: Type.Optional(Type.String()),
+          port: Type.Optional(Type.String()),
+          resultIds: Type.Optional(Type.Array(Type.String(), { minItems: 1 })),
+        });
         const tools = [
           make(
             'describe_capabilities',
-            '读取真实流程和OpenUI组件/交互合同',
+            '读取紧凑的 OpenUI 语法/组件/工具合同与系统准则（不重复返回 systemPrompt 已有内容）',
             Type.Object({}),
             async () => ({
               systemPrinciples: workItemSystemPrinciples,
-              definitionSchema,
-              flowGuide: workItemFlowGuide,
+              openuiComponents: Object.keys(openuiContract.components),
               openuiInstructions,
-              openuiSchema: openuiContract.toJSONSchema(),
-              expressionGuide,
-              collectionGuide,
               inputUnits:
-                'add_input每次保存一个JSON值；数组仍是一条输入。map/flatMap接收一条，aggregate接收值数组。call/集合输入为具名端口数组对象。',
+                'apply_workspace_plan.addInputs 或 manage_inputs(action="add") 每次保存一个 JSON 值；数组仍是一条输入。map/flatMap 消费单条，aggregate 消费值数组。',
             }),
           ),
           make(
-            'inspect_work_item',
-            '读取工作项真实材料、当前流程、修订、运行及交付',
-            Type.Object({}),
-            () => context(id),
-          ),
-          make(
-            'find_methods',
-            '按用途查找可复用流水线与保存版本合同',
+            'inspect_workspace',
+            '统一只读查看：工作项全貌(summary)、运行实例(run)、材料或产物正文(artifact)、后代范围(scope)、子项阶段产物(child_outputs/child_preview)',
             Type.Object({
-              query: Type.Optional(Type.String()),
-              offset: Type.Optional(Type.Integer({ minimum: 0 })),
-              limit: Type.Optional(Type.Integer({ minimum: 1, maximum: 30 })),
-            }),
-            async (p) => {
-              const methods = await composition.methods(p.query);
-              const offset = p.offset ?? 0,
-                limit = p.limit ?? 30;
-              return {
-                total: methods.length,
-                offset,
-                limit,
-                hasMore: offset + limit < methods.length,
-                methods: methods
-                  .slice(offset, offset + limit)
-                  .map(({ definition, ...m }) => m),
-              };
-            },
-          ),
-          make(
-            'inspect_method',
-            '读取指定保存版本的完整定义、端口与schema',
-            Type.Object({ workId: Type.String(), definitionId: Type.String() }),
-            async (p) => {
-              const methods = await composition.methods();
-              const method = methods.find(
-                (m) =>
-                  m.workId === p.workId && m.definitionId === p.definitionId,
-              );
-              if (!method) throw Error('方法目录中没有此保存版本。');
-              return method;
-            },
-          ),
-          make(
-            'check_flow',
-            '检查未完成的流程草案，返回字段问题；不保存或执行',
-            Type.Object({ definition: Type.Any() }),
-            async (p) => {
-              const checked = await composition.check(id, p.definition);
-              return { ...checked, flowGuide: workItemFlowGuide };
-            },
-          ),
-          make(
-            'check_workspace',
-            '只读联合检查方案、真实输入、界面和指定运行；分别报告能否执行、发布及未验证项',
-            Type.Object({
-              definition: Type.Optional(Type.Any()),
-              source: Type.Optional(Type.String()),
-              runId: Type.Optional(Type.String()),
-            }),
-            (p) => composition.checkWorkspace(id, p),
-          ),
-          make(
-            'inspect_item_scope',
-            '分页读取本项有效后代的业务身份与实际运行状态；只读，不调度或采用结果',
-            Type.Object({
-              page: Type.Optional(Type.Integer({ minimum: 1 })),
-              pageSize: Type.Optional(
-                Type.Integer({ minimum: 1, maximum: 50 }),
+              target: Type.Optional(
+                Type.Union([
+                  Type.Literal('summary'),
+                  Type.Literal('run'),
+                  Type.Literal('artifact'),
+                  Type.Literal('scope'),
+                  Type.Literal('child_outputs'),
+                  Type.Literal('child_preview'),
+                ]),
               ),
-            }),
-            (p) => composition.itemScope(id, p.page, p.pageSize),
-          ),
-          make(
-            'inspect_child_outputs',
-            '分页发现正式阶段成果与精确来源；默认直属，scope=descendants显式读取有效后代，不自动选择最新结果',
-            Type.Object({
-              nodeId: Type.Optional(Type.String()),
+              runId: Type.Optional(Type.String()),
+              workId: Type.Optional(Type.String()),
+              materialId: Type.Optional(Type.String()),
+              source: Type.Optional(
+                Type.Object({
+                  workId: Type.String(),
+                  runId: Type.String(),
+                  resultId: Type.String(),
+                  port: Type.String(),
+                  index: Type.Integer({ minimum: 0 }),
+                }),
+              ),
               scope: Type.Optional(
                 Type.Union([
                   Type.Literal('children'),
                   Type.Literal('descendants'),
                 ]),
               ),
-              offset: Type.Optional(Type.Integer({ minimum: 0 })),
-              limit: Type.Optional(Type.Integer({ minimum: 1, maximum: 50 })),
-            }),
-            (p) =>
-              composition.childOutputs(
-                id,
-                p.offset,
-                p.limit,
-                p.scope,
-                p.nodeId,
+              nodeId: Type.Optional(Type.String()),
+              selection: Type.Optional(childSelection),
+              page: Type.Optional(Type.Integer({ minimum: 1 })),
+              pageSize: Type.Optional(
+                Type.Integer({ minimum: 1, maximum: 50 }),
               ),
-          ),
-          make(
-            'preview_child_output',
-            '读取明确子项阶段来源的实际输入包装与值；结果按文本分页，不执行',
-            Type.Object({
-              selection: childSelection,
               offset: Type.Optional(Type.Integer({ minimum: 0 })),
               limit: Type.Optional(
                 Type.Integer({ minimum: 1, maximum: 20000 }),
               ),
             }),
             async (p) => {
-              const preview = await composition.previewChildOutput(
-                id,
-                p.selection,
-              );
-              const text = JSON.stringify(preview.value);
-              const offset = p.offset ?? 0;
-              return {
-                characters: text.length,
-                offset,
-                text: text.slice(offset, offset + (p.limit ?? 10000)),
-                note: '这是一个{item,outputs}输入值，不是直接展开的记录清单。',
-              };
-            },
-          ),
-          make(
-            'select_child_outputs',
-            '将明确子项阶段来源绑定到输入入口；保留固定来源，不复制业务值、不执行',
-            Type.Object({
-              ...base,
-              inputPort: Type.String(),
-              selections: Type.Array(childSelection, { minItems: 1 }),
-            }),
-            (p) =>
-              composition.selectChildOutputs(
-                id,
-                p.baseRevision,
-                p.inputPort,
-                p.selections,
-              ),
-          ),
-          make(
-            'save_flow',
-            '保存工作项组合流程，与画布共用业务入口',
-            Type.Object({
-              ...base,
-              expectedDraftId: Type.Optional(Type.String()),
-              definition: definitionSchema,
-            }),
-            (p) => dispatch(id, { action: 'saveFlow', ...p }),
-          ),
-          make(
-            'select_inputs',
-            '将本工作项已有原文直接绑定到输入入口，保留真实来源',
-            Type.Object({
-              ...base,
-              inputPort: Type.String(),
-              materialIds: Type.Array(Type.String(), { minItems: 1 }),
-            }),
-            (p) => dispatch(id, { action: 'selectInputs', ...p }),
-          ),
-          make(
-            'add_input',
-            '按保存入口合同补充或修订一条输入，保留原值',
-            Type.Object({
-              ...base,
-              inputPort: Type.String(),
-              label: Type.String(),
-              value: Type.Any(),
-              inputId: Type.Optional(Type.String()),
-              materialIds: Type.Optional(Type.Array(Type.String())),
-            }),
-            (p) =>
-              dispatch(id, {
-                action: p.inputId ? 'reviseInput' : 'addInput',
-                ...p,
-              }),
-          ),
-          make(
-            'bind_inputs',
-            '明确绑定全部端口的固定来源引用，不复制正文',
-            Type.Object({
-              ...base,
-              inputBindings: Type.Record(Type.String(), Type.Array(Type.Any())),
-            }),
-            (p) => dispatch(id, { action: 'bindInputs', ...p }),
-          ),
-          make(
-            'execute',
-            '启动已保存的当前工作项流程',
-            Type.Object({ ...base }),
-            (p) => dispatch(id, { action: 'run', ...p }),
-          ),
-          make(
-            'stop_execution',
-            '停止本工作项明确的一轮执行及调用',
-            Type.Object({ ...base, runId: Type.String() }),
-            (p) => dispatch(id, { action: 'stop', ...p }),
-          ),
-          make(
-            'resume_execution',
-            '恢复本工作项明确中断的执行',
-            Type.Object({ ...base, runId: Type.String() }),
-            (p) => dispatch(id, { action: 'resume', ...p }),
-          ),
-          make(
-            'signal_execution',
-            '向明确等待投递已声明事件；同eventId重试去重',
-            Type.Object({
-              ...base,
-              runId: Type.String(),
-              eventId: Type.String(),
-              name: Type.String(),
-              payload: Type.Optional(Type.Any()),
-            }),
-            (p) => dispatch(id, { action: 'signal', ...p }),
-          ),
-          make(
-            'inspect_run',
-            '分页读取本工作项运行的实例状态、输出预览与精确来源',
-            Type.Object({
-              runId: Type.String(),
-              workId: Type.Optional(Type.String()),
-              offset: Type.Optional(Type.Integer({ minimum: 0 })),
-              limit: Type.Optional(Type.Integer({ minimum: 1, maximum: 30 })),
-            }),
-            async (p) => {
+              const target = p.target ?? 'summary';
+              if (target === 'summary') return context(id);
+              if (target === 'scope')
+                return composition.itemScope(id, p.page, p.pageSize);
+              if (target === 'child_outputs')
+                return composition.childOutputs(
+                  id,
+                  p.offset,
+                  p.limit ? Math.min(p.limit, 50) : undefined,
+                  p.scope,
+                  p.nodeId,
+                );
+              if (target === 'child_preview') {
+                if (!p.selection)
+                  throw Error('target=child_preview 需要提供 selection。');
+                const preview = await composition.previewChildOutput(
+                  id,
+                  p.selection,
+                );
+                const text = JSON.stringify(preview.value);
+                const offset = p.offset ?? 0;
+                return {
+                  characters: text.length,
+                  offset,
+                  text: text.slice(offset, offset + (p.limit ?? 10000)),
+                  note: '这是一个{item,outputs}输入值，不是直接展开的记录清单。',
+                };
+              }
+              if (target === 'artifact') {
+                const item = await composition.rawItem(id);
+                let value: unknown;
+                if (p.materialId) {
+                  const material = item.materials.find(
+                    (m) => m.id === p.materialId,
+                  );
+                  if (!material) throw Error('材料不属于当前工作项。');
+                  value = material.text;
+                } else if (p.source) {
+                  const resolved = await resolveItemInputs(
+                    item,
+                    { input: [{ kind: 'result', source: p.source }] },
+                    files,
+                  );
+                  value = resolved.inputs.input[0].value;
+                } else throw Error('请选择材料编号或精确成果来源。');
+                const text =
+                  typeof value === 'string' ? value : JSON.stringify(value);
+                const offset = p.offset ?? 0,
+                  limit = p.limit ?? 12000;
+                return {
+                  text: text.slice(offset, offset + limit),
+                  characters: text.length,
+                  offset,
+                  hasMore: offset + limit < text.length,
+                };
+              }
+              // target === 'run'
+              if (!p.runId) throw Error('target=run 需要提供 runId。');
               const snapshot = await composition.snapshot(id);
               const work = await files.read(p.workId ?? snapshot.work!.work.id),
                 run = work.runs.find((r) => r.id === p.runId);
@@ -638,73 +522,109 @@ export function createWorkItemAssistant(
             },
           ),
           make(
-            'read_artifact',
-            '按材料编号或精确产物引用读取真实内容，可分段读取长文本',
+            'methods',
+            '查找可复用流水线目录(find)、读取保存版本合同(inspect)、或将本项流程提取为流水线(save)',
             Type.Object({
-              materialId: Type.Optional(Type.String()),
-              source: Type.Optional(
-                Type.Object({
-                  workId: Type.String(),
-                  runId: Type.String(),
-                  resultId: Type.String(),
-                  port: Type.String(),
-                  index: Type.Integer({ minimum: 0 }),
-                }),
-              ),
+              action: Type.Union([
+                Type.Literal('find'),
+                Type.Literal('inspect'),
+                Type.Literal('save'),
+              ]),
+              query: Type.Optional(Type.String()),
               offset: Type.Optional(Type.Integer({ minimum: 0 })),
-              limit: Type.Optional(
-                Type.Integer({ minimum: 1, maximum: 20000 }),
+              limit: Type.Optional(Type.Integer({ minimum: 1, maximum: 30 })),
+              workId: Type.Optional(Type.String()),
+              definitionId: Type.Optional(Type.String()),
+              baseRevision: Type.Optional(Type.Integer({ minimum: 0 })),
+              title: Type.Optional(
+                Type.String({ minLength: 1, maxLength: 80 }),
               ),
             }),
             async (p) => {
-              const item = await composition.rawItem(id);
-              let value: unknown;
-              if (p.materialId) {
-                const material = item.materials.find(
-                  (m) => m.id === p.materialId,
+              if (p.action === 'find') {
+                const methods = await composition.methods(p.query);
+                const offset = p.offset ?? 0,
+                  limit = p.limit ?? 30;
+                return {
+                  total: methods.length,
+                  offset,
+                  limit,
+                  hasMore: offset + limit < methods.length,
+                  methods: methods
+                    .slice(offset, offset + limit)
+                    .map(({ definition, ...m }) => m),
+                };
+              }
+              if (p.action === 'inspect') {
+                if (!p.workId || !p.definitionId)
+                  throw Error('inspect 需要提供 workId 与 definitionId。');
+                const methods = await composition.methods();
+                const method = methods.find(
+                  (m) =>
+                    m.workId === p.workId && m.definitionId === p.definitionId,
                 );
-                if (!material) throw Error('材料不属于当前工作项。');
-                value = material.text;
-              } else if (p.source) {
-                const resolved = await resolveItemInputs(
-                  item,
-                  { input: [{ kind: 'result', source: p.source }] },
-                  files,
-                );
-                value = resolved.inputs.input[0].value;
-              } else throw Error('请选择材料编号或精确成果来源。');
-              const text =
-                typeof value === 'string' ? value : JSON.stringify(value);
-              const offset = p.offset ?? 0,
-                limit = p.limit ?? 12000;
-              return {
-                text: text.slice(offset, offset + limit),
-                characters: text.length,
-                offset,
-                hasMore: offset + limit < text.length,
-              };
+                if (!method) throw Error('方法目录中没有此保存版本。');
+                return method;
+              }
+              if (p.baseRevision === undefined || !p.title)
+                throw Error('save 需要提供 baseRevision 与 title。');
+              return dispatch(id, {
+                action: 'saveMethod',
+                baseRevision: p.baseRevision,
+                title: p.title,
+              });
             },
           ),
           make(
-            'check_ui_program',
-            '检查完整原生OpenUI程序，不保存或执行',
-            Type.Object({ source: Type.String() }),
+            'check_workspace',
+            '只读联合检查流程草案(definition)、OpenUI界面(source)、真实输入与指定运行(runId)，不保存或执行',
+            Type.Object({
+              definition: Type.Optional(Type.Any()),
+              source: Type.Optional(Type.String()),
+              runId: Type.Optional(Type.String()),
+            }),
             async (p) => {
-              const parsed = validateOpenUIProgram(p.source);
-              return {
-                valid: true,
-                records: parsed.records,
-                outputs: parsed.outputs,
-                statements: parsed.statements,
-              };
+              const checked = await composition.checkWorkspace(id, p);
+              const flowFailed = checked.issues.some((i) => i.area === 'flow');
+              return flowFailed
+                ? { ...checked, flowGuide: workItemFlowGuide }
+                : checked;
             },
           ),
           make(
-            'save_ui_program',
-            '保存完整OpenUI程序，界面保存不执行业务',
+            'apply_workspace_plan',
+            '按当前baseRevision一次保存工作项流程(definition)、结构化输入(addInputs)、输入绑定(selectMaterials/inputBindings)与OpenUI界面(uiSource/uiPatch)，服务端自动衔接版本；不执行业务',
             Type.Object({
               ...base,
-              definitionId: Type.String(),
+              definition: Type.Optional(definitionSchema),
+              expectedDraftId: Type.Optional(Type.String()),
+              addInputs: Type.Optional(
+                Type.Array(
+                  Type.Object({
+                    inputPort: Type.String(),
+                    label: Type.String(),
+                    value: Type.Any(),
+                    inputId: Type.Optional(Type.String()),
+                    materialIds: Type.Optional(Type.Array(Type.String())),
+                  }),
+                  { minItems: 1 },
+                ),
+              ),
+              selectMaterials: Type.Optional(
+                Type.Array(
+                  Type.Object({
+                    inputPort: Type.String(),
+                    materialIds: Type.Array(Type.String(), { minItems: 1 }),
+                  }),
+                  { minItems: 1 },
+                ),
+              ),
+              inputBindings: Type.Optional(
+                Type.Record(Type.String(), Type.Array(Type.Any())),
+              ),
+              uiSource: Type.Optional(Type.String()),
+              uiPatch: Type.Optional(Type.String()),
+              definitionId: Type.Optional(Type.String()),
               expectedProgramId: Type.Optional(
                 Type.String({
                   minLength: 1,
@@ -712,42 +632,238 @@ export function createWorkItemAssistant(
                     '已有界面的uiProgram.id；首次保存尚无界面时省略此字段。',
                 }),
               ),
-              source: Type.String(),
             }),
-            (p) => dispatch(id, { action: 'saveUiProgram', ...p }),
+            async (p) => {
+              if (
+                p.definition === undefined &&
+                p.addInputs === undefined &&
+                p.selectMaterials === undefined &&
+                p.inputBindings === undefined &&
+                p.uiSource === undefined &&
+                p.uiPatch === undefined
+              )
+                throw Error(
+                  '请至少提供 definition、addInputs、selectMaterials、inputBindings、uiSource 或 uiPatch 之一。',
+                );
+              let rev = p.baseRevision;
+              let latestDraftId: string | undefined;
+              let latest: any;
+              const applied: string[] = [];
+              if (p.definition !== undefined) {
+                latest = await dispatch(id, {
+                  action: 'saveFlow',
+                  baseRevision: rev,
+                  expectedDraftId: p.expectedDraftId,
+                  definition: p.definition,
+                });
+                rev = latest.item.revision;
+                latestDraftId = latest.work?.work?.draftId;
+                applied.push('flow');
+              }
+              if (p.addInputs?.length) {
+                for (const entry of p.addInputs) {
+                  latest = await dispatch(id, {
+                    action: entry.inputId ? 'reviseInput' : 'addInput',
+                    baseRevision: rev,
+                    inputPort: entry.inputPort,
+                    label: entry.label,
+                    value: entry.value,
+                    inputId: entry.inputId,
+                    materialIds: entry.materialIds,
+                  });
+                  rev = latest.item.revision;
+                }
+                applied.push('addInputs');
+              }
+              if (p.selectMaterials?.length) {
+                for (const entry of p.selectMaterials) {
+                  latest = await dispatch(id, {
+                    action: 'selectInputs',
+                    baseRevision: rev,
+                    inputPort: entry.inputPort,
+                    materialIds: entry.materialIds,
+                  });
+                  rev = latest.item.revision;
+                }
+                applied.push('materials');
+              }
+              if (p.inputBindings !== undefined) {
+                latest = await dispatch(id, {
+                  action: 'bindInputs',
+                  baseRevision: rev,
+                  inputBindings: p.inputBindings,
+                });
+                rev = latest.item.revision;
+                applied.push('inputBindings');
+              }
+              if (p.uiSource !== undefined || p.uiPatch !== undefined) {
+                latest = await dispatch(id, {
+                  action: 'saveUiProgram',
+                  baseRevision: rev,
+                  definitionId: p.definitionId ?? latestDraftId,
+                  expectedProgramId: p.expectedProgramId,
+                  source: p.uiSource,
+                  patch: p.uiPatch,
+                });
+                applied.push(p.uiPatch !== undefined ? 'uiPatch' : 'uiSource');
+              }
+              return { ...latest, applied };
+            },
           ),
           make(
-            'update_ui_program',
-            '按原生OpenUI具名patch局部修改，保留无关声明',
+            'manage_inputs',
+            '管理工作项输入与交接：补充/修订结构化输入(add/revise)、绑定原材料(select_materials)、绑定精确来源(bind/select_child_outputs)、或从固定交付续做记录(continue_records)',
             Type.Object({
               ...base,
-              definitionId: Type.String(),
-              expectedProgramId: Type.String(),
-              patch: Type.String(),
+              action: Type.Union([
+                Type.Literal('add'),
+                Type.Literal('revise'),
+                Type.Literal('select_materials'),
+                Type.Literal('bind'),
+                Type.Literal('select_child_outputs'),
+                Type.Literal('continue_records'),
+              ]),
+              inputPort: Type.Optional(Type.String()),
+              label: Type.Optional(Type.String()),
+              value: Type.Optional(Type.Any()),
+              inputId: Type.Optional(Type.String()),
+              materialIds: Type.Optional(Type.Array(Type.String())),
+              inputBindings: Type.Optional(
+                Type.Record(Type.String(), Type.Array(Type.Any())),
+              ),
+              selections: Type.Optional(
+                Type.Array(childSelection, { minItems: 1 }),
+              ),
+              deliveryId: Type.Optional(Type.String()),
+              recordIds: Type.Optional(
+                Type.Array(Type.String(), { minItems: 1 }),
+              ),
+              methodId: Type.Optional(Type.String()),
+              methodDefinitionId: Type.Optional(Type.String()),
+              draft: Type.Optional(Type.Record(Type.String(), Type.Any())),
+              recordField: Type.Optional(Type.String()),
             }),
-            (p) => dispatch(id, { action: 'saveUiProgram', ...p }),
+            async (p) => {
+              switch (p.action) {
+                case 'add':
+                case 'revise':
+                  return dispatch(id, {
+                    action: p.inputId ? 'reviseInput' : 'addInput',
+                    baseRevision: p.baseRevision,
+                    inputPort: p.inputPort,
+                    label: p.label,
+                    value: p.value,
+                    inputId: p.inputId,
+                    materialIds: p.materialIds,
+                  });
+                case 'select_materials':
+                  return dispatch(id, {
+                    action: 'selectInputs',
+                    baseRevision: p.baseRevision,
+                    inputPort: p.inputPort,
+                    materialIds: p.materialIds,
+                  });
+                case 'bind':
+                  return dispatch(id, {
+                    action: 'bindInputs',
+                    baseRevision: p.baseRevision,
+                    inputBindings: p.inputBindings,
+                  });
+                case 'select_child_outputs':
+                  return composition.selectChildOutputs(
+                    id,
+                    p.baseRevision,
+                    p.inputPort!,
+                    p.selections!,
+                  );
+                case 'continue_records':
+                  return dispatch(id, {
+                    action: 'continueRecords',
+                    baseRevision: p.baseRevision,
+                    deliveryId: p.deliveryId,
+                    recordIds: p.recordIds,
+                    inputPort: p.inputPort,
+                    methodId: p.methodId,
+                    methodDefinitionId: p.methodDefinitionId,
+                    draft: p.draft,
+                    recordField: p.recordField,
+                  });
+              }
+            },
+          ),
+          make(
+            'run_control',
+            '控制正式执行：启动(start)、停止(stop)、恢复中断(resume)、投递等待事件(signal)、或仅补跑失败输入且不改写主流程(retry_failed)',
+            Type.Object({
+              ...base,
+              action: Type.Union([
+                Type.Literal('start'),
+                Type.Literal('stop'),
+                Type.Literal('resume'),
+                Type.Literal('signal'),
+                Type.Literal('retry_failed'),
+              ]),
+              runId: Type.Optional(Type.String()),
+              workId: Type.Optional(Type.String()),
+              resultIds: Type.Optional(
+                Type.Array(Type.String(), { minItems: 1 }),
+              ),
+              eventId: Type.Optional(Type.String()),
+              name: Type.Optional(Type.String()),
+              payload: Type.Optional(Type.Any()),
+            }),
+            async (p) => {
+              switch (p.action) {
+                case 'start':
+                  return dispatch(id, {
+                    action: 'run',
+                    baseRevision: p.baseRevision,
+                  });
+                case 'stop':
+                case 'resume':
+                  return dispatch(id, {
+                    action: p.action,
+                    baseRevision: p.baseRevision,
+                    runId: p.runId,
+                  });
+                case 'signal':
+                  return dispatch(id, {
+                    action: 'signal',
+                    baseRevision: p.baseRevision,
+                    runId: p.runId,
+                    eventId: p.eventId,
+                    name: p.name,
+                    payload: p.payload,
+                  });
+                case 'retry_failed':
+                  return dispatch(id, {
+                    action: 'continueFailedInputs',
+                    baseRevision: p.baseRevision,
+                    workId: p.workId,
+                    runId: p.runId,
+                    resultIds: p.resultIds,
+                  });
+              }
+            },
           ),
           make(
             'publish_delivery',
-            '把明确输出绑定到实际成功正式Run和保存的OpenUI程序',
+            '把明确输出发布为固定交付：支持单次成功正式Run，也支持sources显式组合多轮正式成功产物（后者按rowKey覆盖前者并保留每条精确来源）',
             Type.Object({
               ...base,
-              runId: Type.String(),
+              runId: Type.Optional(Type.String()),
               output: Type.String(),
               programId: Type.String(),
+              sources: Type.Optional(
+                Type.Array(deliverySliceSchema, { minItems: 1 }),
+              ),
             }),
-            (p) => dispatch(id, { action: 'publishDelivery', ...p }),
-          ),
-          make(
-            'continue_failed_inputs',
-            '仅补跑明确失败输入，新建正式Run，原失败Run保持历史',
-            Type.Object({
-              ...base,
-              workId: Type.Optional(Type.String()),
-              runId: Type.String(),
-              resultIds: Type.Array(Type.String(), { minItems: 1 }),
-            }),
-            (p) => dispatch(id, { action: 'continueFailedInputs', ...p }),
+            (p) =>
+              dispatch(id, {
+                action: 'publishDelivery',
+                ...p,
+                runId: p.runId ?? p.sources?.at(-1)?.runId ?? '',
+              }),
           ),
           make(
             'set_completion_requirements',
@@ -768,30 +884,6 @@ export function createWorkItemAssistant(
                   evidence: '',
                 })),
               }),
-          ),
-          make(
-            'continue_records',
-            '选取真实交付记录准备下一轮输入',
-            Type.Object({
-              ...base,
-              deliveryId: Type.String(),
-              recordIds: Type.Array(Type.String(), { minItems: 1 }),
-              inputPort: Type.Optional(Type.String()),
-              methodId: Type.Optional(Type.String()),
-              methodDefinitionId: Type.Optional(Type.String()),
-              draft: Type.Optional(Type.Record(Type.String(), Type.Any())),
-              recordField: Type.Optional(Type.String()),
-            }),
-            (p) => dispatch(id, { action: 'continueRecords', ...p }),
-          ),
-          make(
-            'save_method',
-            '将已保存私有处理流程提取为可复用流水线',
-            Type.Object({
-              ...base,
-              title: Type.String({ minLength: 1, maxLength: 80 }),
-            }),
-            (p) => dispatch(id, { action: 'saveMethod', ...p }),
           ),
         ];
         const output = await runner({

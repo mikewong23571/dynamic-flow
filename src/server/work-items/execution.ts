@@ -1,18 +1,19 @@
 import { isDeepStrictEqual } from 'node:util';
-import { randomUUID } from 'node:crypto';
 import type {
+  ContentMaterial,
   Definition,
+  Inputs,
   ItemInputSelection,
   ItemRunRef,
+  OutputReference,
   StartRun,
-  WorkItem,
   WorkItemInput,
   WorkItemRunSelection,
 } from '../../shared/records.ts';
 import { nodeInputPorts } from '../../shared/node-ports.ts';
 import { materializeDefinition } from '../../shared/expansion.ts';
 import type { FileStore } from '../files/index.ts';
-import type { FlowService } from '../flow/index.ts';
+import { checkDefinition, type FlowService } from '../flow/index.ts';
 import type { RunService } from '../runs/index.ts';
 import type { createWorkItems } from './index.ts';
 import { prepareItemInputs } from './run-inputs.ts';
@@ -144,6 +145,11 @@ export function createItemExecution(
       );
     const ports = nodeInputPorts(node),
       fragment: Definition = {
+        sourceNode: {
+          workId: sourceWorkId,
+          definitionId: old.definitionId,
+          nodeId: node.id,
+        },
         schemaVersion: 1,
         inputs: ports,
         nodes: [structuredClone(node)],
@@ -153,65 +159,78 @@ export function createItemExecution(
         })),
         outputs: { output: [node.id, 'output'] },
       };
+    const issues = checkDefinition(fragment);
+    if (issues.length)
+      throw failure(
+        'FAILED_NODE_INVALID',
+        issues.map((i) => i.message).join('；'),
+      );
     return items.launch(
       id,
-      async (_input, workId, current) => {
-        // launch checks the same item revision and unresolved execution before changing its definition.
-        const bindings: Record<string, ItemInputSelection[]> = {},
-          next: WorkItem = structuredClone(current);
+      async (input, workId) => {
+        // Build frozen retry inputs directly from the failed instances without mutating
+        // the work item's primary flow draft, inputBindings, or receivedInputs.
+        const inputs: Inputs = {};
+        const materialsMap = new Map<string, ContentMaterial>();
+        const inputSources: OutputReference[] = [];
         for (const port of ports) {
-          bindings[port] = [];
-          for (const result of selected)
+          inputs[port] = [];
+          for (const result of selected) {
             for (const [index, value] of (result.input[port] ?? []).entries()) {
-              const inputId = randomUUID();
-              next.receivedInputs ??= [];
-              next.receivedInputs.push({
-                id: inputId,
-                label: `失败输入 · ${result.instanceId}`,
+              const inputSource: OutputReference = {
+                workId: sourceWorkId,
+                runId: old.id,
+                resultId: result.id,
+                port,
+                index,
+              };
+              for (const mid of value.materialIds) {
+                if (materialsMap.has(mid)) continue;
+                const material = old.materials.find((m) => m.id === mid);
+                if (!material)
+                  throw failure(
+                    'SOURCE_MATERIAL_MISSING',
+                    '失败输入的固定材料缺失。',
+                  );
+                materialsMap.set(mid, structuredClone(material));
+              }
+              inputs[port].push({
+                sampleId: value.sampleId,
                 value: structuredClone(value.value),
-                inputSource: {
-                  workId: sourceWorkId,
-                  runId: old.id,
-                  resultId: result.id,
-                  port,
-                  index,
-                },
-                materials: value.materialIds.map((id) => {
-                  const material = old.materials.find((m) => m.id === id);
-                  if (!material)
-                    throw failure(
-                      'SOURCE_MATERIAL_MISSING',
-                      '失败输入的固定材料缺失。',
-                    );
-                  return structuredClone(material);
-                }),
+                materialIds: [...value.materialIds],
+                sourceResultIds: [...value.sourceResultIds],
+                ...(value.source
+                  ? { source: structuredClone(value.source) }
+                  : {}),
+                inputSource,
               });
-              bindings[port].push({ kind: 'received', inputId });
+              inputSources.push(inputSource);
             }
+          }
         }
-        next.inputBindings = bindings;
-        // Resolve and validate the entire frozen input before saving a new current definition.
-        await prepareItemInputs(next, fragment, bindings, files, {
-          readItem: items.get,
+        const materials = [...materialsMap.values()];
+        // Save the retry fragment as an immutable definition without clobbering work.draftId.
+        const definitionId = await files.writeDefinition(workId, fragment);
+        await files.change(workId, (w) => {
+          if (!w.definitionIds.includes(definitionId))
+            w.definitionIds.push(definitionId);
         });
-        const draftId = await files.select(workId, (w) => w.draftId),
-          definitionId = await flow.saveDraft(workId, draftId, fragment);
-        const ref = await startPrepared(
-          next,
-          workId,
+        const runId = await runs.start(workId, {
           definitionId,
-          fragment,
-          bindings,
-          {
+          scope: 'full',
+          inputs,
+          materials,
+          inputSources,
+          workItem: { ...input, materials },
+          effectMode: 'commit',
+          retrySource: {
             workId: sourceWorkId,
             runId: old.id,
             definitionId: old.definitionId,
             resultIds: [...request.resultIds],
           },
-        );
-        current.receivedInputs = next.receivedInputs;
-        current.inputBindings = bindings;
-        return ref;
+        });
+        return { workId, runId, definitionId };
       },
       request.baseRevision,
     );

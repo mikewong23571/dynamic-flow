@@ -2,7 +2,11 @@ import { createWorkService } from '../work/index.ts';
 import { resolveItemInputs } from './run-inputs.ts';
 import { childStageInputs } from './stage-inputs.ts';
 import { structuredProgress } from '../../shared/progress-summary';
-import { effectiveItemStatus } from '../../shared/workitem-status';
+import {
+  effectiveItemStatus,
+  hasUnretriedFailures,
+  type RetryRunSummary,
+} from '../../shared/workitem-status';
 import {
   createChildrenService,
   included,
@@ -64,21 +68,30 @@ function texts(value: unknown, label: string): string[] {
 export function createWorkItems(dataRoot: string, files: FileStore) {
   const root = join(dataRoot, 'work-items');
   let savedVersion = 0;
-  let allCache: { version: string; value: Promise<WorkItem[]> } | undefined;
-  async function version() {
+  let allIndex: Map<string, WorkItem> | undefined;
+  let allDirSig = '';
+  let allLoading: Promise<Map<string, WorkItem>> | undefined;
+  async function dirSignature() {
     await mkdir(root, { recursive: true });
     const info = await stat(root);
-    return `${savedVersion}:${info.mtimeMs}:${info.ctimeMs}`;
+    return `${info.mtimeMs}:${info.ctimeMs}`;
   }
-  const pending = new Map<string, Promise<unknown>>();
+  async function version() {
+    return `${savedVersion}:${await dirSignature()}`;
+  }
+  const itemQueues = new Map<string, Promise<unknown>>();
+  let treeBarrier: Promise<unknown> = Promise.resolve();
   const reads = new Map<
     string,
     { version: string; value: Promise<WorkItem> }
   >();
+  async function fileSignature(path: string) {
+    const info = await stat(path);
+    return `${info.ino}:${info.size}:${info.mtimeMs}:${info.ctimeMs}`;
+  }
   async function load(id: string) {
     const path = join(root, `${id}.json`),
-      info = await stat(path);
-    const version = `${info.ino}:${info.size}:${info.mtimeMs}:${info.ctimeMs}`;
+      version = await fileSignature(path);
     let entry = reads.get(id);
     if (!entry || entry.version !== version) {
       entry = {
@@ -95,15 +108,26 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
     }
     return { version, item: await entry.value };
   }
+  /**
+   * Single-item writes serialize per itemId and run concurrently across distinct items.
+   * Cross-item tree operations (keys starting with '$') acquire an exclusive barrier.
+   */
   function serial<T>(key: string, operation: () => Promise<T>): Promise<T> {
-    key = '$mutations';
-    const next = (pending.get(key) ?? Promise.resolve())
-      .catch(() => {})
-      .then(operation);
-    pending.set(key, next);
+    if (key.startsWith('$')) {
+      const prevTree = treeBarrier;
+      // Snapshot only already-queued item operations before publishing the new barrier (strictly acyclic).
+      const inFlight = [...itemQueues.values()];
+      const next = Promise.allSettled([prevTree, ...inFlight]).then(operation);
+      treeBarrier = next.catch(() => {});
+      return next;
+    }
+    const prevTree = treeBarrier;
+    const prevItem = itemQueues.get(key) ?? Promise.resolve();
+    const next = Promise.allSettled([prevTree, prevItem]).then(operation);
+    itemQueues.set(key, next);
     void next
       .finally(() => {
-        if (pending.get(key) === next) pending.delete(key);
+        if (itemQueues.get(key) === next) itemQueues.delete(key);
       })
       .catch(() => {});
     return next;
@@ -115,33 +139,46 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
     await mkdir(root, { recursive: true });
     const destination = join(root, `${item.id}.json`),
       temp = `${destination}.${randomUUID()}.tmp`;
+    const snapshot = structuredClone(item);
     try {
-      await writeFile(temp, JSON.stringify(item, null, 2), { flag: 'wx' });
+      await writeFile(temp, JSON.stringify(snapshot, null, 2), { flag: 'wx' });
       await rename(temp, destination);
-      reads.delete(item.id);
+      const sig = await fileSignature(destination);
+      reads.set(item.id, { version: sig, value: Promise.resolve(snapshot) });
       savedVersion++;
-      allCache = undefined;
+      if (allIndex) {
+        allIndex.set(item.id, snapshot);
+        allDirSig = await dirSignature();
+      }
     } finally {
       await rm(temp, { force: true });
     }
   }
   async function all(): Promise<WorkItem[]> {
-    const current = await version();
-    if (!allCache || allCache.version !== current) {
-      const value = readdir(root).then((names) =>
-        Promise.all(
-          names
+    const currentDirSig = await dirSignature();
+    if (!allIndex || allDirSig !== currentDirSig) {
+      if (!allLoading) {
+        allLoading = (async () => {
+          const names = await readdir(root);
+          const ids = names
             .filter((name) => name.endsWith('.json'))
-            .map((name) => read(name.slice(0, -5))),
-        ),
-      );
-      const entry = { version: current, value };
-      allCache = entry;
-      void value.catch(() => {
-        if (allCache === entry) allCache = undefined;
-      });
+            .map((name) => name.slice(0, -5));
+          const loaded = await Promise.all(
+            ids.map(async (id) => [id, (await load(id)).item] as const),
+          );
+          const next = new Map<string, WorkItem>(loaded);
+          allIndex = next;
+          allDirSig = await dirSignature();
+          return next;
+        })();
+        void allLoading.finally(() => {
+          allLoading = undefined;
+        });
+      }
+      const map = await allLoading;
+      return structuredClone([...map.values()]);
     }
-    return structuredClone(await allCache.value);
+    return structuredClone([...allIndex.values()]);
   }
   function record(
     item: WorkItem,
@@ -192,10 +229,97 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
         };
       });
   }
+  function summarizeRun(run: Run): RetryRunSummary {
+    const failedResultIds = run.results
+      .filter((r) => r.status === 'failed')
+      .map((r) => r.id);
+    return {
+      id: run.id,
+      status: run.status,
+      retrySource: run.retrySource,
+      ...(failedResultIds.length ? { failedResultIds } : {}),
+    };
+  }
+  async function itemUnretriedFailures(
+    item: WorkItem,
+    current: Awaited<ReturnType<typeof execution>>,
+  ) {
+    if (
+      !current ||
+      current.run.status !== 'completed' ||
+      !current.run.retrySource
+    )
+      return false;
+    const { workId, runId } = current.run.retrySource;
+    const sourceWork =
+      workId === current.work.id ? current.work : await files.read(workId);
+    const sourceRun = sourceWork.runs.find((r) => r.id === runId);
+    if (!sourceRun) return false;
+    const relatedWorks = new Map([[current.work.id, current.work]]);
+    const related: RetryRunSummary[] = [];
+    for (const ref of item.runs) {
+      let work = relatedWorks.get(ref.workId);
+      if (!work) {
+        work = await files.read(ref.workId);
+        relatedWorks.set(ref.workId, work);
+      }
+      const run = work.runs.find((r) => r.id === ref.runId);
+      if (run) related.push(summarizeRun(run));
+    }
+    return hasUnretriedFailures(
+      summarizeRun(current.run),
+      summarizeRun(sourceRun),
+      related,
+    );
+  }
+  async function hasActiveChildren(parentId: string): Promise<boolean> {
+    const items = await all();
+    const byParent = new Map<string, WorkItem[]>();
+    for (const entry of items) {
+      if (!entry.parentId || !included(entry)) continue;
+      const list = byParent.get(entry.parentId) ?? [];
+      list.push(entry);
+      byParent.set(entry.parentId, list);
+    }
+    const queue = [...(byParent.get(parentId) ?? [])];
+    if (!queue.length) return false;
+    const active = new Set(['queued', 'running', 'stopping']);
+    const works = new Map<string, Map<string, Run['status']>>();
+    while (queue.length) {
+      const child = queue.shift()!;
+      if (child.status !== 'completed') {
+        const ref = child.runs.at(-1);
+        if (ref) {
+          let statuses = works.get(ref.workId);
+          if (!statuses) {
+            statuses = await files.select(
+              ref.workId,
+              (w) => new Map(w.runs.map((r) => [r.id, r.status] as const)),
+            );
+            works.set(ref.workId, statuses);
+          }
+          const runStatus = statuses.get(ref.runId);
+          if (runStatus && active.has(runStatus)) return true;
+        }
+      }
+      const nested = byParent.get(child.id);
+      if (nested) queue.push(...nested);
+    }
+    return false;
+  }
   async function view(item: WorkItem): Promise<WorkItemView> {
     const current = await execution(item);
     const status = current?.run.status;
-    const effectiveStatus = effectiveItemStatus(item, status);
+    const activeChildren =
+      item.status !== 'completed' &&
+      !(status && ['queued', 'running', 'stopping', 'waiting'].includes(status))
+        ? await hasActiveChildren(item.id)
+        : false;
+    const unretriedFailures = await itemUnretriedFailures(item, current);
+    const effectiveStatus = effectiveItemStatus(item, status, {
+      activeChildren,
+      unretriedFailures,
+    });
     return {
       ...item,
       effectiveStatus,
@@ -238,8 +362,9 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
     id: string,
     edit: (item: WorkItem) => void | Promise<void>,
     expectedRevision?: number,
+    lockKey = id,
   ): Promise<WorkItemView> {
-    return serial(id, async () => {
+    return serial(lockKey, async () => {
       const item = await read(id);
       if (expectedRevision !== undefined && item.revision !== expectedRevision)
         throw Object.assign(Error('工作项版本已变化，请读取最新状态后重试。'), {
@@ -323,7 +448,7 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
         evidence: '',
       })),
       status: 'open',
-      stage: '待处理',
+      stage: '',
       summary: '',
       runs: [],
       history: [],
@@ -351,7 +476,10 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
         ? [
             item.workId,
             ...item.runs.map((r) => r.workId),
-            ...item.deliveries.map((d) => d.workId),
+            ...item.deliveries.flatMap((d) => [
+              d.workId,
+              ...(d.composedSources?.map((s) => s.workId) ?? []),
+            ]),
           ]
         : [item.runs.at(-1)?.workId];
       const dependencies = await Promise.all(
@@ -733,6 +861,7 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
           });
         },
         expectedRevision,
+        '$tree',
       );
     },
     reopen(
@@ -756,6 +885,7 @@ export function createWorkItems(dataRoot: string, files: FileStore) {
           record(item, 'reopened', text);
         },
         expectedRevision,
+        '$tree',
       );
     },
     context: async (id: string) => {

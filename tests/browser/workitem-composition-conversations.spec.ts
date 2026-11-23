@@ -40,16 +40,16 @@ test.beforeEach(async () => {
         )) as any;
         return JSON.parse(r.content[0].text);
       };
-      const ws = await call('inspect_work_item', {});
+      const ws = await call('inspect_workspace', {});
       sessions.push({
         dir: input.sessionDir,
         instruction: prompt.instruction,
         views: ws.uiProgram ? 1 : 0,
       });
       if (prompt.instruction.includes('完善并保存可操作业务界面')) {
-        await call('save_ui_program', {
+        await call('apply_workspace_plan', {
           baseRevision: ws.item.revision,
-          source: scenario.source,
+          uiSource: scenario.source,
         });
         return '已按当前处理方法保存业务界面，未运行。';
       }

@@ -19,3 +19,6 @@ models.toml
 # Interactive previews and recovery snapshots are persistent local data.
 .flowcraft-preview-data/
 .flowcraft-preview-recovery/
+
+# Local CVE regression sample batches (never commit to public repo).
+.cve-regression-samples/
