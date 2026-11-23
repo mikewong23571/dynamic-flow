@@ -1,0 +1,47 @@
+
+Running 1 test using 1 worker
+
+(node:1721370) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/browser/openui-sections.spec.ts:49:3 › explicit business sections keep mixed content, nested headings and real actions 1440 (16.2s)
+
+
+  1) tests/browser/openui-sections.spec.ts:49:3 › explicit business sections keep mixed content, nested headings and real actions 1440
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('[data-openui-renderer="official"]').getByRole('region', { name: '处理事项', exact: true })
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('[data-openui-renderer="official"]').getByRole('region', { name: '处理事项', exact: true }) with timeout 15000ms
+      - waiting for locator('[data-openui-renderer="official"]').getByRole('region', { name: '处理事项', exact: true })
+
+
+      84 |       exact: true,
+      85 |     });
+    > 86 |     await expect(handling).toBeVisible();
+         |                            ^
+      87 |     await expect(
+      88 |       handling.getByRole('heading', {
+      89 |         name: '处理事项',
+        at /home/mike/projs/fork/dynamic-flow-style-governance/tests/browser/openui-sections.spec.ts:86:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../../tmp/openui-sections-red/openui-sections-explicit-b-f65b4-dings-and-real-actions-1440/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../../tmp/openui-sections-red/openui-sections-explicit-b-f65b4-dings-and-real-actions-1440/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../../tmp/openui-sections-red/openui-sections-explicit-b-f65b4-dings-and-real-actions-1440/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../../../../../tmp/openui-sections-red/openui-sections-explicit-b-f65b4-dings-and-real-actions-1440/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/browser/openui-sections.spec.ts:49:3 › explicit business sections keep mixed content, nested headings and real actions 1440

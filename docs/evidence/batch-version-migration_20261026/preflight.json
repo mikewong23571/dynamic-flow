@@ -1,0 +1,205 @@
+{
+  "definitionId": "1e8401d7-4f84-4c8a-b8e1-d9ee5688a750",
+  "entries": [
+    {
+      "cve": "CVE-2021-44228",
+      "itemId": "576c12b8-6510-454f-934f-0ccefab75af0",
+      "originalRunId": "b2570732-fe96-46e3-94d8-f12ea6013d54",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2024-47875",
+      "itemId": "8a69c78f-b198-417b-aa53-889da78291ee",
+      "originalRunId": "28a47e14-28c8-4df0-b086-6d790cbdb24a",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2022-23305",
+      "itemId": "c8c2d156-d146-4099-b192-b86e74aa0973",
+      "originalRunId": "e9697fbb-51e7-481f-83dd-c941cc798123",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2023-24162",
+      "itemId": "2f578a2a-afb6-4a92-b8e5-ca9aa7c8525b",
+      "originalRunId": "de139706-2dcb-4e10-bc6d-ce0514c19b5a",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2019-17571",
+      "itemId": "0129cb60-2744-4277-9879-a6206ad4d4d8",
+      "originalRunId": "54b942e1-f0cb-4f4b-b5e0-6a9b3d882268",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2013-7459",
+      "itemId": "2ce4f936-5504-4faf-993e-8a85816856e7",
+      "originalRunId": "333404a7-880a-4d55-bd96-efb1d00554a9",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "failed",
+      "targets": 23,
+      "preserved": 23,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2022-22817",
+      "itemId": "6a2bd065-15a1-4737-9149-e8dcccdb74f8",
+      "originalRunId": "a31d3d7b-abbd-4a5b-80fe-0a7c0515e7ad",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "failed",
+      "targets": 31,
+      "preserved": 31,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2023-24163",
+      "itemId": "89da96a9-1092-4689-812c-ca150856ccc0",
+      "originalRunId": "930d4482-fc12-4806-b9f9-30e30c2d7a04",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2020-5311",
+      "itemId": "312fed5c-0835-472c-a64f-de0b0f917714",
+      "originalRunId": "fe006361-5b63-4f31-b076-ab7e500fa5e6",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "failed",
+      "targets": 31,
+      "preserved": 31,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2023-42276",
+      "itemId": "61169096-d141-42d0-9152-816dde9284fc",
+      "originalRunId": "b73e5a91-62ef-4d8d-9318-5824bc3efbc1",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2021-25289",
+      "itemId": "7d9b6bab-f039-4120-a8e0-8fada069046d",
+      "originalRunId": "84f3bc0c-ce35-4442-8b3d-7c7ab4673b04",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "running",
+      "targets": 31,
+      "preserved": 20,
+      "remaining": 11
+    },
+    {
+      "cve": "CVE-2021-34552",
+      "itemId": "4e11c8eb-b2d5-42da-9685-0ed40191c552",
+      "originalRunId": "0fe6d00b-6a15-4e2b-98cc-b7fbb50d8e12",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "running",
+      "targets": 31,
+      "preserved": 11,
+      "remaining": 20
+    },
+    {
+      "cve": "CVE-2020-5312",
+      "itemId": "3588a1de-0e78-4288-b8ba-3105e69b1c53",
+      "originalRunId": "a3651ce7-3d99-4dc3-b38c-24adc71b3bc1",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "running",
+      "targets": 31,
+      "preserved": 3,
+      "remaining": 28
+    },
+    {
+      "cve": "CVE-2023-42277",
+      "itemId": "708d3775-4733-4754-b33e-785fdb83a66f",
+      "originalRunId": "1336277f-f691-4d10-a0db-44ed94213f1e",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2020-9493",
+      "itemId": "7a691ced-428d-4680-9542-dbe14737b145",
+      "originalRunId": "8e11ab87-ab45-43c7-9a18-b68f529ee94d",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2020-14343",
+      "itemId": "5e9384d6-b917-458c-a881-575c5395c361",
+      "originalRunId": "6b02e295-785a-48ef-adb1-e6da2f02a233",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 7,
+      "preserved": 7,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2020-1747",
+      "itemId": "38ad9d55-a103-4d5c-813a-351f777b3696",
+      "originalRunId": "da7ff561-60fc-4510-b1e5-2292166c194f",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 7,
+      "preserved": 7,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2017-18342",
+      "itemId": "bc1963f9-a846-43e8-a4c2-7f533e1c69f8",
+      "originalRunId": "95643a20-4873-4361-9a27-c6db2154f621",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 7,
+      "preserved": 7,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2022-37601",
+      "itemId": "6bf2e12b-f99c-4493-ad71-70278ea673f1",
+      "originalRunId": "e5f31c52-3a4b-413f-8d2d-51fe12c36722",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 2,
+      "preserved": 2,
+      "remaining": 0
+    },
+    {
+      "cve": "CVE-2024-52316",
+      "itemId": "fdd9fb68-fabb-456d-b07b-a1b89942f8df",
+      "originalRunId": "7f4f42d5-6665-4928-9c18-a5285398df7f",
+      "definitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+      "status": "completed",
+      "targets": 1,
+      "preserved": 1,
+      "remaining": 0
+    }
+  ]
+}

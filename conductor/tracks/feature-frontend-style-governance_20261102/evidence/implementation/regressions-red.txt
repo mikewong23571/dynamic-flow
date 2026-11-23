@@ -1,0 +1,117 @@
+
+Running 3 tests using 1 worker
+
+(node:1683262) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/browser/style-governance.spec.ts:122:2 › style contracts and controlled task focus 1440 (15.9s)
+(node:1683413) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/browser/style-governance.spec.ts:122:2 › style contracts and controlled task focus 1024 (15.7s)
+(node:1683534) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 tests/browser/style-governance.spec.ts:146:1 › resizing preserves action reachability and user panel preference (15.9s)
+
+
+  1) tests/browser/style-governance.spec.ts:122:2 › style contracts and controlled task focus 1440 ─
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "0px"
+    Received: "19px"
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      126 |   const ui=page.locator('[data-openui-renderer="official"]');await expect(ui).toBeVisible();
+      127 |   const field=ui.locator('.form-field,.field').filter({has:page.getByRole('textbox',{name:'适用范围',exact:true})});
+    > 128 |   await expect.poll(()=>field.evaluate(el=>getComputedStyle(el).marginBottom)).toBe('0px');
+          |                                                                                ^
+      129 |   const text=ui.getByRole('textbox',{name:'适用范围',exact:true});const select=ui.getByRole('combobox',{name:'渠道',exact:true});
+      130 |   await expect.poll(async()=>Math.abs((await text.boundingBox())!.height-(await select.boundingBox())!.height)).toBeLessThan(1);
+      131 |   await expect.poll(async()=>Math.abs((await text.boundingBox())!.width-(await select.boundingBox())!.width)).toBeLessThan(2);
+        at /home/mike/projs/fork/dynamic-flow-style-governance/tests/browser/style-governance.spec.ts:128:80
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../../tmp/style-governance-red/style-governance-style-con-10591--controlled-task-focus-1440/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../../tmp/style-governance-red/style-governance-style-con-10591--controlled-task-focus-1440/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../../tmp/style-governance-red/style-governance-style-con-10591--controlled-task-focus-1440/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../../../../../tmp/style-governance-red/style-governance-style-con-10591--controlled-task-focus-1440/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/browser/style-governance.spec.ts:122:2 › style contracts and controlled task focus 1024 ─
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "0px"
+    Received: "19px"
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      126 |   const ui=page.locator('[data-openui-renderer="official"]');await expect(ui).toBeVisible();
+      127 |   const field=ui.locator('.form-field,.field').filter({has:page.getByRole('textbox',{name:'适用范围',exact:true})});
+    > 128 |   await expect.poll(()=>field.evaluate(el=>getComputedStyle(el).marginBottom)).toBe('0px');
+          |                                                                                ^
+      129 |   const text=ui.getByRole('textbox',{name:'适用范围',exact:true});const select=ui.getByRole('combobox',{name:'渠道',exact:true});
+      130 |   await expect.poll(async()=>Math.abs((await text.boundingBox())!.height-(await select.boundingBox())!.height)).toBeLessThan(1);
+      131 |   await expect.poll(async()=>Math.abs((await text.boundingBox())!.width-(await select.boundingBox())!.width)).toBeLessThan(2);
+        at /home/mike/projs/fork/dynamic-flow-style-governance/tests/browser/style-governance.spec.ts:128:80
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../../tmp/style-governance-red/style-governance-style-con-32efd--controlled-task-focus-1024/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../../tmp/style-governance-red/style-governance-style-con-32efd--controlled-task-focus-1024/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../../tmp/style-governance-red/style-governance-style-con-32efd--controlled-task-focus-1024/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../../../../../tmp/style-governance-red/style-governance-style-con-32efd--controlled-task-focus-1024/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) tests/browser/style-governance.spec.ts:146:1 › resizing preserves action reachability and user panel preference 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 15000ms exceeded while waiting on the predicate
+
+      149 |  const save=page.locator('[data-openui-renderer="official"]').getByRole('button',{name:'保存输入',exact:true});
+      150 |  const hit=()=>save.evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));});
+    > 151 |  await expect.poll(hit).toBe(true);await page.setViewportSize({width:1024,height:768});await save.scrollIntoViewIfNeeded();await expect.poll(hit).toBe(true);
+          |                                                                                                                                                   ^
+      152 |  await page.setViewportSize({width:1440,height:900});await expect.poll(hit).toBe(true);
+      153 |  await expect(page.locator('.context-panel[data-mode="side"]')).toBeVisible();
+      154 | });
+        at /home/mike/projs/fork/dynamic-flow-style-governance/tests/browser/style-governance.spec.ts:151:147
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../../tmp/style-governance-red/style-governance-resizing--e8fdd-y-and-user-panel-preference/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../../tmp/style-governance-red/style-governance-resizing--e8fdd-y-and-user-panel-preference/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../../tmp/style-governance-red/style-governance-resizing--e8fdd-y-and-user-panel-preference/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace ../../../../../tmp/style-governance-red/style-governance-resizing--e8fdd-y-and-user-panel-preference/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    tests/browser/style-governance.spec.ts:122:2 › style contracts and controlled task focus 1440 ──
+    tests/browser/style-governance.spec.ts:122:2 › style contracts and controlled task focus 1024 ──
+    tests/browser/style-governance.spec.ts:146:1 › resizing preserves action reachability and user panel preference 

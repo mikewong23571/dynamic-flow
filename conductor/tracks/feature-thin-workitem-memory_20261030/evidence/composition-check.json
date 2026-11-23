@@ -1,0 +1,22 @@
+{
+  "itemId": "102b1480-da04-4465-821e-515d993d4dca",
+  "definitionId": "1bce78f0-050c-440d-88b3-1434886bf8c9",
+  "runId": "6165f178-5e8f-4464-9929-8159c524837c",
+  "nodeCount": 5,
+  "equal": {
+    "check_gaps": 1,
+    "progress": 4,
+    "research_groups": 480,
+    "research_records": 480,
+    "scope_batches": 2,
+    "scope_records": 1084,
+    "verification_checks": 0
+  },
+  "nestedCalls": [
+    "prepare",
+    "choose",
+    "deliver"
+  ],
+  "agentCalls": 0,
+  "seconds": 497.336
+}

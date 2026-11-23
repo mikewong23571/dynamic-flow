@@ -1,0 +1,89 @@
+{
+  "changes": [
+    {
+      "path": "src/server/AGENTS.md",
+      "before": "642fb8c8569ab34da2913afe0bcf7ef583660adcc64e24f793e081db0b190fbe",
+      "after": "dbf0ecbd02c3160f22833169efd7aeb106bc31afa7fdffe28f1e8ba797614743"
+    },
+    {
+      "path": "src/server/assistant/AGENTS.md",
+      "before": "4bd710992bc5df7a704ac413ab62254916ae9f5371501e4eca2f06b1faf652dd",
+      "after": "fb4ac470a44c9b7277ee7cfb24732841746d313eceb18f43de0bd48a95ddf177"
+    },
+    {
+      "path": "src/server/assistant/workitem.ts",
+      "before": "7409668a782d860fb3a85cd2880e362f68de06497e5f32d06f38547f39841166",
+      "after": "39dd0ed86928a00868d32f11bab69f4d7a43e96175c3c446a0357d4e967e41dc"
+    },
+    {
+      "path": "src/server/index.ts",
+      "before": "4fa08f5b1ff7a1d66d637df91bbd66a9a151efe65a914790199e604cc2b4871d",
+      "after": "57a27f281e8c2d13dd63b4054e0a7943c06c4b731adf3208b583cdc1b3322284"
+    },
+    {
+      "path": "src/server/runs/AGENTS.md",
+      "before": "9445a6ff3dac95e3ae87577f0ab662207d448fe411d5aed9022e6b7a72d95d3d",
+      "after": "a2ab44e67dd084c71a46c3e9db8cbd73ba666f9b866ec123c967efc619ca752b"
+    },
+    {
+      "path": "src/server/runs/index.ts",
+      "before": "b592fc4dcc19a85ef9635bdcc8bae7f84849134afdbd4093f6bd0a8753db0972",
+      "after": "3fe9d612293955866140fb2ccab1a58d2247100a9cbfa345bd69029487c6036c"
+    },
+    {
+      "path": "src/server/runs/invocation.ts",
+      "before": null,
+      "after": "eaa7d52e944975078c27ec9e23b7fc4f770b20eaa16698d37e9ff26d51958a01"
+    },
+    {
+      "path": "src/server/work-items/AGENTS.md",
+      "before": "5a9ebf70aa05d95e22a10dcc6cf09ab1ddf43b16dd813760e9e86c59d82c07d3",
+      "after": "bad9e3a7c47facdfa479f8c19cac3670b703ac85ecaa28c9f21c6056f99dc68f"
+    },
+    {
+      "path": "src/server/work-items/composition-ui.ts",
+      "before": "34982cca51a395bbcc4690f29925af6138c42b62f54c609b58d0c936d0a64e41",
+      "after": "da8d0ab3fcf6fd3089f989a3e0f0066fb1a0e66de8e9ff9e2e3a9473ee4216a9"
+    },
+    {
+      "path": "src/server/work-items/composition.ts",
+      "before": "6c62b03822fe6d27f30fa3ab1283a50eef28a16d326751f673010896b911a2fd",
+      "after": "1fc96bee27d65d972b18d2fb351e714ff52d81fa62d590510d3358b177ea3cc1"
+    },
+    {
+      "path": "src/server/work-items/run-inputs.ts",
+      "before": "b390e4d029d8cb8a5e2933933cec950e3883bd249a74b5e88666d6a029c8d0c6",
+      "after": "0da47b5e56738c4f3d92a87380622d8590b2f760e1f511c33997f3b0b71f7645"
+    },
+    {
+      "path": "src/server/work-items/workspace-check.ts",
+      "before": null,
+      "after": "363d3674720623494ab08775a85064fce81fa2f5b4f1faa5226f5fcec4db3cba"
+    },
+    {
+      "path": "src/shared/AGENTS.md",
+      "before": "11471be2fc761bda66dee8f88e5b1c83320e1a8664c4f4b4cd95e2322fe836d3",
+      "after": "6642e1eea650be00687dc816ded4bed9074abb3065a14d51c573e7e9bf70a94f"
+    },
+    {
+      "path": "src/shared/workitem-composition.ts",
+      "before": "beb948dc07b538fae9fe1be6d844193229469ea1c25ba891f89e58260585c7d7",
+      "after": "d7642a0dae29c6e2e8ba47468fd358712010d0a73a79e2dd437249722107aab1"
+    },
+    {
+      "path": "tests/AGENTS.md",
+      "before": "a778c128389903356cc0d39e30c5604f826a2d5335a4653032937afcdfb19ef1",
+      "after": "8dd4c16e1e621e9560ad2a251a7538dce9487a4d56c90ad0fe5be4264506b7bb"
+    },
+    {
+      "path": "tests/workspace-check.test.ts",
+      "before": null,
+      "after": "26ae9215864ebad3fb868f99ac8c3a6a500f46360d3fd92d4ccd4f7597d46e5b"
+    },
+    {
+      "path": "docs/workitem-ui-authoring.md",
+      "before": "96b52382a00f3f179cd5c7fb10d568dd942634f45ed3840cfb2a7e9caf72f90c",
+      "after": "41e9639b3334186ae9c4690264ab7b4e87c26ccff673b82a4bf8c87fe53fd5ce"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "workId": "060944d9-3509-404f-aecd-32ae4c89247a",
+  "oldDefinitionId": "d593dfc8-9073-49a0-9138-27ee13a60e1a",
+  "definitionId": "1e8401d7-4f84-4c8a-b8e1-d9ee5688a750",
+  "itemId": "2ce4f936-5504-4faf-993e-8a85816856e7",
+  "oldRunId": "333404a7-880a-4d55-bd96-efb1d00554a9",
+  "recoveryRunId": "1aab5613-f329-4f8b-a099-53f769d87ab9",
+  "status": "completed",
+  "scope": {
+    "nodeId": "report"
+  },
+  "sourceResults": 23,
+  "summaryItems": 23,
+  "newModelCalls": 0,
+  "businessStatus": "open",
+  "oldRunUnchanged": true
+}

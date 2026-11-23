@@ -1,0 +1,4 @@
+first {'value': 'initial', '__interrupt__': [Interrupt(value='provide value', id='297073f1996417b33b50c8fd7dfc5beb', response_schema=None)]}
+{"parent_prefix": 1, "completed_child": 1, "interrupt_prefix": 1}
+second {'value': 'resumed-in-new-process'}
+{"parent_prefix": 2, "completed_child": 1, "interrupt_prefix": 2}

@@ -1,0 +1,33 @@
+
+Running 22 tests using 1 worker
+
+(node:1707809) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/style-governance.spec.ts:127:3 › style contracts and controlled task focus 1440 (2.6s)
+  ✓   2 tests/browser/style-governance.spec.ts:127:3 › style contracts and controlled task focus 1024 (2.1s)
+  ✓   3 tests/browser/style-governance.spec.ts:204:1 › resizing preserves action reachability and user panel preference (1.4s)
+  ✓   4 tests/browser/style-governance.spec.ts:232:3 › task success and missing trigger return focus 1440 (2.4s)
+  ✓   5 tests/browser/style-governance.spec.ts:232:3 › task success and missing trigger return focus 1024 (2.3s)
+  ✓   6 tests/browser/style-governance.spec.ts:274:1 › saved panel width and manual method panel remain reachable on resize (2.7s)
+(node:1707999) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1708010) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 tests/browser/style-governance.spec.ts:315:1 › public control state matrix and explicit compact sizing (1.6s)
+  ✓   8 tests/browser/style-governance.spec.ts:381:1 › home long request remains readable and retains local input (936ms)
+  ✓   9 tests/browser/style-governance.spec.ts:401:3 › dedicated material reader keeps width and returns to source 1440 (1.5s)
+  ✓  10 tests/browser/style-governance.spec.ts:401:3 › dedicated material reader keeps width and returns to source 1024 (1.4s)
+  ✓  11 tests/browser/style-governance.spec.ts:421:1 › retained material task portals follow tab and page visibility (3.1s)
+  ✓  12 tests/browser/style-governance.spec.ts:473:3 › settings provider fields and cancellation remain usable 1440 (1.5s)
+  ✓  13 tests/browser/style-governance.spec.ts:473:3 › settings provider fields and cancellation remain usable 1024 (1.5s)
+  ✓  14 tests/browser/style-governance.spec.ts:517:1 › closing a busy task uses the task anchor instead of a disabled trigger (1.4s)
+  ✓  15 tests/browser/workitem-composition-method-references.spec.ts:98:3 › slash补全、固定版本引用、预览、会话草稿和发送 1440 (3.7s)
+  ✓  16 tests/browser/workitem-composition-method-references.spec.ts:98:3 › slash补全、固定版本引用、预览、会话草稿和发送 1024 (3.6s)
+  ✓  17 tests/browser/workitem-composition-navigation.spec.ts:71:1 › 首次工作区读取失败后自动恢复，详情不额外拉取整份工作项 (5.0s)
+  ✓  18 tests/browser/workitem-composition-navigation.spec.ts:97:1 › 工作项不订阅隐藏流水线，未变刷新无正文，实际消息保存仍刷新 (3.7s)
+  ✓  19 tests/browser/workitem-composition-navigation.spec.ts:204:3 › 浏览器导航：三入口、后退前进、刷新与来源 1440 (3.7s)
+  ✓  20 tests/browser/workitem-composition-navigation.spec.ts:204:3 › 浏览器导航：三入口、后退前进、刷新与来源 1024 (3.4s)
+  ✓  21 tests/browser/workitem-composition-navigation.spec.ts:308:1 › 直接打开详情恢复位置，第一次后退正常离开；失效工作项可返回 (2.3s)
+  ✓  22 tests/browser/workitem-composition-navigation.spec.ts:333:1 › 固定执行地址刷新后仍读取指定旧运行，前进后退不启动新运行 (1.5s)
+
+  22 passed (59.0s)

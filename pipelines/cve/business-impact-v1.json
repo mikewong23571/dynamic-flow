@@ -1,0 +1,4882 @@
+{
+  "title": "业务影响分析",
+  "goal": "使用明确选定的漏洞材料及业务证据，逐系统核实版本、调用路径和部署条件，输出整体影响、分项依据、未覆盖范围及下一步。",
+  "definition": {
+    "schemaVersion": 1,
+    "problem": {
+      "framing": "核查选定业务系统是否满足漏洞的触发条件，形成可追溯的分项结论。",
+      "known": "输入包含已收集的漏洞事实、材料来源及业务系统线索。",
+      "unknown": "业务系统所用版本、相关调用路径与运行条件。",
+      "constraints": "核查范围由本次业务输入确定。",
+      "evidence": "选定的漏洞材料、业务材料及本轮实际取得的源码和部署证据。"
+    },
+    "inputs": [
+      "input"
+    ],
+    "inputContracts": {
+      "input": {
+        "item": {
+          "type": "string"
+        },
+        "required": true,
+        "onInvalid": "reject"
+      }
+    },
+    "nodes": [
+      {
+        "id": "scope",
+        "label": "固定材料与业务范围",
+        "kind": "agent",
+        "operation": "aggregate",
+        "concurrency": 1,
+        "contract": {
+          "responsibility": "固定本轮材料来源、业务范围与候选系统。",
+          "done": "每个候选有具体线索；遗漏范围和材料问题被显式保留。",
+          "rationale": "先界定要调查什么，再按真实候选系统逐项核查。"
+        },
+        "task": "你负责准备业务影响核查。输入包含上游漏洞材料、材料来源和本次业务范围。\n整理漏洞编号、受影响版本、触发条件及材料来源；按业务范围列出待核查系统，为每个系统保留已有仓库、版本、环境和依赖线索。历史扫描记录保留扫描时间与来源。\n将漏洞事实和触发条件整理到 materials_facts、trigger_conditions；source_documents 保留支持这些事实的原文片段及来源。缺少的材料和未覆盖范围分别记入 missing_evidence_reasons、uncovered_scope。未知的仓库、版本或环境用 null。\n输出符合 expectedOutput 的核查上下文。",
+        "inputSchema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "materials_ref": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "systems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "repository": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "revision": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "environment": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "clues": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "repository",
+                  "revision",
+                  "environment",
+                  "clues"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "uncovered_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "materials_facts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "trigger_conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "condition": {
+                    "type": "string"
+                  },
+                  "known": {
+                    "type": "boolean"
+                  },
+                  "basis": {
+                    "type": "string"
+                  },
+                  "source_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "condition",
+                  "known",
+                  "basis",
+                  "source_urls"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "cve_id",
+            "materials_ref",
+            "business_scope",
+            "systems",
+            "uncovered_scope",
+            "materials_facts",
+            "trigger_conditions",
+            "source_documents",
+            "missing_evidence_reasons"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "route",
+        "label": "检查候选系统",
+        "kind": "function",
+        "operation": "map",
+        "functionName": "expression",
+        "expression": {
+          "kind": "object",
+          "fields": {
+            "context": {
+              "kind": "variable",
+              "name": "input"
+            },
+            "has_systems": {
+              "kind": "call",
+              "function": "greaterThan",
+              "args": [
+                {
+                  "kind": "call",
+                  "function": "length",
+                  "args": [
+                    {
+                      "kind": "variable",
+                      "name": "input",
+                      "path": [
+                        "systems"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "literal",
+                  "value": 0
+                }
+              ]
+            }
+          }
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "materials_ref": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "systems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "repository": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "revision": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "environment": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "clues": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "repository",
+                  "revision",
+                  "environment",
+                  "clues"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "uncovered_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "materials_facts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "trigger_conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "condition": {
+                    "type": "string"
+                  },
+                  "known": {
+                    "type": "boolean"
+                  },
+                  "basis": {
+                    "type": "string"
+                  },
+                  "source_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "condition",
+                  "known",
+                  "basis",
+                  "source_urls"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "cve_id",
+            "materials_ref",
+            "business_scope",
+            "systems",
+            "uncovered_scope",
+            "materials_facts",
+            "trigger_conditions",
+            "source_documents",
+            "missing_evidence_reasons"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "context": {
+              "type": "object",
+              "properties": {
+                "cve_id": {
+                  "type": "string"
+                },
+                "materials_ref": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "business_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "systems": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "repository": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "revision": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "environment": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clues": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "repository",
+                      "revision",
+                      "environment",
+                      "clues"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "uncovered_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "materials_facts": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "trigger_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "condition": {
+                        "type": "string"
+                      },
+                      "known": {
+                        "type": "boolean"
+                      },
+                      "basis": {
+                        "type": "string"
+                      },
+                      "source_urls": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "condition",
+                      "known",
+                      "basis",
+                      "source_urls"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "source_documents": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "retrieved_at": {
+                        "type": "string"
+                      },
+                      "retrieval_method": {
+                        "type": "string"
+                      },
+                      "truncated": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "url",
+                      "title",
+                      "content",
+                      "retrieved_at",
+                      "retrieval_method",
+                      "truncated"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "missing_evidence_reasons": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "cve_id",
+                "materials_ref",
+                "business_scope",
+                "systems",
+                "uncovered_scope",
+                "materials_facts",
+                "trigger_conditions",
+                "source_documents",
+                "missing_evidence_reasons"
+              ],
+              "additionalProperties": false
+            },
+            "has_systems": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "context",
+            "has_systems"
+          ],
+          "additionalProperties": false
+        },
+        "contract": {
+          "responsibility": "机械检查候选数组是否非空。",
+          "done": "保留完整上下文并计算 has_systems。",
+          "rationale": "空候选走缺口结果，避免零项被当成业务不受影响。"
+        }
+      },
+      {
+        "id": "branch",
+        "label": "有候选系统？",
+        "kind": "branch",
+        "operation": "aggregate",
+        "condition": {
+          "field": "has_systems",
+          "operator": "equals",
+          "value": true
+        },
+        "contract": {
+          "responsibility": "将有候选和待发现范围分开。",
+          "done": "每项只进入一个分支，未命中端口保持空数组。",
+          "rationale": "后续两路均使用逐项算子，空路不调用模型或提交里程碑。"
+        },
+        "inputSchema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "object",
+                "properties": {
+                  "cve_id": {
+                    "type": "string"
+                  },
+                  "materials_ref": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "business_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "systems": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "repository": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "revision": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "environment": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clues": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "repository",
+                        "revision",
+                        "environment",
+                        "clues"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "materials_facts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "trigger_conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "condition": {
+                          "type": "string"
+                        },
+                        "known": {
+                          "type": "boolean"
+                        },
+                        "basis": {
+                          "type": "string"
+                        },
+                        "source_urls": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "condition",
+                        "known",
+                        "basis",
+                        "source_urls"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "cve_id",
+                  "materials_ref",
+                  "business_scope",
+                  "systems",
+                  "uncovered_scope",
+                  "materials_facts",
+                  "trigger_conditions",
+                  "source_documents",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              },
+              "has_systems": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "context",
+              "has_systems"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "expectedOutput": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "object",
+                "properties": {
+                  "cve_id": {
+                    "type": "string"
+                  },
+                  "materials_ref": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "business_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "systems": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "repository": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "revision": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "environment": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clues": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "repository",
+                        "revision",
+                        "environment",
+                        "clues"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "materials_facts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "trigger_conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "condition": {
+                          "type": "string"
+                        },
+                        "known": {
+                          "type": "boolean"
+                        },
+                        "basis": {
+                          "type": "string"
+                        },
+                        "source_urls": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "condition",
+                        "known",
+                        "basis",
+                        "source_urls"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "cve_id",
+                  "materials_ref",
+                  "business_scope",
+                  "systems",
+                  "uncovered_scope",
+                  "materials_facts",
+                  "trigger_conditions",
+                  "source_documents",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              },
+              "has_systems": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "context",
+              "has_systems"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      {
+        "id": "expand",
+        "label": "展开待核查系统",
+        "kind": "function",
+        "operation": "flatMap",
+        "functionName": "expression",
+        "expression": {
+          "kind": "map",
+          "input": {
+            "kind": "variable",
+            "name": "input",
+            "path": [
+              "context",
+              "systems"
+            ]
+          },
+          "binding": {
+            "kind": "bind",
+            "name": "system"
+          },
+          "body": {
+            "kind": "object",
+            "fields": {
+              "context": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "context"
+                ]
+              },
+              "system": {
+                "kind": "variable",
+                "name": "system"
+              }
+            }
+          }
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "context": {
+              "type": "object",
+              "properties": {
+                "cve_id": {
+                  "type": "string"
+                },
+                "materials_ref": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "business_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "systems": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "repository": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "revision": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "environment": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clues": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "repository",
+                      "revision",
+                      "environment",
+                      "clues"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "uncovered_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "materials_facts": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "trigger_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "condition": {
+                        "type": "string"
+                      },
+                      "known": {
+                        "type": "boolean"
+                      },
+                      "basis": {
+                        "type": "string"
+                      },
+                      "source_urls": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "condition",
+                      "known",
+                      "basis",
+                      "source_urls"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "source_documents": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "retrieved_at": {
+                        "type": "string"
+                      },
+                      "retrieval_method": {
+                        "type": "string"
+                      },
+                      "truncated": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "url",
+                      "title",
+                      "content",
+                      "retrieved_at",
+                      "retrieval_method",
+                      "truncated"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "missing_evidence_reasons": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "cve_id",
+                "materials_ref",
+                "business_scope",
+                "systems",
+                "uncovered_scope",
+                "materials_facts",
+                "trigger_conditions",
+                "source_documents",
+                "missing_evidence_reasons"
+              ],
+              "additionalProperties": false
+            },
+            "has_systems": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "context",
+            "has_systems"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "object",
+                "properties": {
+                  "cve_id": {
+                    "type": "string"
+                  },
+                  "materials_ref": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "business_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "systems": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "repository": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "revision": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "environment": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clues": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "repository",
+                        "revision",
+                        "environment",
+                        "clues"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "materials_facts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "trigger_conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "condition": {
+                          "type": "string"
+                        },
+                        "known": {
+                          "type": "boolean"
+                        },
+                        "basis": {
+                          "type": "string"
+                        },
+                        "source_urls": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "condition",
+                        "known",
+                        "basis",
+                        "source_urls"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "cve_id",
+                  "materials_ref",
+                  "business_scope",
+                  "systems",
+                  "uncovered_scope",
+                  "materials_facts",
+                  "trigger_conditions",
+                  "source_documents",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              },
+              "system": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "repository": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "revision": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "environment": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "clues": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "repository",
+                  "revision",
+                  "environment",
+                  "clues"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "context",
+              "system"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "contract": {
+          "responsibility": "每个候选系统携带同一份固定漏洞材料。",
+          "done": "返回一项一系统的核查输入。",
+          "rationale": "只展开非空候选；每个系统可独立查看与重试。"
+        }
+      },
+      {
+        "id": "verify",
+        "label": "逐系统核实影响",
+        "kind": "agent",
+        "operation": "map",
+        "concurrency": 1,
+        "contract": {
+          "responsibility": "判断一个具体系统是否满足该漏洞成立条件。",
+          "done": "影响或排除判断有具体依据；不能判断时记录缺口。",
+          "rationale": "版本、代码、配置与环境由同一核查责任处理，避免人为拆空分支。",
+          "semanticRole": "候选业务系统"
+        },
+        "task": "你负责核查一个业务系统。input.system 给出目标及线索，input.context 给出漏洞事实与触发条件。\n沿仓库线索使用 Sourcegraph 定位源码和 revision，读取依赖声明、相关调用链、输入来源及配置。有部署材料时，对照部署版本与运行条件。\n逐项对照漏洞触发条件：证据确认所分析版本及运行条件满足触发条件时为 impacted；有明确排除依据时为 not_impacted；关键条件尚未确认时为 undetermined。\ncomponent_version 写明版本及其依据是源码声明还是部署取证；dependency_path 记录依赖引入位置；trigger_assessment 说明各条件的事实和判断。source_documents 保留实际取得的关键片段，标明仓库、revision、文件路径与行号。summary 概括结论，missing_evidence_reasons 和 next_actions 对应尚未解决的具体问题。\n输出符合 expectedOutput 的分项核查结果。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "context": {
+              "type": "object",
+              "properties": {
+                "cve_id": {
+                  "type": "string"
+                },
+                "materials_ref": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "business_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "systems": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "repository": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "revision": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "environment": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clues": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "repository",
+                      "revision",
+                      "environment",
+                      "clues"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "uncovered_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "materials_facts": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "trigger_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "condition": {
+                        "type": "string"
+                      },
+                      "known": {
+                        "type": "boolean"
+                      },
+                      "basis": {
+                        "type": "string"
+                      },
+                      "source_urls": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "condition",
+                      "known",
+                      "basis",
+                      "source_urls"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "source_documents": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "retrieved_at": {
+                        "type": "string"
+                      },
+                      "retrieval_method": {
+                        "type": "string"
+                      },
+                      "truncated": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "url",
+                      "title",
+                      "content",
+                      "retrieved_at",
+                      "retrieval_method",
+                      "truncated"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "missing_evidence_reasons": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "cve_id",
+                "materials_ref",
+                "business_scope",
+                "systems",
+                "uncovered_scope",
+                "materials_facts",
+                "trigger_conditions",
+                "source_documents",
+                "missing_evidence_reasons"
+              ],
+              "additionalProperties": false
+            },
+            "system": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "repository": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "revision": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "environment": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "clues": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "repository",
+                "revision",
+                "environment",
+                "clues"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "context",
+            "system"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "system": {
+              "type": "string"
+            },
+            "conclusion": {
+              "enum": [
+                "impacted",
+                "not_impacted",
+                "undetermined"
+              ]
+            },
+            "summary": {
+              "type": "string"
+            },
+            "component_version": {
+              "type": "string"
+            },
+            "dependency_path": {
+              "type": "string"
+            },
+            "trigger_assessment": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "next_actions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "system",
+            "conclusion",
+            "summary",
+            "component_version",
+            "dependency_path",
+            "trigger_assessment",
+            "source_documents",
+            "missing_evidence_reasons",
+            "next_actions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "gap",
+        "label": "保留待发现范围",
+        "kind": "function",
+        "operation": "map",
+        "functionName": "expression",
+        "expression": {
+          "kind": "object",
+          "fields": {
+            "status": {
+              "kind": "literal",
+              "value": "incomplete"
+            },
+            "overall_conclusion": {
+              "kind": "literal",
+              "value": "undetermined"
+            },
+            "reason": {
+              "kind": "literal",
+              "value": "尚无可核查候选系统，不能据此排除业务影响。"
+            },
+            "uncovered_scope": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "context",
+                "uncovered_scope"
+              ]
+            },
+            "missing_evidence_reasons": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "context",
+                "missing_evidence_reasons"
+              ]
+            }
+          }
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "context": {
+              "type": "object",
+              "properties": {
+                "cve_id": {
+                  "type": "string"
+                },
+                "materials_ref": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "business_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "systems": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "repository": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "revision": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "environment": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clues": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "repository",
+                      "revision",
+                      "environment",
+                      "clues"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "uncovered_scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "materials_facts": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "trigger_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "condition": {
+                        "type": "string"
+                      },
+                      "known": {
+                        "type": "boolean"
+                      },
+                      "basis": {
+                        "type": "string"
+                      },
+                      "source_urls": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "condition",
+                      "known",
+                      "basis",
+                      "source_urls"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "source_documents": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "retrieved_at": {
+                        "type": "string"
+                      },
+                      "retrieval_method": {
+                        "type": "string"
+                      },
+                      "truncated": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "url",
+                      "title",
+                      "content",
+                      "retrieved_at",
+                      "retrieval_method",
+                      "truncated"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "missing_evidence_reasons": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "cve_id",
+                "materials_ref",
+                "business_scope",
+                "systems",
+                "uncovered_scope",
+                "materials_facts",
+                "trigger_conditions",
+                "source_documents",
+                "missing_evidence_reasons"
+              ],
+              "additionalProperties": false
+            },
+            "has_systems": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "context",
+            "has_systems"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "const": "incomplete"
+            },
+            "overall_conclusion": {
+              "const": "undetermined"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "uncovered_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "status",
+            "overall_conclusion",
+            "reason",
+            "uncovered_scope",
+            "missing_evidence_reasons"
+          ],
+          "additionalProperties": false
+        },
+        "contract": {
+          "responsibility": "为没有候选的情况保存明确的未决结果。",
+          "done": "输出待发现范围与缺口，结论固定为 undetermined。",
+          "rationale": "空候选没有逐项调用，需有一项业务结果被汇总。"
+        }
+      },
+      {
+        "id": "collect",
+        "label": "收集核查与范围缺口",
+        "kind": "function",
+        "functionName": "collect",
+        "operation": "aggregate",
+        "inputNames": [
+          "context",
+          "checks",
+          "gaps"
+        ],
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "context": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "cve_id": {
+                    "type": "string"
+                  },
+                  "materials_ref": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "business_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "systems": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "repository": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "revision": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "environment": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clues": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "repository",
+                        "revision",
+                        "environment",
+                        "clues"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "materials_facts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "trigger_conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "condition": {
+                          "type": "string"
+                        },
+                        "known": {
+                          "type": "boolean"
+                        },
+                        "basis": {
+                          "type": "string"
+                        },
+                        "source_urls": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "condition",
+                        "known",
+                        "basis",
+                        "source_urls"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "cve_id",
+                  "materials_ref",
+                  "business_scope",
+                  "systems",
+                  "uncovered_scope",
+                  "materials_facts",
+                  "trigger_conditions",
+                  "source_documents",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "checks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "system": {
+                    "type": "string"
+                  },
+                  "conclusion": {
+                    "enum": [
+                      "impacted",
+                      "not_impacted",
+                      "undetermined"
+                    ]
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "component_version": {
+                    "type": "string"
+                  },
+                  "dependency_path": {
+                    "type": "string"
+                  },
+                  "trigger_assessment": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "next_actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "system",
+                  "conclusion",
+                  "summary",
+                  "component_version",
+                  "dependency_path",
+                  "trigger_assessment",
+                  "source_documents",
+                  "missing_evidence_reasons",
+                  "next_actions"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "gaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "incomplete"
+                  },
+                  "overall_conclusion": {
+                    "const": "undetermined"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "status",
+                  "overall_conclusion",
+                  "reason",
+                  "uncovered_scope",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "context",
+            "checks",
+            "gaps"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "context": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "cve_id": {
+                    "type": "string"
+                  },
+                  "materials_ref": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "business_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "systems": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "repository": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "revision": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "environment": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clues": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "repository",
+                        "revision",
+                        "environment",
+                        "clues"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "materials_facts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "trigger_conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "condition": {
+                          "type": "string"
+                        },
+                        "known": {
+                          "type": "boolean"
+                        },
+                        "basis": {
+                          "type": "string"
+                        },
+                        "source_urls": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "condition",
+                        "known",
+                        "basis",
+                        "source_urls"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "cve_id",
+                  "materials_ref",
+                  "business_scope",
+                  "systems",
+                  "uncovered_scope",
+                  "materials_facts",
+                  "trigger_conditions",
+                  "source_documents",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "checks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "system": {
+                    "type": "string"
+                  },
+                  "conclusion": {
+                    "enum": [
+                      "impacted",
+                      "not_impacted",
+                      "undetermined"
+                    ]
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "component_version": {
+                    "type": "string"
+                  },
+                  "dependency_path": {
+                    "type": "string"
+                  },
+                  "trigger_assessment": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "next_actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "system",
+                  "conclusion",
+                  "summary",
+                  "component_version",
+                  "dependency_path",
+                  "trigger_assessment",
+                  "source_documents",
+                  "missing_evidence_reasons",
+                  "next_actions"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "gaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "incomplete"
+                  },
+                  "overall_conclusion": {
+                    "const": "undetermined"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "status",
+                  "overall_conclusion",
+                  "reason",
+                  "uncovered_scope",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "context",
+            "checks",
+            "gaps"
+          ],
+          "additionalProperties": false
+        },
+        "contract": {
+          "responsibility": "汇集固定范围、逐系统结果和空候选缺口。",
+          "done": "只汇集实际分支产物，空分支保持 []。",
+          "rationale": "显式具名输入保留上下文，不用模型猜空分支含义。"
+        }
+      },
+      {
+        "id": "conclusion",
+        "label": "计算整体影响结论",
+        "kind": "function",
+        "operation": "map",
+        "functionName": "expression",
+        "expression": {
+          "kind": "let",
+          "value": {
+            "kind": "variable",
+            "name": "input",
+            "path": [
+              "context",
+              0
+            ]
+          },
+          "pattern": {
+            "kind": "bind",
+            "name": "ctx"
+          },
+          "body": {
+            "kind": "let",
+            "value": {
+              "kind": "filter",
+              "input": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "checks"
+                ]
+              },
+              "binding": {
+                "kind": "bind",
+                "name": "check"
+              },
+              "predicate": {
+                "kind": "call",
+                "function": "equal",
+                "args": [
+                  {
+                    "kind": "variable",
+                    "name": "check",
+                    "path": [
+                      "conclusion"
+                    ]
+                  },
+                  {
+                    "kind": "literal",
+                    "value": "impacted"
+                  }
+                ]
+              }
+            },
+            "pattern": {
+              "kind": "bind",
+              "name": "impacted"
+            },
+            "body": {
+              "kind": "let",
+              "value": {
+                "kind": "filter",
+                "input": {
+                  "kind": "variable",
+                  "name": "input",
+                  "path": [
+                    "checks"
+                  ]
+                },
+                "binding": {
+                  "kind": "bind",
+                  "name": "check"
+                },
+                "predicate": {
+                  "kind": "call",
+                  "function": "equal",
+                  "args": [
+                    {
+                      "kind": "variable",
+                      "name": "check",
+                      "path": [
+                        "conclusion"
+                      ]
+                    },
+                    {
+                      "kind": "literal",
+                      "value": "not_impacted"
+                    }
+                  ]
+                }
+              },
+              "pattern": {
+                "kind": "bind",
+                "name": "excluded"
+              },
+              "body": {
+                "kind": "let",
+                "value": {
+                  "kind": "filter",
+                  "input": {
+                    "kind": "variable",
+                    "name": "input",
+                    "path": [
+                      "checks"
+                    ]
+                  },
+                  "binding": {
+                    "kind": "bind",
+                    "name": "check"
+                  },
+                  "predicate": {
+                    "kind": "call",
+                    "function": "equal",
+                    "args": [
+                      {
+                        "kind": "variable",
+                        "name": "check",
+                        "path": [
+                          "conclusion"
+                        ]
+                      },
+                      {
+                        "kind": "literal",
+                        "value": "undetermined"
+                      }
+                    ]
+                  }
+                },
+                "pattern": {
+                  "kind": "bind",
+                  "name": "undetermined"
+                },
+                "body": {
+                  "kind": "object",
+                  "fields": {
+                    "cve_id": {
+                      "kind": "variable",
+                      "name": "ctx",
+                      "path": [
+                        "cve_id"
+                      ]
+                    },
+                    "materials_ref": {
+                      "kind": "variable",
+                      "name": "ctx",
+                      "path": [
+                        "materials_ref"
+                      ]
+                    },
+                    "business_scope": {
+                      "kind": "variable",
+                      "name": "ctx",
+                      "path": [
+                        "business_scope"
+                      ]
+                    },
+                    "status": {
+                      "kind": "match",
+                      "value": {
+                        "kind": "call",
+                        "function": "and",
+                        "args": [
+                          {
+                            "kind": "call",
+                            "function": "greaterThan",
+                            "args": [
+                              {
+                                "kind": "call",
+                                "function": "length",
+                                "args": [
+                                  {
+                                    "kind": "variable",
+                                    "name": "input",
+                                    "path": [
+                                      "checks"
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "literal",
+                                "value": 0
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call",
+                            "function": "and",
+                            "args": [
+                              {
+                                "kind": "call",
+                                "function": "not",
+                                "args": [
+                                  {
+                                    "kind": "call",
+                                    "function": "or",
+                                    "args": [
+                                      {
+                                        "kind": "call",
+                                        "function": "greaterThan",
+                                        "args": [
+                                          {
+                                            "kind": "call",
+                                            "function": "length",
+                                            "args": [
+                                              {
+                                                "kind": "variable",
+                                                "name": "undetermined"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "literal",
+                                            "value": 0
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "call",
+                                        "function": "or",
+                                        "args": [
+                                          {
+                                            "kind": "call",
+                                            "function": "greaterThan",
+                                            "args": [
+                                              {
+                                                "kind": "call",
+                                                "function": "length",
+                                                "args": [
+                                                  {
+                                                    "kind": "variable",
+                                                    "name": "ctx",
+                                                    "path": [
+                                                      "uncovered_scope"
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "literal",
+                                                "value": 0
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "call",
+                                            "function": "greaterThan",
+                                            "args": [
+                                              {
+                                                "kind": "call",
+                                                "function": "length",
+                                                "args": [
+                                                  {
+                                                    "kind": "variable",
+                                                    "name": "input",
+                                                    "path": [
+                                                      "gaps"
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "literal",
+                                                "value": 0
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "call",
+                                "function": "not",
+                                "args": [
+                                  {
+                                    "kind": "call",
+                                    "function": "greaterThan",
+                                    "args": [
+                                      {
+                                        "kind": "call",
+                                        "function": "length",
+                                        "args": [
+                                          {
+                                            "kind": "variable",
+                                            "name": "ctx",
+                                            "path": [
+                                              "missing_evidence_reasons"
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "literal",
+                                        "value": 0
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "cases": [
+                        {
+                          "pattern": {
+                            "kind": "literal",
+                            "value": true
+                          },
+                          "then": {
+                            "kind": "literal",
+                            "value": "completed"
+                          }
+                        }
+                      ],
+                      "otherwise": {
+                        "kind": "literal",
+                        "value": "incomplete"
+                      }
+                    },
+                    "overall_conclusion": {
+                      "kind": "match",
+                      "value": {
+                        "kind": "call",
+                        "function": "greaterThan",
+                        "args": [
+                          {
+                            "kind": "call",
+                            "function": "length",
+                            "args": [
+                              {
+                                "kind": "variable",
+                                "name": "impacted"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "literal",
+                            "value": 0
+                          }
+                        ]
+                      },
+                      "cases": [
+                        {
+                          "pattern": {
+                            "kind": "literal",
+                            "value": true
+                          },
+                          "then": {
+                            "kind": "match",
+                            "value": {
+                              "kind": "call",
+                              "function": "or",
+                              "args": [
+                                {
+                                  "kind": "call",
+                                  "function": "greaterThan",
+                                  "args": [
+                                    {
+                                      "kind": "call",
+                                      "function": "length",
+                                      "args": [
+                                        {
+                                          "kind": "variable",
+                                          "name": "excluded"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "literal",
+                                      "value": 0
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "call",
+                                  "function": "or",
+                                  "args": [
+                                    {
+                                      "kind": "call",
+                                      "function": "greaterThan",
+                                      "args": [
+                                        {
+                                          "kind": "call",
+                                          "function": "length",
+                                          "args": [
+                                            {
+                                              "kind": "variable",
+                                              "name": "undetermined"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "literal",
+                                          "value": 0
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "call",
+                                      "function": "or",
+                                      "args": [
+                                        {
+                                          "kind": "call",
+                                          "function": "greaterThan",
+                                          "args": [
+                                            {
+                                              "kind": "call",
+                                              "function": "length",
+                                              "args": [
+                                                {
+                                                  "kind": "variable",
+                                                  "name": "ctx",
+                                                  "path": [
+                                                    "uncovered_scope"
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "literal",
+                                              "value": 0
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "call",
+                                          "function": "greaterThan",
+                                          "args": [
+                                            {
+                                              "kind": "call",
+                                              "function": "length",
+                                              "args": [
+                                                {
+                                                  "kind": "variable",
+                                                  "name": "input",
+                                                  "path": [
+                                                    "gaps"
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "literal",
+                                              "value": 0
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            "cases": [
+                              {
+                                "pattern": {
+                                  "kind": "literal",
+                                  "value": true
+                                },
+                                "then": {
+                                  "kind": "literal",
+                                  "value": "partially_impacted"
+                                }
+                              }
+                            ],
+                            "otherwise": {
+                              "kind": "literal",
+                              "value": "impacted"
+                            }
+                          }
+                        }
+                      ],
+                      "otherwise": {
+                        "kind": "match",
+                        "value": {
+                          "kind": "call",
+                          "function": "and",
+                          "args": [
+                            {
+                              "kind": "call",
+                              "function": "and",
+                              "args": [
+                                {
+                                  "kind": "call",
+                                  "function": "greaterThan",
+                                  "args": [
+                                    {
+                                      "kind": "call",
+                                      "function": "length",
+                                      "args": [
+                                        {
+                                          "kind": "variable",
+                                          "name": "input",
+                                          "path": [
+                                            "checks"
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "literal",
+                                      "value": 0
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "call",
+                                  "function": "and",
+                                  "args": [
+                                    {
+                                      "kind": "call",
+                                      "function": "not",
+                                      "args": [
+                                        {
+                                          "kind": "call",
+                                          "function": "or",
+                                          "args": [
+                                            {
+                                              "kind": "call",
+                                              "function": "greaterThan",
+                                              "args": [
+                                                {
+                                                  "kind": "call",
+                                                  "function": "length",
+                                                  "args": [
+                                                    {
+                                                      "kind": "variable",
+                                                      "name": "undetermined"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "literal",
+                                                  "value": 0
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "call",
+                                              "function": "or",
+                                              "args": [
+                                                {
+                                                  "kind": "call",
+                                                  "function": "greaterThan",
+                                                  "args": [
+                                                    {
+                                                      "kind": "call",
+                                                      "function": "length",
+                                                      "args": [
+                                                        {
+                                                          "kind": "variable",
+                                                          "name": "ctx",
+                                                          "path": [
+                                                            "uncovered_scope"
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "kind": "literal",
+                                                      "value": 0
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "call",
+                                                  "function": "greaterThan",
+                                                  "args": [
+                                                    {
+                                                      "kind": "call",
+                                                      "function": "length",
+                                                      "args": [
+                                                        {
+                                                          "kind": "variable",
+                                                          "name": "input",
+                                                          "path": [
+                                                            "gaps"
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "kind": "literal",
+                                                      "value": 0
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "call",
+                                      "function": "not",
+                                      "args": [
+                                        {
+                                          "kind": "call",
+                                          "function": "greaterThan",
+                                          "args": [
+                                            {
+                                              "kind": "call",
+                                              "function": "length",
+                                              "args": [
+                                                {
+                                                  "kind": "variable",
+                                                  "name": "ctx",
+                                                  "path": [
+                                                    "missing_evidence_reasons"
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "literal",
+                                              "value": 0
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "call",
+                              "function": "greaterThan",
+                              "args": [
+                                {
+                                  "kind": "call",
+                                  "function": "length",
+                                  "args": [
+                                    {
+                                      "kind": "variable",
+                                      "name": "excluded"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "literal",
+                                  "value": 0
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        "cases": [
+                          {
+                            "pattern": {
+                              "kind": "literal",
+                              "value": true
+                            },
+                            "then": {
+                              "kind": "literal",
+                              "value": "not_impacted"
+                            }
+                          }
+                        ],
+                        "otherwise": {
+                          "kind": "literal",
+                          "value": "undetermined"
+                        }
+                      }
+                    },
+                    "summary": {
+                      "kind": "literal",
+                      "value": "按逐系统核查结果汇总；判定依据、未覆盖范围和下一步见明细与报告。"
+                    },
+                    "systems_considered": {
+                      "kind": "map",
+                      "input": {
+                        "kind": "variable",
+                        "name": "input",
+                        "path": [
+                          "checks"
+                        ]
+                      },
+                      "binding": {
+                        "kind": "bind",
+                        "name": "check"
+                      },
+                      "body": {
+                        "kind": "variable",
+                        "name": "check",
+                        "path": [
+                          "system"
+                        ]
+                      }
+                    },
+                    "impacted_systems": {
+                      "kind": "map",
+                      "input": {
+                        "kind": "variable",
+                        "name": "impacted"
+                      },
+                      "binding": {
+                        "kind": "bind",
+                        "name": "check"
+                      },
+                      "body": {
+                        "kind": "variable",
+                        "name": "check",
+                        "path": [
+                          "system"
+                        ]
+                      }
+                    },
+                    "not_impacted_systems": {
+                      "kind": "map",
+                      "input": {
+                        "kind": "variable",
+                        "name": "excluded"
+                      },
+                      "binding": {
+                        "kind": "bind",
+                        "name": "check"
+                      },
+                      "body": {
+                        "kind": "variable",
+                        "name": "check",
+                        "path": [
+                          "system"
+                        ]
+                      }
+                    },
+                    "undetermined_systems": {
+                      "kind": "map",
+                      "input": {
+                        "kind": "variable",
+                        "name": "undetermined"
+                      },
+                      "binding": {
+                        "kind": "bind",
+                        "name": "check"
+                      },
+                      "body": {
+                        "kind": "variable",
+                        "name": "check",
+                        "path": [
+                          "system"
+                        ]
+                      }
+                    },
+                    "uncovered_scope": {
+                      "kind": "variable",
+                      "name": "ctx",
+                      "path": [
+                        "uncovered_scope"
+                      ]
+                    },
+                    "system_checks": {
+                      "kind": "variable",
+                      "name": "input",
+                      "path": [
+                        "checks"
+                      ]
+                    },
+                    "discovery_gaps": {
+                      "kind": "variable",
+                      "name": "input",
+                      "path": [
+                        "gaps"
+                      ]
+                    },
+                    "material_gaps": {
+                      "kind": "variable",
+                      "name": "ctx",
+                      "path": [
+                        "missing_evidence_reasons"
+                      ]
+                    },
+                    "source_documents": {
+                      "kind": "variable",
+                      "name": "ctx",
+                      "path": [
+                        "source_documents"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "context": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "cve_id": {
+                    "type": "string"
+                  },
+                  "materials_ref": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "business_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "systems": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "repository": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "revision": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "environment": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clues": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "repository",
+                        "revision",
+                        "environment",
+                        "clues"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "materials_facts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "trigger_conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "condition": {
+                          "type": "string"
+                        },
+                        "known": {
+                          "type": "boolean"
+                        },
+                        "basis": {
+                          "type": "string"
+                        },
+                        "source_urls": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "condition",
+                        "known",
+                        "basis",
+                        "source_urls"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "cve_id",
+                  "materials_ref",
+                  "business_scope",
+                  "systems",
+                  "uncovered_scope",
+                  "materials_facts",
+                  "trigger_conditions",
+                  "source_documents",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "checks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "system": {
+                    "type": "string"
+                  },
+                  "conclusion": {
+                    "enum": [
+                      "impacted",
+                      "not_impacted",
+                      "undetermined"
+                    ]
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "component_version": {
+                    "type": "string"
+                  },
+                  "dependency_path": {
+                    "type": "string"
+                  },
+                  "trigger_assessment": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "next_actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "system",
+                  "conclusion",
+                  "summary",
+                  "component_version",
+                  "dependency_path",
+                  "trigger_assessment",
+                  "source_documents",
+                  "missing_evidence_reasons",
+                  "next_actions"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "gaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "incomplete"
+                  },
+                  "overall_conclusion": {
+                    "const": "undetermined"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "status",
+                  "overall_conclusion",
+                  "reason",
+                  "uncovered_scope",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "context",
+            "checks",
+            "gaps"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "materials_ref": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "status": {
+              "enum": [
+                "completed",
+                "incomplete"
+              ]
+            },
+            "overall_conclusion": {
+              "enum": [
+                "impacted",
+                "partially_impacted",
+                "not_impacted",
+                "undetermined"
+              ]
+            },
+            "summary": {
+              "type": "string"
+            },
+            "systems_considered": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "impacted_systems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "not_impacted_systems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "undetermined_systems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "uncovered_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "system_checks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "system": {
+                    "type": "string"
+                  },
+                  "conclusion": {
+                    "enum": [
+                      "impacted",
+                      "not_impacted",
+                      "undetermined"
+                    ]
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "component_version": {
+                    "type": "string"
+                  },
+                  "dependency_path": {
+                    "type": "string"
+                  },
+                  "trigger_assessment": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "next_actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "system",
+                  "conclusion",
+                  "summary",
+                  "component_version",
+                  "dependency_path",
+                  "trigger_assessment",
+                  "source_documents",
+                  "missing_evidence_reasons",
+                  "next_actions"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "discovery_gaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "incomplete"
+                  },
+                  "overall_conclusion": {
+                    "const": "undetermined"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "status",
+                  "overall_conclusion",
+                  "reason",
+                  "uncovered_scope",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "material_gaps": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "cve_id",
+            "materials_ref",
+            "business_scope",
+            "status",
+            "overall_conclusion",
+            "summary",
+            "systems_considered",
+            "impacted_systems",
+            "not_impacted_systems",
+            "undetermined_systems",
+            "uncovered_scope",
+            "system_checks",
+            "discovery_gaps",
+            "material_gaps",
+            "source_documents"
+          ],
+          "additionalProperties": false
+        },
+        "contract": {
+          "responsibility": "按分项事实和未覆盖范围确定总体结论。",
+          "done": "有影响且有排除/待定范围为 partially_impacted；无已知影响且有未决为 undetermined；全部排除才为 not_impacted。",
+          "rationale": "模型负责事实判断，整体枚举和数组分类用纯表达式保持一致。"
+        }
+      },
+      {
+        "id": "progress",
+        "label": "已形成业务影响记录",
+        "kind": "milestone",
+        "operation": "aggregate",
+        "milestone": {
+          "stage": "已形成业务影响记录",
+          "summary": "本轮业务影响记录已形成，请复核分项依据、待定范围和下一步。"
+        },
+        "contract": {
+          "responsibility": "记录本轮产物已经形成。",
+          "done": "记录中性进展并透传输入；不发布、不确认完成条件。",
+          "rationale": "本轮调查结束与证据齐全、业务结项分别表达。"
+        },
+        "inputSchema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cve_id": {
+                "type": "string"
+              },
+              "materials_ref": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "business_scope": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "incomplete"
+                ]
+              },
+              "overall_conclusion": {
+                "enum": [
+                  "impacted",
+                  "partially_impacted",
+                  "not_impacted",
+                  "undetermined"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "systems_considered": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "impacted_systems": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "not_impacted_systems": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "undetermined_systems": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "uncovered_scope": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "system_checks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "system": {
+                      "type": "string"
+                    },
+                    "conclusion": {
+                      "enum": [
+                        "impacted",
+                        "not_impacted",
+                        "undetermined"
+                      ]
+                    },
+                    "summary": {
+                      "type": "string"
+                    },
+                    "component_version": {
+                      "type": "string"
+                    },
+                    "dependency_path": {
+                      "type": "string"
+                    },
+                    "trigger_assessment": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "source_documents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
+                          },
+                          "retrieved_at": {
+                            "type": "string"
+                          },
+                          "retrieval_method": {
+                            "type": "string"
+                          },
+                          "truncated": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "url",
+                          "title",
+                          "content",
+                          "retrieved_at",
+                          "retrieval_method",
+                          "truncated"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "missing_evidence_reasons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "next_actions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "system",
+                    "conclusion",
+                    "summary",
+                    "component_version",
+                    "dependency_path",
+                    "trigger_assessment",
+                    "source_documents",
+                    "missing_evidence_reasons",
+                    "next_actions"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "discovery_gaps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "incomplete"
+                    },
+                    "overall_conclusion": {
+                      "const": "undetermined"
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "uncovered_scope": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "missing_evidence_reasons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "overall_conclusion",
+                    "reason",
+                    "uncovered_scope",
+                    "missing_evidence_reasons"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "material_gaps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "source_documents": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "retrieved_at": {
+                      "type": "string"
+                    },
+                    "retrieval_method": {
+                      "type": "string"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "title",
+                    "content",
+                    "retrieved_at",
+                    "retrieval_method",
+                    "truncated"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "cve_id",
+              "materials_ref",
+              "business_scope",
+              "status",
+              "overall_conclusion",
+              "summary",
+              "systems_considered",
+              "impacted_systems",
+              "not_impacted_systems",
+              "undetermined_systems",
+              "uncovered_scope",
+              "system_checks",
+              "discovery_gaps",
+              "material_gaps",
+              "source_documents"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "expectedOutput": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cve_id": {
+                "type": "string"
+              },
+              "materials_ref": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "business_scope": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "incomplete"
+                ]
+              },
+              "overall_conclusion": {
+                "enum": [
+                  "impacted",
+                  "partially_impacted",
+                  "not_impacted",
+                  "undetermined"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "systems_considered": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "impacted_systems": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "not_impacted_systems": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "undetermined_systems": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "uncovered_scope": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "system_checks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "system": {
+                      "type": "string"
+                    },
+                    "conclusion": {
+                      "enum": [
+                        "impacted",
+                        "not_impacted",
+                        "undetermined"
+                      ]
+                    },
+                    "summary": {
+                      "type": "string"
+                    },
+                    "component_version": {
+                      "type": "string"
+                    },
+                    "dependency_path": {
+                      "type": "string"
+                    },
+                    "trigger_assessment": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "source_documents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
+                          },
+                          "retrieved_at": {
+                            "type": "string"
+                          },
+                          "retrieval_method": {
+                            "type": "string"
+                          },
+                          "truncated": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "url",
+                          "title",
+                          "content",
+                          "retrieved_at",
+                          "retrieval_method",
+                          "truncated"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "missing_evidence_reasons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "next_actions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "system",
+                    "conclusion",
+                    "summary",
+                    "component_version",
+                    "dependency_path",
+                    "trigger_assessment",
+                    "source_documents",
+                    "missing_evidence_reasons",
+                    "next_actions"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "discovery_gaps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "incomplete"
+                    },
+                    "overall_conclusion": {
+                      "const": "undetermined"
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "uncovered_scope": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "missing_evidence_reasons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "overall_conclusion",
+                    "reason",
+                    "uncovered_scope",
+                    "missing_evidence_reasons"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "material_gaps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "source_documents": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "retrieved_at": {
+                      "type": "string"
+                    },
+                    "retrieval_method": {
+                      "type": "string"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "title",
+                    "content",
+                    "retrieved_at",
+                    "retrieval_method",
+                    "truncated"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "cve_id",
+              "materials_ref",
+              "business_scope",
+              "status",
+              "overall_conclusion",
+              "summary",
+              "systems_considered",
+              "impacted_systems",
+              "not_impacted_systems",
+              "undetermined_systems",
+              "uncovered_scope",
+              "system_checks",
+              "discovery_gaps",
+              "material_gaps",
+              "source_documents"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      {
+        "id": "report",
+        "label": "输出业务影响报告",
+        "kind": "agent",
+        "operation": "map",
+        "concurrency": 1,
+        "contract": {
+          "responsibility": "把结构化影响结果整理成可审阅的报告。",
+          "done": "总体与分项一致，未覆盖范围和证据缺口可见。",
+          "rationale": "报告展示与机械汇总分开，便于用户修改表达而不改变结论。",
+          "semanticRole": "本轮业务调查"
+        },
+        "task": "面向业务负责人，将输入的整体结论与分项核查结果整理成 Markdown 报告。\n开头说明漏洞、核查范围和整体结论；随后用表格列出各系统的版本及来源、关键触发条件、结论和证据。分别呈现源码已确认的事实、部署情况及待核实事项。\n引用材料来源、代码路径和 revision。最后列出未覆盖范围，以及解决剩余问题需要的材料或动作。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "materials_ref": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "status": {
+              "enum": [
+                "completed",
+                "incomplete"
+              ]
+            },
+            "overall_conclusion": {
+              "enum": [
+                "impacted",
+                "partially_impacted",
+                "not_impacted",
+                "undetermined"
+              ]
+            },
+            "summary": {
+              "type": "string"
+            },
+            "systems_considered": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "impacted_systems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "not_impacted_systems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "undetermined_systems": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "uncovered_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "system_checks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "system": {
+                    "type": "string"
+                  },
+                  "conclusion": {
+                    "enum": [
+                      "impacted",
+                      "not_impacted",
+                      "undetermined"
+                    ]
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "component_version": {
+                    "type": "string"
+                  },
+                  "dependency_path": {
+                    "type": "string"
+                  },
+                  "trigger_assessment": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "source_documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "retrieved_at": {
+                          "type": "string"
+                        },
+                        "retrieval_method": {
+                          "type": "string"
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "title",
+                        "content",
+                        "retrieved_at",
+                        "retrieval_method",
+                        "truncated"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "next_actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "system",
+                  "conclusion",
+                  "summary",
+                  "component_version",
+                  "dependency_path",
+                  "trigger_assessment",
+                  "source_documents",
+                  "missing_evidence_reasons",
+                  "next_actions"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "discovery_gaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "incomplete"
+                  },
+                  "overall_conclusion": {
+                    "const": "undetermined"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "uncovered_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "missing_evidence_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "status",
+                  "overall_conclusion",
+                  "reason",
+                  "uncovered_scope",
+                  "missing_evidence_reasons"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "material_gaps": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "cve_id",
+            "materials_ref",
+            "business_scope",
+            "status",
+            "overall_conclusion",
+            "summary",
+            "systems_considered",
+            "impacted_systems",
+            "not_impacted_systems",
+            "undetermined_systems",
+            "uncovered_scope",
+            "system_checks",
+            "discovery_gaps",
+            "material_gaps",
+            "source_documents"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "string"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": [
+          "$input",
+          "input"
+        ],
+        "to": [
+          "scope",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "scope",
+          "output"
+        ],
+        "to": [
+          "route",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "route",
+          "output"
+        ],
+        "to": [
+          "branch",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "branch",
+          "matched"
+        ],
+        "to": [
+          "expand",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "expand",
+          "output"
+        ],
+        "to": [
+          "verify",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "branch",
+          "unmatched"
+        ],
+        "to": [
+          "gap",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "scope",
+          "output"
+        ],
+        "to": [
+          "collect",
+          "context"
+        ]
+      },
+      {
+        "from": [
+          "verify",
+          "output"
+        ],
+        "to": [
+          "collect",
+          "checks"
+        ]
+      },
+      {
+        "from": [
+          "gap",
+          "output"
+        ],
+        "to": [
+          "collect",
+          "gaps"
+        ]
+      },
+      {
+        "from": [
+          "collect",
+          "output"
+        ],
+        "to": [
+          "conclusion",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "conclusion",
+          "output"
+        ],
+        "to": [
+          "progress",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "progress",
+          "output"
+        ],
+        "to": [
+          "report",
+          "input"
+        ]
+      }
+    ],
+    "outputs": {
+      "impact": [
+        "conclusion",
+        "output"
+      ],
+      "report": [
+        "report",
+        "output"
+      ]
+    }
+  },
+  "view": {
+    "positions": {
+      "$input": {
+        "x": 30,
+        "y": 25
+      },
+      "scope": {
+        "x": 390,
+        "y": 25
+      },
+      "route": {
+        "x": 750,
+        "y": 25
+      },
+      "branch": {
+        "x": 1110,
+        "y": 25
+      },
+      "expand": {
+        "x": 750,
+        "y": 300
+      },
+      "verify": {
+        "x": 1110,
+        "y": 300
+      },
+      "gap": {
+        "x": 390,
+        "y": 300
+      },
+      "collect": {
+        "x": 1110,
+        "y": 575
+      },
+      "conclusion": {
+        "x": 750,
+        "y": 575
+      },
+      "progress": {
+        "x": 390,
+        "y": 575
+      },
+      "report": {
+        "x": 30,
+        "y": 575
+      }
+    },
+    "showPorts": true
+  }
+}

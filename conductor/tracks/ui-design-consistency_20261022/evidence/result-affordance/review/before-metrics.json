@@ -1,0 +1,300 @@
+[
+  {
+    "width": 1440,
+    "elements": [
+      {
+        "tag": "TH",
+        "text": "执行",
+        "x": 249,
+        "y": 202.296875,
+        "width": 277.90625,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TH",
+        "text": "关联工作项",
+        "x": 526.90625,
+        "y": 202.296875,
+        "width": 359.953125,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TH",
+        "text": "执行状态",
+        "x": 886.859375,
+        "y": 202.296875,
+        "width": 113.65625,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TH",
+        "text": "成果",
+        "x": 1000.515625,
+        "y": 202.296875,
+        "width": 260.0625,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TH",
+        "text": "操作",
+        "x": 1260.578125,
+        "y": 202.296875,
+        "width": 146.421875,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TD",
+        "text": "第 4 次推进完整流程 · 10/22 17:05",
+        "x": 249,
+        "y": 237.296875,
+        "width": 277.90625,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      },
+      {
+        "tag": "TD",
+        "text": "CVE-2025-27516 · 源码影响核查CVE-2025-27516:SCC-source-review业务：未结项",
+        "x": 526.90625,
+        "y": 237.296875,
+        "width": 359.953125,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      },
+      {
+        "tag": "TD",
+        "text": "已完成",
+        "x": 886.859375,
+        "y": 237.296875,
+        "width": 113.65625,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      },
+      {
+        "tag": "TD",
+        "text": "核查目标源码2 项报告",
+        "x": 1000.515625,
+        "y": 237.296875,
+        "width": 260.0625,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "核查目标源码2 项",
+        "x": 1007.515625,
+        "y": 244.796875,
+        "width": 246.0625,
+        "height": 28,
+        "justify": "center",
+        "align": "center",
+        "vertical": "baseline",
+        "padding": "1px 8.75px"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "报告",
+        "x": 1007.515625,
+        "y": 282.796875,
+        "width": 246.0625,
+        "height": 28,
+        "justify": "center",
+        "align": "center",
+        "vertical": "baseline",
+        "padding": "1px 10.5px"
+      },
+      {
+        "tag": "TD",
+        "text": "查看过程",
+        "x": 1260.578125,
+        "y": 237.296875,
+        "width": 146.421875,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      }
+    ]
+  },
+  {
+    "width": 1024,
+    "elements": [
+      {
+        "tag": "TH",
+        "text": "执行",
+        "x": 217,
+        "y": 201.09375,
+        "width": 187.671875,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TH",
+        "text": "关联工作项",
+        "x": 404.671875,
+        "y": 201.09375,
+        "width": 243.078125,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TH",
+        "text": "执行状态",
+        "x": 647.75,
+        "y": 201.09375,
+        "width": 76.75,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TH",
+        "text": "成果",
+        "x": 724.5,
+        "y": 201.09375,
+        "width": 175.609375,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TH",
+        "text": "操作",
+        "x": 900.109375,
+        "y": 201.09375,
+        "width": 98.890625,
+        "height": 35,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "1px 7px"
+      },
+      {
+        "tag": "TD",
+        "text": "第 4 次推进完整流程 · 10/22 17:05",
+        "x": 217,
+        "y": 236.09375,
+        "width": 187.671875,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      },
+      {
+        "tag": "TD",
+        "text": "CVE-2025-27516 · 源码影响核查CVE-2025-27516:SCC-source-review业务：未结项",
+        "x": 404.671875,
+        "y": 236.09375,
+        "width": 243.078125,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      },
+      {
+        "tag": "TD",
+        "text": "已完成",
+        "x": 647.75,
+        "y": 236.09375,
+        "width": 76.75,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      },
+      {
+        "tag": "TD",
+        "text": "核查目标源码2 项报告",
+        "x": 724.5,
+        "y": 236.09375,
+        "width": 175.609375,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "核查目标源码2 项",
+        "x": 731.5,
+        "y": 243.59375,
+        "width": 161.609375,
+        "height": 28,
+        "justify": "center",
+        "align": "center",
+        "vertical": "baseline",
+        "padding": "1px 8.75px"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "报告",
+        "x": 731.5,
+        "y": 281.59375,
+        "width": 161.609375,
+        "height": 28,
+        "justify": "center",
+        "align": "center",
+        "vertical": "baseline",
+        "padding": "1px 10.5px"
+      },
+      {
+        "tag": "TD",
+        "text": "查看过程",
+        "x": 900.109375,
+        "y": 236.09375,
+        "width": 98.890625,
+        "height": 80.5,
+        "justify": "normal",
+        "align": "normal",
+        "vertical": "middle",
+        "padding": "7px"
+      }
+    ]
+  }
+]

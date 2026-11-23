@@ -1,0 +1,170 @@
+{
+  "itemId": "244b5bfd-65da-4da0-a325-9b4b85c4a00c",
+  "key": "DEMO-UI-SPLIT",
+  "workId": "3b1e2976-8028-495d-8215-23e80d97769f",
+  "runId": "848a3600-796a-4760-9604-50dc3127dd50",
+  "status": "completed",
+  "inputs": {
+    "input": [
+      {
+        "sampleId": "M01",
+        "value": "客户甲反馈：导出月报时页面提示失败，无法取得报表。客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。",
+        "materialIds": [
+          "M01"
+        ],
+        "sourceResultIds": []
+      }
+    ]
+  },
+  "children": [
+    {
+      "id": "47ad118c-76cb-4a75-a94d-e66d39e9cded",
+      "title": "示例 · 客户乙按已知订单编号搜索没有结果，但订单列表能找到该订单",
+      "receivedInputs": [
+        {
+          "label": "原文摘录",
+          "value": "客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。",
+          "source": {
+            "workId": "3b1e2976-8028-495d-8215-23e80d97769f",
+            "runId": "848a3600-796a-4760-9604-50dc3127dd50",
+            "definitionId": "93ed23c8-87bc-48bb-b4c5-72160654f930",
+            "nodeId": "split-issues",
+            "resultId": "daee33fb-5c6d-4164-9e06-15ca4ef85bf4",
+            "instanceId": "split-issues:M01:0",
+            "port": "output",
+            "index": 0
+          },
+          "materials": [
+            {
+              "id": "M01",
+              "text": "客户甲反馈：导出月报时页面提示失败，无法取得报表。客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。"
+            }
+          ],
+          "origin": {
+            "source": {
+              "workId": "3b1e2976-8028-495d-8215-23e80d97769f",
+              "runId": "848a3600-796a-4760-9604-50dc3127dd50",
+              "definitionId": "93ed23c8-87bc-48bb-b4c5-72160654f930",
+              "nodeId": "split-issues",
+              "resultId": "daee33fb-5c6d-4164-9e06-15ca4ef85bf4",
+              "instanceId": "split-issues:M01:0",
+              "port": "output",
+              "index": 0,
+              "kind": "output"
+            },
+            "candidateId": "issue-2",
+            "inputIndex": 0
+          },
+          "id": "9176e5c1-9749-4c24-b233-42f4e21cb074"
+        }
+      ]
+    },
+    {
+      "id": "7a0899de-e3d1-415f-bbae-3f816478cc56",
+      "title": "示例 · 客户甲导出月报时页面提示失败，无法取得报表",
+      "receivedInputs": [
+        {
+          "label": "原文摘录",
+          "value": "客户甲反馈：导出月报时页面提示失败，无法取得报表。",
+          "source": {
+            "workId": "3b1e2976-8028-495d-8215-23e80d97769f",
+            "runId": "848a3600-796a-4760-9604-50dc3127dd50",
+            "definitionId": "93ed23c8-87bc-48bb-b4c5-72160654f930",
+            "nodeId": "split-issues",
+            "resultId": "daee33fb-5c6d-4164-9e06-15ca4ef85bf4",
+            "instanceId": "split-issues:M01:0",
+            "port": "output",
+            "index": 0
+          },
+          "materials": [
+            {
+              "id": "M01",
+              "text": "客户甲反馈：导出月报时页面提示失败，无法取得报表。客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。"
+            }
+          ],
+          "origin": {
+            "source": {
+              "workId": "3b1e2976-8028-495d-8215-23e80d97769f",
+              "runId": "848a3600-796a-4760-9604-50dc3127dd50",
+              "definitionId": "93ed23c8-87bc-48bb-b4c5-72160654f930",
+              "nodeId": "split-issues",
+              "resultId": "daee33fb-5c6d-4164-9e06-15ca4ef85bf4",
+              "instanceId": "split-issues:M01:0",
+              "port": "output",
+              "index": 0,
+              "kind": "output"
+            },
+            "candidateId": "issue-1",
+            "inputIndex": 0
+          },
+          "id": "a906b915-1ad4-4162-b2dd-f42aba742b85"
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "nodeId": "split-issues",
+      "status": "completed",
+      "effectiveModel": {
+        "source": "default",
+        "alias": "sangfor/glm-5.3-flash",
+        "model": "glm-5.3-flash",
+        "effort": "high"
+      },
+      "outputs": {
+        "output": [
+          {
+            "value": [
+              {
+                "criteria": [
+                  "调查记录中包含问题对应的原文出处：材料 M01 中『客户甲反馈：导出月报时页面提示失败，无法取得报表。』，且逐字一致",
+                  "调查记录中含可复现的现象或失败步骤：明确描述客户甲执行导出月报操作时页面提示失败、无法取得报表的具体操作路径与失败表现",
+                  "调查记录中含影响范围：明确问题仅涉及该客户或可推广到的范围（如导出功能、报表类型、受影响客户数量）",
+                  "调查记录中含证据来源且可追溯：注明证据出处（如客户反馈记录、截图、系统日志、操作时间），可据此回查核验",
+                  "调查记录不含原因判断，不含解决方案或修复建议"
+                ],
+                "goal": "调查客户甲导出月报失败问题的现象，形成可核验的调查记录：记录应包含现象描述、复现方式或影响范围、证据来源；本阶段仅调查现象本身，不预判原因、不提出解决方案。",
+                "id": "issue-1",
+                "inputs": [
+                  {
+                    "label": "原文摘录",
+                    "value": "客户甲反馈：导出月报时页面提示失败，无法取得报表。"
+                  }
+                ],
+                "title": "客户甲导出月报时页面提示失败，无法取得报表",
+                "trackingKey": "导出月报失败"
+              },
+              {
+                "criteria": [
+                  "调查记录中包含问题对应的原文出处：材料 M01 中『客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。』，且逐字一致",
+                  "调查记录中含可复现的现象或失败步骤：明确描述客户乙使用的搜索入口、输入的订单编号及『搜索无结果而订单列表可见同一订单』的对比表现",
+                  "调查记录中含影响范围：明确问题仅涉及该客户或可推广到的范围（如搜索功能、订单编号格式、受影响客户数量）",
+                  "调查记录中含证据来源且可追溯：注明证据出处（如客户反馈记录、截图、搜索请求日志、订单数据），可据此回查核验",
+                  "调查记录不含原因判断，不含解决方案或修复建议"
+                ],
+                "goal": "调查客户乙按订单编号搜索无结果问题的现象，形成可核验的调查记录：记录应包含现象描述、复现方式或影响范围、证据来源；本阶段仅调查现象本身，不预判原因、不提出解决方案。",
+                "id": "issue-2",
+                "inputs": [
+                  {
+                    "label": "原文摘录",
+                    "value": "客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。"
+                  }
+                ],
+                "title": "客户乙按已知订单编号搜索没有结果，但订单列表能找到该订单",
+                "trackingKey": "订单搜索无结果"
+              }
+            ],
+            "sampleId": "M01",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": [
+              "daee33fb-5c6d-4164-9e06-15ca4ef85bf4"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

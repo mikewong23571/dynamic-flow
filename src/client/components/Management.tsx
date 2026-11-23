@@ -1,5 +1,5 @@
-import type { FormEvent, ReactNode } from 'react';
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { useRef, type FormEvent, type ReactNode } from 'react';
+import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { NativeSelect, NativeSelectOption } from './ui/native-select';
@@ -34,6 +34,7 @@ export function ListToolbar({
   value,
   onChange,
   onSearch,
+  onClear,
   children,
 }: {
   label: string;
@@ -41,29 +42,50 @@ export function ListToolbar({
   value: string;
   onChange: (value: string) => void;
   onSearch: () => void;
+  onClear?: () => void;
   children?: ReactNode;
 }) {
+  const input = useRef<HTMLInputElement>(null);
   function submit(event: FormEvent) {
     event.preventDefault();
     onSearch();
   }
   return (
     <div className="management-toolbar">
+      {children && <div className="management-toolbar-actions">{children}</div>}
       <form className="management-search" onSubmit={submit}>
         <div className="management-search-field">
           <Search size={15} aria-hidden="true" />
           <Input
+            controlSize="sm"
+            ref={input}
+            className={`pl-[32px] ${onClear ? 'pr-[32px]' : ''}`}
             aria-label={label}
             placeholder={placeholder}
             value={value}
             onChange={(event) => onChange(event.target.value)}
           />
+          {onClear && (
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              type="button"
+              className="absolute top-0 right-0"
+              aria-label="清除搜索"
+              title="清除搜索"
+              onClick={() => {
+                onClear();
+                input.current?.focus();
+              }}
+            >
+              <X />
+            </Button>
+          )}
         </div>
         <Button size="sm" variant="outline" type="submit">
           搜索
         </Button>
       </form>
-      {children}
     </div>
   );
 }
@@ -89,12 +111,13 @@ export function ListPagination({
       <label>
         每页
         <NativeSelect
+          layout="fit"
           size="sm"
           aria-label="每页条目数"
           value={pageSize}
           onChange={(event) => onPageSize(Number(event.target.value))}
         >
-          {[10, 20, 50].map((size) => (
+          {[10, 20, 25, 50].map((size) => (
             <NativeSelectOption key={size} value={size}>
               {size} 项
             </NativeSelectOption>

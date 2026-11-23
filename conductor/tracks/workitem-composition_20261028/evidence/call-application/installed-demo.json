@@ -1,0 +1,11 @@
+{
+  "itemId": "a60e11e5-a0a5-444d-8c24-31798a1337c6",
+  "methodId": "2bbe551a-d3bc-44e9-86de-b36ee4b4392f",
+  "definitionId": "9cd4fdb9-32e8-48cf-a24a-a1bab2e1f46e",
+  "scope": "独立预览中以合成输入验证原语展示；纯函数，无模型",
+  "url": "http://10.134.94.200:4330/items/a60e11e5-a0a5-444d-8c24-31798a1337c6?tab=flow",
+  "rootRunId": "a16420e3-9114-46b7-9cc6-befdcac74b89",
+  "calls": 3,
+  "status": "completed",
+  "itemStatus": "open"
+}

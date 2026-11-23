@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-30T07:26:27.855Z",
+  "root": "/tmp/flowcraft-ac14-clean-AM4C4u",
+  "scope": "Temporary fixture data only; no managed service or original repository touched",
+  "removedBusinessEntries": [
+    "d9a899df-b120-4fd5-84aa-7c1483c887a2",
+    "work-item-batches",
+    "work-items"
+  ],
+  "oldWaitingRun": "faf23323-5af7-49a7-84d2-184175b44f24",
+  "oldPausedBatch": "fee50051-3194-4cb7-a416-963da7385d6c",
+  "protectedFiles": [
+    "model-settings.json",
+    "models.toml"
+  ],
+  "protectedHashesUnchanged": true,
+  "modelSelectionResolves": true,
+  "modelBoundary": "Synthetic catalog selection validated; no real model request in this cleanup drill",
+  "afterRestart": {
+    "oldItems": 0,
+    "oldWorks": 0,
+    "oldBatches": 0,
+    "oldWorkHttpStatus": 404
+  },
+  "freshItems": [
+    {
+      "itemId": "5e15e9ce-071e-495a-9f2e-8021063332a9",
+      "workId": "22faf950-ea84-414e-8fa9-7d917d80d84b",
+      "materialId": "M01",
+      "delivered": "仅属于甲的材料"
+    },
+    {
+      "itemId": "1d70ee8c-0f1a-4751-8675-ae7849fd8e85",
+      "workId": "6bad22f0-1834-49aa-97a5-ed7ab061a748",
+      "materialId": "M01",
+      "delivered": "仅属于乙的材料"
+    }
+  ],
+  "twoPrivateWorks": true,
+  "twoIndependentMaterials": true,
+  "formalRunsAndNativePublication": true,
+  "observationMs": 150
+}

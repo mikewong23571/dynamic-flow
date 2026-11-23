@@ -1,0 +1,70 @@
+[
+  {
+    "width": 1440,
+    "rounds": [
+      {
+        "value": "89e12de3-6ce7-49c2-a269-fd4952c404af",
+        "text": "第 4 轮 · 仓库漏洞核查 · 已完成"
+      },
+      {
+        "value": "64b9f6e6-bb6c-4e3d-894b-f3b125ecedfb",
+        "text": "第 3 轮 · 漏洞事实研究 · 已完成"
+      },
+      {
+        "value": "e854f5e9-85ca-42f3-92d4-b01e2d4b09aa",
+        "text": "第 2 轮 · 漏洞事实研究 · 已停止"
+      },
+      {
+        "value": "682bd088-a125-4bcb-b7b5-981ad54cae72",
+        "text": "第 1 轮 · 漏洞事实研究 · 失败"
+      }
+    ],
+    "historySwitch": true,
+    "referenceMenu": true,
+    "criterionReturnDraft": true,
+    "completeDisabled": true,
+    "methodDialog": true,
+    "summaryPreserved": true,
+    "continueOpensPreparation": true,
+    "writes": [],
+    "shape": {
+      "overflow": false,
+      "content": 287.5,
+      "body": 407
+    }
+  },
+  {
+    "width": 1024,
+    "rounds": [
+      {
+        "value": "89e12de3-6ce7-49c2-a269-fd4952c404af",
+        "text": "第 4 轮 · 仓库漏洞核查 · 已完成"
+      },
+      {
+        "value": "64b9f6e6-bb6c-4e3d-894b-f3b125ecedfb",
+        "text": "第 3 轮 · 漏洞事实研究 · 已完成"
+      },
+      {
+        "value": "e854f5e9-85ca-42f3-92d4-b01e2d4b09aa",
+        "text": "第 2 轮 · 漏洞事实研究 · 已停止"
+      },
+      {
+        "value": "682bd088-a125-4bcb-b7b5-981ad54cae72",
+        "text": "第 1 轮 · 漏洞事实研究 · 失败"
+      }
+    ],
+    "historySwitch": true,
+    "referenceMenu": true,
+    "criterionReturnDraft": true,
+    "completeDisabled": true,
+    "methodDialog": true,
+    "summaryPreserved": true,
+    "continueOpensPreparation": true,
+    "writes": [],
+    "shape": {
+      "overflow": false,
+      "content": 287.5,
+      "body": 403
+    }
+  }
+]

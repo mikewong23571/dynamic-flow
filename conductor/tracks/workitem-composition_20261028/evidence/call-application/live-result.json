@@ -1,0 +1,19 @@
+{
+  "itemId": "a60e11e5-a0a5-444d-8c24-31798a1337c6",
+  "url": "http://10.134.94.200:4330/items/a60e11e5-a0a5-444d-8c24-31798a1337c6?tab=flow",
+  "scope": "合成演示，实际HTTP/Run，纯函数；本次浏览器仅读/整理布局，无模型",
+  "facts": [
+    {
+      "width": 1440,
+      "errors": [],
+      "instanceCount": 3
+    },
+    {
+      "width": 1024,
+      "errors": [],
+      "instanceCount": 3
+    }
+  ],
+  "rootRuns": 1,
+  "status": "open"
+}

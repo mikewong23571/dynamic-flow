@@ -1,0 +1,43 @@
+{
+  "track_id": "overall-design-workitem-openui_20261030",
+  "type": "overall-design",
+  "status": "in-progress",
+  "phase": "page-capabilities-delivered",
+  "created_at": "2026-10-30",
+  "executor": "root",
+  "workspace": "/home/mike/projs/fork/dynamic-flow",
+  "authorization": "用户授权闭环整个track，无需审核；最新否定当前界面组织，要求先纠正方案。主代理独立推进，不再委派。",
+  "depends_on": [],
+  "next_step": "本次页面能力对齐已发布；整体track剩余交付项继续以plan Phase7为准，不能把局部增量或模型反馈修订称作首次生成成功。",
+  "updated_at": "2026-11-02",
+  "implementation_started": true,
+  "planning_delivered": true,
+  "binding_released": false,
+  "validation": {
+    "document_links": "passed",
+    "design_cross_review": "2 reviewers; substantive gaps incorporated",
+    "acceptance_cases": 14,
+    "implementation_tasks_pending": 3,
+    "source_tests": "2026-11-02：307模块、23条受影响浏览器通过；真实模型经两轮使用反馈改界面，实际补交再执行，分层证据见evidence/page-capabilities。",
+    "data_deleted": true
+  },
+  "implementation_workspace": "/home/mike/projs/fork/dynamic-flow-openui",
+  "branch": "feature/workitem-openui-20261030",
+  "active_workstreams": [
+    "root-work-surface-redesign"
+  ],
+  "page_capabilities_delivery": {
+    "commit": "a062635",
+    "deployed_at": "2026-11-02",
+    "protected_configuration_unchanged": true,
+    "business_data_deleted": false
+  },
+  "preview_persistence_fix": {
+    "port": 4335,
+    "data_root": "/home/mike/projs/fork/dynamic-flow-openui/.flowcraft-preview-data",
+    "recovered_items": 3,
+    "recovered_runs": 8,
+    "restart_verified": true,
+    "original_pi_sessions_recovered": false
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-29T05:15:09.180Z",
+  "scope": "真实Assistant方案上的虚构补证/例外表单演示，未确认完成条件或结项",
+  "completion": {
+    "originalAlertCount": 8,
+    "unresolvedAlertIds": [],
+    "acceptedCount": 8
+  },
+  "runs": [
+    {
+      "id": "31cf8b98-b3b4-4458-9fee-2de47691d74e",
+      "status": "completed"
+    },
+    {
+      "id": "42efb997-11bc-4781-bfa8-7a6db83aed24",
+      "status": "completed"
+    },
+    {
+      "id": "d12e96a3-fdc0-41c4-a81b-b8ba8398e2bc",
+      "status": "completed"
+    }
+  ],
+  "rootNodes": 1,
+  "criteria": [
+    {
+      "id": "alert-evidence",
+      "text": "全部原告警都有适用范围的依据（含无判断材料的范围已补齐核查依据），且例外已由用户明确确认",
+      "met": false,
+      "evidence": ""
+    },
+    {
+      "id": "delivery-review",
+      "text": "已核对改动范围、固定来源及最终交付",
+      "met": false,
+      "evidence": ""
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,17 @@
+schema_version: '2.1'
+track: feature-openui-business-sections_20261102
+type: feature
+status: done
+module: openui/composition
+depends_on: [feature-frontend-style-governance_20261102]
+owner: mike
+created_at: 2026-11-02
+updated_at: 2026-11-02
+repo_scope: repo-scope.yaml
+step_id: null
+notes:
+  - 用户授权的Section通用分组/平台边界与嵌套语义已实现，本地独立审查通过。
+  - 12项模块及25条不同浏览器案例通过，两尺寸实看，真实模型未测。
+  - 保留独立4336预览与worktree；未发布托管4320/4321，未push/MR。
+  - 后续用户授权全量合并，完整开发分支已合入master；合并证据和现场恢复点见integration.md。
+  - 用户后续授权更新服务，e7b340c已用于托管4320/4321，构建及只读健康检查通过；见deployment.md。

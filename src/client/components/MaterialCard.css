@@ -1,0 +1,78 @@
+@layer components {
+  .material-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    align-items: stretch;
+    gap: 10px;
+    min-width: 0;
+  }
+  .material-card {
+    display: grid;
+    grid-template-rows: 36px minmax(40px, 1fr) auto;
+    gap: var(--space-inline);
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-control);
+    background: var(--surface);
+  }
+  .material-card-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+  }
+  .material-card-heading > svg {
+    flex: none;
+    margin-top: 2px;
+    color: var(--muted);
+  }
+  .material-card-heading > input {
+    flex: none;
+    margin-top: 2px;
+  }
+  .material-card-heading > strong {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: var(--text-control);
+    font-weight: 500;
+    line-height: 18px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    color: var(--ink-strong);
+  }
+  .material-card-heading > code {
+    flex: none;
+    color: var(--muted);
+    font-size: var(--text-meta);
+  }
+  .material-card-summary {
+    margin: 0;
+    color: var(--muted);
+    font-size: var(--text-small);
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  .material-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-inline);
+  }
+  .material-history-materials {
+    margin: 12px 0;
+    font-size: var(--text-small);
+  }
+  .material-history-materials > summary {
+    cursor: pointer;
+  }
+  .material-history-materials > .material-cards {
+    margin-top: 12px;
+  }
+}

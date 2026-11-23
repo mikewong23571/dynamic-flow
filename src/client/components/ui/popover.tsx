@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useContentVisibility } from '../ContentVisibility';
 import { cn } from '@/client/lib/utils';
 import { Popover as PopoverPrimitive } from 'radix-ui';
 
@@ -22,6 +23,8 @@ function PopoverContent({
   sideOffset = 4,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content>) {
+  const visible = useContentVisibility();
+  if (!visible) return null;
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content

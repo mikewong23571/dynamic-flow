@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-29T17:10:52.224713+00:00",
+  "comparedTo": "consistent stopped backup",
+  "compared": {
+    "workitems": 1117,
+    "definitions": 24,
+    "methods": 18,
+    "batches": 1
+  },
+  "missing": [],
+  "changed": []
+}

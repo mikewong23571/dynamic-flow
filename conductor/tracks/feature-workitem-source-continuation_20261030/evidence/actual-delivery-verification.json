@@ -1,0 +1,34 @@
+{
+  "runId": "c00f5bcf-134b-4aa9-922a-4ef569b01823",
+  "definitionId": "0c1ad3bc-406d-4254-971e-88c6c26c71be",
+  "status": "completed",
+  "facts": 480,
+  "continuedSources": 27,
+  "scopeRecords": 1084,
+  "scopeStates": {
+    "已有可复核成果": 480,
+    "原队列待启动": 602,
+    "原队列运行中": 2
+  },
+  "asOf": "2026-10-30T05:00:26.165008+00:00",
+  "checks": 0,
+  "gaps": [
+    {
+      "candidateCount": 0,
+      "candidates": "",
+      "cveKey": "",
+      "detail": "本轮未填写核查仓库，因此未发起仓库漏洞核查；研究事实照常产出，核查结果为空不代表已核查。",
+      "gapKey": "核查缺口：本轮未要求核查（未填写仓库）",
+      "kind": "本轮未要求核查",
+      "nextAction": "如需源码核查，请填写一个 CVE 编号或记录键，并逐行填写仓库。",
+      "targetCount": 0
+    }
+  ],
+  "nestedCalls": 0,
+  "oldRunUnchanged": true,
+  "baselineFactsUnchanged": 453,
+  "criteriaUnchanged": true,
+  "publicationCurrent": true,
+  "viewCount": 7,
+  "publishedAt": "2026-10-30T05:14:45.290999+00:00"
+}

@@ -1,14 +1,26 @@
 import { materializeDefinition } from '../../shared/expansion.ts';
 import { validateExpansion } from '../flow/expansion.ts';
-import { collectionFunction, nodeInputPorts } from '../../shared/node-ports.ts';
+import {
+  collectionFunction,
+  nodeInputPorts,
+  nodeOutputPorts,
+  nodeOperation,
+} from '../../shared/node-ports.ts';
 export { nodeInputPorts } from '../../shared/node-ports.ts';
 import { executeCollection, namedValues } from './collections.ts';
+import { invocationBatches, invocationValue } from './invocation.ts';
+import { isDeepStrictEqual } from 'node:util';
+import { parseCandidates } from '../../shared/workitem-candidates.ts';
 import { randomUUID } from 'node:crypto';
 import type { FileStore } from '../files/index.ts';
 import { validateValue } from '../flow/schema.ts';
 import { evaluateExpression } from '../flow/expressions.ts';
 import { validateForRun } from '../flow/index.ts';
+import { validateCallReferences } from '../flow/calls.ts';
+import { validateInvocation } from '../flow/contracts.ts';
 import type {
+  CandidateSource,
+  ChildCreationReceipt,
   Definition,
   FlowNode,
   Inputs,
@@ -16,6 +28,7 @@ import type {
   Json,
   NodeExecution,
   NodeResult,
+  OutputReference,
   Run,
   WorkItemInput,
   Work,
@@ -43,7 +56,9 @@ export function validateInputs(inputs: Inputs, ports: string[]) {
   for (const [p, list] of Object.entries(inputs)) {
     if (!ports.includes(p))
       throw Error(`不支持输入端口 ${p}，需要 ${ports.join('、')}。`);
-    for (const i of list)
+    for (const i of list) {
+      if (i.contentUrl)
+        throw Error('输入正文尚未加载，请使用固定来源选择原始输入。');
       if (
         !i.sampleId ||
         !Array.isArray(i.materialIds) ||
@@ -51,9 +66,15 @@ export function validateInputs(inputs: Inputs, ports: string[]) {
         i.value === undefined
       )
         throw Error('输入项缺少内容或来源。');
+    }
   }
 }
 export interface RunHooks {
+  onCreateItems?: (
+    parentId: string,
+    source: CandidateSource,
+    signal: AbortSignal,
+  ) => Promise<ChildCreationReceipt[]>;
   onMilestone?: (
     workId: string,
     run: Run,
@@ -78,6 +99,7 @@ export function createRuns(
   const timers = new Map<string, ReturnType<typeof setTimeout>>();
   const clock = hooks.now ?? Date.now;
   const timestamp = () => new Date(clock()).toISOString();
+  const checkedCalls = new Map<string, Set<string>>();
   let closed = false;
   const owner = (workId: string, itemId?: string) =>
     itemId ? `item:${itemId}` : `work:${workId}`;
@@ -94,7 +116,9 @@ export function createRuns(
     if (reservations.get(workId) === value) reservations.delete(workId);
   }
   async function readRun(workId: string, id: string) {
-    const run = (await files.read(workId)).runs.find((r) => r.id === id);
+    const run = await files.select(workId, (w) =>
+      w.runs.find((r) => r.id === id),
+    );
     if (!run) throw Error('运行不存在');
     return run;
   }
@@ -104,9 +128,7 @@ export function createRuns(
     edit: (run: Run) => void,
   ) {
     if (closed) return;
-    await files.change(workId, (w) => {
-      const r = w.runs.find((r) => r.id === id);
-      if (!r) throw Error('运行不存在');
+    await files.changeRun(workId, id, (r) => {
       if (!closed) edit(r);
     });
   }
@@ -120,7 +142,11 @@ export function createRuns(
     const job = (jobs.get(id) ?? Promise.resolve()).then(async () => {
       if (closed) return;
       const run = await readRun(workId, id);
-      if (terminal(run) || run.status === 'interrupted') return;
+      if (terminal(run) || run.status === 'interrupted') {
+        active.delete(id);
+        checkedCalls.delete(id);
+        return;
+      }
       const entry = active.get(id);
       if (!entry) return;
       try {
@@ -141,10 +167,16 @@ export function createRuns(
       }
       if (closed) return;
       const latest = await readRun(workId, id);
-      if (terminal(latest)) {
+      if (terminal(latest) || latest.status === 'interrupted') {
         active.delete(id);
+        checkedCalls.delete(id);
         clearTimer(id);
       } else arm(workId, latest);
+      if (
+        latest.parentCall &&
+        (terminal(latest) || latest.status === 'interrupted')
+      )
+        schedule(latest.parentCall.workId, latest.parentCall.runId);
     });
     jobs.set(id, job);
     void job
@@ -167,7 +199,7 @@ export function createRuns(
     timers.set(run.id, timer);
   }
   function sourceWorkItem(
-    work: Work,
+    work: Pick<Work, 'runs'>,
     inputs: Inputs,
   ): WorkItemInput | undefined {
     const contexts: (WorkItemInput | undefined)[] = [];
@@ -198,7 +230,10 @@ export function createRuns(
   }
   async function start(workId: string, options: StartRun) {
     if (closed) throw Error('运行器已关闭');
-    const work = await files.read(workId);
+    const work = await files.select(workId, (work) => ({
+      materials: work.materials,
+      runs: work.runs,
+    }));
     const workItem = options.workItem ?? sourceWorkItem(work, options.inputs);
     const key = owner(workId, workItem?.id);
     if (
@@ -225,6 +260,13 @@ export function createRuns(
         options.definitionId,
       );
       validateForRun(definition);
+      await validateCallReferences(
+        files,
+        workId,
+        options.definitionId,
+        definition,
+        workItem?.id,
+      );
       const scope = options.scope;
       const selected =
         typeof scope === 'object'
@@ -232,6 +274,15 @@ export function createRuns(
           : undefined;
       if (scope !== 'full' && !selected)
         throw Error('该版本中没有选中的节点，请重新选择。');
+      if (
+        options.workItem &&
+        options.effectMode === 'commit' &&
+        options.commitScope === 'node' &&
+        !options.comparisonId &&
+        selected &&
+        !['agent', 'function'].includes(selected.kind)
+      )
+        throw Error('正式单步骤只支持普通Agent或Function。');
       validateInputs(
         options.inputs,
         selected ? nodeInputPorts(selected) : definition.inputs,
@@ -241,10 +292,21 @@ export function createRuns(
         definitionId: options.definitionId,
         scope: copy(scope),
         inputs: copy(options.inputs),
+        materials: copy(
+          options.materials ?? workItem?.materials ?? work.materials,
+        ).filter((material) =>
+          items(options.inputs).some((item) =>
+            item.materialIds.includes(material.id),
+          ),
+        ),
+        inputSources: copy(options.inputSources),
+        sampleSource: copy(options.sampleSource),
+        retrySource: copy(options.retrySource),
         workItem: copy(workItem),
         effectMode:
           options.workItem &&
-          scope === 'full' &&
+          !options.comparisonId &&
+          (scope === 'full' || options.commitScope === 'node') &&
           options.effectMode === 'commit'
             ? 'commit'
             : 'preview',
@@ -272,6 +334,230 @@ export function createRuns(
       active.delete(id);
       throw error;
     }
+  }
+  /** A call is an ordinary nested Run in this same scheduler, never public start(). */
+  async function invokeCall(
+    parentWorkId: string,
+    parent: Run,
+    node: FlowNode,
+    input: Inputs,
+    result: NodeResult,
+    signal: AbortSignal,
+  ): Promise<
+    | { status: 'completed'; outputs: Inputs }
+    | { status: 'waiting' | 'interrupted'; outputs?: undefined }
+  > {
+    const call = node.call!;
+    const definition = await files.readDefinition(
+      call.workId,
+      call.definitionId,
+    );
+    const checked = checkedCalls.get(parent.id) ?? new Set<string>();
+    checkedCalls.set(parent.id, checked);
+    const interfaceKey = JSON.stringify([call.workId, call.definitionId]);
+    if (!checked.has(interfaceKey)) {
+      const ancestors: string[] = [];
+      let ancestor = parent,
+        ancestorWorkId = parentWorkId;
+      for (;;) {
+        ancestors.push(JSON.stringify([ancestorWorkId, ancestor.definitionId]));
+        if (!ancestor.parentCall) break;
+        ancestorWorkId = ancestor.parentCall.workId;
+        ancestor = await readRun(ancestorWorkId, ancestor.parentCall.runId);
+      }
+      await validateCallReferences(
+        files,
+        call.workId,
+        call.definitionId,
+        definition,
+        parent.workItem?.id,
+        ancestors,
+      );
+      checked.add(interfaceKey);
+    }
+    if (
+      JSON.stringify(definition.inputs) !== JSON.stringify(call.inputNames) ||
+      JSON.stringify(Object.keys(definition.outputs)) !==
+        JSON.stringify(call.outputNames)
+    )
+      throw Error('调用端口与固定方法接口不一致。');
+    validateInputs(input, definition.inputs);
+    const invalid = validateInvocation(
+      definition,
+      Object.fromEntries(
+        Object.entries(input).map(([p, rows]) => [p, rows.map((i) => i.value)]),
+      ),
+    );
+    if (invalid.length) throw Error(invalid.map((i) => i.message).join('\n'));
+    signal.throwIfAborted();
+    if (closed) throw Error('运行器已关闭');
+    if (!result.call) {
+      result.call = {
+        workId: call.workId,
+        definitionId: call.definitionId,
+        runId: randomUUID(),
+      };
+      await changeRun(parentWorkId, parent.id, (r) => {
+        if (!r.stopRequested)
+          r.results.find((x) => x.id === result.id)!.call = copy(result.call);
+      });
+    }
+    signal.throwIfAborted();
+    const ref = result.call;
+    let child = await files.select(ref.workId, (work) =>
+      work.runs.find((run) => run.id === ref.runId),
+    );
+    if (!child) {
+      const liveParent = await readRun(parentWorkId, parent.id);
+      const availableMaterials = parent.materials;
+      const materialIds = [
+        ...new Set(items(input).flatMap((item) => item.materialIds)),
+      ];
+      const materials = materialIds.map((id) => {
+        const material = availableMaterials.find((m) => m.id === id);
+        if (!material)
+          throw Error(`调用输入引用的材料 ${id} 不在本轮冻结范围中。`);
+        return copy(material);
+      });
+      const sources = new Map<string, OutputReference>();
+      const remember = (source: OutputReference) =>
+        sources.set(JSON.stringify(source), copy(source));
+      for (const item of items(input)) {
+        if (item.source) remember(item.source);
+        for (const resultId of item.sourceResultIds) {
+          const producer = liveParent.results.find((r) => r.id === resultId);
+          if (!producer) {
+            if (!item.source)
+              for (const source of parent.inputSources ?? [])
+                if (source.resultId === resultId) remember(source);
+            continue;
+          }
+          for (const [port, rows] of Object.entries(producer.outputs)) {
+            const index = rows.findIndex((row) => isDeepStrictEqual(row, item));
+            if (index >= 0)
+              remember({
+                workId: parentWorkId,
+                runId: parent.id,
+                resultId,
+                port,
+                index,
+              });
+          }
+        }
+      }
+      child = {
+        id: ref.runId,
+        definitionId: ref.definitionId,
+        scope: 'full',
+        inputs: copy(input),
+        inputSources: [...sources.values()],
+        materials,
+        workItem: parent.workItem
+          ? { ...copy(parent.workItem), materials }
+          : undefined,
+        effectMode: parent.effectMode,
+        comparisonId: parent.comparisonId,
+        parentCall: {
+          workId: parentWorkId,
+          runId: parent.id,
+          definitionId: parent.definitionId,
+          nodeId: node.id,
+          instanceId: result.instanceId,
+          resultId: result.id,
+        },
+        status: 'queued',
+        stopRequested: false,
+        nodeStates: Object.fromEntries(
+          definition.nodes.map((n) => [n.id, 'queued']),
+        ),
+        nodeTotals: {},
+        results: [],
+        waits: [],
+        signals: [],
+        startedAt: timestamp(),
+      };
+      const pending = child;
+      await files.change(ref.workId, (work) => {
+        signal.throwIfAborted();
+        if (!work.runs.some((r) => r.id === pending.id))
+          work.runs.push(pending);
+      });
+      child = await readRun(ref.workId, ref.runId);
+    }
+    if (
+      child.parentCall?.resultId !== result.id ||
+      child.parentCall.runId !== parent.id ||
+      child.definitionId !== call.definitionId ||
+      !isDeepStrictEqual(child.inputs, input)
+    )
+      throw Error('调用恢复身份或冻结输入不一致，不能重建另一执行。');
+    if (!terminal(child) && child.status !== 'interrupted') {
+      if (!active.has(child.id))
+        active.set(child.id, {
+          workId: ref.workId,
+          owner: `call:${child.id}`,
+          controller: new AbortController(),
+        });
+      // Parent await releases the JS turn. Child has its own job key and shares perform().
+      if (!jobs.has(child.id)) schedule(ref.workId, child.id);
+      while (jobs.has(child.id)) await jobs.get(child.id);
+      child = await readRun(ref.workId, child.id);
+    }
+    signal.throwIfAborted();
+    await changeRun(parentWorkId, parent.id, (run) => {
+      const prefix = `${result.id}/`;
+      run.waits = (run.waits ?? []).filter(
+        (w) => !w.source || !w.nodeId.startsWith(prefix),
+      );
+      if (!run.stopRequested && child!.status === 'waiting')
+        run.waits.push(
+          ...(child!.waits ?? [])
+            .filter((w) => w.status === 'pending')
+            .map((w) => ({
+              ...copy(w),
+              nodeId: `${prefix}${w.nodeId}`,
+              source: w.source ?? { ...ref, nodeId: w.nodeId },
+            })),
+        );
+    });
+    if (child.status === 'waiting' || child.status === 'interrupted')
+      return { status: child.status };
+    if (child.status !== 'completed')
+      throw Error(
+        child.error ??
+          child.results.find((r) => r.status === 'failed')?.error ??
+          `被调用方法${child.status === 'cancelled' ? '已取消' : '执行失败'}。`,
+      );
+    const outputs: Inputs = {};
+    for (const [name, [nodeId, port]] of Object.entries(definition.outputs)) {
+      outputs[name] = child.results
+        .filter(
+          (r) =>
+            r.nodeId === nodeId &&
+            r.status === 'completed' &&
+            !r.intermediate &&
+            !r.purpose,
+        )
+        .sort(
+          (a, b) =>
+            Number(a.instanceId.split(':').at(-1)) -
+            Number(b.instanceId.split(':').at(-1)),
+        )
+        .flatMap((r) =>
+          (r.outputs[port] ?? []).map((i, index) => ({
+            ...copy(i),
+            sourceResultIds: [result.id],
+            source: {
+              workId: call.workId,
+              runId: child!.id,
+              resultId: r.id,
+              port,
+              index,
+            },
+          })),
+        );
+    }
+    return { status: 'completed', outputs };
   }
   async function perform(
     workId: string,
@@ -302,12 +588,9 @@ export function createRuns(
     const values: Record<string, Inputs> = { $input: copy(run.inputs) };
     const states = { ...run.nodeStates };
     for (const node of definition.nodes) {
-      const output: Inputs =
-        node.kind === 'branch'
-          ? { matched: [], unmatched: [] }
-          : node.kind === 'wait'
-            ? { output: [], event: [] }
-            : { output: [] };
+      const output: Inputs = Object.fromEntries(
+        nodeOutputPorts(node).map((port) => [port, []]),
+      );
       for (const result of run.results
         .filter(
           (r) =>
@@ -428,21 +711,21 @@ export function createRuns(
           r.nodeStates[nodeId] = 'running';
           r.results.push(result);
         });
+        let planningExecution: NodeExecution | undefined;
         try {
           validateValue(
             node.inputSchema,
             items(input).map((i) => i.value),
             '输入',
           );
-          const work = await files.read(workId);
-          const context: NodeExecution = {
+          const context: NodeExecution = (planningExecution = {
             workId,
             runId: run.id,
             definitionId: run.definitionId,
             node,
             instanceId: result.instanceId,
             inputs: copy(input),
-            materials: copy(run.workItem?.materials ?? work.materials),
+            materials: copy(run.materials),
             workItem: run.workItem,
             problem: sourceDefinition.problem,
             signal,
@@ -457,7 +740,7 @@ export function createRuns(
                 else saved.activities[at] = activity;
               });
             },
-          };
+          });
           const proposal = await executeNode(context);
           if (signal.aborted || closed) throw Error('运行已停止');
           await changeRun(workId, run.id, (r) => {
@@ -492,6 +775,8 @@ export function createRuns(
             const saved = r.results.find((x) => x.id === result.id)!;
             saved.status = signal.aborted ? 'cancelled' : 'failed';
             saved.error = message(error);
+            saved.rawOutput = planningExecution?.rawOutput;
+            saved.effectiveModel = planningExecution?.effectiveModel;
             saved.finishedAt = timestamp();
             r.nodeStates[nodeId] = states[nodeId];
           });
@@ -552,23 +837,20 @@ export function createRuns(
       await changeRun(workId, run.id, (r) => {
         if (!r.stopRequested) r.nodeStates[nodeId] = 'running';
       });
-      const operation =
-        node.operation ?? (node.mode === 'each' ? 'map' : 'aggregate');
-      const aggregate =
-        operation === 'aggregate' ||
-        ['branch', 'wait', 'milestone'].includes(node.kind);
-      const batches: Inputs[] = aggregate
-        ? [input]
-        : input.input.map((i) => ({ input: [i] }));
+      const operation = nodeOperation(node);
+      const aggregate = operation === 'aggregate';
+      const mappedPort = node.kind === 'call' ? node.call!.eachPort! : 'input';
+      const batches = invocationBatches(node, input);
       await changeRun(workId, run.id, (r) => {
         (r.nodeTotals ??= {})[nodeId] = batches.length;
       });
       const producedByIndex: Inputs[] = [];
       let failed = false,
+        suspended: 'waiting' | 'interrupted' | undefined,
         cursor = 0;
       async function instance(index: number) {
         let batch = batches[index];
-        const baseInstanceId = `${nodeId}:${aggregate ? 'all' : batch.input[0].sampleId}:${index}`;
+        const baseInstanceId = `${nodeId}:${aggregate ? 'all' : batch[mappedPort][0].sampleId}:${index}`;
         for (
           let iteration = 1;
           iteration <= (node.repeat?.max ?? 1);
@@ -588,7 +870,14 @@ export function createRuns(
             producedByIndex[index] = copy(previous.outputs);
             return;
           }
-          const result: NodeResult = {
+          // A create-items resume must retain its first persisted input identity.
+          const original =
+            node.kind === 'create-items' || node.kind === 'call'
+              ? run.results.find(
+                  (r) => r.nodeId === nodeId && r.instanceId === instanceId,
+                )
+              : undefined;
+          const result: NodeResult = original ?? {
             id: randomUUID(),
             runId: run.id,
             definitionId: run.definitionId,
@@ -602,7 +891,12 @@ export function createRuns(
             startedAt: timestamp(),
           };
           await changeRun(workId, run.id, (r) => {
-            r.results.push(result);
+            if (original) {
+              const saved = r.results.find((x) => x.id === original.id)!;
+              saved.status = 'running';
+              delete saved.error;
+              delete saved.finishedAt;
+            } else r.results.push(result);
           });
           const wrap = (
             value: Json,
@@ -618,18 +912,50 @@ export function createRuns(
           });
           let execution: NodeExecution | undefined;
           try {
+            if (original && !isDeepStrictEqual(original.input, batch))
+              throw Error(
+                '恢复候选与首次保存输入不一致，不能重新解释原建项来源。',
+              );
             const source = items(batch);
             validateValue(
               node.inputSchema,
-              collectionFunction(node)
-                ? namedValues(node, batch)
-                : aggregate
-                  ? source.map((i) => i.value)
-                  : source[0].value,
+              invocationValue(node, batch),
               '输入',
             );
             let produced: Inputs;
-            if (collectionFunction(node)) {
+            if (node.kind === 'call') {
+              const outcome = await invokeCall(
+                workId,
+                run,
+                node,
+                batch,
+                result,
+                signal,
+              );
+              if (!outcome.outputs) {
+                suspended =
+                  outcome.status === 'interrupted'
+                    ? 'interrupted'
+                    : (suspended ?? 'waiting');
+                await changeRun(workId, run.id, (r) => {
+                  const saved = r.results.find((x) => x.id === result.id)!;
+                  if (!r.stopRequested) saved.status = outcome.status;
+                });
+                return;
+              }
+              produced = outcome.outputs;
+              validateValue(
+                node.expectedOutput,
+                namedValues(
+                  {
+                    ...node,
+                    call: { ...node.call!, inputNames: node.call!.outputNames },
+                  },
+                  produced,
+                ),
+                '调用输出',
+              );
+            } else if (collectionFunction(node)) {
               const rows = executeCollection(node, batch);
               validateValue(
                 node.expectedOutput,
@@ -649,6 +975,81 @@ export function createRuns(
                   ],
                 })),
               };
+            } else if (node.kind === 'create-items') {
+              produced = { output: [] };
+              let incomplete = false;
+              for (const [inputIndex, item] of batch.input.entries()) {
+                if (closed) return;
+                signal.throwIfAborted();
+                const candidates = parseCandidates(item.value);
+                const candidateSource: CandidateSource = {
+                  kind: 'node-input',
+                  workId,
+                  runId: run.id,
+                  resultId: result.id,
+                  port: 'input',
+                  index: inputIndex,
+                };
+                const output = wrap(
+                  { source: { ...candidateSource }, receipts: [] },
+                  [item],
+                  item.sampleId,
+                );
+                produced.output.push(output);
+                // The fixed source also survives a hook-level failure before it returns receipts.
+                await changeRun(workId, run.id, (r) => {
+                  r.results.find((x) => x.id === result.id)!.outputs =
+                    copy(produced);
+                });
+                const commit =
+                  run.workItem &&
+                  run.effectMode === 'commit' &&
+                  run.scope === 'full' &&
+                  !run.comparisonId;
+                let value: Json;
+                if (commit) {
+                  if (!hooks.onCreateItems)
+                    throw Error('建立子项业务动作未接线');
+                  const receipts = await hooks.onCreateItems(
+                    run.workItem!.id,
+                    candidateSource,
+                    signal,
+                  );
+                  if (closed) return;
+                  incomplete ||= receipts.some((r) =>
+                    ['failed', 'needs-input'].includes(r.status),
+                  );
+                  value = {
+                    source: { ...candidateSource },
+                    receipts: receipts.map((r) => ({
+                      ...r,
+                      ...(r.source ? { source: { ...r.source } } : {}),
+                    })),
+                  } as Json;
+                } else {
+                  value = {
+                    source: { ...candidateSource },
+                    preview: true,
+                    candidates,
+                    receipts: [],
+                  } as unknown as Json;
+                }
+                output.value = value;
+                // Preserve successful receipts even when a later container fails or stop arrives.
+                await changeRun(workId, run.id, (r) => {
+                  r.results.find((x) => x.id === result.id)!.outputs =
+                    copy(produced);
+                });
+              }
+              if (incomplete)
+                throw Error(
+                  '部分子项尚未建立，请检查回执并补充或重试未建立项。',
+                );
+              validateValue(
+                node.expectedOutput,
+                produced.output.map((i) => i.value),
+                '输出',
+              );
             } else if (node.kind === 'branch') {
               validateValue(
                 node.expectedOutput,
@@ -712,27 +1113,6 @@ export function createRuns(
                   ),
                 ];
               }
-            } else if (
-              node.kind === 'function' &&
-              !node.operation &&
-              node.functionName !== 'expression'
-            ) {
-              // Legacy collection functions preserve their established one-result-per-input behavior.
-              produced = {
-                output: source.map((i) => {
-                  const value =
-                    node.functionName === 'select-fields'
-                      ? Object.fromEntries(
-                          (node.params?.fields ?? []).map((key) => [
-                            key,
-                            field(i.value, key) ?? null,
-                          ]),
-                        )
-                      : i.value;
-                  validateValue(node.expectedOutput, value, '输出');
-                  return wrap(value, [i], i.sampleId);
-                }),
-              };
             } else {
               let value: Json;
               if (node.kind === 'function') {
@@ -751,19 +1131,20 @@ export function createRuns(
                         )
                       : argument;
               } else {
-                const work = await files.read(workId);
                 value = await executeNode(
                   (execution = {
                     workId,
                     runId: run.id,
                     definitionId: run.definitionId,
                     workItem: run.workItem,
+                    effectMode: run.effectMode,
+                    scope: run.scope,
                     problem: sourceDefinition.problem,
                     iteration: node.repeat ? iteration : undefined,
                     node,
                     instanceId,
                     inputs: copy(batch),
-                    materials: copy(run.workItem?.materials ?? work.materials),
+                    materials: copy(run.materials),
                     signal,
                     onActivity: async (activity) => {
                       if (closed || signal.aborted) return;
@@ -843,6 +1224,7 @@ export function createRuns(
               const saved = r.results.find((x) => x.id === result.id)!;
               saved.status = signal.aborted ? 'cancelled' : 'failed';
               saved.error = signal.aborted ? '已停止' : message(error);
+              saved.rawOutput = execution?.rawOutput;
               if (execution?.effectiveModel)
                 saved.effectiveModel = execution.effectiveModel;
               saved.finishedAt = timestamp();
@@ -861,10 +1243,9 @@ export function createRuns(
           },
         ),
       );
-      const output: Inputs =
-        node.kind === 'branch'
-          ? { matched: [], unmatched: [] }
-          : { output: [] };
+      const output: Inputs = Object.fromEntries(
+        nodeOutputPorts(node).map((port) => [port, []]),
+      );
       for (const produced of producedByIndex)
         if (produced)
           for (const [port, list] of Object.entries(produced))
@@ -872,9 +1253,7 @@ export function createRuns(
       values[nodeId] = output;
       states[nodeId] = signal.aborted
         ? 'cancelled'
-        : failed
-          ? 'failed'
-          : 'completed';
+        : (suspended ?? (failed ? 'failed' : 'completed'));
       await changeRun(workId, run.id, (r) => {
         r.nodeStates[nodeId] = states[nodeId];
       });
@@ -931,14 +1310,16 @@ export function createRuns(
       r.status =
         signal.aborted || r.stopRequested
           ? 'cancelled'
-          : Object.values(states).includes('waiting')
-            ? 'waiting'
-            : Object.values(states).some(
-                  (s) => s === 'failed' || s === 'blocked',
-                )
-              ? 'failed'
-              : 'completed';
-      if (r.status !== 'waiting') {
+          : Object.values(states).includes('interrupted')
+            ? 'interrupted'
+            : Object.values(states).includes('waiting')
+              ? 'waiting'
+              : Object.values(states).some(
+                    (s) => s === 'failed' || s === 'blocked',
+                  )
+                ? 'failed'
+                : 'completed';
+      if (r.status !== 'waiting' && r.status !== 'interrupted') {
         r.finishedAt = timestamp();
         for (const id of Object.keys(r.nodeStates))
           if (['queued', 'running', 'waiting'].includes(r.nodeStates[id]))
@@ -947,13 +1328,15 @@ export function createRuns(
       }
     });
     const finished = await readRun(workId, run.id);
-    if (hooks.onFinish && terminal(finished))
+    if (hooks.onFinish && terminal(finished) && !finished.parentCall)
       await hooks.onFinish(workId, finished).catch((error) => {
         console.error('运行收尾处理失败：', message(error));
       });
   }
   async function stop(workId: string, runId: string) {
     active.get(runId)?.controller.abort();
+    const current = await readRun(workId, runId);
+    const children = current.results.flatMap((r) => (r.call ? [r.call] : []));
     clearTimer(runId);
     await changeRun(workId, runId, (r) => {
       if (terminal(r)) return;
@@ -970,6 +1353,19 @@ export function createRuns(
         }
     });
     active.delete(runId);
+    await Promise.all(
+      children.map(async (child) => {
+        // The parent receipt is saved before child creation; stop may observe that boundary.
+        if (
+          await files.select(child.workId, (work) =>
+            work.runs.some((run) => run.id === child.runId),
+          )
+        )
+          await stop(child.workId, child.runId);
+      }),
+    );
+    if (current.parentCall)
+      schedule(current.parentCall.workId, current.parentCall.runId);
   }
   async function signalRun(
     workId: string,
@@ -978,6 +1374,26 @@ export function createRuns(
   ) {
     if (!event.id?.trim() || !event.name?.trim())
       throw Error('事件需要 ID 和名称');
+    const current = await readRun(workId, runId);
+    const known = current.signals?.find((s) => s.id === event.id);
+    const destinations = new Map<string, { workId: string; runId: string }>();
+    if (
+      known ||
+      (!terminal(current) &&
+        !current.stopRequested &&
+        current.status !== 'interrupted')
+    ) {
+      for (const wait of current.waits ?? [])
+        if (
+          (known || wait.status === 'pending') &&
+          wait.event === event.name &&
+          wait.source
+        )
+          destinations.set(
+            JSON.stringify([wait.source.workId, wait.source.runId]),
+            wait.source,
+          );
+    }
     await changeRun(workId, runId, (r) => {
       const previous = r.signals?.find((s) => s.id === event.id);
       if (previous) {
@@ -1002,12 +1418,19 @@ export function createRuns(
         w.signalId = event.id;
       }
     });
-    schedule(workId, runId);
+    try {
+      for (const destination of destinations.values())
+        await signalRun(destination.workId, destination.runId, event);
+    } finally {
+      schedule(workId, runId);
+    }
   }
   async function resume(workId: string, runId: string) {
     const old = await readRun(workId, runId);
     if (old.status !== 'interrupted') throw Error('仅中断运行可显式继续');
-    const key = owner(workId, old.workItem?.id);
+    const key = old.parentCall
+      ? `call:${old.id}`
+      : owner(workId, old.workItem?.id);
     if (occupied(key)) throw Error('已有运行');
     active.set(runId, {
       workId,
@@ -1026,10 +1449,27 @@ export function createRuns(
         )
           r.nodeStates[id] = 'queued';
     });
+    for (const result of old.results) {
+      if (!result.call) continue;
+      const child = await readRun(result.call.workId, result.call.runId).catch(
+        () => undefined,
+      );
+      if (child?.status === 'interrupted')
+        await resume(result.call.workId, child.id);
+    }
     schedule(workId, runId);
   }
   async function recover() {
-    for (const work of await files.list())
+    for (const work of await files.list((w) => ({
+      id: w.id,
+      runs: w.runs.map((r) => ({
+        id: r.id,
+        status: r.status,
+        stopRequested: r.stopRequested,
+        parentCall: r.parentCall,
+        workItem: r.workItem,
+      })),
+    })))
       for (const run of work.runs)
         if (
           run.status === 'waiting' &&
@@ -1038,7 +1478,9 @@ export function createRuns(
         ) {
           active.set(run.id, {
             workId: work.id,
-            owner: owner(work.id, run.workItem?.id),
+            owner: run.parentCall
+              ? `call:${run.id}`
+              : owner(work.id, run.workItem?.id),
             controller: new AbortController(),
           });
           schedule(work.id, run.id);
@@ -1070,6 +1512,8 @@ export function createRuns(
       inputs,
       workItem: copy(old.workItem),
       effectMode: 'preview',
+      inputSources: copy(old.inputSources),
+      materials: copy(old.materials),
     });
   }
   return {
@@ -1086,6 +1530,7 @@ export function createRuns(
       for (const id of timers.keys()) clearTimer(id);
       for (const entry of active.values()) entry.controller.abort();
       active.clear();
+      checkedCalls.clear();
     },
     wait: async (runId: string) => {
       while (jobs.has(runId)) await jobs.get(runId);

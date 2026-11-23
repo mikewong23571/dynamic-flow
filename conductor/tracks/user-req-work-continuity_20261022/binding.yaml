@@ -1,0 +1,8 @@
+binding:
+  owner: mike
+  session_id: 01a16149-253a-73a0-90c9-d5a03238bc6d
+  host: dev-mike
+  pid: 678454
+  started_at: 2026-10-22T10:49:02.488182+00:00
+  released: true
+  released_at: 2026-10-22T10:52:23.837480+00:00

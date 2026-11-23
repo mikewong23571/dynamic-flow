@@ -1,0 +1,45 @@
+{
+  "node": "v25.4.0",
+  "ajv": "8.20.0",
+  "schema": {
+    "type": "object",
+    "required": [
+      "kind",
+      "keys"
+    ],
+    "properties": {
+      "kind": {
+        "type": "string",
+        "const": "groupBy"
+      },
+      "keys": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 1
+      }
+    },
+    "additionalProperties": false
+  },
+  "good": true,
+  "bad": false,
+  "errors": [
+    {
+      "instancePath": "/keys",
+      "schemaPath": "#/properties/keys/minItems",
+      "keyword": "minItems",
+      "params": {
+        "limit": 1
+      },
+      "message": "must NOT have fewer than 1 items"
+    }
+  ],
+  "missingPathAccepted": true,
+  "stringRejected": true,
+  "pureValidationKeptOriginal": true,
+  "mutationValid": true,
+  "mutatedValue": {
+    "amount": 3
+  }
+}

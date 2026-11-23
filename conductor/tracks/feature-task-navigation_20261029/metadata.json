@@ -1,0 +1,23 @@
+{
+  "track_id": "feature-task-navigation_20261029",
+  "type": "feature",
+  "status": "complete",
+  "phase": "deployed-to-managed-instance",
+  "executor": "root",
+  "subagents_allowed": true,
+  "created_at": "2026-10-29",
+  "updated_at": "2026-10-29",
+  "workspace": "/home/mike/projs/fork/dynamic-flow-workitem-composition",
+  "depends_on": [
+    "workitem-composition_20261028"
+  ],
+  "authorization": "用户明确要求启动track，按已确定合同落地整体navigate优化",
+  "implementation_status": "implemented-and-verified",
+  "next_step": "4320已切换，旧批次保持暂停；切换、真实模型验收和规划稳定性限制见导航track的deployment.md。",
+  "delegation": "用户最新明确授权：新的agent只读调查；主代理综合设计并统一实施",
+  "design_status": "representative-and-actual-two-sizes-reviewed",
+  "completed_at": "2026-10-29",
+  "deployed_at": "2026-10-29",
+  "deployment_target": "/home/mike/projs/fork/dynamic-flow",
+  "deployment_url": "http://10.134.94.200:4320"
+}

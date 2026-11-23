@@ -1,0 +1,10 @@
+{
+  "candidates": 1000,
+  "creationMs": 986,
+  "creationMethodReads": 1,
+  "pageMs": 224,
+  "pageMethodReads": 1,
+  "pageBytes": 340338,
+  "pageRows": 25,
+  "linkedRows": 1000
+}

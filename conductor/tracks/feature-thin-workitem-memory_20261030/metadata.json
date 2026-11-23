@@ -1,0 +1,13 @@
+{
+  "track_id": "feature-thin-workitem-memory_20261030",
+  "type": "feature",
+  "status": "complete",
+  "executor": "root",
+  "workspace": "/home/mike/projs/fork/dynamic-flow-workitem-composition",
+  "subagents_allowed": false,
+  "authorization": "用户明确要求修复浏览器OOM与过厚的工作项流程",
+  "depends_on": [
+    "feature-workitem-source-continuation_20261030"
+  ],
+  "completed_at": "2026-10-30T06:20:14.961424+00:00"
+}

@@ -113,7 +113,9 @@ test('大文件导入：洞见以 cleaned-insight.json 为准登记为一条材�
   const insight = {
     overview: '42 万行多来源扫描汇总',
     structure: {
-      sheets: [{ name: '三方组件', dataRows: 1893, keyCols: ['Vulnerability ID'] }],
+      sheets: [
+        { name: '三方组件', dataRows: 1893, keyCols: ['Vulnerability ID'] },
+      ],
     },
     stats: '8290 条唯一 CVE',
     qualityIssues: '两个空 sheet',
@@ -223,7 +225,13 @@ test('导入运行失败时消息如实失败且不登记材料', async () => {
 test('剖析定义幂等 seed：结构签名识别，不占草稿', async () => {
   const f = await setup(async ({ node }) => {
     if (node.id === 'probe')
-      return { kind: 'txt', bytes: 5, rows: 1, scale: 'small', preview: 'x' } as Json;
+      return {
+        kind: 'txt',
+        bytes: 5,
+        rows: 1,
+        scale: 'small',
+        preview: 'x',
+      } as Json;
     if (node.id === 'register-small') return { materials: ['一条'] } as Json;
     throw new Error(`不应执行节点 ${node.id}`);
   });

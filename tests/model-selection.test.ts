@@ -38,7 +38,15 @@ max_context_size = 100000
 const definition: Definition = {
   schemaVersion: 1,
   inputs: ['materials'],
-  nodes: [{ id: 'a', label: '分类', kind: 'agent', mode: 'all', task: '分类' }],
+  nodes: [
+    {
+      id: 'a',
+      label: '分类',
+      kind: 'agent',
+      operation: 'aggregate',
+      task: '分类',
+    },
+  ],
   edges: [{ from: ['$input', 'materials'], to: ['a', 'input'] }],
   outputs: { out: ['a', 'output'] },
 };

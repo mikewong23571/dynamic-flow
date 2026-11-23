@@ -1,0 +1,126 @@
+{
+  "source": {
+    "workId": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+    "runId": "12f37002-976b-4746-bc6c-54b4bb1e723c",
+    "definitionId": "bbfd0ac7-307e-490f-8b88-7268f92fe83a",
+    "resultId": "e0d16945-79e3-4d14-a483-7ece9b644509"
+  },
+  "value": {
+    "cve_id": "CVE-2025-27516",
+    "component": "Jinja2",
+    "business_scope": [
+      "SCC/chatops-api",
+      "SCC/adr-api"
+    ],
+    "questions": [
+      "CVE-2025-27516 的官方漏洞事实是什么（发布方、公告内容、漏洞类型与影响描述）？",
+      "Jinja2 哪些版本受 CVE-2025-27516 影响，受影响版本范围如何界定？",
+      "修复依据是什么（官方 advisory、修复版本号、补丁 commit）？",
+      "该漏洞的触发条件是什么（何种输入或使用场景下可被触发）？",
+      "SCC chatops-api 与 SCC/adr-api 中 Jinja2 的实际依赖版本与引入路径是什么，是否落在受影响版本范围内？"
+    ],
+    "provided_facts": [
+      "本次输入指定调查任务为 CVE-2025-27516（材料 M01 与 workItem.data.cveId；该编号与组件线索是任务输入，不作为漏洞已成立的证据）。",
+      "本次输入的组件线索为 Jinja2（材料 M01 与 workItem.data.library），具体版本未在本次材料中给出。",
+      "业务范围限定为 SCC chatops-api、adr-api（材料 M01），workItem.data 记为 SCC/chatops-api 与 SCC/adr-api。",
+      "材料 M01 原文：「两者在 cve-fix 已有扫描索引中有 Jinja2 依赖线索，具体记录在 A 完成后交给 B」；本节点未读取该扫描索引。",
+      "材料 M01 要求通过真实 WebSearch MCP 收集官方公告、受影响版本、修复依据与触发条件，并保留实际取得的来源正文（取证由后续节点执行）。",
+      "材料 M01 原文：「本轮不读取旧影响 manifest 当作新判定，不修改业务源码或业务环境」。",
+      "上游官方 advisory 已确认（pallets/jinja 安全公告 GHSA-cpwx-vrp4-4pq7，标题『Sandbox breakout through attr filter selecting format method』，由维护者 davism 于 2025-03-05 发布）：受影响版本 <=3.1.5，严重级别 Moderate，CVSS 5.4，向量 CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N，关联 CVE ID 为 CVE-2025-27516。",
+      "漏洞行为（GHSA-cpwx-vrp4-4pq7 原文）：「An oversight in how the Jinja sandboxed environment interacts with the |attr filter allows an attacker that controls the content of a template to execute arbitrary Python code.」沙箱本会拦截 str.format 直接调用，但 |attr 过滤器可取得字符串 format 方法的引用绕过沙箱；「After the fix, the |attr filter no longer bypasses the environment's attribute lookup.」。",
+      "触发条件（GHSA-cpwx-vrp4-4pq7 原文）：攻击者需控制模板内容（「To exploit the vulnerability, an attacker needs to control the content of a template.」），影响对象为「users of applications which execute untrusted templates」，即执行不可信模板的应用。",
+      "修复依据（官方 Release 3.1.6 与 changelog 交叉印证）：Jinja 3.1.6（2025-03-05 发布）为安全版本，变更条目为「The |attr filter does not bypass the environment's attribute lookup, allowing the sandbox to apply its checks. GHSA-cpwx-vrp4-4pq7」；结合 advisory 的受影响范围 <=3.1.5，受影响区间即 <3.1.6（<=3.1.5）。"
+    ],
+    "missing_evidence_reasons": [
+      "SCC chatops-api 与 SCC/adr-api 的 Jinja2 具体依赖版本、引入路径及是否存在『执行不可信模板』场景未核实：材料 M01 指明 cve-fix 扫描索引记录在 A 完成后交给 B，本节点不读取该索引，两系统是否落在受影响范围（<3.1.6）无法在本轮判定。",
+      "具体补丁 commit/PR 编号未取得：本轮取得的 GHSA 正文与 release note 均未给出修复 commit hash（release note 中的 1520688 为 3.1.6 tag 提交而非补丁提交），如需修复 commit 级证据需后续到 pallets/jinja 仓库历史补齐。",
+      "GHSA advisory 页面的 Patched versions 字段显示为「None」（抓取时页面状态），页面上未取得已修补版本范围条目；修复版本目前依据官方 3.1.6 release note 与 changelog 交叉印证。",
+      "第三方发行方公告（Red Hat CVE 页等）未取得：抓取工具报错且未返回具体原因，见 collection_errors；不影响三份上游官方来源的完整性。",
+      "两业务系统实际受影响结论未判定：材料 M01 明确禁止把旧影响 manifest 当作新判定，本轮未做业务环境验证。"
+    ],
+    "official_sources": [
+      {
+        "title": "Sandbox breakout through attr filter selecting format method · pallets/jinja security advisory GHSA-cpwx-vrp4-4pq7",
+        "url": "https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7",
+        "kind": "上游官方安全公告（GitHub Security Advisory，维护者 davism 2025-03-05 发布）",
+        "official": true
+      },
+      {
+        "title": "Release 3.1.6 · pallets/jinja",
+        "url": "https://github.com/pallets/jinja/releases/tag/3.1.6",
+        "kind": "上游官方 release note（GitHub Releases，2025-03-05）",
+        "official": true
+      },
+      {
+        "title": "Changes — Jinja Documentation (3.1.x)",
+        "url": "https://jinja.palletsprojects.com/en/stable/changes/",
+        "kind": "官方 changelog（Jinja 官方文档站点，release note 中链接指向）",
+        "official": true
+      }
+    ],
+    "affected_range_evidence": [
+      {
+        "title": "Sandbox breakout through attr filter selecting format method · pallets/jinja security advisory GHSA-cpwx-vrp4-4pq7（Affected versions <=3.1.5）",
+        "url": "https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7",
+        "kind": "上游官方安全公告（版本范围一手依据）"
+      },
+      {
+        "title": "Release 3.1.6 · pallets/jinja（3.1.6 为安全修复版本，即其之前版本受影响）",
+        "url": "https://github.com/pallets/jinja/releases/tag/3.1.6",
+        "kind": "上游官方 release note（修复版本边界）"
+      },
+      {
+        "title": "Changes — Jinja Documentation (3.1.x)（Version 3.1.6 条目关联 GHSA-cpwx-vrp4-4pq7）",
+        "url": "https://jinja.palletsprojects.com/en/stable/changes/",
+        "kind": "官方 changelog（版本边界交叉印证）"
+      }
+    ],
+    "fix_evidence": [
+      {
+        "title": "Release 3.1.6 · pallets/jinja（「This is the Jinja 3.1.6 security release…The |attr filter does not bypass the environment's attribute lookup…GHSA-cpwx-vrp4-4pq7」）",
+        "url": "https://github.com/pallets/jinja/releases/tag/3.1.6",
+        "kind": "上游官方 release note（修复版本 3.1.6，2025-03-05）"
+      },
+      {
+        "title": "Changes — Jinja Documentation (3.1.x)（Version 3.1.6 Released 2025-03-05 修复条目）",
+        "url": "https://jinja.palletsprojects.com/en/stable/changes/",
+        "kind": "官方 changelog（修复变更说明）"
+      },
+      {
+        "title": "Sandbox breakout through attr filter selecting format method · pallets/jinja security advisory GHSA-cpwx-vrp4-4pq7（「After the fix, the |attr filter no longer bypasses the environment's attribute lookup.」）",
+        "url": "https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7",
+        "kind": "上游官方安全公告（修复后行为描述；未含补丁 commit hash）"
+      }
+    ],
+    "source_documents": [
+      {
+        "url": "https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7",
+        "title": "Sandbox breakout through attr filter selecting format method · Advisory · pallets/jinja · GitHub",
+        "content": "Sandbox breakout through attr filter selecting format method\n\n  Moderate\n\n          davidism\n          published\n          GHSA-cpwx-vrp4-4pq7\n          Mar 5, 2025\n\n      Package\n\n      Jinja2\n            (pip)\n\n      Affected versions\n\n      <=3.1.5\n\n      Patched versions\n\n      None\n\n  Description\n\n    An oversight in how the Jinja sandboxed environment interacts with the |attr filter allows an attacker that controls the content of a template to execute arbitrary Python code.\nTo exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates.\nJinja's sandbox does catch calls to str.format and ensures they don't escape the sandbox. However, it's possible to use the |attr filter to get a reference to a string's plain format method, bypassing the sandbox. After the fix, the |attr filter no longer bypasses the environment's attribute lookup.\n\n  Severity\n\n  Moderate\n\n    5.4\n\n[CVSS v4 各度量项说明段落略]            CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N\n\n  CVE ID\n\n    CVE-2025-27516\n\n  Weaknesses\n    No CWEs\n\n    Credits\n\n      securingapps\n\n  Reporter",
+        "retrieved_at": "2026-10-22T03:16:42Z",
+        "retrieval_method": "websearch_fetchWebContent renderMode=request maxChars=8000（truncated=false，页面完整取得）；本保存文本为节选：保留版本范围、漏洞描述、触发条件、严重级别、CVSS 向量与 CVE ID 等相关段落，省略 CVSS v4 各度量项（Attack Vector/Complexity 等）的解释性样板段落",
+        "truncated": false
+      },
+      {
+        "url": "https://github.com/pallets/jinja/releases/tag/3.1.6",
+        "title": "Release 3.1.6 · pallets/jinja · GitHub",
+        "content": "Releases\n      3.1.6\n\n        3.1.6\n\n        Latest\n\n    github-actions\n\n    released this\n\n        05 Mar 20:05\n\n          ·\n\n            164 commits\n\n          to main\n          since this release\n\n                3.1.6\n\n                This tag was signed with the committer’s verified signature.\n\n            davidism\n            David Lord\n\n            GPG key ID: 43368A7AA8CC5926\n\n            Verified\n\n        This is the Jinja 3.1.6 security release, which fixes security issues but does not otherwise change behavior and should not result in breaking changes compared to the latest feature release.\nPyPI: https://pypi.org/project/Jinja2/3.1.6/\nChanges: https://jinja.palletsprojects.com/en/stable/changes/#version-3-1-6\n\nThe |attr filter does not bypass the environment's attribute lookup, allowing the sandbox to apply its checks. GHSA-cpwx-vrp4-4pq7",
+        "retrieved_at": "2026-10-22T03:16:42Z",
+        "retrieval_method": "websearch_fetchWebContent renderMode=request maxChars=8000（truncated=false，页面完整取得）；本保存文本为节选：省略页面导航、Compare/标签选择控件、加载报错（Sorry, something went wrong）及表情反应等 UI 碎片，保留发布时间、签名信息、发布说明与修复条目",
+        "truncated": false
+      },
+      {
+        "url": "https://jinja.palletsprojects.com/en/stable/changes/",
+        "title": "Changes — Jinja Documentation (3.1.x)（官方 changelog）",
+        "content": "# Changes ¶\n\n## Version 3.1.6 ¶\n\nReleased 2025-03-05\n\n- The `|attr` filter does not bypass the environment’s attribute lookup, allowing the sandbox to apply its checks. [GHSA-cpwx-vrp4-4pq7](https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7)\n\n## Version 3.1.5 ¶\n\nReleased 2024-12-21\n\n- The sandboxed environment handles indirect calls to `str.format`, such as by passing a stored reference to a filter that calls its argument. [GHSA-q2x7-8rv6-6q7h](https://github.com/pallets/jinja/security/advisories/GHSA-q2x7-8rv6-6q7h)\n- Escape template name before formatting it into error messages, to avoid issues with names that contain f-string syntax. [#1792](https://github.com/pallets/jinja/issues/1792), [GHSA-gmj6-6f8f-6699](https://github.com/pallets/jinja/security/advisories/GHSA-gmj6-6f8f-6699)",
+        "retrieved_at": "2026-10-22T03:16:42Z",
+        "retrieval_method": "websearch_fetchWebContent renderMode=request maxChars=8000；该次抓取整体被截断（truncated=true，工具返回『[...truncated 42319 characters]』，页面余下为更早版本历史）；本保存文本为节选：仅保留与 CVE-2025-27516 相关的 Version 3.1.6 条目及其前一个版本 3.1.5 的前两条安全相关条目（GHSA-q2x7-8rv6-6q7h、GHSA-gmj6-6f8f-6699，作为沙箱修复上下文），其余 3.1.5 及更早版本条目未保存",
+        "truncated": true
+      }
+    ],
+    "collection_errors": [
+      "第二次检索（query『Jinja2 GHSA-cpwx-vrp4-4pq7 attr filter sandbox escape security advisory』，engines=[duckduckgo,baidu]，limit=4）失败：工具返回后端转发超时『请求转发失败: HTTPConnectionPool(host='10.72.10.216', port=30214): Read timed out』；按『避免反复重试同一请求』原则未重试，官方来源已由第一次检索（query『CVE-2025-27516 Jinja2 vulnerability advisory』，无 partialFailures）结果定位。",
+      "fetchWebContent 抓取 https://access.redhat.com/security/cve/cve-2025-27516 时工具直接返回错误（错误信息为空，未给出具体失败原因），Red Hat CVE 页正文未取得；该页在搜索结果中标注漏洞为 important 级、涉及 |attr 过滤器绕过沙箱执行任意 Python 代码，但仅搜索摘要、未取得全文，不能作为全文证据。"
+    ]
+  }
+}

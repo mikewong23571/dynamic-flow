@@ -1,0 +1,4 @@
+
+> dynamic-flow-workbench@ typecheck:app /home/mike/projs/fork/dynamic-flow-style-governance
+> tsc --project tsconfig.app.json --noEmit
+

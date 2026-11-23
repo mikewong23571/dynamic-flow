@@ -1,10 +1,14 @@
+import { overviewWork } from './overview.ts';
 import { materializeDefinition } from '../../shared/expansion.ts';
 import { checkProblem, checkSemantic } from './semantic.ts';
+import { checkCall } from './calls.ts';
 import { checkInputContracts } from './contracts.ts';
 import {
   nodeInputPorts,
+  nodeOutputPorts,
   collectionFunction,
   expandedCollectionOutput,
+  nodeOperation,
 } from '../../shared/node-ports.ts';
 import { checkCollection, collectionPortSchema } from './collections.ts';
 import { checkExpression } from './expressions.ts';
@@ -32,6 +36,7 @@ function pair(value: unknown): boolean {
 function assertShape(value: unknown): asserts value is Definition {
   if (
     !object(value) ||
+    'resultOutput' in value ||
     value.schemaVersion !== 1 ||
     !Array.isArray(value.inputs) ||
     !value.inputs.every((v) => typeof v === 'string') ||
@@ -41,6 +46,19 @@ function assertShape(value: unknown): asserts value is Definition {
   )
     throw new Error(
       '流程定义结构无效：需要 inputs、nodes、edges、outputs 和 schemaVersion: 1。',
+    );
+  const sourceNode = value.sourceNode;
+  if (
+    sourceNode !== undefined &&
+    (!object(sourceNode) ||
+      !['workId', 'definitionId', 'nodeId'].every(
+        (key) =>
+          typeof sourceNode[key] === 'string' &&
+          sourceNode[key].trim().length > 0,
+      ))
+  )
+    throw new Error(
+      'sourceNode 必须明确固定的 workId、definitionId 和 nodeId。',
     );
   for (const node of value.nodes) {
     if (
@@ -53,12 +71,14 @@ function assertShape(value: unknown): asserts value is Definition {
         'branch',
         'wait',
         'milestone',
+        'create-items',
         'file',
         'dynamic',
-      ].includes(node.kind as string) ||
-      !['each', 'all'].includes(node.mode as string)
+        'call',
+      ].includes(node.kind as string)
     )
-      throw new Error('节点结构无效：需要 id、label、支持的 kind 和 mode。');
+      throw new Error('节点结构无效：需要 id、label 和支持的 kind。');
+    if ('mode' in node) throw new Error('mode已移除，请明确使用operation。');
     if (
       node.inputNames !== undefined &&
       (!Array.isArray(node.inputNames) ||
@@ -97,13 +117,7 @@ function assertShape(value: unknown): asserts value is Definition {
     throw new Error('连接和输出必须明确指定 [节点, 端口]。');
 }
 export const inputPorts = nodeInputPorts;
-export function outputPorts(node: FlowNode): string[] {
-  return node.kind === 'branch'
-    ? ['matched', 'unmatched']
-    : node.kind === 'wait'
-      ? ['output', 'event']
-      : ['output'];
-}
+export const outputPorts = nodeOutputPorts;
 export function checkDefinition(definition: Definition): Issue[] {
   try {
     assertShape(definition);
@@ -112,6 +126,26 @@ export function checkDefinition(definition: Definition): Issue[] {
   }
   const issues: Issue[] = checkProblem(definition.problem);
   issues.push(...checkInputContracts(definition));
+  if (definition.summaryOutput !== undefined) {
+    const target = definition.outputs[definition.summaryOutput];
+    const node =
+      target && definition.nodes.find((node) => node.id === target[0]);
+    if (
+      typeof definition.summaryOutput !== 'string' ||
+      !definition.summaryOutput.trim() ||
+      !node ||
+      target[1] !== 'output' ||
+      !['agent', 'function'].includes(node.kind) ||
+      node.operation !== 'aggregate' ||
+      node.repeat ||
+      node.dynamic
+    )
+      issues.push({
+        field: 'summaryOutput',
+        message:
+          '结果摘要必须引用最终产物中的普通整批处理节点 output，且不能迭代或动态展开。',
+      });
+  }
   const nodes = new Map<string, FlowNode>();
   if (!definition.nodes.length)
     issues.push({ field: 'nodes', message: '请添加至少一个处理节点。' });
@@ -134,12 +168,38 @@ export function checkDefinition(definition: Definition): Issue[] {
       issues.push({ field: 'inputs', message: '流程输入名称不能为空或重复。' });
   }
   for (const node of definition.nodes) {
-    issues.push(...checkSemantic(node));
+    issues.push(...checkSemantic(node), ...checkCall(node));
     const add = (message: string, field?: string) =>
       issues.push({ nodeId: node.id, message, field });
     if (!node.id.trim() || node.id === '$input' || nodes.has(node.id))
       add('节点 ID 不能为空、重复或使用保留名称 $input。', 'id');
     nodes.set(node.id, node);
+    if (node.tools !== undefined) {
+      const config = node.tools;
+      if (
+        node.kind !== 'agent' ||
+        !config ||
+        typeof config !== 'object' ||
+        Object.keys(config).some((key) => !['builtin', 'mcp'].includes(key)) ||
+        !Array.isArray(config.builtin) ||
+        !Array.isArray(config.mcp) ||
+        config.builtin.some(
+          (name) =>
+            !['read', 'grep', 'find', 'ls', 'bash', 'edit', 'write'].includes(
+              name,
+            ),
+        ) ||
+        config.mcp.some(
+          (name) => !['websearch', 'sourcegraph', 'cveawg'].includes(name),
+        ) ||
+        new Set(config.builtin).size !== config.builtin.length ||
+        new Set(config.mcp).size !== config.mcp.length
+      )
+        add(
+          '工具配置仅支持普通 Agent；请明确选择不重复的 builtin 和 mcp 工具。',
+          'tools',
+        );
+    }
     if (!node.label.trim()) add('请填写节点名称。', 'label');
     if (
       node.operation !== undefined &&
@@ -160,7 +220,7 @@ export function checkDefinition(definition: Definition): Issue[] {
       }
     }
     if (
-      ['wait', 'milestone', 'branch'].includes(node.kind) &&
+      ['wait', 'milestone', 'branch', 'create-items'].includes(node.kind) &&
       node.operation &&
       node.operation !== 'aggregate'
     )
@@ -190,6 +250,12 @@ export function checkDefinition(definition: Definition): Issue[] {
         !node.milestone.summary.trim())
     )
       add('里程碑需要阶段和进展摘要。', 'milestone');
+    if (
+      (node.kind === 'agent' ||
+        (node.kind === 'function' && !collectionFunction(node))) &&
+      !['map', 'flatMap', 'aggregate'].includes(node.operation ?? '')
+    )
+      add('计算节点需要明确map、flatMap或aggregate。', 'operation');
     if (node.kind === 'agent' && !node.task?.trim())
       add('请填写节点任务，再运行此步骤。', 'task');
     if (node.kind === 'file' && !node.file?.name?.trim())
@@ -203,11 +269,12 @@ export function checkDefinition(definition: Definition): Issue[] {
           'merge',
           'collect',
           'join',
+          'groupBy',
           'expression',
         ].includes(node.functionName ?? '')
       )
         add(
-          '请选择已有处理函数：identity、select-fields、merge、collect、join 或 expression。',
+          '请选择已有处理函数：identity、select-fields、merge、collect、join、groupBy 或 expression。',
           'functionName',
         );
       if (node.functionName === 'expression') {
@@ -225,16 +292,8 @@ export function checkDefinition(definition: Definition): Issue[] {
           node.params.fields.some((f) => !f.trim()))
       )
         add('请选择至少一个需要保留的字段。', 'params.fields');
-      if (
-        node.functionName === 'merge' &&
-        (node.mode !== 'all' ||
-          (node.operation !== undefined && node.operation !== 'aggregate'))
-      )
-        add('汇合节点必须使用集合模式 all。', 'mode');
     }
     if (node.kind === 'branch') {
-      if (node.mode !== 'all')
-        add('条件分流一次处理集合，请使用 all 模式。', 'mode');
       if (!node.condition || typeof node.condition.field !== 'string')
         add(
           '请设置要判断的字段；空文本表示判断整个输入值。',
@@ -278,22 +337,21 @@ export function checkDefinition(definition: Definition): Issue[] {
     if (
       source &&
       target &&
+      source.kind !== 'call' &&
+      target.kind !== 'call' &&
       edge.from[1] === 'output' &&
       source.expectedOutput !== undefined &&
       target.inputSchema !== undefined
     ) {
-      const sourceOperation =
-        source.operation ?? (source.mode === 'each' ? 'map' : 'aggregate');
-      const targetOperation = ['wait', 'milestone', 'branch'].includes(
-        target.kind,
-      )
-        ? 'aggregate'
-        : (target.operation ?? (target.mode === 'each' ? 'map' : 'aggregate'));
+      const sourceOperation = nodeOperation(source);
+      const targetOperation = nodeOperation(target);
       let schema = source.expectedOutput;
       if (
         (expandedCollectionOutput(source) ||
           sourceOperation === 'flatMap' ||
-          ['wait', 'milestone', 'branch'].includes(source.kind)) &&
+          ['wait', 'milestone', 'branch', 'create-items'].includes(
+            source.kind,
+          )) &&
         schema &&
         typeof schema === 'object' &&
         !Array.isArray(schema)
@@ -524,8 +582,20 @@ export function createFlow(files: FileStore) {
         work.draftBaseId = work.adoptedId;
       });
     },
-    async snapshot(workId: string): Promise<Snapshot> {
-      const work = await files.read(workId),
+    async snapshot(
+      workId: string,
+      options?: { overview?: boolean; runIds?: string[] },
+    ): Promise<Snapshot> {
+      const work = await files.select(workId, (w) =>
+          options?.overview
+            ? overviewWork(w, options.runIds)
+            : options?.runIds
+              ? {
+                  ...w,
+                  runs: w.runs.filter((r) => options.runIds!.includes(r.id)),
+                }
+              : w,
+        ),
         definitions: Record<string, Definition> = {};
       for (const id of work.definitionIds)
         definitions[id] = await files.readDefinition(workId, id);

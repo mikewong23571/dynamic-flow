@@ -1,0 +1,32 @@
+{
+  "checked": {
+    "itemRevision": 10,
+    "definitionId": "cc879069-c1a6-416a-be85-99bf4f5b8a89",
+    "planId": "463a9631-e555-4354-bfd5-bdbfaaa6b6f7",
+    "runId": "309975fa-7d6c-4701-a99f-923b70450976"
+  },
+  "canExecute": true,
+  "canPublish": true,
+  "issues": [],
+  "unchecked": [
+    {
+      "area": "state",
+      "code": "BUSINESS_ACCEPTANCE_UNVERIFIED",
+      "path": "item.criteria",
+      "message": "本工具不确认业务事实、完成依据或结项；仍需证据与用户复核。"
+    }
+  ],
+  "inputs": [
+    {
+      "port": "records",
+      "count": 2,
+      "types": [
+        "object"
+      ]
+    }
+  ],
+  "publication": {
+    "current": true,
+    "missingOutputs": []
+  }
+}

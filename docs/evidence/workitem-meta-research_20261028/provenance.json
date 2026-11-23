@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-28",
+  "commits": {
+    "json-render": "c6f73d7d5f69acb80fc89faefd12c0865c8603d1",
+    "a2ui": "ccf5dc20d0b0ed041b03e3913d807420ff45e178",
+    "jsonforms": "2c5fae62a8aace19970ac037d122fa6428cd0436",
+    "langgraph": "eb8ec111b3e9d3108af5d7bdcac51e3e913637a0",
+    "windmill": "c858cd1d14bdccdff2dc185f1424886c85623ce2",
+    "mcp-typescript-sdk": "39ae8e6192cf43273aaaf2de4169dfa9f7216e28"
+  },
+  "mcpReviewedFileSha256": "83be84bbaefbf93364c72ccca8bc48269cb28cbebbdc1a826c48d364b3f15451",
+  "langgraphStateFileSha256": "d8c8021a93a8fc895d62335a9482e50d51353343bf885901e6487611dcd0d212",
+  "evidenceSha256": {
+    "README.md": "d982a413be06f6d6ebe9780197da7b2366b1312cf2a2130f8a95435918b05119",
+    "browser-output.json": "44abec2834f44b5d59594ddd6b32ff926e41d1342fce912cb232a6066e6c8782",
+    "browser-probe.mjs": "2c89cd528890f11e8a0b6158dcbee95402a46756e664c5c64e68dc4d740f6dd1",
+    "json-render-README.md": "de6088968f713cbb9379ed3ae8842fa4863de2570fb762bdd2e28ea64091a989",
+    "json-render-output.json": "9617f4efb151f790a5755200d837ca63f579a3a871b02cb2757a1aae4e7f7872",
+    "json-render-probe.ts": "b9b34451067a2c9c8f3e230f50024d8efefaf990abdd00d5f1d723feac9adeb9",
+    "json-render-renderer-ajv-output.json": "feb2490265b9a4d280cf29edfb8510909619bd3b74cd29b8743a1fab35541f49",
+    "json-render-renderer-ajv.ts": "c069a7ad76d6979f46cdbc36859fae69e89f2eb45f3020c1549e894e8435d9d5",
+    "langgraph-probe-output.txt": "2c9ba73b8fe49af74eba8e00fe822bbc72f5ff32dc459396728be0b79f1ef26a",
+    "langgraph-probe.py": "129b354a51f8798c34280b866794dd5fbf5da0a6b5906beb2a25cadaa3cec17b",
+    "langgraph-requirements.lock.txt": "2c07a5a0daeea3205f1713d16a484e7c0b9c4b69d3b6094b67695bcf110f3fde",
+    "langgraph-restart-counts.json": "8350376307eace493e987e1e428a5311c97a3c18175b234867c5ea8771b57d01",
+    "langgraph-restart-output.txt": "1372bcc843c914ed26973d5de9fb60acd6013c4da51427e7d7b57832a87e92b8",
+    "langgraph-restart_probe.py": "258d638a8a2b46a8f1046662c13e1e1bd0d2f316fa537eb2eb35c40afddf1b71",
+    "public-demo.png": "a4fe2ee66fdc16002d0b7cc0d142f261fbf006c23d3bae6aeb7c5bbbe254bbb8",
+    "schema-output.json": "d16724aa8cf730670fdc5c323f6bc55b4f137917af7735b2c1afbaacc0c612ad",
+    "schema-probe.mjs": "2c0d471b3ccc42618d30c714abfaecb7ad299f26ad92227efc7412194f305561"
+  },
+  "scope": "Research probes and source review, not product integration or Node22 acceptance."
+}

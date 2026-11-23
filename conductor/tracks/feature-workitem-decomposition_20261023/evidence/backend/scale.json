@@ -1,0 +1,23 @@
+{
+  "leafCount": 1000,
+  "branches": 100,
+  "historyPerLeaf": 20,
+  "runsPerLeaf": 4,
+  "timings": [
+    {
+      "elapsedMs": 1376,
+      "bytes": 27862,
+      "methodReads": 1
+    },
+    {
+      "elapsedMs": 8,
+      "bytes": 27862,
+      "methodReads": 0
+    },
+    {
+      "elapsedMs": 4,
+      "bytes": 27862,
+      "methodReads": 0
+    }
+  ]
+}

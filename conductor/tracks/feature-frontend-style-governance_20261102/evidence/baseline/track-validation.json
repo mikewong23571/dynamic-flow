@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "local_links": 32,
+  "source_hashes": 157,
+  "inventory_replay": "same source and summary",
+  "json_yaml": "parsed",
+  "binding": "same owner/native session, live pid",
+  "completed_audit_tasks": 3,
+  "pending_implementation_tasks": 18,
+  "product_source_modified_by_task": false
+}

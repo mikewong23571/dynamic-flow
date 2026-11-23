@@ -53,14 +53,21 @@ Flowcraft 是本地工作流原型：用户在画布或 Assistant 中编辑处�
 
 要求 Node 22.19+、pnpm 10（版本以 `package.json` 为准）。
 
+`0.0.0.0:4320`（前端）和 `4321`（后端）专用于用户持续使用的托管实例，由用户级 systemd `flowcraft.service` 管理，已启用开机启动和自动重启。查看状态与日志使用 `systemctl --user status flowcraft`、`journalctl --user -u flowcraft -f`。
+
+此后开发调试和浏览器测试必须另起独立实例，默认使用前端 `4330`、后端 `4331`（被占用时另选空闲端口），调试前端的 `/api` 代理必须指向调试后端。不得占用或复用托管实例的 `4320/4321`，不得把调试进程并入 `flowcraft.service`，也不得为调试停止或重启该服务。调试使用独立工作目录或 worktree 与测试数据，避免托管实例的 watch 进程加载调试改动或测试修改用户数据。
+
+`pnpm dev` 默认使用独立 `4330/4331` 与 `.flowcraft-dev-data/`，前端代理指向调试后端；仍须从独立工作目录/worktree运行。根 Playwright 配置不启动托管服务，各 fixture 使用临时数据与随机私有端口。`pnpm dev:managed` 才显式使用托管端口与 `data/`，不得用于调试。
+
 | 命令 | 用途 |
 | --- | --- |
 | `pnpm install --frozen-lockfile` | 按锁文件安装依赖 |
-| `pnpm dev` | 正式前端 4320 + 后端 4321，前端代理 `/api` |
-| `pnpm build` | 正式客户端输出到 `dist/`；后端 `pnpm dev:api` 可在 4321 提供构建文件 |
+| `pnpm dev` | 独立前端 4330 + 后端 4331，前端代理 `/api`，使用独立数据目录 |
+| `pnpm dev:managed` | 显式使用托管 4320/4321 与 data，仅供既有托管配置 |
+| `pnpm build` | 正式客户端输出到 `dist/`；独立预览由 `pnpm preview` 提供完整前后端 |
 | `pnpm typecheck:app` | 正式源码类型检查 |
 | `pnpm test` | `tests/*.test.ts` 正式模块及集成测试 |
-| `pnpm test:browser` | 正式 Playwright 浏览器测试；数据与服务复用边界见测试指南 |
+| `pnpm test:browser` | 正式 Playwright 浏览器测试；fixture 使用临时数据与随机私有端口，见测试指南 |
 | `pnpm typecheck` / `pnpm spike:*` | 前者同时检查旧实验与正式源码；后者只运行历史实验 |
 
 模型目录来自根 `models.toml`（参考 `models.example.toml`），全局默认选择保存到 `data/model-settings.json`，工作对话覆盖保存在 Work；手动/env 回退已移除；不要在输出、提交或快照里暴露密钥。运行数据见 `data/AGENTS.md`。不要把已有用户数据当作可清空的测试夹具。
@@ -72,3 +79,5 @@ Flowcraft 是本地工作流原型：用户在画布或 Assistant 中编辑处�
 按 [术语与编号](docs/glossary.md) 先写业务名称，再附索引；同类说明结构一致、定义与验收对应，区分事实/计划/假设，解释紧邻术语。关键模块变更实施前明确最小输入、输出、错误和具体例子；发现反例时记录具体输入、失效假设、受影响故事和最小验证，再同步调用双方、AGENTS 与测试。模块边界可修订，不为维护骨架削弱业务要求。
 
 交付说明实际改动、相关验证和未测边界。模块测试、相邻模块真实联测、真实模型、浏览器操作与用户视觉判断分别报告；实现存在、类型检查或 mock 通过不代表完整验收。子模块保留的带日期交接、测试数量和勾选是历史记录，不代表当前提交已经重验。持续工作以 H1–H11 / L1–L5 为基线，旧 T1–T8 为回归，实际结论看对应 track 证据。
+
+交给用户持续查看的预览使用独立worktree中的持久数据目录（默认`.flowcraft-preview-data/`），与托管`data/`隔离。`pnpm build`后`pnpm preview`在0.0.0.0:4335提供完整前后端；不得将这类预览的业务数据、上传、会话或运行目录放在/tmp。/tmp仅用于可丢弃的自动测试夹具和短期工具文件。

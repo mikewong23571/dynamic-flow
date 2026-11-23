@@ -1,4 +1,14 @@
-import { useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import './Assistant.css';
+import { FormActions } from '../../components/ui/field';
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+  type ReactNode,
+  type Ref,
+} from 'react';
 import {
   AssistantRuntimeProvider,
   ComposerPrimitive,
@@ -14,10 +24,12 @@ import type {
   EditRequest,
   ModelConfiguration,
   ModelSelection,
+  MethodReference,
 } from '../../../shared/records';
 import { runAction } from '../../core/action';
 import { active } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import {
   ModelSelectorRoot,
   ModelSelectorTrigger,
@@ -38,6 +50,9 @@ import {
 const convertMessageIdentity = (m: ThreadMessageLike) => m;
 export function Assistant({
   messages,
+  presentation = 'thread',
+  businessTitle,
+  prefill,
   nodeLabel,
   nodeLabels,
   nodeId,
@@ -48,14 +63,22 @@ export function Assistant({
   onStop,
   onShowCanvas,
   disabled = false,
+  disabledReason,
+  editingContext,
   draftText,
   onDraftChange,
   configuration,
   workSelection,
   onModelSelection,
   onOpenSettings,
+  composerContext,
+  onOpenMethodReference,
+  composerInputRef,
 }: {
   messages: ChatMessage[];
+  presentation?: 'thread' | 'composer';
+  businessTitle?: string;
+  prefill?: { text: string; onApplied: () => void };
   nodeLabel?: string;
   nodeLabels: Record<string, string>;
   nodeId?: string;
@@ -66,12 +89,17 @@ export function Assistant({
   onStop: (id: string) => void;
   onShowCanvas: (nodeId?: string) => void;
   disabled?: boolean;
+  disabledReason?: string;
+  editingContext?: string;
   draftText: string;
   onDraftChange: (text: string) => void;
   configuration: ModelConfiguration | null;
   workSelection: ModelSelection | null;
   onModelSelection: (selection: ModelSelection | null) => Promise<unknown>;
   onOpenSettings: () => void;
+  composerContext?: ReactNode;
+  onOpenMethodReference?: (reference: MethodReference) => void;
+  composerInputRef?: Ref<HTMLTextAreaElement>;
 }) {
   const [error, setError] = useState('');
   const [retryMessage, setRetryMessage] = useState<ChatMessage>();
@@ -127,9 +155,9 @@ export function Assistant({
     sampleIds,
     running,
   };
-  const runtimeRef = useRef<ReturnType<
-    typeof useExternalStoreRuntime
-  > | null>(null);
+  const runtimeRef = useRef<ReturnType<typeof useExternalStoreRuntime> | null>(
+    null,
+  );
   /** IME composition 进行中标记；期间不向父级同步草稿（避免重渲染打断组合）。 */
   const composingRef = useRef(false);
   async function send(request: EditRequest) {
@@ -180,6 +208,13 @@ export function Assistant({
   useEffect(() => {
     runtime.thread.composer.setText(draftText);
   }, []);
+  useEffect(() => {
+    if (prefill) {
+      runtime.thread.composer.setText(prefill.text);
+      onDraftChange(prefill.text);
+      prefill.onApplied();
+    }
+  }, [prefill]);
   function suggest(text: string) {
     runtime.thread.composer.setText(text);
     onDraftChange(text);
@@ -199,6 +234,7 @@ export function Assistant({
         expectedDraftId: draftId,
         nodeId: original.nodeId,
         sampleIds: [...(original.sampleIds || [])],
+        methodReferences: original.methodReferences || [],
       })
     ) {
       setRetryMessage(undefined);
@@ -264,6 +300,7 @@ export function Assistant({
       onStop: (id: string) => latest.current.onStop(id),
       onShowCanvas: (id?: string) => latest.current.onShowCanvas(id),
       onOpenSettings,
+      onOpenMethodReference,
     }),
     [
       messages,
@@ -276,30 +313,50 @@ export function Assistant({
       configuration,
       workSelection,
       onOpenSettings,
+      onOpenMethodReference,
     ],
   );
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <AssistantMessagesContext.Provider value={messagesValue}>
-        <div className="assistant-context">
-          <span>下一条消息的范围</span>
-          <strong>{nodeLabel || '整个流程'}</strong>
-          <span className="assistant-samples">
-            {sampleIds.length ? `${sampleIds.length} 条所选样本` : '未指定样本'}
-          </span>
-          {disabled && (
-            <p className="error-text">先保存画布修改，再发送对话。</p>
-          )}
-        </div>
-        <ThreadPrimitive.Root className="thread">
-          <ThreadPrimitive.Viewport className="chat-scroll" autoScroll>
+        {presentation === 'thread' && (
+          <div className="assistant-context">
+            {businessTitle ? (
+              <strong>{nodeLabel ? `关注：${nodeLabel}` : '当前工作项'}</strong>
+            ) : (
+              <>
+                <span>下一条消息的范围</span>
+                <strong>{nodeLabel || '整个流程'}</strong>
+                <span className="assistant-samples">
+                  {sampleIds.length
+                    ? `${sampleIds.length} 条所选样本`
+                    : '未指定样本'}
+                </span>
+              </>
+            )}
+            {disabled && (
+              <p className="error-text">
+                {disabledReason || '先保存画布修改，再发送对话。'}
+              </p>
+            )}
+          </div>
+        )}
+        <ThreadPrimitive.Root
+          className="thread"
+          data-presentation={presentation}
+        >
+          <ThreadPrimitive.Viewport
+            className="chat-scroll"
+            autoScroll
+            hidden={presentation === 'composer'}
+          >
             {messages.length === 0 && (
               <div className="chat-empty">
                 <Sparkles size={25} />
-                <h3>一起完善这份做法</h3>
+                <h3>{businessTitle ? '一起推进这件事' : '一起完善这份做法'}</h3>
                 <p>
                   {nodeLabel
-                    ? `你正在查看「${nodeLabel}」。描述希望改变的处理方式。`
+                    ? `你正在查看「${nodeLabel}」。描述希望改变的${editingContext || '处理方式'}。`
                     : '先把目标变成步骤，再一起检查和改进。'}
                 </p>
               </div>
@@ -313,17 +370,23 @@ export function Assistant({
               {error}
             </p>
           )}
-          {!running && !disabled && (
-            <div className="assistant-suggestions">
-              {suggestions.map((text) => (
-                <button key={text} onClick={() => suggest(text)}>
-                  {text}
-                </button>
-              ))}
-            </div>
-          )}
+          {!businessTitle &&
+            presentation === 'thread' &&
+            !running &&
+            !disabled && (
+              <div className="assistant-suggestions">
+                {suggestions.map((text) => (
+                  <button key={text} onClick={() => suggest(text)}>
+                    {text}
+                  </button>
+                ))}
+              </div>
+            )}
           <ComposerPrimitive.Root className="composer">
+            {composerContext}
             <ComposerPrimitive.Input
+              className="composer-input"
+              ref={composerInputRef}
               aria-label="对话修改"
               // IME composition 期间父级 setState 的重渲染会被 Chromium
               // 强制提交组合（候选框闪断）；组合结束才把草稿同步给父级。
@@ -335,22 +398,29 @@ export function Assistant({
                 onDraftChange(event.currentTarget.value);
               }}
               onChange={(event) => {
-                if (!composingRef.current)
-                  onDraftChange(event.target.value);
+                if (!composingRef.current) onDraftChange(event.target.value);
               }}
               placeholder={
-                nodeLabel
-                  ? `希望「${nodeLabel}」怎样改变？`
-                  : '描述你希望的做法…'
+                disabled
+                  ? disabledReason || '先保存流程修改，再发送对话'
+                  : nodeLabel
+                    ? `希望「${nodeLabel}」怎样改变？`
+                    : businessTitle
+                      ? '输入 / 引用流水线，或描述下一步…'
+                      : '描述你希望的做法…'
               }
               disabled={disabled || submitting}
               submitMode="ctrlEnter"
-              minRows={3}
+              minRows={presentation === 'composer' ? 2 : 3}
               maxRows={8}
             />
             <div className="composer-footer">
               <span className="composer-meta">
-                <span className="send-hint">⌘ / Ctrl + Enter 发送</span>
+                <span className="send-hint">
+                  {disabled && presentation === 'composer'
+                    ? disabledReason || '先保存画布修改，再发送对话。'
+                    : '⌘ / Ctrl + Enter 发送'}
+                </span>
                 {!!catalog.length && (
                   <ModelSelectorRoot
                     models={modelOptions}
@@ -401,8 +471,9 @@ export function Assistant({
               {running ? (
                 <ComposerPrimitive.Cancel asChild>
                   <Button
+                    size="sm"
                     aria-label="停止生成"
-                    variant="secondary"
+                    variant="outline"
                     disabled={running.status === 'stopping'}
                   >
                     <Square size={13} />
@@ -412,7 +483,8 @@ export function Assistant({
               ) : (
                 <ComposerPrimitive.Send asChild>
                   <Button
-                    variant="primary"
+                    size="sm"
+                    variant="default"
                     aria-label="发送修改"
                     disabled={disabled || submitting}
                   >
@@ -445,10 +517,17 @@ export function Assistant({
             </p>
           )}
           {error && <p className="inline-error">{error}</p>}
-          <div className="modal-actions">
-            <Button onClick={() => setRetryMessage(undefined)}>返回检查</Button>
+          <FormActions>
             <Button
-              variant="primary"
+              variant="outline"
+              size="sm"
+              onClick={() => setRetryMessage(undefined)}
+            >
+              返回检查
+            </Button>
+            <Button
+              size="sm"
+              variant="default"
               disabled={
                 submitting ||
                 disabled ||
@@ -459,7 +538,7 @@ export function Assistant({
             >
               确认在当前草稿重试
             </Button>
-          </div>
+          </FormActions>
         </Modal>
       </AssistantMessagesContext.Provider>
     </AssistantRuntimeProvider>

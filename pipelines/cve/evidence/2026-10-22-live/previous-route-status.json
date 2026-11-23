@@ -1,0 +1,9 @@
+{
+  "source": {
+    "workId": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+    "runId": "f1625072-f7cc-480d-bb6e-ea16c213c0e3",
+    "definitionId": "065291f9-79c2-4d5b-81bc-896d494ba198"
+  },
+  "statusObserved": "running",
+  "reason": "用户纠正接入方式：改为应用向 Pi 注册原生 MCP 工具，停止节点自行编写客户端的路线。"
+}

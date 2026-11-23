@@ -1,6 +1,9 @@
 import type { FlowNode, Json } from '../../shared/records.ts';
-import { collectionFunction } from '../../shared/node-ports.ts';
-import { incompatibleTypes } from './schema.ts';
+import {
+  collectionFunction,
+  groupByConfigSchema,
+} from '../../shared/node-ports.ts';
+import { incompatibleTypes, validateValue } from './schema.ts';
 
 export function checkCollection(
   node: FlowNode,
@@ -19,11 +22,43 @@ export function checkCollection(
     (node.kind !== 'function' || node.functionName !== 'join')
   )
     add('join', '关联配置仅用于 join。');
+  if (
+    node.groupBy !== undefined &&
+    (node.kind !== 'function' || node.functionName !== 'groupBy')
+  )
+    add('groupBy', '分组配置只用于 groupBy。');
   if (!collectionFunction(node)) return issues;
-  if (node.mode !== 'all') add('mode', '集合函数需要 all 模式。');
   if (node.operation !== undefined && node.operation !== 'aggregate')
     add('operation', '集合函数只支持 aggregate。');
-  if (node.functionName !== 'join') {
+  if (node.functionName === 'groupBy') {
+    try {
+      validateValue(
+        groupByConfigSchema,
+        node.groupBy as unknown as Json,
+        '分组配置',
+      );
+    } catch (error) {
+      add('groupBy', (error as Error).message);
+    }
+    const keys = node.groupBy?.keys;
+    if (
+      !Array.isArray(keys) ||
+      !keys.length ||
+      keys.some(
+        (path) =>
+          !Array.isArray(path) ||
+          path.some(
+            (p) =>
+              typeof p !== 'string' &&
+              !(typeof p === 'number' && Number.isInteger(p) && p >= 0),
+          ),
+      )
+    )
+      add(
+        'groupBy.keys',
+        '分组需要至少一个字段路径，路径由字段名或非负整数索引组成。',
+      );
+  } else if (node.functionName !== 'join') {
     const names = node.inputNames;
     if (
       !Array.isArray(names) ||

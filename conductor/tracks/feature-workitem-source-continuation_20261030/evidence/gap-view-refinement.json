@@ -1,0 +1,22 @@
+{
+  "view": "verification_gaps",
+  "columns": [
+    {
+      "field": "kind",
+      "label": "类别"
+    },
+    {
+      "field": "cveKey",
+      "label": "核查对象"
+    },
+    {
+      "field": "candidateCount",
+      "label": "匹配记录"
+    }
+  ],
+  "detailsPreserved": true,
+  "sameRunId": "c00f5bcf-134b-4aa9-922a-4ef569b01823",
+  "definitionUnchanged": "0c1ad3bc-406d-4254-971e-88c6c26c71be",
+  "publicationCurrent": true,
+  "newRuns": 0
+}

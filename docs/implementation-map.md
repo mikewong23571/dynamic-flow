@@ -1,5 +1,7 @@
 # 模块拆解与验收地图
 
+> 2026-10-22：[完整工作主线与差距](work-journey-stories.md)作为本次需求整理入口。本文是现有模块责任地图；模块已有实现不代表跨页面的新用户路线已通过。
+
 更新：2026-09-20。正式 src 已实现各模块并通过 HTTP/SSE 接线，默认开发、构建与测试命令面向正式应用。下表记录职责及已有实现范围；是否通过用户路线仍以 [当前 track 的验收证据](../conductor/tracks/workitem-lifecycle_20260920/evidence.md) 为准，不以模块存在或类型检查替代产品验收。
 
 当前目标见 [持续业务工作项故事](./workitem-stories.md)，原有 [用户故事](./user-stories.md) 继续回归；[Spike](../spike/README.md) 是历史行为推演。源码下的 AGENTS 是后续修改该模块时就近读取的约定；具体接口字段仍可按真实连接调整。
@@ -78,14 +80,14 @@
 
 | 业务故事                 | 牵头与相邻模块                        | 必须观察的结果                                                    |
 | ------------------------ | ------------------------------------- | ----------------------------------------------------------------- |
-| H1/H2 身份与总览         | work-items → HTTP → client            | 两项共用方法但材料/进展独立，阶段/等待/最近业务进展真实           |
-| H3/H4 固定执行与业务影响 | runs → work-items、flow、trials       | 固定工作项快照，只有 full/commit 里程碑写业务，重复回调不重复历史 |
+| H1/H2 身份与总览         | work-items → HTTP → client            | 共用方法不串材料/进展；全局数量与筛选一致，阶段/活动步骤/阻碍/下一步来源真实 |
+| H3/H4 固定执行与业务影响 | runs → assistant/work-items、flow、trials | 固定工作项快照，只有 full/commit 里程碑或普通执行 Agent 报告写进展；来源可查，重复不重复历史，报告不等于条件确认 |
 | H5 并发与契约            | flow/schema → runs → assistant/client | map/flatMap/aggregate、有限并发、顺序/来源；坏结果阻断依赖        |
 | H6/H7 事件/到期与重启    | runs → files → server → client        | 等待落盘，原 Run 跨重启继续，已成功调用不重复                     |
 | H8 停止与中断            | runs → files/server/client            | 迟到事件不能推进；不确定调用需显式恢复，不伪称恰好一次            |
 | H9 方法演进              | work-items → work/flow/runs/client    | 同一业务 ID 换方法/补证据继续，旧版本/输入/历史不变               |
 | H10 结项重开             | work-items → client                   | 条件及依据齐全才结项，Run 完成不等于业务完成，重开保留记录        |
-| H11 外部观察             | server → work-items/runs              | HTTP 查询与页面状态一致，显式消息动作才推动等待                   |
+| H11 外部观察             | server → work-items/runs              | HTTP 汇总/详情与页面一致；外部报告需版本与来源检查，只有显式消息动作才推动等待 |
 
 本表只声明实现责任，不提前勾选产品通过。字段见 shared/records.ts，模块域内测试与真实产品证据分开记录。
 
@@ -157,3 +159,48 @@ shared/node-ports.ts 统一前端、flow、runs 的实际端口与集合分发�
 这些为展示子问题，不改动 runtime、业务工作项或 IR 组合语义。具体边界见 [本轮设计](../conductor/tracks/canvas-layout_20260920/spec.md)。
 
 本轮问题驱动优化的 S1–S4 由 shared/flow → runs/assistant → client 贯穿：类型与图投影见 shared/records.ts、expansion.ts；语义检查见 flow/semantic.ts；动态提案检查见 flow/expansion.ts；作者合同见 assistant/semantic-guide.ts；前端入口见 inspector/SemanticFields.tsx 与 Results。均复用现有 HTTP/文件/运行路径，见 [方案](semantic-workflow.md)。
+
+
+## 工作项分治的责任（2026-10-23）
+
+| 用户操作 | 主要入口与交接 | 验证 |
+| --- | --- | --- |
+| 添加子项、候选建立/补建、输入修订 | work-items `children.ts` / `prepare.ts` / `run-inputs.ts` → HTTP → ItemRelations / CandidateItems / ReceivedInputs | 私有文件/HTTP、两尺寸创建与材料交接 |
+| 方法自动建立子项 | shared候选合同 → flow/作者 → runs固定节点输入 → 同一children动作 | 作者保存、preview无写入、正式/部分失败/恢复、真实Pi |
+| 确认整体、重开与范围调整 | work-items完成事件 / `completion-inputs.ts` → criteria / 子项列表 / 汇总准备 | 固定历史引用、层级交错、两尺寸确认/重开 |
+| 范围待办、批量推进 | `queries.ts`摘要分页 → ItemRelations / BatchItemRun → 单项prepare/run | 千项有历史fixture、过滤/返回、10项直接准备+2项补缺、等待/恢复窗口 |
+
+当前字段以 `src/shared/records.ts`、接口以服务入口及就近AGENTS为准。故事与证据入口：[分治track](../conductor/tracks/feature-workitem-decomposition_20261023/plan.md)。批量窗口是浏览器发起新Run的限制，不是持久调度器或模型全局并发限制。
+
+
+## 工作项组合与交付（2026-10-28）
+
+| 用户操作 | 实现责任 | 验证入口 |
+| --- | --- | --- |
+| 在工作项中保存处理关系、引用方法版本 | shared/records、node-ports → flow/calls、flow/collections → runs/index、runs/collections | composition-runtime.test；固定版本/来源/停止/等待 |
+| 提供材料、准备输入、发布成果、选记录接续 | work-items/composition、upload-text → server workspace/actions → 既有prepare/run-inputs/launch | workitem-composition-backend.test；真实文件/HTTP/runtime |
+| 用Assistant读取目录并实际推进 | assistant/workitem → 同一workspace命令；Pi持久会话链接 | backend工具fixture、assistant-session-files.test、track真实模型证据 |
+| 从首页开始/继续，查看成果、流程、输入和记录 | WorkItems/WorkItemStart/create-item → WorkItemDetail/composition；共用WorkspaceFrame、原Assistant/画布/材料与运行检查及统一控件 | composition浏览器及独立真实模型；实现和视觉证据见track，用户视觉判断另列 |
+
+本轮实现与限制见[工作项组合track](../conductor/tracks/workitem-composition_20261028/plan.md)。CVE业务方法只存在于pipelines与业务样例，不进入通用工作项服务或前端字段推断。
+
+
+页面导航由client/app/navigation持有有限URL及History API，App组装入口，controller选择已有方法和固定运行，WorkItems选择已有工作项及内容Tab；不会在popstate中创建或启动业务。Sidebar负责首页/工作项/流水线真实链接，WorkspaceHeading和Management负责两种列表实际共用的框架/布局。验证入口为composition-navigation及原composition来源往返断言；最新证据见navigation.md。
+
+2026-10-29[访问合同](task-navigation-contract.md)已在独立预览实施：App/navigation负责对象入口、任务来处与真实历史，WorkspaceFrame/Header固定身份与视图层，Results/RunInspector负责固定执行选择和来源检查，WorkItems/既有草稿存储负责阅读恢复。NAV-01—12映射见导航track，不能混同业务视图navigation=tabs/select测试。具体文件、审查和验收见[导航track](../conductor/tracks/feature-task-navigation_20261029/index.md)。
+
+界面安排共编：shared/ui-authoring与item-ui/workitem-composition定义具名结构、有限文本和块合同；work-items/composition-ui及presentation-data做同源保存与固定来源重绑；assistant/workitem读取uiFocus并调用同一命令；client UiArrangement/UiArrangementFields与CompositionAssistant组合现有控件。验收入口ui-authoring.test、ui-authoring-http、browser/workitem-composition-authoring；规范见workitem-ui-authoring，当前证据见composition track K阶段。
+
+
+工作项调用节点引用由CompositionFlow解析实际方法目录，WorkflowCanvas/WorkflowNode只接显示数据和回调；MethodPreview在现有Modal中查看固定版本，运行及Definition权威仍在既有服务。验收为节点内可见流水线名称/版本、旧版不被新草稿替代及往返保留本项身份，见workitem-composition-call-node浏览器路线。
+
+
+工作项原语展示：core/definition.nodePrimitive读取现有kind/functionName/expression，WorkflowNode及步骤详情共用；call单层呈现实际方法/固定版/应用粒度，端口标签和交付标记由同一定义输出投影。nodeTotals/results→现有RunInspector实例检查，layerSpacing仅控制布局。验证见primitive-display-fixture及workitem-composition-primitives，均使用真实函数运行与固定来源，无模型。
+
+工作项展示闭环/多会话：shared/workitem-conversations投影会话元数据与消息；assistant/item-conversations校验归属/持久目录，assistant/workitem复用同一业务工具和按Work队列。客户端ConversationMenu/useItemConversations接同一Composer，PlannedWork仅承接真实执行/绑定，PlannedInputs在输入页呈现声明任务，InterfacePlanTask处理缺失/失配。验证对应workitem-conversations.test.ts和browser/workitem-composition-conversations.spec.ts，真实模型与视觉证据在当前track分列。
+
+当前S已删除interface-progress，成果页不再从when/review制造业务进度或捷径。原模板路线的交互验证不代表Assistant自主设计；无模板真实模型与跨方法回接缺口见track/fresh-assistant-design。
+
+明确导航与详情：shared/item-ui、workitem-composition定义navigation与详情标题合同，ui-authoring负责Workspace往返和冻结标题；composition-ui保存navigation、同Run重绑。ViewNavigation执行前后共用；PlannedInputs只在输入页；detailActionSpec复用deliverySpec动作而不复制业务校验，RecordTools只承载原有平台工具。导航/详情浏览器路线为workitem-composition-navigation-contract.spec.ts，实际模型选择与视觉见当前track。
+
+工作项跨层阶段接续：source-scope.ts统一有效祖先链；stage-inputs发现、run-inputs预览/冻结和composition选择共用。Assistant通过inspect_item_scope查看分页状态/批次归属，通过inspect_child_outputs与明确selection.scope=descendants采用固定来源；不引入自动最新结果或领域判断。验证descendant-stage-inputs、原child-stage-inputs和workspace-check。

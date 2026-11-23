@@ -1,0 +1,100 @@
+{
+  "timeOrigin": 1792658826940.5,
+  "date": "2026-10-22T08:47:11.102Z",
+  "work": "5cb210fc-f700-43bd-9946-736d869db90b",
+  "width": 1440,
+  "errors": [],
+  "measurements": [
+    {
+      "target": "results",
+      "ms": 375,
+      "dom": 999,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 514.1000001430511,
+          "duration": 204
+        },
+        {
+          "start": 721.7999999523163,
+          "duration": 190
+        },
+        {
+          "start": 1292.2000000476837,
+          "duration": 119
+        },
+        {
+          "start": 1738.2999999523163,
+          "duration": 448
+        },
+        {
+          "start": 2186.600000143051,
+          "duration": 687
+        },
+        {
+          "start": 3050.4000000953674,
+          "duration": 72
+        },
+        {
+          "start": 3146.2000000476837,
+          "duration": 112
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 147,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3328.600000143051,
+          "duration": 92
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 231,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3479.7999999523163,
+          "duration": 130
+        }
+      ]
+    },
+    {
+      "target": "results",
+      "ms": 232,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3713.5,
+          "duration": 161
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 148,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3946.9000000953674,
+          "duration": 70
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 98,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": []
+    }
+  ]
+}

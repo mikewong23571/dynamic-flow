@@ -1,0 +1,18 @@
+schema_version: "2.1"
+track: feature-workitem-decomposition_20261023
+type: feature
+status: done
+module: work-items/client/runs/flow
+owner: mike
+created_at: 2026-10-23
+updated_at: 2026-10-23
+depends_on: []
+repo_scope: null
+notes:
+  - 用户授权实施整个track；六条连续用户故事已落地，实际验收与边界见evidence.md。
+  - 不增加聚合/执行类型；手工/清单/节点共用建立，结构化输入修订、固定完成依据、范围待办与批量窗口贯通。
+  - 92项相关模块通过，21条相关浏览器路线分批通过；真实Pi high少量非CVE样本与千项fixture分别记录。
+  - 62MB历史样本冷UI首屏2.52–2.66秒，明确调整该样本冷预算为3秒；热路径符合原预算。
+  - 按本仓workflow沿用conductor/tracks及单仓现有工作区；无多仓scope，不提交push/MR或移动归档目录。
+  - 私有测试服务与临时数据已清理；保留正式用户现场及既有未提交修改，数据核查见evidence/root/data-check.json。
+  - plan、documentation、现行docs和模块指南已同步；绑定释放。

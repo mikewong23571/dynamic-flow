@@ -1,5 +1,8 @@
+import { FormActions } from '../../components/ui/field';
+import { MaterialCard } from '../../components/MaterialCard';
 import { Plus } from 'lucide-react';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import type { WorkspaceController } from '../../app/controller';
 
 export function MaterialsDialog({
@@ -26,6 +29,7 @@ export function MaterialsDialog({
           已选 {selectedMaterials.length} / {work.materials.length} 条
         </span>
         <Button
+          size="sm"
           variant="ghost"
           onClick={() =>
             setSelectedMaterials(
@@ -38,6 +42,8 @@ export function MaterialsDialog({
           {selectedMaterials.length === work.materials.length ? '清空' : '全选'}
         </Button>
         <Button
+          variant="outline"
+          size="sm"
           onClick={() => {
             onOpenChange(false);
             setAddOpen(true);
@@ -47,31 +53,29 @@ export function MaterialsDialog({
           添加材料
         </Button>
       </div>
-      <div className="materials-list">
+      <div className="material-cards">
         {work.materials.map((m) => (
-          <label key={m.id} className="material-row">
-            <input
-              type="checkbox"
-              checked={selectedMaterials.includes(m.id)}
-              onChange={() =>
+          <MaterialCard
+            key={m.id}
+            material={m}
+            selection={{
+              checked: selectedMaterials.includes(m.id),
+              onChange: () =>
                 setSelectedMaterials((ids) =>
                   ids.includes(m.id)
                     ? ids.filter((id) => id !== m.id)
                     : [...ids, m.id],
-                )
-              }
-            />
-            <b>{m.id}</b>
-            <span>{m.text}</span>
-          </label>
+                ),
+            }}
+          />
         ))}
-        {work.materials.length === 0 && <p className="muted">暂无材料</p>}
+        {work.materials.length === 0 && <p className="meta-text">暂无材料</p>}
       </div>
-      <div className="modal-actions">
-        <Button variant="primary" onClick={() => onOpenChange(false)}>
+      <FormActions>
+        <Button size="sm" variant="default" onClick={() => onOpenChange(false)}>
           完成选择
         </Button>
-      </div>
+      </FormActions>
     </Modal>
   );
 }

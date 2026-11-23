@@ -12,3 +12,10 @@ playwright-report/
 
 # 模型目录含 API 密钥，不入库；模板见 models.example.toml
 models.toml
+
+# Independent development state; never the managed application's data.
+.flowcraft-dev-data/
+
+# Interactive previews and recovery snapshots are persistent local data.
+.flowcraft-preview-data/
+.flowcraft-preview-recovery/

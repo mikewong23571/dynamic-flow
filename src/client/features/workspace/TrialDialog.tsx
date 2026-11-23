@@ -1,8 +1,17 @@
+import { NativeSelect } from '../../components/ui/native-select';
+import { FormActions } from '../../components/ui/field';
+import { Field } from '../../components/ui/field';
 import { Play, GitCompareArrows } from 'lucide-react';
-import type { FlowNode, Inputs, Work } from '../../../shared/records';
+import type {
+  FlowNode,
+  Inputs,
+  Work,
+  RunSampleSource,
+} from '../../../shared/records';
 import { inputPorts } from '../../core/inputs';
 import { short, portLabel } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 
 import { InputContent } from '../results/Results';
 
@@ -14,6 +23,8 @@ export function TrialDialog({
   work,
   inputMode,
   setInputMode,
+  sampleSource,
+  setSampleSource,
   samplePort,
   setSamplePort,
   selectedNode,
@@ -31,8 +42,10 @@ export function TrialDialog({
   onOpenChange: (open: boolean) => void;
   selected?: FlowNode;
   work?: Work;
-  inputMode: 'materials' | 'results';
-  setInputMode: (mode: 'materials' | 'results') => void;
+  inputMode: 'materials' | 'results' | 'run';
+  setInputMode: (mode: 'materials' | 'results' | 'run') => void;
+  sampleSource?: RunSampleSource;
+  setSampleSource: (source: RunSampleSource) => void;
   samplePort: string;
   setSamplePort: (port: string) => void;
   selectedNode?: string;
@@ -56,21 +69,22 @@ export function TrialDialog({
       description="只处理下面明确选择的输入，不自动运行上游。"
     >
       <div className="inline-group">
-        <label className="field">
+        <Field>
           输入来源
-          <select
+          <NativeSelect
             value={inputMode}
             onChange={(e) =>
-              setInputMode(e.target.value as 'materials' | 'results')
+              setInputMode(e.target.value as 'materials' | 'results' | 'run')
             }
           >
-            <option value="materials">原始材料</option>
+            {sampleSource && <option value="run">这次运行的原始输入</option>}
+            <option value="materials">方法样例材料</option>
             <option value="results">已选历史结果</option>
-          </select>
-        </label>
-        <label className="field">
+          </NativeSelect>
+        </Field>
+        <Field>
           目标端口
-          <select
+          <NativeSelect
             value={samplePort}
             onChange={(e) => setSamplePort(e.target.value)}
           >
@@ -79,10 +93,62 @@ export function TrialDialog({
                 {portLabel(p)}
               </option>
             ))}
-          </select>
-        </label>
+          </NativeSelect>
+        </Field>
       </div>
-      {inputMode === 'materials' ? (
+      {inputMode === 'run' ? (
+        <div className="sample-picker">
+          {work?.runs
+            .find((run) => run.id === sampleSource?.runId)
+            ?.results.filter(
+              (result) =>
+                result.nodeId === selectedNode &&
+                !result.purpose &&
+                !result.intermediate,
+            )
+            .map((result) => (
+              <label key={result.id} className="check-row">
+                <input
+                  type="checkbox"
+                  aria-label={`原始输入 ${Object.values(result.input)
+                    .flat()
+                    .map((entry) => entry.sampleId)
+                    .join('、')}`}
+                  checked={sampleSource?.resultIds.includes(result.id) || false}
+                  onChange={() => {
+                    if (!sampleSource) return;
+                    const selectedIds = new Set(sampleSource.resultIds);
+                    if (selectedIds.has(result.id))
+                      selectedIds.delete(result.id);
+                    else selectedIds.add(result.id);
+                    setSampleSource({
+                      runId: sampleSource.runId,
+                      resultIds: work.runs
+                        .find((run) => run.id === sampleSource.runId)!
+                        .results.filter(
+                          (entry) =>
+                            entry.nodeId === selectedNode &&
+                            selectedIds.has(entry.id),
+                        )
+                        .map((entry) => entry.id),
+                    });
+                  }}
+                />
+                <span>
+                  {Object.values(result.input)
+                    .flat()
+                    .map((entry) =>
+                      typeof entry.value === 'string'
+                        ? entry.value
+                        : JSON.stringify(entry.value),
+                    )
+                    .join(' / ')}
+                </span>
+              </label>
+            ))}
+          <InputContent inputs={inputs} />
+        </div>
+      ) : inputMode === 'materials' ? (
         <div className="sample-picker">
           {work?.materials.map((m) => (
             <label key={m.id} className="check-row">
@@ -112,6 +178,8 @@ export function TrialDialog({
             条成功结果。可在「运行结果」勾选。
           </p>
           <Button
+            variant="outline"
+            size="sm"
             disabled={!selectedResults.length}
             onClick={() => void prepareResultInputs()}
           >
@@ -126,12 +194,14 @@ export function TrialDialog({
           本次所选输入送入 {portLabel(samplePort)}；另一端口为空。
         </p>
       )}
-      <p className="muted">
+      <p className="meta-text">
         固定 {Object.values(inputs).flat().length} 条输入 · 候选{' '}
         {short(work?.draftId)}
       </p>
-      <div className="modal-actions">
+      <FormActions>
         <Button
+          variant="outline"
+          size="sm"
           disabled={
             busy ||
             !Object.values(inputs).flat().length ||
@@ -143,14 +213,15 @@ export function TrialDialog({
           比较当前与候选
         </Button>
         <Button
-          variant="primary"
+          size="sm"
+          variant="default"
           disabled={busy || !Object.values(inputs).flat().length}
           onClick={() => void trial()}
         >
           <Play size={15} />
           仅试运行此步骤
         </Button>
-      </div>
+      </FormActions>
     </Modal>
   );
 }

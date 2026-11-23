@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { selectCanvasNode } from './canvas-actions';
+import { test, expect } from './fixtures';
 import type {
   Definition,
   FlowNode,
@@ -27,7 +28,7 @@ for (const [width, height] of [
       id,
       label: id,
       kind: 'function',
-      mode: 'each',
+
       operation: 'map',
       functionName: 'expression',
       expression: { kind: 'literal', value },
@@ -41,7 +42,7 @@ for (const [width, height] of [
           label: '综合结果',
           kind: 'function',
           functionName: 'merge',
-          mode: 'all',
+          inputNames: ['left', 'right'],
           inputSchema: {
             type: 'object',
             properties: { left: { type: 'array' }, right: { type: 'array' } },
@@ -100,24 +101,20 @@ for (const [width, height] of [
         },
       });
       // 侧栏只列显式打开的流水线（opened-pipelines 语义）；预置本浏览器的打开入口。
-      await page.addInitScript((workId) => {
-        localStorage.setItem(
-          'dynamic-flow.opened-works',
-          JSON.stringify([{ id: workId, goal: '', updatedAt: '' }]),
-        );
-        localStorage.setItem('dynamic-flow.work', workId);
-      }, id);
-      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.goto(`/methods/${id}`, { waitUntil: 'domcontentloaded' });
       await page
         .locator('.work-list')
-        .getByRole('button', {
+        .getByRole('link', {
           name: initial.work.title || initial.work.goal,
           exact: true,
         })
         .click();
-      await page.getByRole('button', { name: '整理布局', exact: true }).click();
+      await page.getByRole('button', { name: '整理布局', exact: true }).focus();
+      await page
+        .getByRole('button', { name: '整理布局', exact: true })
+        .press('Enter');
       await expect(page.locator('[data-routing="elk"]')).toHaveCount(5);
-      await page.locator('.react-flow__node[data-id="gather"]').click();
+      await selectCanvasNode(page, 'gather');
       await page
         .getByRole('combobox', { name: '处理函数', exact: true })
         .selectOption('collect');
@@ -158,7 +155,10 @@ for (const [width, height] of [
         .click();
       await save();
       await expect(page.locator('[data-routing="elk"]')).toHaveCount(0);
-      await page.getByRole('button', { name: '整理布局', exact: true }).click();
+      await page.getByRole('button', { name: '整理布局', exact: true }).focus();
+      await page
+        .getByRole('button', { name: '整理布局', exact: true })
+        .press('Enter');
       await expect(page.locator('[data-routing="elk"]')).toHaveCount(6);
       let state = await snapshot();
       expect(state.issues).toEqual([]);
@@ -178,7 +178,8 @@ for (const [width, height] of [
         verification: [{ id: 2, verified: true }],
       });
       await page.reload({ waitUntil: 'domcontentloaded' });
-      await page.locator('.react-flow__node[data-id="gather"]').click();
+      await page.getByRole('tab', { name: '流程', exact: true }).click();
+      await selectCanvasNode(page, 'gather');
       await expect(
         page.getByRole('textbox', { name: '输入端口 3 名称', exact: true }),
       ).toHaveValue('verification');
@@ -194,7 +195,10 @@ for (const [width, height] of [
         .click();
       await save();
       await expect(page.locator('[data-routing="elk"]')).toHaveCount(0);
-      await page.getByRole('button', { name: '整理布局', exact: true }).click();
+      await page.getByRole('button', { name: '整理布局', exact: true }).focus();
+      await page
+        .getByRole('button', { name: '整理布局', exact: true })
+        .press('Enter');
       await expect(page.locator('[data-routing="elk"]')).toHaveCount(5);
       state = await snapshot();
       expect(
@@ -241,7 +245,8 @@ for (const [width, height] of [
         },
       ]);
       await page.reload({ waitUntil: 'domcontentloaded' });
-      await page.locator('.react-flow__node[data-id="gather"]').click();
+      await page.getByRole('tab', { name: '流程', exact: true }).click();
+      await selectCanvasNode(page, 'gather');
       await expect(
         page.getByRole('combobox', { name: '关联方式', exact: true }),
       ).toHaveValue('full');

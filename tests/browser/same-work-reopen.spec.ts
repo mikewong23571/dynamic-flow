@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import type { Snapshot } from '../../src/shared/records';
 
 test('当前工作在列表重命名后重新打开，保留工作区和未提交编辑', async ({
@@ -23,7 +23,7 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
               id: 'step',
               label: '整理材料',
               kind: 'function',
-              mode: 'each',
+              operation: 'map',
               functionName: 'identity',
             },
           ],
@@ -33,11 +33,7 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
       },
     });
     expect(saved.ok()).toBeTruthy();
-    await page.addInitScript(
-      (id) => localStorage.setItem('dynamic-flow.work', id),
-      work.id,
-    );
-    await page.goto('/');
+    await page.goto(`/methods/${work.id}`);
     await page
       .locator('.workflow-node')
       .getByText('整理材料', { exact: true })
@@ -46,7 +42,7 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
     await expect(
       page.getByRole('button', { name: '保存修改', exact: true }),
     ).toBeVisible();
-    await page.getByRole('button', { name: '全部流水线', exact: true }).click();
+    await page.getByRole('link', { name: '流水线', exact: true }).click();
     const library = page.getByRole('region', {
       name: '流水线管理',
       exact: true,
@@ -64,7 +60,7 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
     await dialog.getByRole('textbox', { name: '流水线标题' }).fill(title);
     await dialog.getByRole('button', { name: '保存标题', exact: true }).click();
     await expect(dialog).toHaveCount(0);
-    await library.getByRole('button', { name: title, exact: true }).click();
+    await library.getByRole('link', { name: title, exact: true }).click();
     await expect(
       page.getByRole('heading', { name: title, level: 1, exact: true }),
     ).toBeVisible();
@@ -78,7 +74,7 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
       page.getByRole('button', { name: '运行流程', exact: true }),
     ).toBeDisabled();
     await page.getByRole('button', { name: '输入材料', exact: true }).click();
-    await expect(page.locator('.material-row')).toContainText(
+    await expect(page.locator('.material-card')).toContainText(
       '仅用于同工作重开回归的一条材料',
     );
     await page.getByRole('button', { name: '完成选择', exact: true }).click();
@@ -86,7 +82,7 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
     // The same opened-work item is also a valid re-entry point.
     await page
       .locator('.work-list')
-      .getByRole('button', { name: title, exact: true })
+      .getByRole('link', { name: title, exact: true })
       .click();
     await expect(
       page.getByRole('heading', { name: title, level: 1, exact: true }),
@@ -114,7 +110,7 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
       page.getByRole('button', { name: '放弃修改', exact: true }),
     ).toHaveCount(0);
     // Archiving the currently loaded work must also remove it from opened work.
-    await page.getByRole('button', { name: '全部流水线', exact: true }).click();
+    await page.getByRole('link', { name: '流水线', exact: true }).click();
     await library.getByRole('textbox', { name: '搜索标题或目标' }).fill(goal);
     await library.getByRole('button', { name: '搜索', exact: true }).click();
     await library
@@ -124,7 +120,7 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
     await expect(
       page
         .locator('.work-list')
-        .getByRole('button', { name: title, exact: true }),
+        .getByRole('link', { name: title, exact: true }),
     ).toHaveCount(0);
     await library.getByRole('tab', { name: '已归档', exact: true }).click();
     await library
@@ -134,14 +130,14 @@ test('当前工作在列表重命名后重新打开，保留工作区和未提�
     await expect(
       page
         .locator('.work-list')
-        .getByRole('button', { name: title, exact: true }),
+        .getByRole('link', { name: title, exact: true }),
     ).toHaveCount(0);
     await library.getByRole('tab', { name: '未归档', exact: true }).click();
-    await library.getByRole('button', { name: title, exact: true }).click();
+    await library.getByRole('link', { name: title, exact: true }).click();
     await expect(
       page
         .locator('.work-list')
-        .getByRole('button', { name: title, exact: true }),
+        .getByRole('link', { name: title, exact: true }),
     ).toBeVisible();
     await testInfo.attach('same-work-reopen', {
       body: await page.screenshot(),

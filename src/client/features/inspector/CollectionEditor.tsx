@@ -1,8 +1,9 @@
+import { Field } from '../../components/ui/field';
 import { useEffect, useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import type { Definition, FlowNode } from '../../../shared/records';
 import { nodeInputPorts } from '../../../shared/node-ports';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { NativeSelect } from '../../components/ui/native-select';
 import { changeInputNames, joinNames } from './collection-model';
@@ -25,7 +26,7 @@ export function CollectionEditor({
         n.id === node.id
           ? {
               ...n,
-              mode: 'all',
+
               operation: 'aggregate',
               join: {
                 type: 'inner',
@@ -43,7 +44,7 @@ export function CollectionEditor({
     <section className="collection-editor" aria-label="集合配置">
       {node.functionName === 'join' ? (
         <>
-          <label className="field">
+          <Field>
             关联方式
             <NativeSelect
               value={node.join?.type || 'inner'}
@@ -59,8 +60,8 @@ export function CollectionEditor({
                 </option>
               ))}
             </NativeSelect>
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             左路关联字段
             <Input
               value={node.join?.leftKey.join('.') ?? 'id'}
@@ -72,8 +73,8 @@ export function CollectionEditor({
                 })
               }
             />
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             右路关联字段
             <Input
               value={node.join?.rightKey.join('.') ?? 'id'}
@@ -85,11 +86,11 @@ export function CollectionEditor({
                 })
               }
             />
-          </label>
+          </Field>
           <p className="collection-hint">
             嵌套字段用点分隔，如 customer.id；留空匹配整个值。
           </p>
-          <label className="field">
+          <Field>
             重复键
             <NativeSelect
               value={node.join?.duplicates || 'all'}
@@ -100,13 +101,14 @@ export function CollectionEditor({
               <option value="all">全部配对（可能产生多行）</option>
               <option value="error">发现重复即报错</option>
             </NativeSelect>
-          </label>
+          </Field>
         </>
       ) : (
         <>
           <div className="collection-heading">
             <span>输入端口 · {ports.length} 路</span>
             <Button
+              size="sm"
               variant="ghost"
               onClick={() => {
                 let next = 1;
@@ -200,6 +202,7 @@ function PortField({
           }}
         />
         <Button
+          size="sm"
           variant="ghost"
           aria-label={`删除端口 ${name}`}
           disabled={disabled}

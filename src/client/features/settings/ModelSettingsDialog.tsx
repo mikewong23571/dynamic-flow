@@ -1,3 +1,6 @@
+import './ModelSettings.css';
+import { NativeSelect } from '../../components/ui/native-select';
+import { Field } from '../../components/ui/field';
 import { useEffect, useState } from 'react';
 import { Check, LoaderCircle, Settings2 } from 'lucide-react';
 import type {
@@ -116,9 +119,9 @@ export function ModelSettingsDialog({
             </p>
           )}
         <div className="settings-grid">
-          <label className="field">
+          <Field>
             默认模型
-            <select
+            <NativeSelect
               aria-label="默认模型"
               value={defaultAlias}
               disabled={busy}
@@ -137,11 +140,11 @@ export function ModelSettingsDialog({
                   {entry.displayName}（{entry.alias}）
                 </option>
               ))}
-            </select>
-          </label>
-          <label className="field">
+            </NativeSelect>
+          </Field>
+          <Field>
             Reasoning effort
-            <select
+            <NativeSelect
               aria-label="默认推理强度"
               value={defaultEffort}
               disabled={busy || !defaultEntry}
@@ -158,10 +161,10 @@ export function ModelSettingsDialog({
                   {reasoningLabels[effort]}
                 </option>
               ))}
-            </select>
-          </label>
+            </NativeSelect>
+          </Field>
         </div>
-        <p className="muted settings-hint">
+        <p className="meta-text settings-hint">
           <span>作用于全部调用（含流程执行）；对话里可按工作覆盖。</span>
           {busy && <LoaderCircle size={13} className="spin" />}
           {defaultSaved && !busy && (

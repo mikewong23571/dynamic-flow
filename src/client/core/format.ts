@@ -1,6 +1,7 @@
 import type { Work } from '../../shared/records';
 
 export const statusNames: Record<string, string> = {
+  review: '待复核',
   queued: '等待中',
   running: '运行中',
   stopping: '正在停止',
@@ -56,6 +57,8 @@ export const portLabel = (port: string) =>
     left: '左路',
     right: '右路',
     materials: '材料',
+    report: '报告',
+    result: '结果',
     feedback: '反馈',
   })[port] || port;
 export const workTitle = (work: Pick<Work, 'title' | 'goal'>) =>

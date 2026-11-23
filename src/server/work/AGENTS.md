@@ -66,3 +66,11 @@ G2正式接线域内回归已通过：`pnpm test:browser` 三项通过，其中�
 ## 流水线管理摘要
 
 WorkSummary 增加 definitionState（empty/draft/adopted/changed）及 nodeCount，由真实 draftId/adoptedId 和当前定义读取产生；列表不再把未归档称为进行中。只读取当页定义计算节点数，不为了列表存第二份状态或节点计数。tests/state.test.ts 覆盖无定义→草稿→采用→候选变化→放弃的状态切换。
+
+`run-samples.ts`只读解析源Run指定同节点实例的原始input，供试运行、比较和从结果编辑上下文共用；保持实际源材料范围，不写回方法样例。结果编辑通过EditRequest.sampleSource显式读取一次固定样本；公共Work作者只读其样例，私有Work作者从当前WorkItem读取实际上下文。
+
+工作项私有Work以ownerItemId标记，listWorks将其过滤；可复用方法目录也不暴露私有流程。通过工作项saveMethod提取时不复制材料/运行/作者上下文，只保存参数化定义与固定版OpenUI程序模板。
+
+## 当前工作项交接（2026-10-30）
+
+唯一流程已将本项材料/当前输入收回WorkItem及其私有Work，公共Work不再保存authorContext/authorInputs/authorInputSelections或presentation副本。实际作者上下文由readItemContext随请求只读取得，结果改进的sampleSource只属于该次edit请求。私有Work以ownerItemId标识，公共方法目录仍过滤私有项；saveMethod只提取参数化Definition和固定版OpenUI程序模板，不复制业务材料/Run/会话。目标与证据见workitem-openui track。

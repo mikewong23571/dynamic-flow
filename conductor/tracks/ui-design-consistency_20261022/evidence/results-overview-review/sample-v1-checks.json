@@ -1,0 +1,30 @@
+[
+  {
+    "width": 1440,
+    "groupCount": 1,
+    "artifactCount": 2,
+    "businessState": "未结项",
+    "globalRound": 3,
+    "overviewStateRestored": true,
+    "artifactOnly": true,
+    "exactProcess": true,
+    "artifactReturn": true,
+    "panelRestored": true,
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "groupCount": 1,
+    "artifactCount": 2,
+    "businessState": "未结项",
+    "globalRound": 3,
+    "overviewStateRestored": true,
+    "artifactOnly": true,
+    "exactProcess": true,
+    "artifactReturn": true,
+    "panelRestored": true,
+    "overflow": false,
+    "errors": []
+  }
+]

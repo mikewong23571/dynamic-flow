@@ -94,8 +94,20 @@ export function createWorkService(files: FileStore) {
       )
         throw new Error('分页参数无效：页码从 1 开始，每页 1–100 条。');
       const query = (options.query ?? '').trim().toLocaleLowerCase();
-      const works = (await files.list())
+      const works = (
+        await files.list((w) => ({
+          id: w.id,
+          title: w.title,
+          goal: w.goal,
+          updatedAt: w.updatedAt,
+          ownerItemId: w.ownerItemId,
+          archivedAt: w.archivedAt,
+          draftId: w.draftId,
+          adoptedId: w.adoptedId,
+        }))
+      )
         .filter((work) => {
+          if (work.ownerItemId) return false;
           if (Boolean(work.archivedAt) !== (options.archived ?? false))
             return false;
           return (

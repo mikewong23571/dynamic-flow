@@ -1,0 +1,403 @@
+@layer components {
+  .app-shell {
+    display: flex;
+    height: 100dvh;
+    min-height: 550px;
+    overflow: hidden;
+  }
+  .sidebar {
+    width: 216px;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    background: var(--canvas);
+    color: var(--ink);
+    border-right: 1px solid var(--line);
+    padding: 20px 12px 14px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline);
+    margin: 0 8px 26px;
+  }
+  .brand strong {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--ink-strong);
+  }
+  .brand-mark {
+    display: flex;
+    color: var(--ink);
+  }
+  .brand-beta {
+    margin-left: auto;
+    font-size: 9px;
+    letter-spacing: 0.07em;
+    color: var(--subtle);
+    border: 1px solid var(--line);
+    padding: 2px 4px;
+    border-radius: var(--radius-small);
+  }
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-control);
+    margin-bottom: 30px;
+  }
+  .library-link {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    width: 100%;
+    border: 1px solid transparent;
+    background: none;
+    color: var(--muted);
+    padding: 8px 10px;
+    font-size: var(--text-control);
+    border-radius: var(--radius-control);
+    text-align: left;
+    min-height: 34px;
+  }
+  .library-link:hover,
+  .work-item:hover,
+  .resource-button:hover,
+  .model-settings-button:hover {
+    background: var(--hover-soft);
+    color: var(--ink-strong);
+  }
+  .library-link.selected {
+    background: var(--select-soft);
+    color: var(--ink-strong);
+  }
+  .sidebar-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline);
+    color: var(--subtle);
+    font-size: var(--text-meta);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    margin: 0 10px 10px;
+  }
+  .work-list {
+    flex-shrink: 0;
+    overflow: auto;
+    max-height: 200px;
+  }
+  .opened-work-row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .opened-work-row .work-item {
+    flex: 1;
+    min-width: 0;
+  }
+  .work-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: var(--radius-small);
+    background: none;
+    color: var(--muted);
+    text-align: left;
+    font-size: var(--text-small);
+    font-weight: 500;
+    min-height: 34px;
+  }
+  .work-item > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .work-indicator {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--line-hover);
+    flex: none;
+  }
+  .work-item.selected {
+    color: var(--ink-strong);
+    background: var(--select-soft);
+  }
+  .work-item.selected .work-indicator {
+    background: var(--ink-strong);
+  }
+  .sidebar-empty {
+    font-size: var(--text-small);
+    color: var(--muted);
+    padding: 10px;
+  }
+  .work-resources {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .resource-button {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: none;
+    border: 0;
+    border-radius: var(--radius-control);
+    text-align: left;
+    color: var(--muted);
+  }
+  .resource-button > span {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+  }
+  .resource-button strong {
+    color: var(--ink);
+    font-size: var(--text-small);
+    font-weight: 500;
+  }
+  .resource-button small {
+    font-size: var(--text-meta);
+  }
+  .sidebar-bottom {
+    margin-top: auto;
+    padding-top: 24px;
+  }
+  .model-settings-button {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    width: 100%;
+    background: none;
+    border: 0;
+    border-radius: var(--radius-control);
+    text-align: left;
+    color: var(--muted);
+  }
+  .model-settings-button > span {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-control);
+    min-width: 0;
+  }
+  .model-settings-button strong {
+    font-size: var(--text-small);
+    font-weight: 500;
+  }
+  .model-settings-button small {
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px;
+  }
+  .sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 10px;
+    color: var(--subtle);
+    padding: 16px 10px 0;
+  }
+  .connection-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--warning);
+  }
+  .connection-dot.online {
+    background: var(--success);
+  }
+  .workspace {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+  }
+  .workspace-tab-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .workspace-tab-panel[hidden] {
+    display: none;
+  }
+  .saved {
+    color: var(--muted);
+    font-size: var(--text-meta);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+  .canvas-toolbar {
+    min-height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 20px;
+    background: var(--canvas);
+    border-bottom: 1px solid var(--line);
+  }
+  .issues-strip {
+    padding: 11px 20px;
+    background: var(--warning-soft);
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-height: 140px;
+    overflow: auto;
+    color: var(--warning);
+    font-size: var(--text-meta);
+  }
+  .issues-strip button {
+    background: transparent;
+    border: 0;
+    text-align: left;
+    font-size: var(--text-meta);
+    color: var(--muted);
+    padding: 0;
+  }
+  .chat-scroll {
+    min-height: 0;
+    overflow: auto;
+    flex: 1;
+    padding: 20px;
+  }
+  .chat-empty {
+    padding: 32px 9px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .chat-empty > svg {
+    color: var(--muted);
+    margin-bottom: 15px;
+  }
+  .chat-empty h3 {
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .chat-empty p {
+    font-size: var(--text-small);
+  }
+  .welcome {
+    margin: auto;
+    max-width: 560px;
+    padding: 45px;
+  }
+  .welcome-symbol {
+    display: flex;
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    color: var(--muted);
+    background: var(--surface);
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 35px;
+  }
+  .welcome h1 {
+    font-size: 43px;
+    line-height: 1.4;
+    letter-spacing: -0.065em;
+    margin: 15px 0 19px;
+    font-weight: 550;
+  }
+  .welcome > p {
+    color: var(--muted);
+    line-height: 1.9;
+    margin-bottom: 28px;
+    font-size: var(--text-body);
+  }
+  .empty-flow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 20px 0;
+    color: var(--muted);
+  }
+  .empty-flow > span {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-group);
+    min-width: 86px;
+    padding: 20px 14px;
+    color: var(--muted);
+    font-size: var(--text-meta);
+  }
+  .notice {
+    padding: 11px 22px;
+    background: var(--warning-soft);
+    color: var(--warning);
+    font-size: var(--text-small);
+    line-height: 1.7;
+  }
+  .error-banner {
+    padding: 11px 22px;
+    color: var(--muted);
+    background: var(--danger-soft);
+    font-size: var(--text-small);
+    display: flex;
+    gap: var(--space-group);
+    align-items: center;
+    line-height: 1.7;
+  }
+  @media (max-width: 1200px) {
+    .sidebar {
+      width: 204px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    .saved {
+      display: none;
+    }
+    .canvas-toolbar {
+      padding: 12px;
+    }
+    .canvas-toolbar .inline-group {
+      gap: 4px;
+    }
+    .bar-actions .badge {
+      font-size: 9px;
+    }
+    .brand-beta {
+      display: none;
+    }
+  }
+  @media (max-width: 1050px) {
+    .sidebar {
+      width: 192px;
+    }
+    .canvas-toolbar .inline-group:first-child select {
+      width: 82px;
+    }
+    .canvas-toolbar .view-code {
+      font-size: 0;
+      gap: 0;
+    }
+  }
+  .chat-scroll[hidden] {
+    display: none;
+  }
+}

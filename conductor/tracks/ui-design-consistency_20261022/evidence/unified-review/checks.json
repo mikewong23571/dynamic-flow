@@ -1,0 +1,230 @@
+[
+  {
+    "width": 1440,
+    "runId": "5732dd2e-ef01-489a-94ed-39f6dc581b1d",
+    "resultId": "1e5477b1-4c57-4964-9591-90609b59d6a6",
+    "heading": "输出业务影响报告",
+    "outputHash": "21de44931092a6fc35cfdcd7d68e131b06962c43f0735488254e28fca8f46c2f",
+    "sameOutput": true,
+    "sourceReturn": true,
+    "businessReturn": true,
+    "methodActions": true,
+    "businessActions": true,
+    "status": [
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已停止",
+        "title": "已停止",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": [],
+    "overflow": false
+  },
+  {
+    "width": 1024,
+    "runId": "5732dd2e-ef01-489a-94ed-39f6dc581b1d",
+    "resultId": "1e5477b1-4c57-4964-9591-90609b59d6a6",
+    "heading": "输出业务影响报告",
+    "outputHash": "21de44931092a6fc35cfdcd7d68e131b06962c43f0735488254e28fca8f46c2f",
+    "sameOutput": true,
+    "sourceReturn": true,
+    "businessReturn": true,
+    "methodActions": true,
+    "businessActions": true,
+    "status": [
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已停止",
+        "title": "已停止",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      {
+        "text": "已完成",
+        "title": "已完成",
+        "svg": 1,
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)"
+      }
+    ],
+    "errors": [],
+    "overflow": false
+  }
+]

@@ -1,0 +1,70 @@
+{
+  "requestId": "4c8bde89-253f-48b3-814a-50347f76000d",
+  "status": "completed",
+  "references": [
+    {
+      "workId": "060944d9-3509-404f-aecd-32ae4c89247a",
+      "definitionId": "13ffa13b-2209-4d1c-b101-31361c9b1a83",
+      "title": "仓库漏洞核查"
+    }
+  ],
+  "reply": "已保存流程中的 call 与本次引用的“仓库漏洞核查”固定版本合同一致（同一 workId/definitionId、facts+targets 输入、checks/report/summary 输出），联合检查未发现合同不一致，只报告旧运行与新定义不匹配、新核查视图尚无运行输出。当前真正缺的是两项真实输入：要核查的 CVE（编号或记录键）与仓库+分支/版本范围，补齐前不可执行、不可发布。",
+  "checks": [
+    {
+      "checked": {
+        "itemRevision": 19,
+        "definitionId": "9110b15e-234e-469a-b1ba-2e12367b3c41",
+        "planId": "a9a05939-375c-4451-b5f4-45d5f3e5a004",
+        "runId": "f4790e6c-6818-4e8e-a879-aafcc027b575"
+      },
+      "canExecute": false,
+      "canPublish": false,
+      "issues": [
+        {
+          "area": "inputs",
+          "code": "INPUT_BINDING_INVALID",
+          "path": "inputs",
+          "message": "请选择输入入口「cveKey」的输入。",
+          "hint": "读取并明确选择材料、历史成果或子项阶段来源，再检查。"
+        },
+        {
+          "area": "run",
+          "code": "RUN_DEFINITION_MISMATCH",
+          "path": "run.definitionId",
+          "message": "运行的固定定义与当前方案不一致。",
+          "hint": "保留旧结果；使用明确匹配的版本重新检查。"
+        },
+        {
+          "area": "ui",
+          "code": "DELIVERY_OUTPUT_MISSING",
+          "path": "uiPlan.views[3]",
+          "message": "指定交付输出不存在。",
+          "hint": "按真实输出修正列、编号、分组或详情，不在界面中补造业务值。"
+        }
+      ],
+      "unchecked": [
+        {
+          "area": "state",
+          "code": "BUSINESS_ACCEPTANCE_UNVERIFIED",
+          "path": "item.criteria",
+          "message": "本工具不确认业务事实、完成依据或结项；仍需证据与用户复核。"
+        }
+      ],
+      "inputs": [],
+      "publication": {
+        "current": false,
+        "missingOutputs": [
+          "research_records",
+          "research_groups",
+          "progress",
+          "verification_checks"
+        ]
+      }
+    }
+  ],
+  "runCount": 1,
+  "criteria": [
+    false,
+    false
+  ]
+}

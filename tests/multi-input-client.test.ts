@@ -15,7 +15,7 @@ const definition: Definition = {
       id: 'gather',
       label: '收集',
       kind: 'function',
-      mode: 'all',
+
       functionName: 'collect',
       inputNames: ['investigation', 'remediation', 'verification'],
     },
@@ -48,7 +48,7 @@ test('动态端口改名保留连接，删除只删除对应连接，原定义�
   assert.deepEqual(removed.outputs, definition.outputs);
   assert.equal(definition.edges[0].to[1], 'investigation');
 });
-test('切换关联不遗留不可见端口；旧merge可升级动态端口', () => {
+test('切换集合函数保留显式端口，删除不再可见的连接', () => {
   const joined = changeFunction(definition, 'gather', 'join');
   assert.deepEqual(joined.edges, []);
   assert.deepEqual(inputPorts(joined.nodes[0]), ['left', 'right']);
@@ -58,15 +58,11 @@ test('切换关联不遗留不可见端口；旧merge可升级动态端口', () 
     rightKey: ['id'],
     duplicates: 'all',
   });
-  const legacy: Definition = {
-    ...definition,
-    nodes: [
-      { ...definition.nodes[0], functionName: 'merge', inputNames: undefined },
-    ],
-  };
-  assert.deepEqual(inputPorts(legacy.nodes[0]), ['left', 'right']);
+  const merged = changeFunction(joined, 'gather', 'merge');
+  assert.deepEqual(inputPorts(merged.nodes[0]), ['left', 'right']);
+  assert.deepEqual(merged.nodes[0].inputNames, ['left', 'right']);
   assert.deepEqual(
-    changeFunction(legacy, 'gather', 'collect').nodes[0].inputNames,
+    changeFunction(merged, 'gather', 'collect').nodes[0].inputNames,
     ['left', 'right'],
   );
 });

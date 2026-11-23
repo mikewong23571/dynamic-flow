@@ -1,0 +1,19 @@
+{
+  "url": "http://127.0.0.1:41449",
+  "dataRoot": "/tmp/flowcraft-journey-live-wX8hUA",
+  "pid": 742057,
+  "effectiveModel": {
+    "source": "default",
+    "alias": "sangfor/glm-5.3-flash",
+    "model": "glm-5.3-flash",
+    "effort": "max"
+  },
+  "createdAt": "2026-10-22T12:08:14.802Z",
+  "hashes": {
+    "dist/index.html": "11ca47994a7992f2eff175ed62c1264154e037dc9db98c2084e662f96a3476c0",
+    "src/server/index.ts": "29f7862b189eba74cb27ba4112e78e3d57a2d94d895d23f0b9416b6d9ab93783",
+    "src/server/work-items/index.ts": "0eb053a94eb62b43087d5ee7c2524b60c8407671404028a70d41785d73e75606",
+    "src/server/runs/index.ts": "ab972f151b75a738028e4190d45f7832bc3ff72c6f5d2625493304295f332dea"
+  },
+  "modelStub": false
+}

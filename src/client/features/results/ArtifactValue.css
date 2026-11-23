@@ -1,0 +1,165 @@
+@layer components {
+  .artifact-value {
+    min-width: 0;
+  }
+  .artifact-value-mode,
+  .artifact-collection-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .artifact-value-mode {
+    justify-content: flex-end;
+    margin-bottom: 8px;
+  }
+  .artifact-value-mode button[aria-pressed='true'] {
+    color: var(--ink-strong);
+    background: var(--hover);
+  }
+  .artifact-fields {
+    display: grid;
+    gap: 0;
+  }
+  .artifact-field {
+    display: grid;
+    grid-template-columns: minmax(110px, 25%) minmax(0, 1fr);
+    gap: 18px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--text-control);
+  }
+  .artifact-field > span {
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+  .artifact-field > div {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .artifact-fields > details {
+    border-bottom: 1px solid var(--line);
+    padding: 12px 0;
+    min-width: 0;
+  }
+  .artifact-fields > details > summary {
+    cursor: pointer;
+    font-size: var(--text-control);
+  }
+  .artifact-fields > details > summary strong {
+    font-weight: 500;
+    margin-right: 14px;
+    overflow-wrap: anywhere;
+  }
+  .artifact-fields > details > summary span {
+    color: var(--muted);
+    font-size: var(--text-small);
+  }
+  .artifact-fields > details[open] > summary {
+    margin-bottom: 14px;
+  }
+  .artifact-text,
+  .artifact-raw {
+    max-height: 58vh;
+    overflow: auto;
+    font-size: var(--text-control);
+    overflow-wrap: anywhere;
+  }
+  .artifact-raw {
+    white-space: pre-wrap;
+    padding: 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-control);
+  }
+  .artifact-collection-tools input:not([type='checkbox']) {
+    min-width: 120px;
+    flex: 1;
+    max-width: 320px;
+  }
+  .artifact-collection-tools > span {
+    color: var(--muted);
+    font-size: var(--text-small);
+  }
+  .artifact-table th button {
+    color: inherit;
+    font-weight: inherit;
+    border: 0;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .artifact-table th,
+  .artifact-table td {
+    font-size: var(--text-small);
+  }
+  .artifact-table .artifact-cell {
+    display: block;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    color: inherit;
+  }
+  .artifact-row-detail {
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-control);
+    background: var(--surface);
+  }
+  .artifact-row-detail h4 {
+    margin: 0 0 10px;
+    font-size: var(--text-control);
+  }
+  .artifact-comparison {
+    min-width: 0;
+  }
+  .artifact-comparison td {
+    vertical-align: top;
+    min-width: 140px;
+    max-width: 320px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: var(--text-small);
+  }
+  .artifact-comparison summary {
+    cursor: pointer;
+  }
+  .artifact-comparison pre {
+    white-space: pre-wrap;
+    max-height: 260px;
+    overflow: auto;
+  }
+
+  .artifact-text {
+    --prose-table-font-size: 13px;
+    max-width: 76ch;
+    margin-inline: auto;
+    font-size: var(--text-body);
+    line-height: 1.8;
+  }
+  .artifact-text .prose {
+    font-size: inherit;
+    line-height: inherit;
+  }
+  .artifact-text h1,
+  .artifact-text h2,
+  .artifact-text h3 {
+    line-height: 1.4;
+    margin-top: 1.8em;
+    margin-bottom: 0.7em;
+  }
+  .artifact-text p {
+    margin-block: 1em;
+  }
+
+  .artifact-text .prose > :first-child {
+    margin-top: 0;
+  }
+}

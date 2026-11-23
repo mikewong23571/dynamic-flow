@@ -1,0 +1,185 @@
+{
+  "itemId": "840f8d8f-7422-4fbd-8364-448a334cf15f",
+  "trace": [
+    {
+      "status": "completed",
+      "model": {
+        "source": "default",
+        "alias": "sangfor/deepseek-v4-flash",
+        "model": "deepseek-v4-flash",
+        "effort": "high"
+      },
+      "tools": [
+        {
+          "name": "inspect_work_item",
+          "status": "completed"
+        },
+        {
+          "name": "check_workspace",
+          "status": "completed",
+          "check": {
+            "checked": {
+              "itemRevision": 4,
+              "definitionId": "29e43b46-620d-4ec3-a813-5f7677d10505"
+            },
+            "canExecute": false,
+            "canPublish": false
+          },
+          "issues": [
+            "NODE_OUTPUT_SCHEMA_MISMATCH",
+            "UI_PLAN_MISSING"
+          ]
+        },
+        {
+          "name": "check_flow",
+          "status": "completed"
+        },
+        {
+          "name": "check_flow",
+          "status": "completed"
+        },
+        {
+          "name": "save_flow",
+          "status": "completed"
+        },
+        {
+          "name": "check_ui_plan",
+          "status": "completed"
+        },
+        {
+          "name": "check_ui_plan",
+          "status": "completed"
+        },
+        {
+          "name": "save_ui_plan",
+          "status": "completed"
+        },
+        {
+          "name": "check_workspace",
+          "status": "completed",
+          "check": {
+            "checked": {
+              "itemRevision": 6,
+              "definitionId": "cc879069-c1a6-416a-be85-99bf4f5b8a89",
+              "planId": "463a9631-e555-4354-bfd5-bdbfaaa6b6f7"
+            },
+            "canExecute": true,
+            "canPublish": false
+          },
+          "issues": []
+        },
+        {
+          "name": "execute",
+          "status": "completed"
+        },
+        {
+          "name": "inspect_run",
+          "status": "completed"
+        },
+        {
+          "name": "check_workspace",
+          "status": "completed",
+          "check": {
+            "checked": {
+              "itemRevision": 7,
+              "definitionId": "cc879069-c1a6-416a-be85-99bf4f5b8a89",
+              "planId": "463a9631-e555-4354-bfd5-bdbfaaa6b6f7",
+              "runId": "309975fa-7d6c-4701-a99f-923b70450976"
+            },
+            "canExecute": true,
+            "canPublish": true
+          },
+          "issues": []
+        },
+        {
+          "name": "publish_ui_plan",
+          "status": "completed"
+        },
+        {
+          "name": "publish",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "status": "completed",
+      "model": {
+        "source": "default",
+        "alias": "sangfor/deepseek-v4-flash",
+        "model": "deepseek-v4-flash",
+        "effort": "high"
+      },
+      "tools": [
+        {
+          "name": "check_workspace",
+          "status": "completed",
+          "check": {
+            "checked": {
+              "itemRevision": 9,
+              "definitionId": "cc879069-c1a6-416a-be85-99bf4f5b8a89",
+              "planId": "463a9631-e555-4354-bfd5-bdbfaaa6b6f7",
+              "runId": "309975fa-7d6c-4701-a99f-923b70450976"
+            },
+            "canExecute": true,
+            "canPublish": true,
+            "publication": {
+              "current": false,
+              "missingOutputs": [
+                "quotes"
+              ]
+            }
+          },
+          "issues": []
+        },
+        {
+          "name": "publish_ui_plan",
+          "status": "completed"
+        },
+        {
+          "name": "check_workspace",
+          "status": "completed",
+          "check": {
+            "checked": {
+              "itemRevision": 10,
+              "definitionId": "cc879069-c1a6-416a-be85-99bf4f5b8a89",
+              "planId": "463a9631-e555-4354-bfd5-bdbfaaa6b6f7",
+              "runId": "309975fa-7d6c-4701-a99f-923b70450976"
+            },
+            "canExecute": true,
+            "canPublish": true,
+            "publication": {
+              "current": true,
+              "missingOutputs": []
+            }
+          },
+          "issues": []
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "id": "309975fa-7d6c-4701-a99f-923b70450976",
+      "status": "completed"
+    }
+  ],
+  "inputValues": [
+    {
+      "id": "q1",
+      "amount": 20
+    },
+    {
+      "id": "q2",
+      "amount": 35
+    }
+  ],
+  "businessStatus": "open",
+  "criteria": [
+    {
+      "id": "fa08864c-5e15-4573-84e5-24cdd2e64f96",
+      "text": "报价金额与原文一致，由用户核对。",
+      "met": false,
+      "evidence": ""
+    }
+  ]
+}

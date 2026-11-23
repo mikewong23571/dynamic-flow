@@ -20,14 +20,14 @@ const definition = (): Definition => ({
       id: 'classify',
       label: '分类',
       kind: 'agent',
-      mode: 'each',
+      operation: 'map',
       task: '分类并引用材料编号',
     },
     {
       id: 'report',
       label: '报告',
       kind: 'agent',
-      mode: 'all',
+      operation: 'aggregate',
       task: '汇总有依据的建议',
     },
   ],
@@ -79,6 +79,7 @@ function result(
 }
 function run(results: NodeResult[]): Run {
   return {
+    materials: [],
     id: 'run1',
     definitionId: 'd1',
     scope: 'full',
@@ -213,7 +214,7 @@ test('校验定位缺输入、坏端口、重复来源、回连、输出和函�
     id: 'classify',
     label: '筛选',
     kind: 'function',
-    mode: 'each',
+    operation: 'map',
     functionName: 'select-fields',
     params: { fields: [] },
   };
@@ -230,14 +231,14 @@ test('条件分支和显式汇合有效，空分支不要求不存在的实例',
         id: 'branch',
         label: '分流',
         kind: 'branch',
-        mode: 'all',
+
         condition: { field: 'category', operator: 'equals', value: '问题' },
       },
       {
         id: 'merge',
         label: '汇合',
         kind: 'function',
-        mode: 'all',
+        inputNames: ['left', 'right'],
         functionName: 'merge',
       },
     ],

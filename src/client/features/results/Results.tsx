@@ -1,537 +1,311 @@
-import { materializeDefinition } from '../../../shared/expansion';
-import { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { MarkdownTable } from '../../components/MarkdownTable';
-import { Copy, ChevronRight, ArrowRight } from 'lucide-react';
-import type {
-  Definition,
-  Inputs,
-  Json,
-  ModelConfiguration,
-  NodeResult,
-  Work,
-} from '../../../shared/records';
-import { resultItems, nodeTotal } from '../../core/results';
-import { isFinalOutput } from '../../core/definition';
-import { active, short, statusNames } from '../../core/format';
-import { Badge, Button, Empty } from '../../components/ui';
-import { effectiveModelLabel } from '../settings/catalog-model';
+import './Results.css';
+import { useEffect, useMemo, useState, type ComponentProps } from 'react';
+import type { WorkItemSummaryPage } from '../../../shared/records';
+import type { ResultView } from '../../app/navigation';
+import { routeHref } from '../../app/navigation';
+import { ObjectLink } from '../../components/ObjectLink';
+import { api } from '../../core/api';
+import {
+  active as running,
+  errorText,
+  short,
+  statusNames,
+} from '../../core/format';
+import { Button } from '../../components/ui/button';
+import { NativeSelect } from '../../components/ui/native-select';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '../../components/ui/tabs';
+import { DeferredContent } from '../../components/DeferredContent';
+import { RunArtifactsPage } from './RunArtifactsPage';
+import { RunProcess } from './RunProcess';
+import { ResultsOverview, type OverviewMode } from './ResultsOverview';
+import {
+  finalArtifacts,
+  runRows,
+  runLabel,
+  type BusinessItem,
+  type FinalArtifact,
+} from './result-overview-model';
+import { executionDefinition, type RunFocus } from './run-inspector-model';
+import './ResultsOverview.css';
+export { InputContent, Value } from './RunProcess';
 
-/** 展开实例的全部输入端口并按字段去重，用于展示材料与来源引用。 */
-function inputRefs(
-  input: Inputs,
-  field: 'materialIds' | 'sourceResultIds',
-): string[] {
-  return [
-    ...new Set(
-      Object.values(input)
-        .flat()
-        .flatMap((item) => item[field]),
-    ),
+export function Results(
+  props: ComponentProps<typeof RunProcess> & {
+    active?: boolean;
+    view?: ResultView;
+    requestedRunId?: string;
+    onViewChange: (view: ResultView, runId?: string) => void;
+    onOpenItem: (id: string) => void;
+  },
+) {
+  const { work, definitions, requestedFocus, active = true } = props;
+  const view = props.view || (props.requestedRunId ? 'process' : 'overview');
+  const [items, setItems] = useState<BusinessItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [retry, setRetry] = useState(0);
+  const [mode, setMode] = useState<OverviewMode>('runs');
+  const [artifactRequests, setArtifactRequests] = useState<
+    Record<string, { groupId?: string; artifactId?: string }>
+  >({});
+  const [processFocus, setProcessFocus] = useState<Record<string, RunFocus>>(
+    {},
+  );
+  const [visitedArtifactRuns, setVisitedArtifactRuns] = useState<string[]>([]);
+  const selectedId = props.requestedRunId || props.selectedRun;
+  const selected = work.runs.find((run) => run.id === selectedId);
+  const missingRun = !!selectedId && !selected;
+  useEffect(() => {
+    if (view === 'artifacts' && selected)
+      setVisitedArtifactRuns((old) =>
+        old.includes(selected.id) ? old : [...old, selected.id],
+      );
+  }, [view, selected?.id]);
+  useEffect(() => {
+    if (!active) return;
+    if (!work.runs.some((run) => run.workItem)) {
+      setLoading(false);
+      return;
+    }
+    let live = true;
+    let timer: ReturnType<typeof setTimeout>;
+    async function refresh() {
+      try {
+        const data = await api<WorkItemSummaryPage>(
+          `/api/items?summary=true&ids=${encodeURIComponent([...new Set(work.runs.flatMap((run) => (run.workItem ? [run.workItem.id] : [])))].join(','))}`,
+        );
+        const ids = new Set(
+          work.runs.flatMap((run) => (run.workItem ? [run.workItem.id] : [])),
+        );
+        const next = data.items
+          .filter((item) => ids.has(item.id))
+          .map(({ id, key, title, status, effectiveStatus, runs }) => ({
+            id,
+            key,
+            title,
+            status,
+            effectiveStatus,
+            runs,
+          }));
+        if (live) {
+          setItems((old) =>
+            JSON.stringify(old) === JSON.stringify(next) ? old : next,
+          );
+          setError('');
+        }
+      } catch (cause) {
+        if (live) setError(errorText(cause));
+      } finally {
+        if (live) {
+          setLoading(false);
+          if (view === 'overview') timer = setTimeout(refresh, 2000);
+        }
+      }
+    }
+    void refresh();
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  }, [active, work.id, work.runs.length, retry, view]);
+
+  const rows = useMemo(() => runRows(work, items), [work.runs, items]);
+  const artifacts = useMemo(
+    () => finalArtifacts(work, definitions),
+    [work.runs, definitions],
+  );
+  function chooseView(
+    next: ResultView,
+    runId = next === 'overview'
+      ? selected?.id
+      : selectedId || work.runs.at(-1)?.id,
+  ) {
+    props.onViewChange(next, runId);
+  }
+  function openArtifacts(
+    runId: string,
+    request?: { groupId?: string; artifactId?: string },
+  ) {
+    if (request) setArtifactRequests((old) => ({ ...old, [runId]: request }));
+    chooseView('artifacts', runId);
+  }
+  function openProcess(runId: string, artifact?: FinalArtifact) {
+    if (artifact)
+      setProcessFocus((old) => ({ ...old, [runId]: artifact.focus }));
+    chooseView('process', runId);
+  }
+  const visited = [
+    ...new Set([
+      ...visitedArtifactRuns,
+      ...(view === 'artifacts' && selected ? [selected.id] : []),
+    ]),
   ];
-}
-export function Value({ value }: { value: Json }) {
-  if (typeof value === 'string')
-    return (
-      <div className="prose">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={{ table: MarkdownTable }}
-        >
-          {value}
-        </ReactMarkdown>
-      </div>
-    );
-  if (value === null || typeof value !== 'object')
-    return <span>{String(value)}</span>;
-  if (Array.isArray(value))
-    return (
-      <div className="value-list">
-        {value.map((v, i) => (
-          <Value key={i} value={v} />
-        ))}
-      </div>
-    );
   return (
-    <dl className="value-object">
-      {Object.entries(value).map(([key, v]) => (
-        <div key={key}>
-          <dt>{key}</dt>
-          <dd>
-            <Value value={v} />
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-export function InputContent({ inputs }: { inputs: Inputs }) {
-  return (
-    <div className="input-content">
-      {Object.entries(inputs).map(([port, items]) => (
-        <div key={port}>
-          {Object.keys(inputs).length > 1 && <h4>端口 · {port}</h4>}
-          {items.length === 0 && <span className="muted">无输入</span>}
-          {items.map((item, i) => (
-            <div className="sample-content" key={`${item.sampleId}-${i}`}>
-              <span className="sample-id">
-                {item.materialIds.join(' · ') ||
-                  (item.sourceResultIds.length
-                    ? item.sampleId
-                    : `直接输入 · ${item.sampleId}`)}
-              </span>
-              <Value value={item.value} />
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-}
-export function Results({
-  work,
-  definitions,
-  selectedRun,
-  onRunSelect,
-  selectedResults,
-  onSelectResults,
-  onAction,
-  onCandidate,
-  onContinue,
-  onInvoke,
-  selectedDefinitionId,
-  configuration,
-  onOpenSettings,
-}: {
-  work: Work;
-  definitions: Record<string, Definition>;
-  selectedRun?: string;
-  onRunSelect: (id: string) => void;
-  selectedResults: string[];
-  onSelectResults: (ids: string[]) => void;
-  onAction: (
-    action: string,
-    fields?: Record<string, unknown>,
-  ) => Promise<unknown>;
-  onCandidate: (result: NodeResult) => void;
-  onContinue: () => void;
-  onInvoke?: () => void;
-  selectedDefinitionId?: string;
-  configuration?: ModelConfiguration | null;
-  onOpenSettings?: () => void;
-}) {
-  const run =
-    work.runs.find((r) => r.id === selectedRun) ||
-    work.runs[work.runs.length - 1];
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const [copied, setCopied] = useState('');
-  if (!run)
-    return (
-      <Empty title="还没有运行结果">
-        <p>选择材料，运行流程后将在这里看到逐条进展。</p>
-        {onInvoke && (
-          <Button variant="primary" onClick={onInvoke}>
-            直接输入运行
-          </Button>
-        )}
-      </Empty>
-    );
-  const original = definitions[run.definitionId];
-  const def = original
-    ? materializeDefinition(original, run.expansions ?? [])
-    : undefined;
-  const toggle = (id: string) =>
-    onSelectResults(
-      selectedResults.includes(id)
-        ? selectedResults.filter((x) => x !== id)
-        : [...selectedResults, id],
-    );
-  return (
-    <div className="results-view">
-      <div className="results-toolbar">
-        <label>
-          运行记录
-          <select
-            aria-label="运行记录"
-            value={run.id}
-            onChange={(e) => onRunSelect(e.target.value)}
+    <Tabs
+      value={view}
+      onValueChange={(next) => chooseView(next as ResultView)}
+      className="results-destination gap-0"
+    >
+      <div className="results-navigation">
+        <TabsList aria-label="结果导航" className="h-9">
+          <TabsTrigger value="overview">总览</TabsTrigger>
+          <TabsTrigger
+            value="artifacts"
+            disabled={!work.runs.length && !selectedId}
           >
-            {[...work.runs].reverse().map((r, i) => (
-              <option key={r.id} value={r.id}>
-                {new Date(r.startedAt).toLocaleTimeString()} ·{' '}
-                {r.scope === 'full'
-                  ? '完整流程'
-                  : definitions[r.definitionId]?.nodes.find(
-                      (n) =>
-                        n.id ===
-                        (typeof r.scope === 'object' ? r.scope.nodeId : ''),
-                    )?.label || '单节点'}{' '}
-                · {statusNames[r.status]} · {short(r.definitionId)}
-                {r.invocation?.loose ? ' · 宽松调用' : ''}
-                {r.invocation?.repairedPorts?.length ? ' · 自动修复' : ''}
+            本次成果
+          </TabsTrigger>
+          <TabsTrigger
+            value="process"
+            disabled={!work.runs.length && !selectedId}
+          >
+            执行过程
+          </TabsTrigger>
+        </TabsList>
+        <div className="results-navigation-selection">
+          <NativeSelect
+            layout="fit"
+            aria-label="运行记录"
+            value={selectedId || ''}
+            onChange={(event) =>
+              chooseView(
+                view === 'overview' ? 'process' : view,
+                event.target.value,
+              )
+            }
+            disabled={!work.runs.length && !selectedId}
+          >
+            {!selectedId && (
+              <option value="" disabled>
+                选择执行
+              </option>
+            )}
+            {missingRun && <option value={selectedId}>指定执行不可用</option>}
+            {[...work.runs].reverse().map((run) => (
+              <option key={run.id} value={run.id}>
+                {runLabel(run, rows.find((row) => row.run.id === run.id)?.item)}{' '}
+                · {statusNames[run.status]} · {short(run.definitionId)}
               </option>
             ))}
-          </select>
-        </label>
-        <Badge status={run.status} />
-        {active(run.status) && (
-          <Button
-            onClick={() => void onAction('stopRun', { runId: run.id })}
-            disabled={run.stopRequested}
-          >
-            停止运行
-          </Button>
-        )}
-      </div>
-      <div className="run-meta">
-        <span>
-          做法 {short(run.definitionId)} ·{' '}
-          {run.definitionId === work.adoptedId
-            ? '当前采用'
-            : run.definitionId === work.draftId
-              ? '候选'
-              : '历史版本'}
-        </span>
-        <span>
-          {run.results.filter((r) => r.status === 'completed').length} 条完成 /{' '}
-          {run.results.length} 个执行实例
-        </span>
-        <span>输入 {Object.values(run.inputs).flat().length} 条</span>
-        {run.invocation?.loose && <span>宽松调用（豁免入口契约）</span>}
-        {!!run.invocation?.repairedPorts?.length && (
-          <span>
-            端口 {run.invocation.repairedPorts.join('、')} 经自动修复
-          </span>
-        )}
-      </div>
-      {run.error && <p className="inline-error">{run.error}</p>}
-      <div className="scroll results-body">
-        {run.workItem && (
-          <div className="run-business-context">
-            <strong>
-              {run.workItem.key} · {run.workItem.title}
-            </strong>
-            <span>
-              工作项输入修订 {run.workItem.revision} ·{' '}
-              {run.effectMode === 'commit' ? '正式推进' : '试运行'}
-            </span>
-          </div>
-        )}
-        {!!run.waits?.length && (
-          <details className="details" open={run.status === 'waiting'}>
-            <summary>等待与触发记录</summary>
-            {run.waits.map((wait) => (
-              <div className="run-wait-record" key={wait.nodeId}>
-                <strong>{wait.reason}</strong>
-                <p>
-                  {wait.event} ·{' '}
-                  {wait.status === 'pending'
-                    ? '等待中'
-                    : wait.releasedBy === 'timer'
-                      ? '到期已继续'
-                      : '事件已继续'}
-                  {wait.dueAt
-                    ? ` · 到期 ${new Date(wait.dueAt).toLocaleString()}`
-                    : ''}
-                </p>
-              </div>
-            ))}
-            {run.signals?.map((signal) => (
-              <div className="run-wait-record" key={signal.id}>
-                <strong>{signal.name}</strong>
-                <p>
-                  接收于 {new Date(signal.receivedAt).toLocaleString()} ·{' '}
-                  {signal.id}
-                </p>
-                {signal.payload !== undefined && (
-                  <Value value={signal.payload} />
-                )}
-              </div>
-            ))}
-          </details>
-        )}
-        {original?.problem && (
-          <details className="details">
-            <summary>本次固定的问题认知</summary>
-            <Value
-              value={{
-                当前问题: original.problem.framing,
-                已知事实: original.problem.known,
-                仍待确认: original.problem.unknown,
-                约束: original.problem.constraints,
-                依据与来源: original.problem.evidence,
-              }}
-            />
-          </details>
-        )}
-        {run.expansions?.map((expansion) => (
-          <details className="details" key={expansion.nodeId} open>
-            <summary>
-              实际展开 ·{' '}
-              {original?.nodes.find((n) => n.id === expansion.nodeId)?.label}
-            </summary>
-            <ol>
-              {expansion.definition.nodes.map((node) => (
-                <li key={node.id}>
-                  <strong>{node.label}</strong>
-                  <p>{node.contract?.responsibility}</p>
-                  <p className="muted">完成：{node.contract?.done}</p>
-                  <p className="muted">依据：{node.contract?.rationale}</p>
-                </li>
-              ))}
-            </ol>
-            <p className="muted">
-              {expansion.definition.edges
-                .map(
-                  (e) =>
-                    `${e.from[0] === '$input' ? '输入' : expansion.definition.nodes.find((n) => n.id === e.from[0])?.label} → ${expansion.definition.nodes.find((n) => n.id === e.to[0])?.label}`,
-                )
-                .join('；')}
-            </p>
+          </NativeSelect>
+          {selected && running(selected.status) && (
             <Button
-              disabled={
-                run.nodeStates[expansion.nodeId] !== 'completed' ||
-                !definitions[work.draftId ?? work.adoptedId ?? '']?.nodes.some(
-                  (n) => n.id === expansion.nodeId && n.kind === 'dynamic',
-                )
-              }
+              variant="outline"
+              size="sm"
+              disabled={selected.stopRequested}
               onClick={() =>
-                void onAction('freezeExpansion', {
-                  expectedDraftId: work.draftId,
-                  runId: run.id,
-                  nodeId: expansion.nodeId,
-                })
+                void props.onAction('stopRun', { runId: selected.id })
               }
             >
-              把展开写为候选
+              停止运行
             </Button>
-          </details>
-        ))}
-        {Object.entries(run.nodeStates).map(([id, state]) => (
-          <div className="step-progress" key={id}>
-            <span>{def?.nodes.find((n) => n.id === id)?.label || id}</span>
-            <Badge status={state} />
-            <span>
-              {
-                run.results.filter(
-                  (r) =>
-                    r.nodeId === id &&
-                    r.status === 'completed' &&
-                    !r.intermediate &&
-                    !r.purpose,
-                ).length
-              }{' '}
-              / {nodeTotal(run, id)} 个实例
-            </span>
-          </div>
-        ))}
-        {run.results.map((result) => {
-          const parentDynamic = run.expansions?.find((e) =>
-            result.nodeId.startsWith(`${e.nodeId}/`),
-          )?.nodeId;
-          const final =
-            !result.intermediate &&
-            !result.purpose &&
-            isFinalOutput(def, result.nodeId);
-          return (
-            <article
-              className={`result-card ${final ? 'final-result' : ''}`}
-              key={result.id}
-            >
-              <header>
-                <label className="check-row">
-                  <input
-                    type="checkbox"
-                    checked={selectedResults.includes(result.id)}
-                    disabled={result.status !== 'completed' || !!result.purpose}
-                    onChange={() => toggle(result.id)}
-                  />
-                  <strong>
-                    {def?.nodes.find((n) => n.id === result.nodeId)?.label ||
-                      result.nodeId}
-                  </strong>
-                </label>
-                {result.purpose && <Badge>生成计划</Badge>}
-                {result.iteration && (
-                  <Badge>
-                    第 {result.iteration} 轮
-                    {result.intermediate ? ' · 中间结果' : ''}
-                  </Badge>
-                )}
-                {final && <Badge>最终产物</Badge>}
-                <Badge status={result.status} />
-                <span className="muted">
-                  {inputRefs(result.input, 'materialIds').join(' · ')}
-                </span>
-              </header>
-              {result.error && <p className="inline-error">{result.error}</p>}
-              {result.purpose && result.proposedDefinition && (
-                <details className="details">
-                  <summary>生成的提案</summary>
-                  <pre>
-                    {JSON.stringify(result.proposedDefinition, null, 2)}
-                  </pre>
-                </details>
-              )}
-              {result.effectiveModel && (
-                <p className="muted result-model">
-                  {effectiveModelLabel(
-                    result.effectiveModel,
-                    configuration?.catalog ?? [],
-                  )}
-                </p>
-              )}
-              {resultItems(result).map((item, i) => (
-                <div className="result-output" key={i}>
-                  <Value value={item.value} />
-                </div>
-              ))}
-              {result.status !== 'completed' &&
-                resultItems(result).length === 0 && (
-                  <p className="muted">
-                    {active(result.status)
-                      ? '正在处理这条输入…'
-                      : '此实例没有完整产物。'}
-                  </p>
-                )}
-              <div className="result-actions">
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    setExpanded({
-                      ...expanded,
-                      [result.id]: !expanded[result.id],
-                    })
-                  }
-                >
-                  <ChevronRight
-                    size={14}
-                    className={expanded[result.id] ? 'rotate' : ''}
-                  />
-                  输入与来源
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    onCandidate(
-                      parentDynamic
-                        ? { ...result, nodeId: parentDynamic }
-                        : result,
-                    )
-                  }
-                >
-                  {parentDynamic ? '改进所属动态步骤' : '从此结果改进'}
-                </Button>
-                {result.status === 'failed' &&
-                  original?.nodes.some((n) => n.id === result.nodeId) && (
-                    <>
-                      <Button
-                        onClick={() =>
-                          void onAction('retry', {
-                            runId: run.id,
-                            resultIds: [result.id],
-                            definitionId:
-                              selectedDefinitionId || run.definitionId,
-                          })
-                        }
-                      >
-                        用所选做法重试此输入
-                      </Button>
-                      {result.effectiveModel && onOpenSettings && (
-                        <Button variant="ghost" onClick={onOpenSettings}>
-                          检查模型设置
-                        </Button>
-                      )}
-                    </>
-                  )}
-                {result.status === 'completed' && !result.purpose && (
-                  <>
-                    <Button
-                      variant="ghost"
-                      onClick={() =>
-                        void onAction('keepResults', { resultIds: [result.id] })
-                      }
-                    >
-                      {work.keptResultIds.includes(result.id)
-                        ? '已保留'
-                        : '保留此结果'}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      aria-label="复制结果"
-                      onClick={() => {
-                        void navigator.clipboard
-                          .writeText(
-                            resultItems(result)
-                              .map((i) =>
-                                typeof i.value === 'string'
-                                  ? i.value
-                                  : JSON.stringify(i.value, null, 2),
-                              )
-                              .join('\n\n'),
-                          )
-                          .then(() => setCopied(result.id));
-                      }}
-                    >
-                      <Copy size={14} />
-                      {copied === result.id ? '已复制' : '复制'}
-                    </Button>
-                  </>
-                )}
-              </div>
-              {expanded[result.id] && (
-                <div className="result-detail">
-                  <h4>实际输入</h4>
-                  <InputContent inputs={result.input} />
-                  <p className="muted">
-                    运行 {short(result.runId)} · 做法{' '}
-                    {short(result.definitionId)} · 实例{' '}
-                    {short(result.instanceId)}
-                  </p>
-                  {inputRefs(result.input, 'sourceResultIds').length > 0 && (
-                    <p className="muted">
-                      来源结果：
-                      {inputRefs(result.input, 'sourceResultIds')
-                        .map(short)
-                        .join('、')}
-                    </p>
-                  )}
-                  {result.activities.map((a) => (
-                    <details key={a.id}>
-                      <summary>
-                        {a.toolName} · {statusNames[a.status]}
-                      </summary>
-                      {a.args && <Value value={a.args} />}{' '}
-                      {a.result && <Value value={a.result} />}{' '}
-                      {a.error && <p className="error-text">{a.error}</p>}
-                    </details>
-                  ))}
-                </div>
-              )}
-            </article>
-          );
-        })}
+          )}
+        </div>
       </div>
-      {selectedResults.length > 0 && (
-        <div className="selection-bar">
-          <span>跨运行已选 {selectedResults.length} 条结果</span>
-          <Button
-            onClick={() =>
-              void onAction('keepResults', { resultIds: selectedResults })
-            }
-          >
-            保留所选结果
-          </Button>
-          <Button variant="primary" onClick={onContinue}>
-            用所选结果续做
-            <ArrowRight size={15} />
-          </Button>
-          <Button variant="ghost" onClick={() => onSelectResults([])}>
-            清除
-          </Button>
+      {missingRun && (
+        <div className="results-location-error" role="alert">
+          找不到指定执行，未替换为其它运行。
         </div>
       )}
-    </div>
+      <div className="results-panels" hidden={missingRun}>
+        {view !== 'overview' && selected?.workItem && (
+          <div className="results-run-owner">
+            <span>所属工作项</span>
+            <ObjectLink
+              href={routeHref({ kind: 'item', id: selected.workItem.id })}
+              onNavigate={() => props.onOpenItem(selected.workItem!.id)}
+            >
+              {selected.workItem.title}
+            </ObjectLink>
+            <span title={selected.definitionId}>
+              固定版本 {short(selected.definitionId)}
+            </span>
+          </div>
+        )}
+        <TabsContent
+          value="overview"
+          forceMount
+          hidden={view !== 'overview'}
+          className="results-destination-body"
+        >
+          <ResultsOverview
+            rows={rows}
+            artifacts={artifacts}
+            mode={mode}
+            onMode={setMode}
+            loading={loading}
+            error={error}
+            onRetry={() => setRetry((n) => n + 1)}
+            onProcess={(run) => openProcess(run.id)}
+            onRunArtifacts={(run) => openArtifacts(run.id)}
+            onArtifact={(entry) =>
+              openArtifacts(entry.run.id, { groupId: entry.groupId })
+            }
+          />
+          {!work.runs.length && props.onInvoke && (
+            <Button variant="outline" size="sm" onClick={props.onInvoke}>
+              直接输入运行
+            </Button>
+          )}
+        </TabsContent>
+        <TabsContent
+          value="process"
+          forceMount
+          hidden={view !== 'process'}
+          className="results-destination-body"
+        >
+          <DeferredContent active={view === 'process' && !!selected}>
+            {() =>
+              selected && (
+                <RunProcess
+                  {...props}
+                  key={selected.id}
+                  showRunSelection={false}
+                  requestedFocus={processFocus[selected.id] || requestedFocus}
+                  selectedRun={selected.id}
+                  onInspectFocus={(focus) =>
+                    setProcessFocus((old) => ({
+                      ...old,
+                      [selected.id]: focus,
+                    }))
+                  }
+                  onRunSelect={(id) => chooseView('process', id)}
+                />
+              )
+            }
+          </DeferredContent>
+        </TabsContent>
+        <TabsContent
+          value="artifacts"
+          forceMount
+          hidden={view !== 'artifacts'}
+          className="results-destination-body"
+        >
+          {visited.map((id) => {
+            const run = work.runs.find((entry) => entry.id === id);
+            if (!run) return null;
+            const row = rows.find((entry) => entry.run.id === id);
+            return (
+              <RunArtifactsPage
+                key={id}
+                run={run}
+                definition={executionDefinition(run, definitions)}
+                artifacts={artifacts.filter((entry) => entry.run.id === id)}
+                identity={runLabel(run, row?.item)}
+                active={active && view === 'artifacts' && selected?.id === id}
+                request={artifactRequests[id]}
+                controls={props}
+                onProcess={(entry) => openProcess(run.id, entry)}
+              />
+            );
+          })}
+        </TabsContent>
+      </div>
+    </Tabs>
   );
 }

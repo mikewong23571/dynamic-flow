@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-29",
+  "scope": "whole-preview-versus-managed",
+  "diffFiles": 164,
+  "dataCopyRead": {
+    "works": 10,
+    "definitionVersions": 16,
+    "oldItems": 1117,
+    "samples": 2,
+    "newOldDefinitionValidationDifferences": 0
+  },
+  "persistedActivity": {
+    "runningRuns": 2,
+    "runningBatches": 1
+  },
+  "moduleTests": {
+    "concurrency": 2,
+    "externalMcp": "disabled only for fixture test process",
+    "passed": 276,
+    "failed": 0
+  },
+  "defaultConcurrencyRun": {
+    "passed": 275,
+    "failed": 1,
+    "failure": "CVE fixture polling budget; standalone 4/4 passed"
+  },
+  "managedServiceChanged": false,
+  "productSourceChanged": false,
+  "deployment": "not-performed",
+  "compatibility": "data reads verified; old-item automatic composition/UI handoff not implemented"
+}

@@ -1,0 +1,97 @@
+@layer components {
+  /* Each container owns its direct children's spacing; content carries no page margin. */
+  .openui-workspace,
+  .openui-view {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-section);
+    min-width: 0;
+  }
+  .openui-section,
+  .openui-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-group);
+    min-width: 0;
+  }
+  .openui-section {
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-field);
+  }
+  .openui-section:not([data-section-depth='0']) {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+    padding: 0 0 0 var(--space-field);
+  }
+  .openui-section-heading,
+  .openui-content > h2 {
+    margin: 0;
+    font-size: var(--text-section);
+    font-weight: 500;
+  }
+  .openui-section:not([data-section-depth='0']) > .openui-section-heading {
+    font-size: var(--text-control);
+  }
+  .openui-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-field);
+    min-width: 0;
+  }
+  .openui-stack-horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+  }
+  .openui-stack > [data-slot='button'] {
+    align-self: flex-start;
+  }
+  .openui-stack-horizontal > * {
+    min-width: 0;
+  }
+  .openui-workspace > p,
+  .openui-stack > p,
+  .openui-content > p {
+    margin: 0;
+    max-width: 70ch;
+    line-height: 1.6;
+  }
+  .openui-content .declared-record-detail {
+    margin: 0;
+    gap: 10px;
+  }
+  .openui-content .declared-record-detail dt {
+    font-size: var(--text-small);
+  }
+  .declared-input-form {
+    margin: 0;
+  }
+  .declared-input-form .form-field {
+    margin: 0;
+  }
+  .declared-input-form .form-actions {
+    margin-top: 0;
+  }
+  .openui-metric {
+    margin: 0;
+    min-width: 100px;
+  }
+  .openui-metric dt {
+    color: var(--muted);
+    font-size: var(--text-small);
+  }
+  .openui-metric dd {
+    margin: 4px 0 0;
+    font-size: 20px;
+    font-weight: 500;
+  }
+  .openui-disclosure > summary {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: var(--text-control);
+  }
+  .openui-disclosure[open] > summary {
+    margin-bottom: 16px;
+  }
+}

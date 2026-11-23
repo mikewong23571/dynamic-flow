@@ -6,8 +6,8 @@ export default defineConfig({
   plugins: [react(), tailwind()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   server: {
-    host: '0.0.0.0',
-    port: 4320,
+    host: process.env.HOST || '0.0.0.0',
+    port: Number(process.env.FLOWCRAFT_WEB_PORT || 4330),
     strictPort: true,
     watch: {
       ignored: [
@@ -17,8 +17,10 @@ export default defineConfig({
         '**/data/**',
       ],
     },
-    proxy: { '/api': 'http://127.0.0.1:4321' },
+    proxy: {
+      '/api': `http://127.0.0.1:${process.env.FLOWCRAFT_API_PORT || 4331}`,
+    },
   },
   build: { outDir: 'dist' },
-  preview: { host: '0.0.0.0', port: 4322 },
+  preview: { host: process.env.HOST || '0.0.0.0', port: 4332 },
 });

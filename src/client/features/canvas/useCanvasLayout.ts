@@ -28,6 +28,8 @@ type Options = {
   nodes: CanvasNode[];
   setNodes: Dispatch<SetStateAction<CanvasNode[]>>;
   onLayout: (view: ViewState) => void;
+  enabled?: boolean;
+  layerSpacing?: number;
 };
 const nextMeasurement = () =>
   new Promise<void>((resolve) => setTimeout(resolve, 40));
@@ -38,6 +40,8 @@ export function useCanvasLayout({
   nodes,
   setNodes,
   onLayout,
+  enabled = true,
+  layerSpacing = 104,
 }: Options) {
   const { getNodes, getInternalNode, fitView, getViewport } =
     useReactFlow<CanvasNode>();
@@ -49,8 +53,8 @@ export function useCanvasLayout({
   const request = useRef(0);
   const initialLayout = useRef(Object.keys(view.positions).length === 0);
   const autoPending = useRef(false);
-  const latest = useRef({ definition, onLayout });
-  latest.current = { definition, onLayout };
+  const latest = useRef({ definition, onLayout, layerSpacing });
+  latest.current = { definition, onLayout, layerSpacing };
   const routeRef = useRef(routing);
   const portsRef = useRef(showPorts);
   const mounted = useRef(true);
@@ -107,10 +111,12 @@ export function useCanvasLayout({
     if (!initialized) return;
     const generation = ++request.current;
     const captured = latest.current.definition;
+    const spacing = latest.current.layerSpacing;
     const graphKey = JSON.stringify(captured);
     const current = () =>
       mounted.current &&
       generation === request.current &&
+      spacing === latest.current.layerSpacing &&
       graphKey === JSON.stringify(latest.current.definition);
     const readReadyGeometry = async (): Promise<LayoutNode[] | undefined> => {
       for (let attempt = 0; attempt < 10 && current(); attempt++) {
@@ -130,7 +136,7 @@ export function useCanvasLayout({
       const { layoutWorkflow } = await import('./canvas-layout');
       for (let attempt = 0; attempt < 4 && current(); attempt++) {
         const measuredKey = routingSignature(captured, dimensions, {});
-        const result = await layoutWorkflow(captured, dimensions);
+        const result = await layoutWorkflow(captured, dimensions, spacing);
         // Allow ResizeObserver and handle updates to settle before accepting ELK's result.
         await nextMeasurement();
         if (!current()) return;
@@ -169,7 +175,13 @@ export function useCanvasLayout({
   }, [initialized, geometry, getNodes, setNodes, saveLayout, fitView]);
 
   useEffect(() => {
-    if (!initialized || !initialLayout.current || autoPending.current) return;
+    if (
+      !enabled ||
+      !initialized ||
+      !initialLayout.current ||
+      autoPending.current
+    )
+      return;
     const frame = requestAnimationFrame(() => {
       autoPending.current = true;
       void arrange().finally(() => {
@@ -177,7 +189,7 @@ export function useCanvasLayout({
       });
     });
     return () => cancelAnimationFrame(frame);
-  }, [initialized, arrange]);
+  }, [enabled, initialized, arrange]);
 
   function manualMove() {
     initialLayout.current = false;

@@ -1,0 +1,89 @@
+{
+  "startedAt": "2026-10-29T07:31:07.043Z",
+  "itemId": "33800ab9-0d63-4484-92c3-936d8ff86d62",
+  "scope": "真实默认模型仅共同编辑明确虚构演示的界面安排；不运行漏洞核查、不确认条件或结项",
+  "before": {
+    "runCount": 3,
+    "definitionId": "9ce13d9a-ae38-42d7-861c-0430339832e3",
+    "status": "open"
+  },
+  "human": {
+    "planId": "a6abdec4-d5bb-434f-a1e3-62747c1681de",
+    "runCount": 3,
+    "column": {
+      "field": "cve",
+      "label": "核查问题"
+    }
+  },
+  "assistant": {
+    "durationMs": 30843,
+    "status": "completed",
+    "text": "已完成本次界面共编：只改了「仓库影响」的详情块。\n\n**展示变化**\n- 详情字段在原有 6 项之后追加一项：「原基线与后继验证」（对应 impact 记录中已有的 verification，展示原基线、后继版本与验证证据）。\n- 原有字段及标签（目标仓库、目标分支、原审计版本、问题、判断依据、证据）保持不变，顺序不变。\n- 其余三个视图（改动安排、逐条告警交付、验收缺口）、分组、动作与所绑方法版本均未改动；未保存流程、未运行、未新增判断、未确认任何条件。",
+    "tools": [
+      {
+        "name": "inspect_work_item",
+        "status": "completed"
+      },
+      {
+        "name": "update_ui_block",
+        "status": "completed"
+      }
+    ]
+  },
+  "after": {
+    "runCount": 3,
+    "rootNodes": 1,
+    "definitionId": "9ce13d9a-ae38-42d7-861c-0430339832e3",
+    "planId": "fd47e994-9559-444d-81f9-e6647f4892ae",
+    "detail": {
+      "title": "仓库影响详情",
+      "fields": [
+        {
+          "field": "repository",
+          "label": "目标仓库"
+        },
+        {
+          "field": "requestedRef",
+          "label": "目标分支"
+        },
+        {
+          "field": "baseline",
+          "label": "原审计版本"
+        },
+        {
+          "field": "cve",
+          "label": "问题"
+        },
+        {
+          "field": "reason",
+          "label": "判断依据"
+        },
+        {
+          "field": "evidence",
+          "label": "证据"
+        },
+        {
+          "field": "verification",
+          "label": "原基线与后继验证"
+        }
+      ]
+    },
+    "criteria": [
+      {
+        "id": "alert-evidence",
+        "text": "全部原告警都有适用范围的依据（含无判断材料的范围已补齐核查依据），且例外已由用户明确确认",
+        "met": false,
+        "evidence": ""
+      },
+      {
+        "id": "delivery-review",
+        "text": "已核对改动范围、固定来源及最终交付",
+        "met": false,
+        "evidence": ""
+      }
+    ],
+    "status": "open"
+  },
+  "url": "http://10.134.94.200:4330/items/33800ab9-0d63-4484-92c3-936d8ff86d62?tab=results",
+  "completedAt": "2026-10-29T07:31:52.693Z"
+}

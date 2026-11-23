@@ -1,0 +1,136 @@
+{
+  "dataRoot": "/tmp/flowcraft-cveawg-AJQJJv",
+  "modelStub": false,
+  "startedAt": "2026-10-22T16:10:49.395Z",
+  "workId": "a5aa533a-bd9f-4a75-82b6-112bc7f7a7d4",
+  "author": {
+    "id": "68ddefa3-4163-4ee4-b6c1-5b4a30667f25",
+    "role": "assistant",
+    "text": "工具验证完成：`cveawg_cve_exists` 调用一次成功，CVE-2025-27516 返回 `exists: true`（来源 cve，状态码 200），即该 CVE 记录存在。本轮为纯工具验证，未做任何工作流修改；如需进一步查看该记录详情，可继续调用 `cveawg_cveGetSingle`。",
+    "requestId": "2536adcb-3fde-4894-a397-6144b5105f2c",
+    "sampleIds": [],
+    "status": "completed",
+    "activities": [
+      {
+        "id": "475cce44-2a14-47f2-9dda-9a497c85e89c",
+        "toolCallId": "call_1b440ae3748b49ad813f076a",
+        "toolName": "cveawg_cve_exists",
+        "status": "completed",
+        "args": {
+          "cve_id": "CVE-2025-27516"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"exists\":true,\"source\":\"cve\",\"status_code\":200}"
+            }
+          ],
+          "details": {
+            "server": "cveawg",
+            "tool": "cve_exists"
+          }
+        }
+      }
+    ],
+    "effectiveModel": {
+      "source": "default",
+      "alias": "sangfor/glm-5.3-flash",
+      "model": "glm-5.3-flash",
+      "effort": "max"
+    },
+    "unchanged": true
+  },
+  "run": {
+    "id": "48d1dbd7-5908-4505-9157-03c540e228d9",
+    "definitionId": "5514931a-b885-4438-ad04-4caae3e5ad72",
+    "scope": "full",
+    "inputs": {
+      "cve": [
+        {
+          "sampleId": "cve-1",
+          "value": "CVE-2025-27516",
+          "materialIds": [],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "effectMode": "preview",
+    "status": "completed",
+    "stopRequested": false,
+    "nodeStates": {
+      "query": "completed"
+    },
+    "nodeTotals": {
+      "query": 1
+    },
+    "results": [
+      {
+        "id": "c20bfbab-f194-4648-905a-86988ff78036",
+        "runId": "48d1dbd7-5908-4505-9157-03c540e228d9",
+        "definitionId": "5514931a-b885-4438-ad04-4caae3e5ad72",
+        "nodeId": "query",
+        "instanceId": "query:cve-1:0",
+        "input": {
+          "input": [
+            {
+              "sampleId": "cve-1",
+              "value": "CVE-2025-27516",
+              "materialIds": [],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "- 编号：CVE-2025-27516\n- 记录状态：PUBLISHED\n- 标题：Jinja sandbox breakout through attr filter selecting format method",
+              "sampleId": "cve-1",
+              "materialIds": [],
+              "sourceResultIds": [
+                "c20bfbab-f194-4648-905a-86988ff78036"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [
+          {
+            "id": "48d1dbd7-5908-4505-9157-03c540e228d9:query:cve-1:0:call_ebe461aa87ac4f3581461751",
+            "toolCallId": "call_ebe461aa87ac4f3581461751",
+            "toolName": "cveawg_cveGetSingle",
+            "status": "completed",
+            "args": {
+              "id": "CVE-2025-27516"
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "{\"result\":{\"dataType\":\"CVE_RECORD\",\"dataVersion\":\"5.2\",\"cveMetadata\":{\"cveId\":\"CVE-2025-27516\",\"assignerOrgId\":\"a0819718-46f1-4df5-94e2-005712e83aaa\",\"state\":\"PUBLISHED\",\"assignerShortName\":\"GitHub_M\",\"dateReserved\":\"2025-02-26T18:11:52.307Z\",\"datePublished\":\"2025-03-05T20:40:06.568Z\",\"dateUpdated\":\"2026-02-26T19:09:45.280Z\"},\"containers\":{\"cna\":{\"title\":\"Jinja sandbox breakout through attr filter selecting format method\",\"problemTypes\":[{\"descriptions\":[{\"cweId\":\"CWE-1336\",\"lang\":\"en\",\"description\":\"CWE-1336: Improper Neutralization of Special Elements Used in a Template Engine\",\"type\":\"CWE\"}]}],\"metrics\":[{\"cvssV4_0\":{\"attackVector\":\"LOCAL\",\"attackComplexity\":\"LOW\",\"attackRequirements\":\"PRESENT\",\"privilegesRequired\":\"LOW\",\"userInteraction\":\"PASSIVE\",\"vulnConfidentialityImpact\":\"HIGH\",\"vulnIntegrityImpact\":\"HIGH\",\"vulnAvailabilityImpact\":\"HIGH\",\"subConfidentialityImpact\":\"NONE\",\"subIntegrityImpact\":\"NONE\",\"subAvailabilityImpact\":\"NONE\",\"baseScore\":5.4,\"baseSeverity\":\"MEDIUM\",\"vectorString\":\"CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N\",\"version\":\"4.0\"}}],\"references\":[{\"name\":\"https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7\",\"tags\":[\"x_refsource_CONFIRM\"],\"url\":\"https://github.com/pallets/jinja/security/advisories/GHSA-cpwx-vrp4-4pq7\"},{\"name\":\"https://github.com/pallets/jinja/commit/90457bbf33b8662926ae65cdde4c4c32e756e403\",\"tags\":[\"x_refsource_MISC\"],\"url\":\"https://github.com/pallets/jinja/commit/90457bbf33b8662926ae65cdde4c4c32e756e403\"}],\"affected\":[{\"vendor\":\"pallets\",\"product\":\"jinja\",\"versions\":[{\"version\":\"< 3.1.6\",\"status\":\"affected\"}]}],\"providerMetadata\":{\"orgId\":\"a0819718-46f1-4df5-94e2-005712e83aaa\",\"shortName\":\"GitHub_M\",\"dateUpdated\":\"2025-03-05T20:40:06.568Z\"},\"descriptions\":[{\"lang\":\"en\",\"value\":\"Jinja is an extensible templating engine. Prior to 3.1.6, an oversight in how the Jinja sandboxed environment interacts with the |attr filter allows an attacker that controls the content of a template to execute arbitrary Python code. To exploit the vulnerability, an attacker needs to control the content of a template. Whether that is the case depends on the type of application using Jinja. This vulnerability impacts users of applications which execute untrusted templates. Jinja's sandbox does catch calls to str.format and ensures they don't escape the sandbox. However, it's possible to use the |attr filter to get a reference to a string's plain format method, bypassing the sandbox. After the fix, the |attr filter no longer bypasses the environment's attribute lookup. This vulnerability is fixed in 3.1.6.\"}],\"source\":{\"advisory\":\"GHSA-cpwx-vrp4-4pq7\",\"discovery\":\"UNKNOWN\"}},\"adp\":[{\"metrics\":[{\"other\":{\"type\":\"ssvc\",\"content\":{\"id\":\"CVE-2025-27516\",\"role\":\"CISA Coordinator\",\"options\":[{\"Exploitation\":\"none\"},{\"Automatable\":\"no\"},{\"Technical Impact\":\"total\"}],\"version\":\"2.0.3\",\"timestamp\":\"2025-07-31T03:56:03.356670Z\"}}}],\"title\":\"CISA ADP Vulnrichment\",\"providerMetadata\":{\"orgId\":\"134c704f-9b21-4f2e-91b3-4a467353bcc0\",\"shortName\":\"CISA-ADP\",\"dateUpdated\":\"2026-02-26T19:09:45.280Z\"}},{\"title\":\"CVE Program Container\",\"references\":[{\"url\":\"https://lists.debian.org/debian-lts-announce/2025/04/msg00045.html\"},{\"url\":\"https://lists.debian.org/debian-lts-announce/2025/04/msg00022.html\"}],\"providerMetadata\":{\"orgId\":\"af854a3a-2127-422b-91ae-364da2661108\",\"shortName\":\"CVE\",\"dateUpdated\":\"2025-11-03T19:45:35.548Z\"}}]}}}"
+                }
+              ],
+              "details": {
+                "server": "cveawg",
+                "tool": "cveGetSingle"
+              }
+            }
+          }
+        ],
+        "startedAt": "2026-10-22T16:10:50.193Z",
+        "effectiveModel": {
+          "source": "default",
+          "alias": "sangfor/glm-5.3-flash",
+          "model": "glm-5.3-flash",
+          "effort": "max"
+        },
+        "finishedAt": "2026-10-22T16:11:44.063Z"
+      }
+    ],
+    "waits": [],
+    "signals": [],
+    "startedAt": "2026-10-22T16:10:50.181Z",
+    "finishedAt": "2026-10-22T16:11:44.066Z"
+  },
+  "finishedAt": "2026-10-22T16:11:44.251Z"
+}

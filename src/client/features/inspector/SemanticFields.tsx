@@ -1,6 +1,9 @@
+import { Textarea } from '../../components/ui/textarea';
+import { Input } from '../../components/ui/input';
+import { Field } from '../../components/ui/field';
 import type { Definition, FlowNode } from '../../../shared/records';
 import { ExpressionEditor } from './ExpressionEditor';
-import { Button } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 const problemLabels = {
   framing: '当前问题',
   known: '已知事实',
@@ -28,9 +31,9 @@ export function ProblemEditor({
         <h2>问题与依据</h2>
       </div>
       {Object.entries(problemLabels).map(([key, label]) => (
-        <label className="field" key={key}>
+        <Field key={key}>
           {label}
-          <textarea
+          <Textarea
             rows={key === 'framing' ? 3 : 2}
             value={problem[key as keyof typeof problem]}
             onChange={(e) =>
@@ -40,7 +43,7 @@ export function ProblemEditor({
               })
             }
           />
-        </label>
+        </Field>
       ))}
     </div>
   );
@@ -70,31 +73,31 @@ export function SemanticFields({
             ['semanticRole', '同类对象角色'],
           ] as const
         ).map(([key, label]) => (
-          <label className="field" key={key}>
+          <Field key={key}>
             {label}
-            <textarea
+            <Textarea
               rows={2}
               value={contract[key] ?? ''}
               onChange={(e) =>
                 update({ contract: { ...contract, [key]: e.target.value } })
               }
             />
-          </label>
+          </Field>
         ))}
       </details>
       {node.kind === 'dynamic' && (
         <>
-          <label className="field">
+          <Field>
             局部目标
-            <textarea
+            <Textarea
               rows={4}
               value={node.task ?? ''}
               onChange={(e) => update({ task: e.target.value })}
             />
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             展开边界
-            <textarea
+            <Textarea
               rows={3}
               value={node.dynamic?.boundary ?? ''}
               onChange={(e) =>
@@ -106,10 +109,10 @@ export function SemanticFields({
                 })
               }
             />
-          </label>
-          <label className="field">
+          </Field>
+          <Field>
             最多生成步骤
-            <input
+            <Input
               type="number"
               min={1}
               max={20}
@@ -123,7 +126,7 @@ export function SemanticFields({
                 })
               }
             />
-          </label>
+          </Field>
         </>
       )}
       {['agent', 'function'].includes(node.kind) &&
@@ -137,9 +140,7 @@ export function SemanticFields({
                 onChange={(e) =>
                   update({
                     repeat: e.target.checked ? { max: 3 } : undefined,
-                    ...(e.target.checked
-                      ? { operation: 'map', mode: 'each' }
-                      : {}),
+                    ...(e.target.checked ? { operation: 'map' } : {}),
                   })
                 }
               />
@@ -147,9 +148,9 @@ export function SemanticFields({
             </label>
             {node.repeat && (
               <>
-                <label className="field">
+                <Field>
                   最多轮次
-                  <input
+                  <Input
                     type="number"
                     min={1}
                     max={10}
@@ -163,8 +164,8 @@ export function SemanticFields({
                       })
                     }
                   />
-                </label>
-                <p className="muted">
+                </Field>
+                <p className="meta-text">
                   每轮输出作为下一轮输入；有停止条件时，达到上限仍未满足会报告未完成。
                 </p>
                 {node.repeat.until ? (
@@ -176,6 +177,7 @@ export function SemanticFields({
                       }
                     />
                     <Button
+                      size="sm"
                       variant="ghost"
                       onClick={() =>
                         update({ repeat: { max: node.repeat!.max } })
@@ -186,6 +188,8 @@ export function SemanticFields({
                   </>
                 ) : (
                   <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() =>
                       update({
                         repeat: {

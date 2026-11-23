@@ -1,0 +1,35 @@
+[
+  {
+    "kind": "initial",
+    "ms": 1675.3,
+    "bytes": 61800214
+  },
+  {
+    "kind": "initial",
+    "ms": 1436.5,
+    "bytes": 61800214
+  },
+  {
+    "kind": "initial",
+    "ms": 1382.5,
+    "bytes": 61800214
+  },
+  {
+    "kind": "unchanged",
+    "status": 304,
+    "ms": 12.3,
+    "bytes": 0
+  },
+  {
+    "kind": "unchanged",
+    "status": 304,
+    "ms": 3.6,
+    "bytes": 0
+  },
+  {
+    "kind": "unchanged",
+    "status": 304,
+    "ms": 3.1,
+    "bytes": 0
+  }
+]

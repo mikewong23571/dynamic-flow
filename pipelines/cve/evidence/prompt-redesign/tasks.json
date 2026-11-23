@@ -1,0 +1,14 @@
+{
+  "problem": {
+    "framing": "核查选定业务系统是否满足漏洞的触发条件，形成可追溯的分项结论。",
+    "known": "输入包含已收集的漏洞事实、材料来源及业务系统线索。",
+    "unknown": "业务系统所用版本、相关调用路径与运行条件。",
+    "constraints": "核查范围由本次业务输入确定。",
+    "evidence": "选定的漏洞材料、业务材料及本轮实际取得的源码和部署证据。"
+  },
+  "tasks": {
+    "scope": "你负责准备业务影响核查。输入包含上游漏洞材料、材料来源和本次业务范围。\n整理漏洞编号、受影响版本、触发条件及材料来源；按业务范围列出待核查系统，为每个系统保留已有仓库、版本、环境和依赖线索。历史扫描记录保留扫描时间与来源。\n将漏洞事实和触发条件整理到 materials_facts、trigger_conditions；source_documents 保留支持这些事实的原文片段及来源。缺少的材料和未覆盖范围分别记入 missing_evidence_reasons、uncovered_scope。未知的仓库、版本或环境用 null。\n输出符合 expectedOutput 的核查上下文。",
+    "verify": "你负责核查一个业务系统。input.system 给出目标及线索，input.context 给出漏洞事实与触发条件。\n沿仓库线索使用 Sourcegraph 定位源码和 revision，读取依赖声明、相关调用链、输入来源及配置。有部署材料时，对照部署版本与运行条件。\n逐项对照漏洞触发条件：证据确认所分析版本及运行条件满足触发条件时为 impacted；有明确排除依据时为 not_impacted；关键条件尚未确认时为 undetermined。\ncomponent_version 写明版本及其依据是源码声明还是部署取证；dependency_path 记录依赖引入位置；trigger_assessment 说明各条件的事实和判断。source_documents 保留实际取得的关键片段，标明仓库、revision、文件路径与行号。summary 概括结论，missing_evidence_reasons 和 next_actions 对应尚未解决的具体问题。\n输出符合 expectedOutput 的分项核查结果。",
+    "report": "面向业务负责人，将输入的整体结论与分项核查结果整理成 Markdown 报告。\n开头说明漏洞、核查范围和整体结论；随后用表格列出各系统的版本及来源、关键触发条件、结论和证据。分别呈现源码已确认的事实、部署情况及待核实事项。\n引用材料来源、代码路径和 revision。最后列出未覆盖范围，以及解决剩余问题需要的材料或动作。"
+  }
+}

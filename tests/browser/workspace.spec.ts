@@ -1,9 +1,5 @@
-import {
-  test,
-  expect,
-  type APIRequestContext,
-  type Page,
-} from '@playwright/test';
+import { selectCanvasNode } from './canvas-actions';
+import { test, expect, type APIRequestContext, type Page } from './fixtures';
 import type { Definition, Snapshot } from '../../src/shared/records';
 
 const materials = [
@@ -19,28 +15,28 @@ const functionFlow = (): Definition => ({
       id: 'prepare',
       label: '原样整理材料',
       kind: 'function',
-      mode: 'each',
+      operation: 'map',
       functionName: 'identity',
     },
     {
       id: 'branch',
       label: '按内容分流',
       kind: 'branch',
-      mode: 'all',
+
       condition: { field: '', operator: 'contains', value: '最初条件' },
     },
     {
       id: 'matched',
       label: '处理匹配材料',
       kind: 'function',
-      mode: 'each',
+      operation: 'map',
       functionName: 'identity',
     },
     {
       id: 'merge',
       label: '汇合全部材料',
       kind: 'function',
-      mode: 'all',
+      inputNames: ['left', 'right'],
       functionName: 'merge',
     },
   ],
@@ -97,7 +93,7 @@ async function createWork(request: APIRequestContext, width: number) {
 async function saveInBrowser(page: Page, id: string): Promise<Snapshot> {
   const response = page.waitForResponse(
     (r) =>
-      r.url().endsWith(`/api/works/${id}/actions`) &&
+      new URL(r.url()).pathname === `/api/works/${id}/actions` &&
       r.request().postDataJSON()?.action === 'saveDraft',
   );
   await page.getByRole('button', { name: '保存修改', exact: true }).click();
@@ -117,9 +113,10 @@ async function expectNoHorizontalOverflow(page: Page, width: number) {
   expect(measurements.viewport).toBe(width);
   expect(measurements.document).toBeLessThanOrEqual(width);
   expect(measurements.body).toBeLessThanOrEqual(width);
+  const visiblePanels = await page.locator('.context-panel:visible').all();
   for (const locator of [
-    page.locator('.workspace-header'),
-    page.locator('.context-panel'),
+    ...visiblePanels,
+    page.locator('.workspace-header:visible'),
     page.getByRole('button', { name: '运行流程', exact: true }),
   ]) {
     const bounds = await locator.boundingBox();
@@ -143,24 +140,17 @@ for (const [width, height] of [
     const work = await createWork(request, width);
     // 侧栏只列显式打开的流水线（opened-pipelines 语义）；
     // 预置本浏览器的打开入口，等价于用户此前已打开该工作。
-    await page.addInitScript((id) => {
-      localStorage.setItem(
-        'dynamic-flow.opened-works',
-        JSON.stringify([{ id, goal: '', updatedAt: '' }]),
-      );
-      localStorage.setItem('dynamic-flow.work', id);
-    }, work.id);
-    await page.goto('/');
+    await page.goto(`/methods/${work.id}`);
     await page
       .locator('.work-list')
-      .getByRole('button', { name: work.goal, exact: true })
+      .getByRole('link', { name: work.goal, exact: true })
       .click();
     await expect(
       page.getByRole('heading', { name: work.goal, exact: true }),
     ).toBeVisible();
     await page.getByRole('button', { name: '输入材料', exact: true }).click();
     const materialDialog = page.getByRole('dialog', { name: '输入材料' });
-    await expect(materialDialog.locator('.material-row')).toHaveCount(3);
+    await expect(materialDialog.locator('.material-card')).toHaveCount(3);
     await materialDialog
       .getByRole('button', { name: '清空', exact: true })
       .click();
@@ -176,7 +166,7 @@ for (const [width, height] of [
     await materialDialog
       .getByRole('button', { name: '完成选择', exact: true })
       .click();
-    await page.locator('.react-flow__node[data-id="prepare"]').click();
+    await selectCanvasNode(page, 'prepare');
     await page
       .getByLabel('步骤名称', { exact: true })
       .fill('保留原始反馈与编号');
@@ -190,7 +180,7 @@ for (const [width, height] of [
       page.locator('.react-flow__node[data-id="prepare"]'),
     ).toContainText('保留原始反馈与编号');
 
-    await page.locator('.react-flow__node[data-id="branch"]').click();
+    await selectCanvasNode(page, 'branch');
     await page.getByLabel('值', { exact: true }).fill('失败');
     const configured = await saveInBrowser(page, work.id);
     expect(
@@ -237,20 +227,29 @@ for (const [width, height] of [
       )
       .toBe('completed');
     await page.getByRole('tab', { name: /运行结果/ }).click();
-    await expect(page.locator('.results-toolbar')).toContainText('已完成');
-    await expect(page.locator('.final-result')).toContainText(materials[0]);
-    await expect(page.locator('.final-result')).toContainText(materials[1]);
-    await expect(page.locator('.final-result')).toContainText(materials[2]);
-    await page
-      .locator('.final-result')
-      .getByRole('button', { name: '输入与来源', exact: true })
+    await expect(page.locator('.results-overview')).toContainText('已完成');
+    await page.getByRole('button', { name: '查看过程', exact: true }).click();
+    const reader = page.locator('.run-inspector');
+    await reader
+      .getByRole('navigation', { name: '处理环节' })
+      .getByRole('button', { name: /汇合全部材料/ })
       .click();
-    await expect(page.locator('.final-result .result-detail')).toContainText(
-      'M01',
-    );
-    await expect(page.locator('.final-result .result-detail')).toContainText(
-      '来源结果',
-    );
+    const outputs = reader.locator('.item-output-entry');
+    await expect(outputs).toHaveCount(3);
+    for (let index = 0; index < 3; index++)
+      await outputs.nth(index).locator('summary').click();
+    for (const material of materials)
+      await expect(reader).toContainText(material);
+    await reader.getByRole('tab', { name: '输入与依据', exact: true }).click();
+    await reader.locator('.item-frozen-inputs summary').first().click();
+    await expect(reader.locator('.item-frozen-inputs')).toContainText('M01');
+    await reader
+      .getByRole('button', { name: /^上游 ·/ })
+      .first()
+      .click();
+    const trail = reader.getByRole('navigation', { name: '来源轨迹' });
+    await expect(trail).toBeVisible();
+    await trail.getByRole('button').first().click();
     const completed = await snapshot(request, work.id);
     const run = completed.work.runs[0];
     expect(completed.work.runs).toHaveLength(1);
@@ -276,17 +275,28 @@ for (const [width, height] of [
     });
 
     await page.reload();
+    await page.getByRole('tab', { name: '流程', exact: true }).click();
     await expect(
       page.getByRole('heading', { name: work.goal, exact: true }),
     ).toBeVisible();
     await expect(
       page.locator('.react-flow__node[data-id="prepare"]'),
     ).toContainText('保留原始反馈与编号');
-    await page.locator('.react-flow__node[data-id="branch"]').click();
+    await selectCanvasNode(page, 'branch');
     await expect(page.getByLabel('值', { exact: true })).toHaveValue('失败');
     await expectNoHorizontalOverflow(page, width);
     await page.getByRole('tab', { name: /运行结果/ }).click();
-    await expect(page.locator('.final-result')).toContainText(materials[2]);
+    await page.getByRole('button', { name: '查看过程', exact: true }).click();
+    await reader
+      .getByRole('navigation', { name: '处理环节' })
+      .getByRole('button', { name: /汇合全部材料/ })
+      .click();
+    await reader.getByRole('tab', { name: /^产物/ }).click();
+    for (const entry of await reader.locator('.item-output-entry').all()) {
+      if ((await entry.getAttribute('open')) === null)
+        await entry.locator('summary').click();
+    }
+    await expect(reader).toContainText(materials[2]);
     expect(
       (await snapshot(request, work.id)).work.runs.map((r) => r.id),
     ).toEqual([run.id]);

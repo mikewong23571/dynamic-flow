@@ -1,0 +1,64 @@
+[
+  {
+    "width": 1440,
+    "kind": "one",
+    "panes": 1,
+    "groupNav": 0,
+    "picker": 0,
+    "overflow": false
+  },
+  {
+    "width": 1440,
+    "kind": "ten",
+    "panes": 1,
+    "groupNav": 1,
+    "picker": 1,
+    "instances": 10,
+    "lastHeading": "客户记录核查 · 第 10 项",
+    "lastValue": "客户记录核查 · 第 10 项\n已完成\n查看过程\n选择\n更多\n复制\n查看内容\n原始数据\naccount\n客户-10\nrecords35 项\nnotes\n本次记录待人工确认。",
+    "report": "报告",
+    "restore": "客户记录核查 · 第 10 项",
+    "overflow": false
+  },
+  {
+    "width": 1440,
+    "kind": "empty",
+    "panes": 0,
+    "groupNav": 0,
+    "picker": 0,
+    "emptyText": "独立运行 · 10/22 18:39\n运行成果\n失败\n查看过程\n\n此运行尚无可查看的成果。",
+    "processAvailable": 1,
+    "overflow": false
+  },
+  {
+    "width": 1024,
+    "kind": "one",
+    "panes": 1,
+    "groupNav": 0,
+    "picker": 0,
+    "overflow": false
+  },
+  {
+    "width": 1024,
+    "kind": "ten",
+    "panes": 1,
+    "groupNav": 1,
+    "picker": 1,
+    "instances": 10,
+    "lastHeading": "客户记录核查 · 第 10 项",
+    "lastValue": "客户记录核查 · 第 10 项\n已完成\n查看过程\n选择\n更多\n复制\n查看内容\n原始数据\naccount\n客户-10\nrecords35 项\nnotes\n本次记录待人工确认。",
+    "report": "报告",
+    "restore": "客户记录核查 · 第 10 项",
+    "overflow": false
+  },
+  {
+    "width": 1024,
+    "kind": "empty",
+    "panes": 0,
+    "groupNav": 0,
+    "picker": 0,
+    "emptyText": "独立运行 · 10/22 18:39\n运行成果\n失败\n查看过程\n\n此运行尚无可查看的成果。",
+    "processAvailable": 1,
+    "overflow": false
+  }
+]

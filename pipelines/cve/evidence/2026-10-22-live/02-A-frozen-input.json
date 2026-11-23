@@ -1,0 +1,42 @@
+{
+  "source": {
+    "workId": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+    "runId": "12f37002-976b-4746-bc6c-54b4bb1e723c",
+    "definitionId": "bbfd0ac7-307e-490f-8b88-7268f92fe83a"
+  },
+  "workItem": {
+    "id": "3a1412fb-937b-4add-a7cd-7f23f94bf05a",
+    "key": "CVE-2025-27516:SCC-chatops-adr:Flowcraft测试-024932",
+    "title": "CVE-2025-27516 · SCC chatops/ADR 真实流水线测试",
+    "goal": "收集 CVE-2025-27516 的可复核漏洞材料，并基于 cve-fix 真实业务线索核查 SCC chatops-api、adr-api 两个系统的实际影响，展示两条方法的输入、输出与产物交接。",
+    "revision": 2,
+    "data": {
+      "cveId": "CVE-2025-27516",
+      "library": "Jinja2",
+      "businessScope": [
+        "SCC/chatops-api",
+        "SCC/adr-api"
+      ],
+      "testPurpose": "真实模型和真实检索的双流水线输入输出展示",
+      "businessClueSource": "/home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl"
+    },
+    "materials": [
+      {
+        "id": "M01",
+        "text": "调查任务：CVE-2025-27516；组件线索：Jinja2。请通过真实 WebSearch MCP 收集官方公告、受影响版本、修复依据与触发条件，保留实际取得的来源正文。业务范围限定 SCC chatops-api、adr-api；两者在 cve-fix 已有扫描索引中有 Jinja2 依赖线索，具体记录在 A 完成后交给 B。本轮不读取旧影响 manifest 当作新判定，不修改业务源码或业务环境。"
+      }
+    ]
+  },
+  "inputs": {
+    "input": [
+      {
+        "sampleId": "M01",
+        "value": "调查任务：CVE-2025-27516；组件线索：Jinja2。请通过真实 WebSearch MCP 收集官方公告、受影响版本、修复依据与触发条件，保留实际取得的来源正文。业务范围限定 SCC chatops-api、adr-api；两者在 cve-fix 已有扫描索引中有 Jinja2 依赖线索，具体记录在 A 完成后交给 B。本轮不读取旧影响 manifest 当作新判定，不修改业务源码或业务环境。",
+        "materialIds": [
+          "M01"
+        ],
+        "sourceResultIds": []
+      }
+    ]
+  }
+}

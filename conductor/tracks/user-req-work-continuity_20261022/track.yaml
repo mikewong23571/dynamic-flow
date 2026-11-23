@@ -1,0 +1,15 @@
+schema_version: "2.1"
+track: user-req-work-continuity_20261022
+type: user-req
+status: done
+module: product
+depends_on: []
+owner: mike
+created_at: 2026-10-22
+updated_at: 2026-10-22
+repo_scope: null
+notes:
+  - 用户授权重新梳理用户故事；仅文档，不实施应用变更。
+  - 沿用仓库 conductor/tracks 和现有 workflow，不迁移基础设施。
+  - 无登记阻塞依赖；原始设计、A–G、H/L 与当前源码是输入。
+  - 模板已复制；规范按本地原型范围裁剪，不追加生产治理与评审平台。

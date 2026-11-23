@@ -1,0 +1,17 @@
+schema_version: "2.1"
+track: feature-work-journey_20261022
+type: feature
+status: done
+module: work-items/client/runs
+depends_on:
+  - user-req-work-continuity_20261022
+owner: mike
+created_at: 2026-10-22
+updated_at: 2026-10-22
+repo_scope: null
+notes:
+  - 全部计划完成：83项相关模块、完整路线两尺寸、8项相邻浏览器、真实GLM/max及最终独立实看通过；绑定释放。
+  - 依赖为已完成的用户故事梳理；五阶段建议按原型范围收敛为明确的页面故事。
+  - 沿用仓库 conductor/tracks、单仓当前工作区与项目 workflow；不创建多仓基础设施或空工作树。
+  - 模板与规范已复制；不引入新依赖、通用制品平台、自动类型转换或任意子图续跑。
+  - repo_scope 为 null：依本仓 workflow 在当前单仓工作区实施，不建立多仓交付设施，不混入旧修改提交。

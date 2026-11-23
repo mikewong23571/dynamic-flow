@@ -1,0 +1,107 @@
+{
+  "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+  "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf",
+  "definition": {
+    "edges": [
+      {
+        "from": [
+          "$input",
+          "records"
+        ],
+        "to": [
+          "report",
+          "input"
+        ]
+      }
+    ],
+    "inputs": [
+      "records"
+    ],
+    "inputContracts": {
+      "records": {
+        "item": {
+          "properties": {
+            "category": {
+              "type": "string"
+            },
+            "original": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "original",
+            "category",
+            "reason"
+          ],
+          "type": "object"
+        },
+        "onInvalid": "reject",
+        "required": true
+      }
+    },
+    "nodes": [
+      {
+        "contract": {
+          "done": "报告包含本次收到的条目数量、类别范围、按类别分组的成果条目及逐字原文引用",
+          "rationale": "只有一次整批读取全部记录，才能准确统计条目数量与覆盖范围，并保持结论与原文一致",
+          "responsibility": "汇总已完成的分类成果，产出带原文依据并如实声明本次数量与覆盖范围的报告",
+          "semanticRole": "报告生成"
+        },
+        "expectedOutput": {
+          "type": "string"
+        },
+        "id": "report",
+        "inputSchema": {
+          "items": {
+            "properties": {
+              "category": {
+                "type": "string"
+              },
+              "original": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "original",
+              "category",
+              "reason"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "kind": "agent",
+        "label": "生成分类成果报告",
+        "mode": "all",
+        "operation": "aggregate",
+        "task": "整批接收 records（每条为含 original/category/reason 字符串的对象，保持对象结构读取），生成简洁的 Markdown 报告：开头明确声明本次实际收到的条目数量与覆盖的类别范围；随后按类别分组列出各条成果，每条逐字引用其 original 原文片段作为依据，并附 category 与 reason；不重新分类、不改写任何判定结论，如实反映实际收到的内容与数量，不引入输入之外的信息。"
+      }
+    ],
+    "outputs": {
+      "成果报告": [
+        "report",
+        "output"
+      ]
+    },
+    "problem": {
+      "constraints": "不依赖方法样例；不调用网络或本地文件；不创建动态或等待步骤；保留对象结构不转成文本；仅保存定义不自动运行。",
+      "evidence": "本轮无粘贴材料与历史运行（materials 为空、无可用 Run/结果），方法规格来自用户本轮指令对入口结构与报告要求的明确描述。",
+      "framing": "接收已完成的分类成果记录，不重新分类原始文本，生成一份引用原文并如实声明本次实际覆盖范围的 Markdown 报告。",
+      "known": "入口 records 为对象数组，每条含 original/category/reason 字符串；方法为单个 Agent 整批处理步骤，最终输出为 Markdown 字符串。",
+      "unknown": "实际运行时收到的条目数量、类别取值与原文内容由运行时输入决定，报告必须如实声明，不得推断或补齐。"
+    },
+    "schemaVersion": 1
+  },
+  "effectiveModel": {
+    "source": "default",
+    "alias": "sangfor/glm-5.3-flash",
+    "model": "glm-5.3-flash",
+    "effort": "max"
+  }
+}

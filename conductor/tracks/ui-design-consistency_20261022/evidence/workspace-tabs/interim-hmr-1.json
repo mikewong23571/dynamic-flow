@@ -1,0 +1,112 @@
+{
+  "date": "2026-10-22T08:44:03.958Z",
+  "work": "5cb210fc-f700-43bd-9946-736d869db90b",
+  "width": 1440,
+  "errors": [],
+  "measurements": [
+    {
+      "target": "results",
+      "ms": 520,
+      "dom": 999,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 555.2000000476837,
+          "duration": 206
+        },
+        {
+          "start": 764.8999998569489,
+          "duration": 211
+        },
+        {
+          "start": 1002.5,
+          "duration": 50
+        },
+        {
+          "start": 1320.2000000476837,
+          "duration": 123
+        },
+        {
+          "start": 1508.0999999046326,
+          "duration": 53
+        },
+        {
+          "start": 1761,
+          "duration": 490
+        },
+        {
+          "start": 2251.2999999523163,
+          "duration": 653
+        },
+        {
+          "start": 3086.7999999523163,
+          "duration": 78
+        },
+        {
+          "start": 3191.5,
+          "duration": 239
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 156,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3590.399999856949,
+          "duration": 99
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 232,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3756.7999999523163,
+          "duration": 129
+        }
+      ]
+    },
+    {
+      "target": "results",
+      "ms": 132,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 3990.5,
+          "duration": 61
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 147,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 4124.399999856949,
+          "duration": 62
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 181,
+      "dom": 1002,
+      "prose": 5,
+      "longTasks": [
+        {
+          "start": 4274.299999952316,
+          "duration": 110
+        }
+      ]
+    }
+  ]
+}

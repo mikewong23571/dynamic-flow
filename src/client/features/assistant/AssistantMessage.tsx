@@ -1,4 +1,9 @@
+import { OpenUIPreviewContext } from '../openui/OpenUIPreviewContext';
+import type { OpenUIProgram } from '../../../shared/openui';
+import { RemoteContent } from '../results/RemoteContent';
 import { createContext, useContext } from 'react';
+import { DeferredDetails } from '../../components/DeferredContent';
+import { MethodReferences } from './MethodReferences';
 import { MessagePrimitive, useAuiState } from '@assistant-ui/react';
 import { MarkdownTextPrimitive } from '@assistant-ui/react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -18,10 +23,12 @@ import type {
   Definition,
   ModelConfiguration,
   ModelSelection,
+  MethodReference,
 } from '../../../shared/records';
 import { changeSummary } from '../../core/definition';
 import { active, short, statusNames } from '../../core/format';
-import { Badge, Button } from '../../components/ui';
+import { Badge } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { effectiveModelLabel } from '../settings/catalog-model';
 export const AssistantMessagesContext = createContext<{
   messages: ChatMessage[];
@@ -35,6 +42,7 @@ export const AssistantMessagesContext = createContext<{
   onStop: (id: string) => void;
   onShowCanvas: (id?: string) => void;
   onOpenSettings: () => void;
+  onOpenMethodReference?: (reference: MethodReference) => void;
 }>({
   messages: [],
   definitions: {},
@@ -82,10 +90,14 @@ function ContextLabel({
   );
 }
 export function UserMessage() {
-  const { message, nodeLabels } = useOriginalMessage();
+  const { message, nodeLabels, onOpenMethodReference } = useOriginalMessage();
   return (
     <MessagePrimitive.Root className="message user-message">
       {message && <ContextLabel message={message} nodeLabels={nodeLabels} />}
+      <MethodReferences
+        references={message?.methodReferences || []}
+        onOpen={onOpenMethodReference}
+      />
       <MessagePrimitive.Parts />
     </MessagePrimitive.Root>
   );
@@ -121,6 +133,18 @@ export function AssistantMessage() {
         definitions[message.definitionId!],
       )
     : [];
+  const renderOpenUI = useContext(OpenUIPreviewContext);
+  const programResults =
+    message.activities?.flatMap((activity) => {
+      const result = activity.result as unknown as
+        { details?: { uiProgram?: OpenUIProgram } } | undefined;
+      const program = result?.details?.uiProgram;
+      return activity.status === 'completed' &&
+        program &&
+        typeof program.source === 'string'
+        ? [{ id: activity.id, program }]
+        : [];
+    }) || [];
   const waiting = active(message.status);
   const failed = message.status === 'failed';
   return (
@@ -130,7 +154,7 @@ export function AssistantMessage() {
         Assistant
       </span>
       {message.effectiveModel && (
-        <div className="message-model muted">
+        <div className="message-model meta-text">
           {effectiveModelLabel(
             message.effectiveModel,
             configuration?.catalog ?? [],
@@ -190,6 +214,7 @@ export function AssistantMessage() {
           </div>
           {message.requestId && (
             <Button
+              size="sm"
               variant="ghost"
               aria-label="停止本次修改"
               disabled={message.status === 'stopping'}
@@ -212,6 +237,7 @@ export function AssistantMessage() {
               {changes.length > 2 ? `，另有 ${changes.length - 2} 项变化` : ''}
             </p>
             <Button
+              size="sm"
               variant="ghost"
               onClick={() => onShowCanvas(message.nodeId)}
             >
@@ -228,37 +254,67 @@ export function AssistantMessage() {
           </div>
         </div>
       )}
+      {renderOpenUI &&
+        programResults.map(({ id, program }) => (
+          <DeferredDetails
+            key={id}
+            summary="界面预览"
+            className="assistant-openui-preview"
+          >
+            {() => renderOpenUI(program)}
+          </DeferredDetails>
+        ))}
       {!!message.activities?.length && (
-        <details className="assistant-activities">
-          <summary>
-            <Search size={12} />
-            {waiting
-              ? '执行记录'
-              : `执行了 ${message.activities.length} 项操作`}
-            <ChevronDown size={12} />
-          </summary>
-          <div>
-            {message.activities.map((activity) => (
-              <details className="assistant-activity" key={activity.id}>
-                <summary>
-                  <span>{toolNames[activity.toolName] || '处理任务'}</span>
-                  <Badge status={activity.status} />
-                </summary>
-                {activity.error && (
-                  <p className="error-text">{activity.error}</p>
-                )}
-                <pre>
-                  {JSON.stringify(
-                    { 参数: activity.args, 结果: activity.result },
-                    null,
-                    2,
+        <DeferredDetails
+          className="assistant-activities"
+          summary={
+            <>
+              <Search size={12} />
+              {waiting
+                ? '执行记录'
+                : `执行了 ${message.activities.length} 项操作`}
+              <ChevronDown size={12} />
+            </>
+          }
+        >
+          {() => (
+            <div>
+              {message.activities!.map((activity) => (
+                <DeferredDetails
+                  className="assistant-activity"
+                  key={activity.id}
+                  summary={
+                    <>
+                      <span>{toolNames[activity.toolName] || '处理任务'}</span>
+                      <Badge status={activity.status} />
+                    </>
+                  }
+                >
+                  {() => (
+                    <>
+                      {activity.error && (
+                        <p className="error-text">{activity.error}</p>
+                      )}
+                      {activity.contentUrl ? (
+                        <RemoteContent url={activity.contentUrl} />
+                      ) : (
+                        <pre>
+                          {JSON.stringify(
+                            { 参数: activity.args, 结果: activity.result },
+                            null,
+                            2,
+                          )}
+                        </pre>
+                      )}
+                    </>
                   )}
-                </pre>
-              </details>
-            ))}
-          </div>
-        </details>
+                </DeferredDetails>
+              ))}
+            </div>
+          )}
+        </DeferredDetails>
       )}
+
       {failed && (
         <div className="assistant-failure" role="alert">
           <strong>这次修改没有完成</strong>
@@ -268,12 +324,17 @@ export function AssistantMessage() {
           </p>
           <div className="failure-actions">
             {original && (
-              <Button disabled={disabled} onClick={() => onRetry(original)}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={disabled}
+                onClick={() => onRetry(original)}
+              >
                 <RotateCcw size={13} />
                 重试本次修改
               </Button>
             )}
-            <Button variant="ghost" onClick={onOpenSettings}>
+            <Button size="sm" variant="ghost" onClick={onOpenSettings}>
               检查模型设置
             </Button>
           </div>

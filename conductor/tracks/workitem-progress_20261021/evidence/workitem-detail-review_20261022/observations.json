@@ -1,0 +1,113 @@
+{
+  "details": [
+    {
+      "title": "当前进展",
+      "top": 186.390625,
+      "height": 492.703125
+    },
+    {
+      "title": "完成条件",
+      "top": 705.09375,
+      "height": 411.703125
+    },
+    {
+      "title": "证据材料 1",
+      "top": 1142.796875,
+      "height": 114
+    },
+    {
+      "title": "业务历史",
+      "top": 1282.796875,
+      "height": 1181.15625
+    },
+    {
+      "title": "处理方法",
+      "top": 186.390625,
+      "height": 122.796875
+    },
+    {
+      "title": "运行来源",
+      "top": 335.1875,
+      "height": 154
+    },
+    {
+      "title": "运行记录 2",
+      "top": 515.1875,
+      "height": 181.390625
+    }
+  ],
+  "entries": [
+    {
+      "text": "Agent 报告\n\n通过 WebSearch MCP 定位并读取 3 份官方来源：pallets/jinja 安全咨询 GHSA-cpwx-vrp4-4pq7（受影响版本 <=3.1.5，|attr 过滤器绕过沙箱）、Jinja 3.1.6 release note（安全修复版本）与官方 changelog。两次检索中第二次因后端读超时失败；Red Hat CVE 页抓取工具报错未取得。业务侧 SCC/chatops-api、adr-api 的 Jinja2 实际版本仍未核实，留待 A/B 环节。\n\n业务阶段\nCVE-2025-27516 官方证据收集完成\n下一步\n由后续 A/B 环节读取 cve-fix 扫描索引，核对 SCC/chatops-api 与 SCC/adr-api 的 Jinja2 实际版本是否落在 <=3.1.5 范围；如需补强修复依据可再取 pallets/jinja 具体修复 commit。\n业务阻碍\n未报告\n10/22 03:16 · 证据 M01 · 步骤 sources\n查看来源运行",
+      "links": [
+        "查看来源运行"
+      ]
+    },
+    {
+      "text": "Agent 报告\n\n已归并本次唯一材料 M01 与 workItem.data，确定唯一漏洞条目 CVE-2025-27516（组件线索 Jinja2），业务范围限定 SCC/chatops-api 与 SCC/adr-api；形成聚焦漏洞事实、受影响版本、修复依据、触发条件的研究问题与已知缺口清单。本节点未联网、未读取业务索引、未展开系统核查。\n\n业务阶段\naggregate-归并完成\n下一步\n由后续取证节点通过真实 WebSearch MCP 收集 CVE-2025-27516 的官方公告、受影响版本、修复依据与触发条件，并把实际取得的正文（含 URL）写入 source_documents，再交 B 依据 A 的记录核查 SCC/chatops-api 与 SCC/adr-api 的 Jinja2 依赖。\n业务阻碍\n未报告\n10/22 03:13 · 证据 M01 · 步骤 frame\n查看来源运行",
+      "links": [
+        "查看来源运行"
+      ]
+    },
+    {
+      "text": "发起正式推进\n\n10/22 03:11\n查看来源运行",
+      "links": [
+        "查看来源运行"
+      ]
+    },
+    {
+      "text": "Agent 报告\n\n确定唯一漏洞条目 CVE-2025-27516，组件线索 Jinja2（任务输入，非成立证据）；业务范围按 M01 限定 SCC chatops-api、adr-api。已在 workItem.data.businessClueSource（/home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl，1820 行）第 1682 行核得 CVE-2025-27516 条目：library=Jinja2-2.10.1-py2.py3-none-any.whl，isTraced=true，traceSource 含 chatops-api/requirements.txt 与 aDR/adr-api/adr-api/requirements.txt、test-requirements.txt 直接依赖记录（逐字保留）。条目原文已存为清洗制品 cleaned-cve-2025-27516-clue-lines.jsonl。缺口：官方公告、受影响/修复版本、触发条件均未取得（本轮无 WebSearch 实际结果），实际安装版本与调用路径未核实；遵守\"不读取旧影响 manifest 当新判定、不修改业务源码/环境\"约束。\n\n业务阶段\n聚合完成：漏洞调查任务已定义\n下一步\n下一节点需通过真实 WebSearch 检索 CVE-2025-27516 官方公告正文（NVD/GHSA/Pallets），确认受影响版本、修复版本与触发条件；再核对 chatops-api、adr-api 实际安装版本与调用路径。\n业务阻碍\n未报告\n10/22 02:52 · 证据 M01 · 步骤 frame\n查看来源运行",
+      "links": [
+        "查看来源运行"
+      ]
+    },
+    {
+      "text": "发起正式推进\n\n10/22 02:49\n查看来源运行",
+      "links": [
+        "查看来源运行"
+      ]
+    },
+    {
+      "text": "登记工作项：CVE-2025-27516 · SCC chatops/ADR 真实流水线测试\n\n10/22 02:49",
+      "links": []
+    }
+  ],
+  "landing": {
+    "url": "http://127.0.0.1:4320/",
+    "headings": [
+      "漏洞材料收集",
+      "Changes ¶",
+      "Version 3.1.6 ¶",
+      "Version 3.1.5 ¶"
+    ],
+    "cards": [
+      {
+        "label": "明确研究问题",
+        "top": 602.140625,
+        "height": 1179.21875
+      },
+      {
+        "label": "收集公告与上游证据",
+        "top": 1799.359375,
+        "height": 6097.796875
+      },
+      {
+        "label": "梳理版本与触发条件",
+        "top": 7915.15625,
+        "height": 140.78125
+      }
+    ],
+    "businessContext": "CVE-2025-27516:SCC-chatops-adr:Flowcraft测试-024932 · CVE-2025-27516 · SCC chatops/ADR 真实流水线测试\n工作项输入修订 2 · 正式推进",
+    "selectedRun": "12f37002-976b-4746-bc6c-54b4bb1e723c",
+    "backLinks": [
+      "工作项"
+    ]
+  },
+  "cards": [
+    "明确研究问题",
+    "收集公告与上游证据",
+    "梳理版本与触发条件"
+  ],
+  "returnedDetail": 0,
+  "errors": []
+}

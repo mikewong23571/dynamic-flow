@@ -1,0 +1,16 @@
+{
+  "track_id": "feature-workitem-source-continuation_20261030",
+  "type": "feature",
+  "status": "complete",
+  "executor": "root",
+  "workspace": "/home/mike/projs/fork/dynamic-flow-workitem-composition",
+  "subagents_allowed": false,
+  "authorization": "用户明确要求修复上一轮审查列出的四项问题",
+  "depends_on": [
+    "feature-workitem-plan-check_20261029"
+  ],
+  "phase": "deployed-and-business-delivery-verified",
+  "completed_at": "2026-10-30",
+  "deployment_url": "http://10.134.94.200:4320",
+  "next_step": "原研究队列继续；后续成果按固定来源明确接续。大历史持久化性能限制见evidence。"
+}

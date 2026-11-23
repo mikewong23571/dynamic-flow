@@ -1,0 +1,127 @@
+{
+  "edges": [
+    {
+      "from": [
+        "$input",
+        "materials"
+      ],
+      "to": [
+        "classify",
+        "input"
+      ]
+    },
+    {
+      "from": [
+        "classify",
+        "output"
+      ],
+      "to": [
+        "report",
+        "input"
+      ]
+    }
+  ],
+  "inputs": [
+    "materials"
+  ],
+  "nodes": [
+    {
+      "contract": {
+        "done": "每条反馈都产出含 original、category、reason 的分类对象",
+        "rationale": "各条反馈互不依赖、责任相同，逐条分类便于逐项核对与抽查",
+        "responsibility": "对每条客户反馈原文独立判断类别并完整保留原文",
+        "semanticRole": "逐条分类"
+      },
+      "expectedOutput": {
+        "properties": {
+          "category": {
+            "enum": [
+              "问题",
+              "需求",
+              "称赞"
+            ],
+            "type": "string"
+          },
+          "original": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "original",
+          "category",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "id": "classify",
+      "inputSchema": {
+        "type": "string"
+      },
+      "kind": "agent",
+      "label": "逐条分类反馈",
+      "mode": "each",
+      "operation": "map",
+      "task": "对当前输入的这条客户反馈原文进行分类：category 只能取\"问题\"、\"需求\"或\"称赞\"之一；original 逐字保留这条反馈原文；reason 用一句话说明分类依据。只依据当前输入内容判断，不引入外部信息。"
+    },
+    {
+      "contract": {
+        "done": "报告包含类别整理、逐条原文引用与明确的覆盖范围声明",
+        "rationale": "归纳建议与统计覆盖面需要看到整批结果，属整批处理而非逐项处理",
+        "responsibility": "将全部分类结果整批汇总为带原文引用和覆盖范围说明的 Markdown 报告",
+        "semanticRole": "整批汇总"
+      },
+      "expectedOutput": {
+        "type": "string"
+      },
+      "id": "report",
+      "inputSchema": {
+        "items": {
+          "properties": {
+            "category": {
+              "type": "string"
+            },
+            "original": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "original",
+            "category",
+            "reason"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "kind": "agent",
+      "label": "整批汇总建议报告",
+      "mode": "all",
+      "operation": "aggregate",
+      "task": "根据输入的全部分类结果整批汇总为 Markdown 报告：按\"问题\"、\"需求\"、\"称赞\"三类整理，针对问题和需求形成有原文依据的改进建议，每条建议直接引用对应的 original 原文；报告须明确说明实际覆盖范围（本次纳入分类的反馈条数，以及是否覆盖全部输入，如有未覆盖须指出）。只基于输入的分类结果，不引入外部信息。"
+    }
+  ],
+  "outputs": {
+    "分类结果": [
+      "classify",
+      "output"
+    ],
+    "建议报告": [
+      "report",
+      "output"
+    ]
+  },
+  "problem": {
+    "constraints": "仅使用本次明确提供的材料；不把具体反馈内容写死进任务；不调用网络和本地文件；不创建动态步骤或等待。",
+    "evidence": "材料来源：工作项 WI-20261022-adf153 附带材料 M01、M03。",
+    "framing": "整理客户反馈：先逐条分类（问题/需求/称赞），再整批汇总形成有原文依据的建议报告，并明确报告实际覆盖范围。",
+    "known": "本次提供 2 条材料：M01（界面顺手但导出报告经常失败、影响交付）、M03（搜索比以前快很多、团队满意）。",
+    "unknown": "每条反馈运行时归入的具体类别、reason 表述与汇总建议内容，需实际运行后确认。"
+  },
+  "schemaVersion": 1
+}

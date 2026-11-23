@@ -1,0 +1,19 @@
+schema_version: '2.1'
+track: feature-frontend-style-governance_20261102
+type: feature
+status: done
+module: client/styles-and-components
+depends_on: []
+owner: mike
+created_at: 2026-11-02
+updated_at: '2026-11-02'
+repo_scope: null
+step_id: null
+notes:
+- 2026-11-02用户授权主动闭环Phase1–5；现已完成实现、相关回归、两尺寸实看与父会话独立审查。
+- 治理代码提交6ebd59b、c3b52e3、ccc4ff0；ae0426c为预览文档。既有现场冻结99cef65不计治理实现。
+- 按当前项目单仓workflow交付本地独立worktree/branch，不自动push、MR或托管发布，不迁移到多仓systems/archive。
+- 原仓src哈希保持；托管4320/4321与既有4335不操作。4336独立持久预览保留。
+- 类型、构建、最小样式检查、修改文件格式与24模块通过；70个不同浏览器案例分轮验证，最终局部修正完整15治理通过。
+- 真实模型、托管用户数据、全长尾/全浏览器与用户主观视觉接受未宣称通过；详细边界见review和实施README。
+- 会话已释放，心跳停止；保留worktree与.flowcraft-preview-data供持续预览，后续新增工作需恢复/新任务。

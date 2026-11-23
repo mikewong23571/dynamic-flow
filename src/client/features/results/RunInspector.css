@@ -1,0 +1,238 @@
+@layer components {
+  .run-reference-fields {
+    margin: 0;
+    display: grid;
+    gap: 20px;
+  }
+  .run-reference-fields dt {
+    color: var(--muted);
+    font-size: var(--text-small);
+    margin-bottom: 6px;
+  }
+  .run-reference-fields dd {
+    margin: 0;
+    font-size: var(--text-control);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .run-inspector {
+    min-width: 0;
+  }
+  .item-retained-artifact[hidden],
+  .item-artifact-tabs > [role='tabpanel'][hidden] {
+    display: none;
+  }
+  .item-artifact-tabs > [role='tabpanel'] > .artifact-value > .artifact-text {
+    max-height: none;
+    overflow: visible;
+  }
+  .item-retained-artifact {
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+  .item-steps {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 0;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .item-steps button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline);
+    flex: 0 0 auto;
+    max-width: 260px;
+    min-height: 38px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 8px 12px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    text-align: left;
+    font-size: var(--text-control);
+  }
+  .item-steps button[aria-current='step'] {
+    border-bottom-color: var(--accent);
+    color: var(--ink);
+  }
+  .item-steps button:hover {
+    background: var(--hover);
+    color: var(--ink);
+  }
+  .item-step-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .item-instance-select {
+    margin: 0 0 12px;
+  }
+  .run-instance-menu {
+    width: 560px;
+    max-height: 70vh;
+    max-width: calc(100vw - 40px);
+  }
+  .run-instance-option {
+    align-items: flex-start;
+    padding-block: 12px;
+  }
+  .run-instance-option > div {
+    min-width: 0;
+    width: 100%;
+  }
+  .run-instance-option-heading {
+    display: flex;
+    gap: var(--space-group);
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: var(--text-small);
+  }
+  .item-result-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0 12px;
+  }
+  .item-result-heading h3 {
+    margin: 6px 0;
+    font-size: var(--text-section);
+    font-weight: 500;
+  }
+  .item-artifact-tabs {
+    min-width: 0;
+  }
+  .item-artifact-tabs > [role='tablist'] {
+    margin-bottom: 12px;
+  }
+  .item-artifact-tabs [role='tabpanel'] {
+    min-width: 0;
+  }
+  .item-source-links {
+    display: flex;
+    gap: var(--space-inline);
+    flex-wrap: wrap;
+    margin: 12px 0;
+  }
+  .item-artifact-actions {
+    display: flex;
+    gap: var(--space-inline);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .item-output-entry,
+  .item-frozen-inputs details,
+  .item-tool-record {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--text-small);
+    min-width: 0;
+  }
+  .item-output-entry summary,
+  .item-frozen-inputs summary,
+  .item-tool-record summary {
+    cursor: pointer;
+  }
+  .item-output-entry[open] > summary,
+  .item-frozen-inputs details[open] > summary,
+  .item-tool-record[open] > summary {
+    margin-bottom: 12px;
+  }
+  .item-history-round > .item-source-links {
+    align-items: center;
+    font-size: var(--text-meta);
+  }
+  .item-artifact-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-group);
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .item-artifact-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .item-artifact-heading h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 550;
+  }
+  .item-artifact-toolbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--space-section);
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .item-artifact-toolbar .artifact-value-mode {
+    margin: 0;
+  }
+  .item-result-heading[hidden] {
+    display: none;
+  }
+  @media (max-width: 1100px) {
+    .item-retained-artifact {
+      padding: 20px;
+    }
+  }
+  .run-source-instances {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 360px;
+    overflow: auto;
+  }
+  .run-source-instances > li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .run-source-instances .artifact-choice-preview {
+    margin-top: 8px;
+  }
+  .item-instance-select {
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline);
+    flex-wrap: wrap;
+  }
+  .run-source-trail {
+    display: flex;
+    gap: var(--space-control);
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--line);
+    padding: 6px 0 10px;
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+  .run-source-trail > span {
+    padding: 6px;
+  }
+  .run-inspection-identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+    padding: 14px 0;
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+  .run-inspection-identity strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+}

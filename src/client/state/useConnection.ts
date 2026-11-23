@@ -54,7 +54,12 @@ function restoreOpened() {
 }
 
 /** 本浏览器的有序打开入口、当前工作快照与 SSE 连接。 */
-export function useConnection(setError: (error: string) => void) {
+export function useConnection(
+  setError: (error: string) => void,
+  active = true,
+) {
+  const visible = useRef(active);
+  visible.current = active;
   const [initial] = useState(restoreOpened);
   const [works, setWorks] = useState(initial.works);
   const worksRef = useRef(works);
@@ -69,7 +74,7 @@ export function useConnection(setError: (error: string) => void) {
   const [connected, setConnected] = useState(false);
   const work = snapshot?.work;
 
-  const updateEntry = useCallback((next: Snapshot) => {
+  const updateEntry = useCallback((next: { work: WorkSummary }) => {
     const { work } = next;
     setWorks((prev) =>
       work.archivedAt
@@ -100,17 +105,40 @@ export function useConnection(setError: (error: string) => void) {
   useEffect(() => {
     localStorage.setItem(openedKey, JSON.stringify(works));
   }, [works]);
+  const handleReadError = useCallback(
+    (id: string, error: unknown) => {
+      if (
+        error instanceof Error &&
+        'code' in error &&
+        error.code === 'WORK_NOT_FOUND'
+      ) {
+        setWorks((prev) => prev.filter((item) => item.id !== id));
+        if (activeWorkId.current === id) {
+          activeWorkId.current = '';
+          setWorkId('');
+          setSnapshot(null);
+          snapshotRef.current = null;
+          setConnected(false);
+          setError(errorText(error));
+        }
+        return;
+      }
+      if (activeWorkId.current === id) setError(errorText(error));
+    },
+    [setError],
+  );
   const refreshWorks = useCallback(() => {
     // Refresh only explicitly opened entries; never repopulate from a sorted library page.
     for (const item of worksRef.current) {
-      void api<Snapshot>(`/api/works/${item.id}`)
+      void api<Parameters<typeof updateEntry>[0]>(
+        `/api/works/${item.id}?view=header`,
+      )
         .then((next) => {
-          if (activeWorkId.current === item.id) receive(next);
-          else updateEntry(next);
+          updateEntry(next);
         })
-        .catch((error) => setError(errorText(error)));
+        .catch((error) => handleReadError(item.id, error));
     }
-  }, [receive, setError, updateEntry]);
+  }, [handleReadError, updateEntry]);
   useEffect(() => {
     refreshWorks();
     void api<ModelConfiguration>('/api/config')
@@ -121,16 +149,27 @@ export function useConnection(setError: (error: string) => void) {
     setConnected(false);
     if (workId) localStorage.setItem(currentKey, workId);
     else localStorage.removeItem(currentKey);
-    if (!workId) return;
+    if (!workId || !active) return;
     let alive = true;
-    void api<Snapshot>(`/api/works/${workId}`)
+    const controller = new AbortController();
+    void fetch(`/api/works/${workId}?view=overview`, {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok)
+          throw Object.assign(Error(data.error || '读取失败'), {
+            code: data.code,
+          });
+        return data as Snapshot;
+      })
       .then((s) => {
         if (alive) receive(s);
       })
       .catch((e) => {
-        if (alive) setError(errorText(e));
+        if (alive) handleReadError(workId, e);
       });
-    const events = new EventSource(`/api/works/${workId}/events`);
+    const events = new EventSource(`/api/works/${workId}/events?view=overview`);
     events.addEventListener('snapshot', (event) => {
       if (alive) {
         try {
@@ -149,17 +188,19 @@ export function useConnection(setError: (error: string) => void) {
     };
     return () => {
       alive = false;
+      controller.abort();
       events.close();
     };
-  }, [workId, receive, setError]);
+  }, [workId, active, receive, setError, handleReadError]);
 
   /** 重新进入当前工作：保留快照与本地编辑，只刷新元数据。 */
   function refetch(id: string) {
     ensureOpened(id);
+    if (!visible.current) return;
     void api<Snapshot>(`/api/works/${id}`)
       .then(receive)
       .catch((error) => {
-        if (activeWorkId.current === id) setError(errorText(error));
+        if (activeWorkId.current === id) handleReadError(id, error);
       });
   }
   function ensureOpened(id: string) {

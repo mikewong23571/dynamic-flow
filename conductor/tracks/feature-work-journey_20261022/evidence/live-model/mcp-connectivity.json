@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-22T12:14:22.345Z",
+  "operation": "initialize",
+  "httpStatus": 429,
+  "bodyLength": 0,
+  "sessionCreated": false,
+  "credentialsRecorded": false,
+  "decision": "For offline-input verification only, omit WebSearch in the private process; preserve original failures and user configuration."
+}

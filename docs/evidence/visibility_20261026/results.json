@@ -1,0 +1,34 @@
+[
+  {
+    "width": 1440,
+    "height": 900,
+    "status": "passed",
+    "sidebar": "#929292",
+    "controlBorder": "#707070",
+    "disabled": {
+      "opacity": 1,
+      "color": "#a1a1a1",
+      "background": "#141414"
+    },
+    "dim": {
+      "node": 0.9,
+      "edge": 0.85
+    }
+  },
+  {
+    "width": 1024,
+    "height": 768,
+    "status": "passed",
+    "sidebar": "#929292",
+    "controlBorder": "#707070",
+    "disabled": {
+      "opacity": 1,
+      "color": "#a1a1a1",
+      "background": "#141414"
+    },
+    "dim": {
+      "node": 0.9,
+      "edge": 0.85
+    }
+  }
+]

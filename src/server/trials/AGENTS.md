@@ -47,3 +47,5 @@
 `createTrials(files, runs)` 提供 compare/stopComparison/wait；默认基线为 draftBaseId，固定两侧定义和完整输入，顺序复用 runs。tests/trials.test.ts 验证基线失败后继续候选、同样本输入、取消不启动第二侧、拒绝重复链。比较 completed 只指执行结束；界面依据当前草稿与所选输入判断过期，用户自己判断质量。
 
 产品级验证与边界见 [本轮验收证据](../../../conductor/tracks/full-application_20260920/evidence.md)。
+
+原始运行实例比较：请求sampleSource由work/run-samples.ts读取真实源Run的result.input，冻结workItem/inputSources/sampleSource，忽略伪造替代输入；两侧仍preview，不自动采用/提交业务进展。普通方法材料比较保持原行为。

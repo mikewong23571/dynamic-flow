@@ -1,0 +1,324 @@
+[
+  {
+    "width": 1440,
+    "errors": [],
+    "sidebar": {
+      "x": 0,
+      "y": 0,
+      "width": 216,
+      "height": 900
+    },
+    "normal": {
+      "fontSize": "12px",
+      "color": "rgb(161, 161, 161)",
+      "borderWidth": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    "selected": {
+      "ariaCurrent": "page",
+      "color": "rgb(255, 255, 255)",
+      "borderWidth": "0px",
+      "backgroundColor": "rgba(255, 255, 255, 0.08)"
+    },
+    "rowBoxes": [
+      {
+        "x": 12,
+        "width": 191,
+        "right": 203,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 168,
+            "right": 180
+          },
+          {
+            "x": 182,
+            "width": 21,
+            "right": 203
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 191,
+        "right": 203,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 168,
+            "right": 180
+          },
+          {
+            "x": 182,
+            "width": 21,
+            "right": 203
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 191,
+        "right": 203,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 168,
+            "right": 180
+          },
+          {
+            "x": 182,
+            "width": 21,
+            "right": 203
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 191,
+        "right": 203,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 168,
+            "right": 180
+          },
+          {
+            "x": 182,
+            "width": 21,
+            "right": 203
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 191,
+        "right": 203,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 168,
+            "right": 180
+          },
+          {
+            "x": 182,
+            "width": 21,
+            "right": 203
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 191,
+        "right": 203,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 168,
+            "right": 180
+          },
+          {
+            "x": 182,
+            "width": 21,
+            "right": 203
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 191,
+        "right": 203,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 168,
+            "right": 180
+          },
+          {
+            "x": 182,
+            "width": 21,
+            "right": 203
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 191,
+        "right": 203,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 168,
+            "right": 180
+          },
+          {
+            "x": 182,
+            "width": 21,
+            "right": 203
+          }
+        ]
+      }
+    ],
+    "pageOverflow": false
+  },
+  {
+    "width": 1024,
+    "errors": [],
+    "sidebar": {
+      "x": 0,
+      "y": 0,
+      "width": 192,
+      "height": 768
+    },
+    "normal": {
+      "fontSize": "12px",
+      "color": "rgb(161, 161, 161)",
+      "borderWidth": "0px",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    "selected": {
+      "ariaCurrent": "page",
+      "color": "rgb(255, 255, 255)",
+      "borderWidth": "0px",
+      "backgroundColor": "rgba(255, 255, 255, 0.08)"
+    },
+    "rowBoxes": [
+      {
+        "x": 12,
+        "width": 167,
+        "right": 179,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 144,
+            "right": 156
+          },
+          {
+            "x": 158,
+            "width": 21,
+            "right": 179
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 167,
+        "right": 179,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 144,
+            "right": 156
+          },
+          {
+            "x": 158,
+            "width": 21,
+            "right": 179
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 167,
+        "right": 179,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 144,
+            "right": 156
+          },
+          {
+            "x": 158,
+            "width": 21,
+            "right": 179
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 167,
+        "right": 179,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 144,
+            "right": 156
+          },
+          {
+            "x": 158,
+            "width": 21,
+            "right": 179
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 167,
+        "right": 179,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 144,
+            "right": 156
+          },
+          {
+            "x": 158,
+            "width": 21,
+            "right": 179
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 167,
+        "right": 179,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 144,
+            "right": 156
+          },
+          {
+            "x": 158,
+            "width": 21,
+            "right": 179
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 167,
+        "right": 179,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 144,
+            "right": 156
+          },
+          {
+            "x": 158,
+            "width": 21,
+            "right": 179
+          }
+        ]
+      },
+      {
+        "x": 12,
+        "width": 167,
+        "right": 179,
+        "buttons": [
+          {
+            "x": 12,
+            "width": 144,
+            "right": 156
+          },
+          {
+            "x": 158,
+            "width": 21,
+            "right": 179
+          }
+        ]
+      }
+    ],
+    "pageOverflow": false
+  }
+]

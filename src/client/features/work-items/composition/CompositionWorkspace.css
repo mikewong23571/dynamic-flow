@@ -1,0 +1,852 @@
+@layer components {
+  .item-workspace-host:has(.composition-workspace) {
+    height: 100%;
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+  .items-page:has(.composition-workspace) {
+    padding: 0;
+    overflow: hidden;
+  }
+  .composition-workspace {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+  }
+  .composition-workspace .main-content > [role='tabpanel'] {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    margin: 0;
+    padding: 24px 28px;
+  }
+  .composition-workspace
+    .main-content
+    > [role='tabpanel'].composition-flow-tab {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: auto;
+  }
+  .composition-flow-tab .composition-flow {
+    flex: none;
+    height: 440px;
+  }
+  .composition-process-panel {
+    flex: none;
+    padding: 24px 28px;
+    border-top: 1px solid var(--line);
+  }
+  .composition-process-panel .composition-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-group);
+    margin-bottom: 16px;
+  }
+  .composition-process-panel .composition-section-heading select {
+    max-width: 280px;
+  }
+  .composition-workspace .main-content > [role='tabpanel'][hidden] {
+    display: none;
+  }
+  .composition-inline-error,
+  .composition-blocker {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-group);
+    justify-content: space-between;
+    padding: 8px 24px;
+    font-size: var(--text-small);
+  }
+  .composition-inline-error {
+    color: var(--danger);
+    background: var(--danger-soft);
+    border-bottom: 1px solid var(--danger-border);
+  }
+  .composition-blocker {
+    color: var(--warning);
+    background: var(--warning-soft);
+  }
+  .composition-flow-error {
+    margin: 0;
+    padding: 10px 20px;
+    color: var(--danger);
+    font-size: var(--text-small);
+  }
+  .composition-flow-toolbar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline);
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .composition-run-control {
+    margin-left: auto;
+  }
+  .composition-flow {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .composition-flow-tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline);
+    flex-wrap: wrap;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--line);
+    flex: none;
+  }
+  .composition-flow-tools select {
+    max-width: 210px;
+  }
+  .composition-flow-save {
+    margin-left: auto;
+    font-size: var(--text-small);
+  }
+  .composition-flow-editor {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .composition-flow-editor .canvas {
+    height: 100%;
+    min-height: 0;
+  }
+  .composition-flow-issues {
+    padding: 8px 16px;
+    color: var(--warning);
+    background: var(--warning-soft);
+    display: flex;
+    gap: var(--space-group);
+    flex-wrap: wrap;
+    flex: none;
+  }
+  .composition-flow-issues > button {
+    background: none;
+    color: inherit;
+    font-size: var(--text-small);
+  }
+  .composition-waits {
+    padding: 8px 20px;
+    color: var(--warning);
+    background: var(--warning-soft);
+    font-size: var(--text-small);
+  }
+  .composition-waits > div {
+    display: flex;
+    align-items: center;
+    gap: var(--space-group);
+  }
+  .composition-waits time {
+    margin-left: auto;
+  }
+  .composition-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-field);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .composition-section-heading h2,
+  .composition-task-heading {
+    font-size: var(--text-section);
+    font-weight: 550;
+    margin: 0;
+  }
+  .composition-section-heading .meta-text {
+    display: block;
+    font-size: var(--text-small);
+    margin-top: 5px;
+  }
+  .composition-task-heading {
+    margin-bottom: 16px;
+  }
+  .composition-empty-task {
+    flex: 1;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-field);
+    padding: 36px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .composition-empty-task h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 17px;
+    font-weight: 500;
+    max-width: 55ch;
+    line-height: 1.7;
+  }
+  .composition-empty-task p {
+    margin: 0;
+    max-width: 60ch;
+    font-size: var(--text-control);
+    line-height: 1.7;
+  }
+  .composition-initial-task {
+    gap: 20px;
+  }
+  .composition-delivery-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-group);
+    margin-bottom: 20px;
+  }
+  .composition-delivery-nav select {
+    max-width: 300px;
+  }
+  .composition-delivery-nav time {
+    color: var(--muted);
+    font-size: var(--text-small);
+  }
+  .composition-delivery-nav > [data-slot='button']:last-child {
+    margin-left: auto;
+  }
+  .composition-table-tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-group);
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    font-size: var(--text-small);
+  }
+  .composition-search {
+    display: flex;
+    align-items: center;
+    gap: var(--space-inline);
+    min-width: 160px;
+    max-width: 260px;
+    flex: 1;
+  }
+  .composition-table-scroll {
+    width: 100%;
+    overflow: auto;
+  }
+  .composition-table-scroll table {
+    min-width: 500px;
+  }
+  .composition-table-scroll td {
+    max-width: 320px;
+    vertical-align: top;
+  }
+  .composition-table-scroll td > span {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+  .composition-table-scroll [data-selected='true'] {
+    background: var(--accent-soft);
+  }
+  .composition-column-sort {
+    display: flex;
+    gap: var(--space-control);
+    align-items: center;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+    text-align: left;
+  }
+  .composition-check {
+    width: 36px;
+  }
+  .composition-sources {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin-top: 20px;
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+  .delivery-source-step {
+    margin: 16px 0 12px;
+  }
+  .delivery-source-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .delivery-source-card .material-card-heading {
+    align-items: center;
+  }
+  .delivery-source-card .material-card-heading > svg {
+    margin-top: 0;
+  }
+  .delivery-source-card .artifact-choice-preview {
+    margin-top: 0;
+    color: var(--ink);
+  }
+  .delivery-source-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-inline);
+  }
+  .delivery-source-card-actions > span {
+    color: var(--muted);
+  }
+  .delivery-source-card-actions > button {
+    margin-left: auto;
+  }
+  .composition-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .composition-input-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .composition-input-name > svg {
+    flex: none;
+    color: var(--muted);
+  }
+  .composition-input-name > button {
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 360px;
+  }
+  .composition-input-actions {
+    white-space: nowrap;
+    text-align: right;
+  }
+  .composition-input-representation .composition-input-name {
+    padding-left: 26px;
+  }
+  .composition-inputs table {
+    font-size: var(--text-small);
+  }
+  .composition-inputs th {
+    color: var(--muted);
+    font-size: var(--text-meta);
+    font-weight: 500;
+  }
+  .composition-inputs td {
+    height: 58px;
+  }
+  .composition-goal-detail {
+    white-space: pre-wrap;
+    line-height: 1.8;
+  }
+  .composition-confirmation-row {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) 32px;
+    gap: var(--space-inline);
+    margin-bottom: 20px;
+    align-items: start;
+  }
+  .composition-confirmation-row > input[type='checkbox'] {
+    margin-top: 10px;
+  }
+  .composition-confirmation-row > textarea,
+  .composition-criterion-references {
+    grid-column: 2;
+  }
+  .composition-create-options,
+  .composition-create-inheritance {
+    margin-top: 14px;
+  }
+  .composition-create-inheritance {
+    max-height: 200px;
+    overflow: auto;
+  }
+  @media (max-width: 1200px) {
+    .composition-workspace .main-content > [role='tabpanel'] {
+      padding: 20px;
+    }
+    .composition-input-name > button {
+      max-width: 270px;
+    }
+  }
+}
+/* Task-specific composition sizes; shared patterns belong to the component layer. */
+@layer components {
+  .composition-delivery .management-pagination {
+    padding: 16px 0;
+  }
+  .modal.composition-create-dialog,
+  .modal.composition-acceptance-dialog {
+    width: min(640px, calc(100vw - 48px));
+    max-width: min(640px, calc(100vw - 48px));
+  }
+  .modal.composition-children-dialog {
+    width: min(920px, calc(100vw - 48px));
+    max-width: min(920px, calc(100vw - 48px));
+  }
+  .modal.composition-record-dialog {
+    width: min(860px, calc(100vw - 48px));
+    max-width: min(860px, calc(100vw - 48px));
+  }
+  .modal.composition-method-preview {
+    width: min(1040px, calc(100vw - 48px));
+    max-width: min(1040px, calc(100vw - 48px));
+  }
+  .composition-method-preview-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-field);
+  }
+  .composition-method-preview-canvas {
+    display: flex;
+    height: min(56vh, 500px);
+    min-height: 280px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+  }
+  .modal.composition-input-dialog .stack,
+  .modal.composition-create-dialog .stack {
+    gap: var(--space-field);
+  }
+  .modal.composition-input-dialog .form-actions,
+  .modal.composition-create-dialog .form-actions {
+    position: sticky;
+    bottom: 0;
+    padding: 14px 2px 0;
+    margin: 0;
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+  }
+  .composition-children-dialog .item-section {
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+  .composition-children-dialog .item-relations > .section-heading {
+    margin-bottom: 16px;
+  }
+  .composition-confirmations > .inline-group {
+    position: sticky;
+    bottom: 0;
+    background: var(--paper);
+    padding: 14px 0 0;
+    border-top: 1px solid var(--line);
+  }
+  .composition-flow-progress {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--text-small);
+  }
+  .children-task-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .children-task-toolbar > span {
+    font-size: var(--text-small);
+  }
+  .children-empty {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 36px 12px 20px;
+    gap: var(--space-group);
+    color: var(--muted);
+  }
+  .children-empty h3 {
+    margin: 7px 0 0;
+    font-size: var(--text-section);
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .children-empty p {
+    margin: 0 0 10px;
+    font-size: var(--text-small);
+  }
+  .children-empty > svg {
+    margin-bottom: 4px;
+  }
+  .children-empty > button:last-child {
+    font-size: var(--text-meta);
+    margin-top: 4px;
+  }
+  .children-no-match {
+    padding: 36px 20px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .work-timeline {
+    max-width: 900px;
+    margin: 0;
+    padding: 4px 8px;
+    list-style: none;
+  }
+  .work-timeline h2 {
+    margin: 0 0 22px 40px;
+    padding-top: 8px;
+    font-size: var(--text-small);
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .work-timeline article {
+    display: flex;
+    gap: 14px;
+    position: relative;
+    min-height: 82px;
+    padding-bottom: 20px;
+  }
+  .work-timeline li:not(:last-child) article:before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 32px;
+    bottom: 4px;
+    border-left: 1px solid var(--line);
+  }
+  .work-event-icon {
+    height: 26px;
+    width: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--muted);
+  }
+  .work-event-content {
+    min-width: 0;
+    flex: 1;
+  }
+  .work-event-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-group);
+    min-height: 26px;
+    font-size: var(--text-control);
+  }
+  .work-event-heading > span:first-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .work-event-heading time {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: var(--text-meta);
+    white-space: nowrap;
+  }
+  .work-event-heading > button {
+    flex: none;
+  }
+  .work-event-content p {
+    margin: 7px 0 0;
+    font-size: var(--text-small);
+    line-height: 1.7;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+  .work-event-content details {
+    margin-top: 12px;
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+  .modal.composition-children-dialog:has(.children-empty) {
+    width: min(640px, calc(100vw - 48px));
+    max-width: min(640px, calc(100vw - 48px));
+  }
+  .delivery-panel[hidden] {
+    display: none;
+  }
+  .composition-view-navigation {
+    flex: 1;
+    min-width: 0;
+  }
+  .composition-view-navigation > [role='tablist'] {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+  .composition-delivery-nav [role='tab'] {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .composition-delivery-nav > time {
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .composition-delivery-nav > [data-slot='button']:last-child {
+    margin-left: 0;
+  }
+  .composition-confirmations > .inline-group > button:last-child {
+    margin-left: auto;
+  }
+  .composition-plan {
+    padding: 14px 24px 16px;
+    border-bottom: 1px solid var(--line);
+    flex: none;
+  }
+  .composition-plan-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--text-meta);
+    min-height: 24px;
+    margin-bottom: 4px;
+  }
+  .composition-plan > p {
+    font-size: var(--text-control);
+    line-height: 1.7;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .composition-plan-outputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: var(--text-meta);
+  }
+  .composition-plan-outputs > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .composition-plan-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-section);
+    margin: 0;
+    padding-top: 8px;
+  }
+  .composition-plan-details dt {
+    font-size: var(--text-meta);
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .composition-plan-details dd {
+    margin: 0;
+    font-size: var(--text-control);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .composition-step-handoff {
+    display: flex;
+    align-items: center;
+    gap: var(--space-section);
+    border-block: 1px solid var(--line);
+    padding: 16px 0;
+  }
+  .composition-step-handoff > div {
+    flex: 1;
+    min-width: 0;
+  }
+  .composition-step-handoff > svg {
+    color: var(--muted);
+    flex: none;
+  }
+  .composition-step-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+  @media (max-width: 1200px) {
+    .composition-plan {
+      padding: 12px 20px;
+    }
+  }
+  .declared-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-inline);
+    flex-wrap: wrap;
+  }
+  .table-business-actions {
+    margin-left: auto;
+  }
+  .composition-record-group td {
+    padding: 10px 12px;
+    background: var(--surface);
+    color: var(--muted);
+    font-weight: 500;
+    text-align: left;
+  }
+  .declared-record-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 16px 0 24px;
+  }
+  .declared-record-detail > div {
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: var(--space-field);
+  }
+  .declared-record-detail dt {
+    font-size: var(--text-meta);
+    color: var(--muted);
+  }
+  .declared-record-detail .prose > :first-child {
+    margin-top: 0;
+  }
+  .declared-record-detail .prose > :last-child {
+    margin-bottom: 0;
+  }
+  .declared-record-detail dd {
+    margin: 0;
+    min-width: 0;
+    font-size: var(--text-control);
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+
+  .composition-prior-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--muted);
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  @media (max-width: 1200px) {
+    .declared-record-detail > div {
+      grid-template-columns: 110px minmax(0, 1fr);
+    }
+    .composition-table-tools {
+      flex-wrap: wrap;
+    }
+  }
+  .composition-ui-focus {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-inline);
+    margin: 12px 16px 0;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-small);
+    padding: 7px 10px;
+    font-size: var(--text-meta);
+    color: var(--muted);
+  }
+  @media (max-width: 1200px) {
+  }
+  .composition-clear-focus {
+    margin-left: auto;
+  }
+  .composition-conversation-controls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+    min-width: 0;
+  }
+  .composition-conversation-trigger {
+    min-width: 0;
+    max-width: 150px;
+  }
+  .composition-conversation-trigger > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .composition-conversation-option {
+    min-width: 0;
+    display: grid;
+    gap: 5px;
+  }
+  .composition-conversation-option strong {
+    font-size: var(--text-small);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .composition-conversation-option > span {
+    color: var(--muted);
+    font-size: var(--text-meta);
+  }
+  .composition-record-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-group);
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    margin-top: 20px;
+  }
+  .composition-record-tools {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .composition-record-dialog .declared-action-bar {
+    margin: 0;
+  }
+  .composition-record-dialog .declared-record-detail .value-list {
+    gap: 2px;
+  }
+  .ui-arrangement > .composition-section-heading {
+    position: sticky;
+    top: -24px;
+    z-index: 2;
+    background: var(--paper);
+    padding: 12px 0;
+    flex-wrap: wrap;
+  }
+  .ui-arrangement-body {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 20px;
+    margin-top: 16px;
+  }
+  .ui-arrangement-body > nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 480px;
+    overflow: auto;
+  }
+  .ui-arrangement-body > nav button {
+    justify-content: flex-start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ui-arrangement-editor {
+    min-width: 0;
+  }
+  .ui-arrangement-source {
+    height: 420px;
+    width: 100%;
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-small);
+    line-height: 1.6;
+    resize: vertical;
+  }
+  .ui-arrangement .form-field {
+    margin: 0 0 12px;
+  }
+}

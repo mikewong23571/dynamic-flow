@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-22T07:52:26.831Z",
+  "work": "5cb210fc-f700-43bd-9946-736d869db90b",
+  "width": 1440,
+  "errors": [],
+  "measurements": [
+    {
+      "target": "results",
+      "ms": 2911,
+      "dom": 7391,
+      "prose": 1076,
+      "longTasks": [
+        {
+          "start": 502.59999990463257,
+          "duration": 209
+        },
+        {
+          "start": 715.0999999046326,
+          "duration": 193
+        },
+        {
+          "start": 1267.2000000476837,
+          "duration": 118
+        },
+        {
+          "start": 1442.8999998569489,
+          "duration": 52
+        },
+        {
+          "start": 1707.5,
+          "duration": 457
+        },
+        {
+          "start": 2165.2000000476837,
+          "duration": 690
+        },
+        {
+          "start": 3039.7999999523163,
+          "duration": 71
+        },
+        {
+          "start": 3126.899999856949,
+          "duration": 2607
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 176,
+      "dom": 232,
+      "prose": 0,
+      "longTasks": [
+        {
+          "start": 5876.099999904633,
+          "duration": 89
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 648,
+      "dom": 740,
+      "prose": 0,
+      "longTasks": [
+        {
+          "start": 6025.899999856949,
+          "duration": 182
+        },
+        {
+          "start": 6208.099999904633,
+          "duration": 398
+        }
+      ]
+    },
+    {
+      "target": "results",
+      "ms": 2482,
+      "dom": 7391,
+      "prose": 1076,
+      "longTasks": [
+        {
+          "start": 6676.099999904633,
+          "duration": 2389
+        }
+      ]
+    },
+    {
+      "target": "canvas",
+      "ms": 698,
+      "dom": 740,
+      "prose": 0,
+      "longTasks": [
+        {
+          "start": 9159.700000047684,
+          "duration": 199
+        },
+        {
+          "start": 9358.700000047684,
+          "duration": 436
+        }
+      ]
+    },
+    {
+      "target": "compare",
+      "ms": 81,
+      "dom": 232,
+      "prose": 0,
+      "longTasks": []
+    }
+  ]
+}

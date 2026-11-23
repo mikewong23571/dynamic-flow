@@ -1,0 +1,10 @@
+{
+  "width": 1024,
+  "collectionAction": true,
+  "comparisonBeforeBody": true,
+  "compareTwoResults": true,
+  "shape": {
+    "card": 287.5,
+    "body": 403
+  }
+}

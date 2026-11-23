@@ -1,3 +1,4 @@
+import { FormActions } from '../../components/ui/field';
 import { useEffect, useState } from 'react';
 import { Play, Plus, ShieldOff, X } from 'lucide-react';
 import type { Definition } from '../../../shared/records';
@@ -7,10 +8,14 @@ import {
   type InvokeField,
 } from '../../core/invoke-form';
 import { errorCode, errorText } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
-import { NativeSelect, NativeSelectOption } from '../../components/ui/native-select';
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from '../../components/ui/native-select';
 
 function blankEntries(fields: InvokeField[]): Record<string, string[]> {
   return Object.fromEntries(
@@ -68,11 +73,13 @@ export function InvokeDialog({
   open,
   onOpenChange,
   definition,
+  identity,
   invokeWork,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   definition: Definition;
+  identity?: string;
   invokeWork: (
     inputs: Record<string, unknown[]>,
     loose: boolean,
@@ -118,7 +125,8 @@ export function InvokeDialog({
     } catch (reason) {
       const message = errorText(reason);
       setErrors([message]);
-      if (!loose) setContractBlocked(errorCode(reason) === 'contract_violation');
+      if (!loose)
+        setContractBlocked(errorCode(reason) === 'contract_violation');
     } finally {
       setSubmitting(false);
     }
@@ -129,11 +137,11 @@ export function InvokeDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="直接输入运行"
-      description="按输入端口直接提供内容，不经过材料选择；输入随本次运行固定保存。"
+      description={identity}
     >
       <div className="stack">
         {!fields.length && (
-          <p className="muted">
+          <p className="meta-text">
             {hasFileSource
               ? '当前做法没有批次输入端口，入口是上传文件节点：请在「输入材料」上传文件后用「运行流程」。'
               : '当前做法没有声明输入端口，无法用直接输入运行。'}
@@ -143,11 +151,9 @@ export function InvokeDialog({
           <div className="invoke-port" key={field.port}>
             <div className="invoke-port-head">
               <strong>{field.port}</strong>
-              <span className="muted">
+              <span className="meta-text">
                 {field.required ? '必填' : '可选'}
-                {field.kind === 'json' && field.contract?.item
-                  ? ' · JSON'
-                  : ''}
+                {field.kind === 'json' && field.contract?.item ? ' · JSON' : ''}
               </span>
             </div>
             {(raw[field.port] ?? []).map((entry, index) => (
@@ -159,6 +165,7 @@ export function InvokeDialog({
                 />
                 {(raw[field.port]?.length ?? 0) > 1 && (
                   <Button
+                    size="sm"
                     variant="ghost"
                     aria-label={`删除端口 ${field.port} 第 ${index + 1} 条`}
                     onClick={() =>
@@ -176,6 +183,7 @@ export function InvokeDialog({
               </div>
             ))}
             <Button
+              size="sm"
               variant="ghost"
               onClick={() =>
                 setRaw((prev) => ({
@@ -201,7 +209,8 @@ export function InvokeDialog({
         )}
         {contractBlocked && (
           <Button
-            variant="secondary"
+            size="sm"
+            variant="outline"
             disabled={submitting}
             onClick={() => void submit(true)}
           >
@@ -210,16 +219,17 @@ export function InvokeDialog({
           </Button>
         )}
       </div>
-      <div className="modal-actions">
+      <FormActions>
         <Button
-          variant="primary"
+          size="sm"
+          variant="default"
           disabled={submitting || !fields.length}
           onClick={() => void submit(false)}
         >
           <Play size={15} />
           {submitting ? '正在运行…' : '运行'}
         </Button>
-      </div>
+      </FormActions>
     </Modal>
   );
 }

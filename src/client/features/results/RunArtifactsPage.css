@@ -1,0 +1,31 @@
+@layer components {
+  .run-artifacts-page {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    padding: 20px 24px;
+    overflow: auto;
+  }
+  .run-artifacts-page[hidden],
+  .run-artifact-pane[hidden] {
+    display: none;
+  }
+  .run-artifacts-reading {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+  }
+  .run-artifact-pane {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+  }
+  .run-artifact-pane > .artifact-value > .artifact-text {
+    max-height: none;
+    overflow: visible;
+  }
+}

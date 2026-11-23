@@ -1,0 +1,181 @@
+{
+  "status": "completed",
+  "effectiveModel": {
+    "source": "default",
+    "alias": "sangfor/glm-5.3-flash",
+    "model": "glm-5.3-flash",
+    "effort": "high"
+  },
+  "inputs": {
+    "input": [
+      {
+        "sampleId": "M01",
+        "value": "客户甲反馈：导出月报时页面提示失败，无法取得报表。客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。",
+        "materialIds": [
+          "M01"
+        ],
+        "sourceResultIds": []
+      }
+    ]
+  },
+  "results": [
+    {
+      "id": "173ae63d-5902-4638-a157-6d96fed5c5f6",
+      "nodeId": "discover",
+      "status": "completed",
+      "outputs": {
+        "output": [
+          {
+            "value": {
+              "candidates": [
+                {
+                  "criteria": [
+                    "输出一份可核验的调查记录，包含复现导出月报失败的操作步骤、页面提示原文与影响范围，且不含未经证实的原因结论"
+                  ],
+                  "goal": "独立查明客户甲导出月报时页面提示失败、无法取得报表的问题表现与影响范围，不预设原因。",
+                  "id": "CAND-001",
+                  "inputs": [
+                    {
+                      "label": "客户甲反馈原文（材料M01）",
+                      "value": "客户甲反馈：导出月报时页面提示失败，无法取得报表。"
+                    }
+                  ],
+                  "title": "调查客户甲月报导出失败问题"
+                },
+                {
+                  "criteria": [
+                    "输出一份可核验的调查记录，包含使用客户乙提供的订单编号复现搜索的操作步骤、所经搜索入口及与订单列表的对照结果，且不含未经证实的原因结论"
+                  ],
+                  "goal": "独立查明客户乙按已知订单编号搜索没有结果、但订单列表能找到该订单的问题表现与影响范围，不预设原因。",
+                  "id": "CAND-002",
+                  "inputs": [
+                    {
+                      "label": "客户乙反馈原文（材料M01）",
+                      "value": "客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。"
+                    }
+                  ],
+                  "title": "调查客户乙订单编号搜索无结果问题"
+                }
+              ]
+            },
+            "sampleId": "M01",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": [
+              "173ae63d-5902-4638-a157-6d96fed5c5f6"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "dbf9eb32-5dda-4e0f-8059-acb8ac407116",
+      "nodeId": "create",
+      "status": "completed",
+      "outputs": {
+        "output": [
+          {
+            "value": {
+              "source": {
+                "kind": "node-input",
+                "workId": "be0fa272-831b-4ff6-ba3b-72ac843802c8",
+                "runId": "bcdd5cd3-7989-4067-a119-1fd762638a61",
+                "resultId": "dbf9eb32-5dda-4e0f-8059-acb8ac407116",
+                "port": "input",
+                "index": 0
+              },
+              "receipts": [
+                {
+                  "candidateId": "CAND-001",
+                  "status": "created",
+                  "source": {
+                    "kind": "node-input",
+                    "workId": "be0fa272-831b-4ff6-ba3b-72ac843802c8",
+                    "runId": "bcdd5cd3-7989-4067-a119-1fd762638a61",
+                    "resultId": "dbf9eb32-5dda-4e0f-8059-acb8ac407116",
+                    "port": "input",
+                    "index": 0
+                  },
+                  "childId": "fb70ac17-eb34-4951-beda-b850ec86ea87"
+                },
+                {
+                  "candidateId": "CAND-002",
+                  "status": "created",
+                  "source": {
+                    "kind": "node-input",
+                    "workId": "be0fa272-831b-4ff6-ba3b-72ac843802c8",
+                    "runId": "bcdd5cd3-7989-4067-a119-1fd762638a61",
+                    "resultId": "dbf9eb32-5dda-4e0f-8059-acb8ac407116",
+                    "port": "input",
+                    "index": 0
+                  },
+                  "childId": "955b34d8-e408-41a8-a66d-9ff0d6c7de79"
+                }
+              ]
+            },
+            "sampleId": "M01",
+            "materialIds": [
+              "M01"
+            ],
+            "sourceResultIds": [
+              "dbf9eb32-5dda-4e0f-8059-acb8ac407116"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "children": [
+    {
+      "id": "955b34d8-e408-41a8-a66d-9ff0d6c7de79",
+      "title": "调查客户乙订单编号搜索无结果问题",
+      "goal": "独立查明客户乙按已知订单编号搜索没有结果、但订单列表能找到该订单的问题表现与影响范围，不预设原因。",
+      "parentId": "1f82f6be-0c5b-4b00-a034-64d72e20f582",
+      "status": "open",
+      "receivedInputs": [
+        {
+          "label": "客户乙反馈原文（材料M01）",
+          "value": "客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。",
+          "id": "97f04cbb-c216-4737-a108-2cc37e0952d6"
+        }
+      ],
+      "origin": {
+        "source": {
+          "kind": "node-input",
+          "workId": "be0fa272-831b-4ff6-ba3b-72ac843802c8",
+          "runId": "bcdd5cd3-7989-4067-a119-1fd762638a61",
+          "resultId": "dbf9eb32-5dda-4e0f-8059-acb8ac407116",
+          "port": "input",
+          "index": 0
+        },
+        "candidateId": "CAND-002"
+      }
+    },
+    {
+      "id": "fb70ac17-eb34-4951-beda-b850ec86ea87",
+      "title": "调查客户甲月报导出失败问题",
+      "goal": "独立查明客户甲导出月报时页面提示失败、无法取得报表的问题表现与影响范围，不预设原因。",
+      "parentId": "1f82f6be-0c5b-4b00-a034-64d72e20f582",
+      "status": "open",
+      "receivedInputs": [
+        {
+          "label": "客户甲反馈原文（材料M01）",
+          "value": "客户甲反馈：导出月报时页面提示失败，无法取得报表。",
+          "id": "dbe902a0-8ed2-4b7f-9a59-7f041e3728ef"
+        }
+      ],
+      "origin": {
+        "source": {
+          "kind": "node-input",
+          "workId": "be0fa272-831b-4ff6-ba3b-72ac843802c8",
+          "runId": "bcdd5cd3-7989-4067-a119-1fd762638a61",
+          "resultId": "dbf9eb32-5dda-4e0f-8059-acb8ac407116",
+          "port": "input",
+          "index": 0
+        },
+        "candidateId": "CAND-001"
+      }
+    }
+  ]
+}

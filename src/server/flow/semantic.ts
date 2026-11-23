@@ -42,10 +42,7 @@ export function checkSemantic(node: FlowNode): Issue[] {
       node.dynamic.maxNodes > 20
     )
       add('dynamic', '局部展开需要明确边界和 1–20 个节点上限。');
-    if (
-      node.mode !== 'all' ||
-      (node.operation && node.operation !== 'aggregate')
-    )
+    if (node.operation && node.operation !== 'aggregate')
       add('dynamic', '局部展开一次规划当前整批上下文。');
   }
   if (node.repeat !== undefined) {
@@ -58,7 +55,9 @@ export function checkSemantic(node: FlowNode): Issue[] {
       add('repeat.max', '迭代上限须为 1–10 的整数。');
     if (
       !['agent', 'function'].includes(node.kind) ||
-      ['merge', 'collect', 'join'].includes(node.functionName ?? '') ||
+      ['merge', 'collect', 'join', 'groupBy'].includes(
+        node.functionName ?? '',
+      ) ||
       node.operation !== 'map'
     )
       add('repeat', '迭代用于逐项步骤；每轮返回一个值并作为下一轮输入。');

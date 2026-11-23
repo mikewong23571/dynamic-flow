@@ -1,0 +1,143 @@
+{
+  "scope": "相对N交付的O阶段增量",
+  "changes": [
+    {
+      "path": "docs/design.md",
+      "change": "modified",
+      "before": "e322f2992504f8c1170b101a5362f58805d8fc49c61a9a5fc0178020030b001b",
+      "after": "e92c2850c8979f5aad0a1fa927e2bb87a0d3aebf37dc0c34c225e6efae26bfc3"
+    },
+    {
+      "path": "docs/implementation-map.md",
+      "change": "modified",
+      "before": "73425aad448371748baae176c3615e4c2bf37e8bffc447e8d542a8e34b0cbad9",
+      "after": "db8bf1db4d3963d0841b097b99efeef41b7538de75464caa4442649c7057d8d9"
+    },
+    {
+      "path": "docs/workitem-ui-authoring.md",
+      "change": "modified",
+      "before": "92dd8cb21fc530b2cfe3f0a33b3dcadd698c039f3eb29a343e021141628e7d4c",
+      "after": "0c2e0ef572fd822eb79dfa958294d3cfb88a15a603233285c336c338d6b1a69d"
+    },
+    {
+      "path": "src/client/AGENTS.md",
+      "change": "modified",
+      "before": "7af7cafad809b11b67a026c646ac199329ebe613689a528e744e858155be03d9",
+      "after": "a35ae1fd4686e7d79d5bed8c39495a7333ca238f567b45cf357ee64291d3dea4"
+    },
+    {
+      "path": "src/client/DESIGN-NOTES.md",
+      "change": "modified",
+      "before": "45913114113b40322d7c3ac406e28dd913509e27407b2cc62b521206d1040656",
+      "after": "39535986ce77f14e8568bef8df9a742348321199d03da3c8d72fdf7264ad7d0c"
+    },
+    {
+      "path": "src/client/components/ui/README.md",
+      "change": "modified",
+      "before": "b41a3e277f319b587f44d23c3cbae7e840207a46b3f121eb184d8aaa45f8313c",
+      "after": "784b99d446175f836fb3f0cf391192a027c74cfb234ca65c24b5a0d7975cd9c8"
+    },
+    {
+      "path": "src/client/core/definition.ts",
+      "change": "modified",
+      "before": "1a396d2c883f7e4315e5653966015a23a8e507ac8cffc3c14805c668886affd2",
+      "after": "95ec23efa5e38704b4af35403d28d10838dea67ebc3b554fce6174d9551eeebb"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowCanvas.css",
+      "change": "modified",
+      "before": "a74bbd63615832c2040423e73b4afc2230de04091e8e05d1a31ec955c1048706",
+      "after": "503737eb12f335402db475317cbc951d25a1a8ca69bdb286f01f558d9095ccde"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowCanvas.tsx",
+      "change": "modified",
+      "before": "50340d12199f7e1cd202850eeb0dfe7f9cecdb2c97ccf99ff244b9b687e9719c",
+      "after": "95175f615bb2b7458ebc12c3312944c493fcb026ed006fff70313560b44d0108"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowNode.tsx",
+      "change": "modified",
+      "before": "03f07713b1120988b2e7691cf46761d8c9e17a774263769ee3743eb4c15a0a66",
+      "after": "b76d353525252f9f39a5b90aac8ac3edf4790b20223f689e40486a9e679a6a99"
+    },
+    {
+      "path": "src/client/features/canvas/canvas-layout.ts",
+      "change": "modified",
+      "before": "c927fe60ba5dc11eaea3d9be27b9b1341ae4c85beea8e6badf6ef769d0182c8a",
+      "after": "66a7858a00fd8fb7f5583e0a9757ad0d129b5e70769e9c14d69158fc3c6517a5"
+    },
+    {
+      "path": "src/client/features/canvas/useCanvasLayout.ts",
+      "change": "modified",
+      "before": "f7e65f0e8145bfc8947a87a1496f41858e4a35c71f02f471468eeec29d077ef1",
+      "after": "54dffd4c0fe3f95a6720ea40df06a3b4662037b0351abdbafaa6d1c7990d6cf1"
+    },
+    {
+      "path": "src/client/features/work-items/WorkItemDetail.tsx",
+      "change": "modified",
+      "before": "f1787f47016899a36505cebce6a3c5263632266e1579631a3dc8af4333b8ee0a",
+      "after": "811a7777c841abc12fc18716f10e07081e0cb2eda0ec76635feec283846589c9"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionFlow.tsx",
+      "change": "modified",
+      "before": "d98e72deb8b85feeef32c43e9888edd4699f6732d7259a9eafb55d02edef12eb",
+      "after": "246d168d8c8c2026e9543a1cef1db640bb67d48c515f6bce3fa2b49ec68ee29f"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionPlan.tsx",
+      "change": "modified",
+      "before": "006cd4bba1d3aedbe10f359ce26916996d7d82b058e3ba5538028adef5245f35",
+      "after": "a17aab4c5609735ccf813ec6f2acb1f9620e2dd68658d9dccb504ccea93c0910"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionWorkspace.css",
+      "change": "modified",
+      "before": "5adf6294c9125a758518db3ca7049b980814d4767870897f26f648ada6629e88",
+      "after": "e70bd257f693648090b688de77ac6e346c02c5eb54a4557f787e6a6006d6dec9"
+    },
+    {
+      "path": "src/server/assistant/AGENTS.md",
+      "change": "modified",
+      "before": "05ec15705c8d6dee5ec7c76ca4e444e699631ca05ebc0aeca4a5914dd58cb1a0",
+      "after": "5d07befadf4f11d59efe46eb7e0a4a75672a63f51eb4a1d6abeec0c7d69909fb"
+    },
+    {
+      "path": "src/server/assistant/workitem.ts",
+      "change": "modified",
+      "before": "14dbb4d587a76895bfbdff3c23bc20226e94c59ab1a5cdb01b3f2cf833a56022",
+      "after": "608a13d150a314b9d35d28c77eeaa4b63573cb2e869f12a6bf26c424ae39289b"
+    },
+    {
+      "path": "tests/AGENTS.md",
+      "change": "modified",
+      "before": "e1d6e9becc5975357923a549ef30f9cbe299f5105bf90e526c9ebec2cef1a56f",
+      "after": "90a51015130a9a53ed6ce4b8630ba287cd9486900a255f633830b084233cc47d"
+    },
+    {
+      "path": "tests/browser/workitem-composition-call-node.spec.ts",
+      "change": "modified",
+      "before": "f608ca9b24eee61ae1d0467e608ddf09574ffaa5030ec5e09c197b5bee86c5b2",
+      "after": "4877e6a03d56f8d69e3abf27825cef2b8dc1ded12f614e1bf87d738cedefc0ab"
+    },
+    {
+      "path": "tests/browser/workitem-composition-primitives.spec.ts",
+      "change": "added",
+      "before": null,
+      "after": "db00dcae386ec3841d2e7a06d64a857253e2698caa2eafc8c7c4696a663a061d"
+    },
+    {
+      "path": "tests/browser/workitem-composition.spec.ts",
+      "change": "modified",
+      "before": "9a557259d33361179ae4c23acb5126128bbac5d3105b5c3362775d50acbae8bb",
+      "after": "98354968e3f72e63b9f6b3418c7967bef7e9f544767de9705140b26250ba06cd"
+    },
+    {
+      "path": "tests/primitive-display-fixture.ts",
+      "change": "added",
+      "before": null,
+      "after": "9db0ab84d7dbf8015424f0c2b8cd8298a92a743fb8aab94236d2be983b4f9493"
+    }
+  ]
+}

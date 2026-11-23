@@ -1,0 +1,1850 @@
+{
+  "title": "漏洞材料收集",
+  "goal": "为一个漏洞条目收集并整理公告、版本范围、触发条件和修复依据，保留实际来源正文与证据缺口，形成可供业务分析选用的材料记录。",
+  "definition": {
+    "schemaVersion": 1,
+    "problem": {
+      "framing": "为单个漏洞条目整理可复核的官方事实和业务核查条件。",
+      "known": "用户提供漏洞编号、组件线索和已有材料；WebSearch MCP 调用合同已确认。",
+      "unknown": "该漏洞的版本范围、触发条件、修复依据以及本轮证据缺口。",
+      "constraints": "单进程原型；通过 Pi MCP 插件提供原生工具；原文内联保存到节点结果，人工交接，不自动发布或结项。",
+      "evidence": "设计依据 docs/cve-pipelines-feasibility.md、docs/websearch-mcp.md；设计说明不作为业务事实。"
+    },
+    "inputs": [
+      "input"
+    ],
+    "inputContracts": {
+      "input": {
+        "item": {
+          "type": "string"
+        },
+        "required": true,
+        "onInvalid": "reject"
+      }
+    },
+    "nodes": [
+      {
+        "id": "frame",
+        "label": "明确研究问题",
+        "kind": "agent",
+        "operation": "aggregate",
+        "concurrency": 1,
+        "contract": {
+          "responsibility": "把本次材料归并为一个明确的漏洞调查任务。",
+          "done": "输出唯一漏洞编号、组件线索、范围、研究问题和已知缺口。",
+          "rationale": "首节点整理文本入口；同一调查整体处理，不按材料重复调查。"
+        },
+        "task": "本步骤只归并本次输入并列出研究问题，不联网、不读取业务索引、不展开系统核查；这些分别由后续取证节点和 B 负责。研究问题聚焦漏洞事实、受影响版本、修复和触发条件，不额外扩展 CVSS 或升级兼容性研究。结合本次全部材料和 workItem.data，确定漏洞条目 ID（允许 CVE、WS 等编号）、组件、调查范围和待确认问题。漏洞 ID 与用户明确给定的线索可以作为任务输入，不当作漏洞已成立的证据。缺失事实列为未知，禁止套用方法样例。输入材料引用只使用本次实际材料编号；新网页材料保留 URL、实际取得的正文及获取信息，放入 source_documents，不把 URL 当作 materialId，也不伪造原始材料编号。所有 source_documents 必须来自实际读取，不能用模型记忆补正文。下游保留这些正文以便复核。最终输出只返回符合 expectedOutput 的 JSON。",
+        "inputSchema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "component": {
+              "type": "string"
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "provided_facts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "cve_id",
+            "component",
+            "business_scope",
+            "questions",
+            "provided_facts",
+            "missing_evidence_reasons"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "sources",
+        "label": "收集公告与上游证据",
+        "kind": "agent",
+        "operation": "map",
+        "concurrency": 1,
+        "contract": {
+          "responsibility": "取得可复核的漏洞一手材料。",
+          "done": "正文、来源和获取情况可查看；没有找到的材料有明确缺口。",
+          "rationale": "一个 Agent 自行进行多次搜索和阅读，画布只保留业务责任。",
+          "semanticRole": "单个漏洞调查"
+        },
+        "task": "使用本会话已经注册的 MCP 工具 websearch_search、websearch_fetchWebContent、websearch_fetchGithubReadme。无需读取连接配置或凭据，不编写 MCP/HTTP 客户端。搜索优先 engines=[\"duckduckgo\",\"baidu\"]，每次 limit=4，一般最多两次有区别的查询；优先读取最多三份官方关键来源，fetchWebContent 使用 renderMode=request、maxChars=8000。检查 partialFailures、正文是否为目标内容以及 truncated；搜索摘要不能冒充全文。仅需仓库概览时使用 fetchGithubReadme。工具失败保留具体原因，避免反复重试同一请求；遇到限流先记录缺口。围绕输入问题，优先官方公告、上游 advisory、release note、commit/PR；检索后打开关键来源，保存支持版本范围、漏洞行为及修复线索的相关原文段落（每份一般不超过 12000 字符），包括必要上下文，披露截取或截断。仅在确认来源为官方后写 official=true。已有证据直接核对并保留。来源冲突、缺失、获取失败分别写清。source_documents 是本轮内联的证据文本，不声称已生成外部证据包。输入材料引用只使用本次实际材料编号；新网页材料保留 URL、实际取得的正文及获取信息，放入 source_documents，不把 URL 当作 materialId，也不伪造原始材料编号。所有 source_documents 必须来自实际读取，不能用模型记忆补正文。下游保留这些正文以便复核。最终输出只返回符合 expectedOutput 的 JSON。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "component": {
+              "type": "string"
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "provided_facts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "cve_id",
+            "component",
+            "business_scope",
+            "questions",
+            "provided_facts",
+            "missing_evidence_reasons"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "component": {
+              "type": "string"
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "provided_facts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "official_sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  },
+                  "official": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind",
+                  "official"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_range_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "fix_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "collection_errors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "cve_id",
+            "component",
+            "business_scope",
+            "questions",
+            "provided_facts",
+            "missing_evidence_reasons",
+            "official_sources",
+            "affected_range_evidence",
+            "fix_evidence",
+            "source_documents",
+            "collection_errors"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "conditions",
+        "label": "梳理版本与触发条件",
+        "kind": "agent",
+        "operation": "map",
+        "concurrency": 1,
+        "contract": {
+          "responsibility": "把漏洞描述整理成业务核查可使用的成立条件。",
+          "done": "版本与触发条件各自有来源或明确未知，修复线索不冒充成立条件证明。",
+          "rationale": "漏洞成立条件与业务是否满足条件分开核实。",
+          "semanticRole": "单个漏洞调查"
+        },
+        "task": "更新缺口时删除已被实际证据解决的旧项；A 的材料状态只针对漏洞事实，业务系统的实际部署版本和调用方式留给 B，不将其算作 A 必须补齐的官方材料。依据输入 source_documents 和本次原始材料，核实受影响版本、攻击者可控输入、触发入口、必要配置、危险行为和修复切断点。每个 trigger_conditions 条目写 condition、known、basis、source_urls；无法证明的条件 known=false，并记录缺口。需要查看源码时仅对明确的官方仓库和版本使用 bash/git，在临时目录取证，保留路径、版本及相关代码片段到 source_documents。保留上游全部来源正文和错误记录。输入材料引用只使用本次实际材料编号；新网页材料保留 URL、实际取得的正文及获取信息，放入 source_documents，不把 URL 当作 materialId，也不伪造原始材料编号。所有 source_documents 必须来自实际读取，不能用模型记忆补正文。下游保留这些正文以便复核。最终输出只返回符合 expectedOutput 的 JSON。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "component": {
+              "type": "string"
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "provided_facts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "official_sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  },
+                  "official": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind",
+                  "official"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_range_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "fix_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "collection_errors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "cve_id",
+            "component",
+            "business_scope",
+            "questions",
+            "provided_facts",
+            "missing_evidence_reasons",
+            "official_sources",
+            "affected_range_evidence",
+            "fix_evidence",
+            "source_documents",
+            "collection_errors"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "component": {
+              "type": "string"
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "provided_facts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "official_sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  },
+                  "official": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind",
+                  "official"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_range_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "fix_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "collection_errors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "trigger_conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "condition": {
+                    "type": "string"
+                  },
+                  "known": {
+                    "type": "boolean"
+                  },
+                  "basis": {
+                    "type": "string"
+                  },
+                  "source_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "condition",
+                  "known",
+                  "basis",
+                  "source_urls"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_versions": {
+              "type": "string"
+            },
+            "fix_cutoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "cve_id",
+            "component",
+            "business_scope",
+            "questions",
+            "provided_facts",
+            "missing_evidence_reasons",
+            "official_sources",
+            "affected_range_evidence",
+            "fix_evidence",
+            "source_documents",
+            "collection_errors",
+            "trigger_conditions",
+            "affected_versions",
+            "fix_cutoff"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "materials",
+        "label": "形成材料调查结果",
+        "kind": "agent",
+        "operation": "map",
+        "concurrency": 1,
+        "contract": {
+          "responsibility": "形成可选取、可复核的结构化材料结果。",
+          "done": "材料状态与缺口一致，内联原文保留，未声称发布。",
+          "rationale": "结果候选是交接载体；采用方法、保存结果与发布分开。",
+          "semanticRole": "单个漏洞调查"
+        },
+        "task": "更新缺口时删除已被实际证据解决的旧项；A 的材料状态只针对漏洞事实，业务系统的实际部署版本和调用方式留给 B，不将其算作 A 必须补齐的官方材料。整理上游事实，输出材料 manifest。status=completed 仅表示本轮关键漏洞事实已有依据；有影响判断所需的关键缺口或冲突用 incomplete；确实未取得可用材料且取证失败用 failed。原样保留实际 source_documents、来源及缺口，summary 解释覆盖范围。package_ref 固定为 null：本版结果随 Run 保存，不生成或发布外部包。提供给 B 时由操作者把本结果正文连同实际 workId/runId/definitionId/resultId 作为工作项新证据，不让模型编造来源 ID。输入材料引用只使用本次实际材料编号；新网页材料保留 URL、实际取得的正文及获取信息，放入 source_documents，不把 URL 当作 materialId，也不伪造原始材料编号。所有 source_documents 必须来自实际读取，不能用模型记忆补正文。下游保留这些正文以便复核。最终输出只返回符合 expectedOutput 的 JSON。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "component": {
+              "type": "string"
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "provided_facts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "official_sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  },
+                  "official": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind",
+                  "official"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_range_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "fix_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "collection_errors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "trigger_conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "condition": {
+                    "type": "string"
+                  },
+                  "known": {
+                    "type": "boolean"
+                  },
+                  "basis": {
+                    "type": "string"
+                  },
+                  "source_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "condition",
+                  "known",
+                  "basis",
+                  "source_urls"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_versions": {
+              "type": "string"
+            },
+            "fix_cutoff": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "cve_id",
+            "component",
+            "business_scope",
+            "questions",
+            "provided_facts",
+            "missing_evidence_reasons",
+            "official_sources",
+            "affected_range_evidence",
+            "fix_evidence",
+            "source_documents",
+            "collection_errors",
+            "trigger_conditions",
+            "affected_versions",
+            "fix_cutoff"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "completed",
+                "incomplete",
+                "failed"
+              ]
+            },
+            "summary": {
+              "type": "string"
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "official_sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  },
+                  "official": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind",
+                  "official"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_range_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "fix_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "trigger_conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "condition": {
+                    "type": "string"
+                  },
+                  "known": {
+                    "type": "boolean"
+                  },
+                  "basis": {
+                    "type": "string"
+                  },
+                  "source_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "condition",
+                  "known",
+                  "basis",
+                  "source_urls"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_versions": {
+              "type": "string"
+            },
+            "fix_cutoff": {
+              "type": "string"
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "collection_errors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "package_ref": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "cve_id",
+            "status",
+            "summary",
+            "business_scope",
+            "official_sources",
+            "affected_range_evidence",
+            "fix_evidence",
+            "missing_evidence_reasons",
+            "trigger_conditions",
+            "affected_versions",
+            "fix_cutoff",
+            "source_documents",
+            "collection_errors",
+            "package_ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "progress",
+        "label": "已形成材料调查记录",
+        "kind": "milestone",
+        "operation": "aggregate",
+        "milestone": {
+          "stage": "已形成材料调查记录",
+          "summary": "本轮材料记录已形成，完整性和待补事项请查看结果。"
+        },
+        "contract": {
+          "responsibility": "记录本轮产物已经形成。",
+          "done": "记录中性进展并透传输入；不发布、不确认完成条件。",
+          "rationale": "本轮调查结束与证据齐全、业务结项分别表达。"
+        },
+        "inputSchema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cve_id": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "incomplete",
+                  "failed"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "business_scope": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "official_sources": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "official": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "url",
+                    "kind",
+                    "official"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "affected_range_evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "url",
+                    "kind"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "fix_evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "url",
+                    "kind"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "missing_evidence_reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "trigger_conditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "condition": {
+                      "type": "string"
+                    },
+                    "known": {
+                      "type": "boolean"
+                    },
+                    "basis": {
+                      "type": "string"
+                    },
+                    "source_urls": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "condition",
+                    "known",
+                    "basis",
+                    "source_urls"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "affected_versions": {
+                "type": "string"
+              },
+              "fix_cutoff": {
+                "type": "string"
+              },
+              "source_documents": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "retrieved_at": {
+                      "type": "string"
+                    },
+                    "retrieval_method": {
+                      "type": "string"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "title",
+                    "content",
+                    "retrieved_at",
+                    "retrieval_method",
+                    "truncated"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "collection_errors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "package_ref": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "cve_id",
+              "status",
+              "summary",
+              "business_scope",
+              "official_sources",
+              "affected_range_evidence",
+              "fix_evidence",
+              "missing_evidence_reasons",
+              "trigger_conditions",
+              "affected_versions",
+              "fix_cutoff",
+              "source_documents",
+              "collection_errors",
+              "package_ref"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "expectedOutput": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cve_id": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "incomplete",
+                  "failed"
+                ]
+              },
+              "summary": {
+                "type": "string"
+              },
+              "business_scope": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "official_sources": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "official": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "url",
+                    "kind",
+                    "official"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "affected_range_evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "url",
+                    "kind"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "fix_evidence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "title",
+                    "url",
+                    "kind"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "missing_evidence_reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "trigger_conditions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "condition": {
+                      "type": "string"
+                    },
+                    "known": {
+                      "type": "boolean"
+                    },
+                    "basis": {
+                      "type": "string"
+                    },
+                    "source_urls": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "condition",
+                    "known",
+                    "basis",
+                    "source_urls"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "affected_versions": {
+                "type": "string"
+              },
+              "fix_cutoff": {
+                "type": "string"
+              },
+              "source_documents": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "retrieved_at": {
+                      "type": "string"
+                    },
+                    "retrieval_method": {
+                      "type": "string"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "title",
+                    "content",
+                    "retrieved_at",
+                    "retrieval_method",
+                    "truncated"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "collection_errors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "package_ref": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "cve_id",
+              "status",
+              "summary",
+              "business_scope",
+              "official_sources",
+              "affected_range_evidence",
+              "fix_evidence",
+              "missing_evidence_reasons",
+              "trigger_conditions",
+              "affected_versions",
+              "fix_cutoff",
+              "source_documents",
+              "collection_errors",
+              "package_ref"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      {
+        "id": "report",
+        "label": "输出材料说明",
+        "kind": "agent",
+        "operation": "map",
+        "concurrency": 1,
+        "contract": {
+          "responsibility": "让操作者快速审阅材料并选择交接正文。",
+          "done": "报告包含状态、依据、缺口和下一步，来源与结构化结果一致。",
+          "rationale": "结构化结果供后续分析，Markdown 供用户审阅。",
+          "semanticRole": "单个漏洞调查"
+        },
+        "task": "只输出可直接阅读的 Markdown。结论和材料状态在前，随后列官方事实、受影响范围、触发条件、修复线索、来源 URL、仍缺什么与下一步。明确 source_documents 保存的是本轮取得的正文或摘录，尚未发布证据包。不能把 incomplete 写成材料完整。不要生成额外文件路径或声称已经切换业务分析方法。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "cve_id": {
+              "type": "string"
+            },
+            "status": {
+              "enum": [
+                "completed",
+                "incomplete",
+                "failed"
+              ]
+            },
+            "summary": {
+              "type": "string"
+            },
+            "business_scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "official_sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  },
+                  "official": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind",
+                  "official"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_range_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "fix_evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "url",
+                  "kind"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "missing_evidence_reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "trigger_conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "condition": {
+                    "type": "string"
+                  },
+                  "known": {
+                    "type": "boolean"
+                  },
+                  "basis": {
+                    "type": "string"
+                  },
+                  "source_urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "condition",
+                  "known",
+                  "basis",
+                  "source_urls"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "affected_versions": {
+              "type": "string"
+            },
+            "fix_cutoff": {
+              "type": "string"
+            },
+            "source_documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "retrieved_at": {
+                    "type": "string"
+                  },
+                  "retrieval_method": {
+                    "type": "string"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "url",
+                  "title",
+                  "content",
+                  "retrieved_at",
+                  "retrieval_method",
+                  "truncated"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "collection_errors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "package_ref": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "cve_id",
+            "status",
+            "summary",
+            "business_scope",
+            "official_sources",
+            "affected_range_evidence",
+            "fix_evidence",
+            "missing_evidence_reasons",
+            "trigger_conditions",
+            "affected_versions",
+            "fix_cutoff",
+            "source_documents",
+            "collection_errors",
+            "package_ref"
+          ],
+          "additionalProperties": false
+        },
+        "expectedOutput": {
+          "type": "string"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": [
+          "$input",
+          "input"
+        ],
+        "to": [
+          "frame",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "frame",
+          "output"
+        ],
+        "to": [
+          "sources",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "sources",
+          "output"
+        ],
+        "to": [
+          "conditions",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "conditions",
+          "output"
+        ],
+        "to": [
+          "materials",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "materials",
+          "output"
+        ],
+        "to": [
+          "progress",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "progress",
+          "output"
+        ],
+        "to": [
+          "report",
+          "input"
+        ]
+      }
+    ],
+    "outputs": {
+      "materials": [
+        "materials",
+        "output"
+      ],
+      "report": [
+        "report",
+        "output"
+      ]
+    }
+  },
+  "view": {
+    "positions": {
+      "$input": {
+        "x": -330,
+        "y": 40
+      },
+      "frame": {
+        "x": 40,
+        "y": 40
+      },
+      "sources": {
+        "x": 410,
+        "y": 40
+      },
+      "conditions": {
+        "x": 780,
+        "y": 40
+      },
+      "materials": {
+        "x": 40,
+        "y": 310
+      },
+      "progress": {
+        "x": 410,
+        "y": 310
+      },
+      "report": {
+        "x": 780,
+        "y": 310
+      }
+    },
+    "showPorts": true
+  }
+}

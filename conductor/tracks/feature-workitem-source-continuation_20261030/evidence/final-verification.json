@@ -1,0 +1,22 @@
+{
+  "completedRunHashesPreserved": 543,
+  "rootRunCount": 2,
+  "runId": "c00f5bcf-134b-4aa9-922a-4ef569b01823",
+  "definitionId": "0c1ad3bc-406d-4254-971e-88c6c26c71be",
+  "planId": "010e28e1-e352-4afb-8160-0c0735bf3770",
+  "publicationCurrent": true,
+  "criteriaUnchanged": true,
+  "fixtureCases": 8,
+  "scopeSourceSelectionCount": 27,
+  "batchStillRunning": true,
+  "batchCurrentCounts": {
+    "completed": 471,
+    "failed": 1,
+    "cancelled": 2,
+    "running": 2,
+    "pending": 598
+  },
+  "actualRunSeconds": 662.8,
+  "knownLimitation": "large private Work history still makes full-record persistence slow; no storage/performance migration in this fix",
+  "verifiedAt": "2026-10-30T05:28:29.948613+00:00"
+}

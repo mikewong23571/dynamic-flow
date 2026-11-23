@@ -1,0 +1,11 @@
+{
+  "scenario": "客户来件真实模型原生OpenUI表单",
+  "itemId": "7a43065a-6aab-4069-862f-d7aec559e480",
+  "uiProgramId": "fb92474d-da65-4974-b343-48352e78c33e",
+  "interaction": "Chrome DevTools click/type_text填field、recordId、value后点击保存补充信息",
+  "draft": {"field":"批量导出使用频率与规模","recordId":"R3","value":"每周3次，每次约500条记录，CSV格式"},
+  "source": "saveSupplement = Mutation(\"submit_input\", {inputPort: \"supplement\", value: $draft})",
+  "observed": "400 补充输入不符合 schema：data must be object；Renderer显示Mutation错误，三字段草稿完整保留",
+  "accepted": false,
+  "resolution": "待定位后重验，不以fixture通过冒充真实模型表单通过"
+}

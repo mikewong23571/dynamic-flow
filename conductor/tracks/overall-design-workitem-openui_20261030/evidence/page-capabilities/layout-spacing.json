@@ -1,0 +1,28 @@
+{
+  "commit": "48f8afd",
+  "before": {
+    "navigationToHeadingPx": 0,
+    "viewOwnedBlockSpacing": false,
+    "formTopMarginPx": 20,
+    "layoutGuessedFromMetric": true
+  },
+  "after": {
+    "navigationToHeadingPx": 16,
+    "viewBlockGapPx": 24,
+    "sectionHeadingToContentPx": 12,
+    "sectionBodyGapPx": 16,
+    "formMarginPx": 0,
+    "layoutGuessedFromMetric": false
+  },
+  "verifiedViewportWidths": [
+    1440,
+    1024
+  ],
+  "horizontalPageOverflow": false,
+  "browserCasesPassed": 12,
+  "typecheck": "passed",
+  "build": "passed",
+  "changedFilesFormatting": "passed",
+  "deployed": true,
+  "businessDataAndConfigurationChanged": false
+}

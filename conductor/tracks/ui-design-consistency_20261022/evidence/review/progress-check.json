@@ -1,0 +1,50 @@
+[
+  {
+    "width": 1440,
+    "preview": {
+      "height": 70,
+      "width": 706,
+      "lineHeight": "23.4px",
+      "whiteSpace": "normal",
+      "textLength": 172
+    },
+    "expanded": {
+      "height": 70,
+      "scrollHeight": 70,
+      "display": "block"
+    },
+    "reportLayout": {
+      "width": 684,
+      "height": 140,
+      "fontSize": "13px",
+      "textLength": 362,
+      "whiteSpace": "pre-wrap"
+    },
+    "reportSourceVisible": true,
+    "goalAccessible": true
+  },
+  {
+    "width": 1024,
+    "preview": {
+      "height": 70,
+      "width": 698,
+      "lineHeight": "23.4px",
+      "whiteSpace": "normal",
+      "textLength": 172
+    },
+    "expanded": {
+      "height": 70,
+      "scrollHeight": 70,
+      "display": "block"
+    },
+    "reportLayout": {
+      "width": 684,
+      "height": 140,
+      "fontSize": "13px",
+      "textLength": 362,
+      "whiteSpace": "pre-wrap"
+    },
+    "reportSourceVisible": true,
+    "goalAccessible": true
+  }
+]

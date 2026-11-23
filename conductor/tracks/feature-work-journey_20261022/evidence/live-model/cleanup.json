@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-22T12:40:14.617Z",
+  "cleanup": [
+    {
+      "dataRoot": "/tmp/flowcraft-journey-live-5UwsPp",
+      "pid": 759301,
+      "processStopped": true,
+      "credentialsRemoved": true,
+      "testDataPreserved": true
+    },
+    {
+      "dataRoot": "/tmp/flowcraft-journey-live-wX8hUA",
+      "pid": 747306,
+      "processStopped": true,
+      "credentialsRemoved": true,
+      "testDataPreserved": true
+    }
+  ],
+  "originals": [
+    {
+      "id": "a6b0f746-1095-46b4-8f20-008d80d8c654",
+      "unchanged": true
+    },
+    {
+      "id": "5cb210fc-f700-43bd-9946-736d869db90b",
+      "unchanged": true
+    },
+    {
+      "id": "3a1412fb-937b-4add-a7cd-7f23f94bf05a",
+      "unchanged": true
+    }
+  ]
+}

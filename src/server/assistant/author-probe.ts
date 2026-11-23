@@ -127,7 +127,7 @@ try {
     }),
   );
   const node = definition.nodes.find(
-    (node) => node.kind === 'agent' && node.mode === 'each',
+    (node) => node.kind === 'agent' && node.operation === 'map',
   )!;
   if (!node) throw new Error('No per-item agent generated');
   const material = work.materials[0],

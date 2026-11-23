@@ -1,0 +1,34 @@
+{
+  "root": "/home/mike/projs/fork/dynamic-flow-openui/.flowcraft-preview-data",
+  "recoveredFrom": "browser React state retained after backend files were deleted",
+  "restored": [
+    {
+      "itemId": "1359a79f-ce23-4f64-ba03-d04888761284",
+      "workId": "0de4f7d2-63f3-42c1-82c7-3756304890cf",
+      "runs": 4,
+      "definitions": 4
+    },
+    {
+      "itemId": "0daa2a26-b002-4ea8-8c87-b4c9ff3a5b5f",
+      "workId": "4c7b9d08-4885-4f69-81fb-ced3c2a6f36e",
+      "runs": 2,
+      "definitions": 1
+    },
+    {
+      "itemId": "22183501-2dc0-484a-a08d-8e6353dd7bc4",
+      "workId": "22d4694a-78c5-4e19-92b3-cfee11069bc3",
+      "runs": 2,
+      "definitions": 1
+    }
+  ],
+  "unrecovered": [
+    "Pi session JSONL",
+    "tool contents offloaded to files absent from the browser workspace snapshot"
+  ],
+  "managedDataChanged": false,
+  "restartPreservedBusinessFiles": true,
+  "latestOutputRows": 2,
+  "allCurrentRowsComplete": true,
+  "retiredPreviewPort": 4333,
+  "currentPreviewPort": 4335
+}

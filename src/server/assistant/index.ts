@@ -1,3 +1,8 @@
+import { readRunSamples } from '../work/run-samples.ts';
+import {
+  callConfigSchema,
+  groupByConfigSchema,
+} from '../../shared/node-ports.ts';
 import { validateExpansion } from '../flow/expansion.ts';
 import { semanticGuide, dynamicInstructions } from './semantic-guide.ts';
 import { randomUUID } from 'node:crypto';
@@ -8,12 +13,15 @@ import { Type } from '@earendil-works/pi-ai';
 import { defineTool } from '@earendil-works/pi-coding-agent';
 import type {
   Activity,
+  FlowNode,
   ChatMessage,
   Definition,
   EditRequest,
   Json,
   ModelSelection,
   NodeExecution,
+  WorkItemProgressReport,
+  WorkItemView,
 } from '../../shared/records.ts';
 import type { FileStore } from '../files/index.ts';
 import {
@@ -24,15 +32,24 @@ import {
 import { safeError, type ModelConfig } from './config.ts';
 import type { CatalogInput } from './catalog.ts';
 import { runPiSession, throwIfAborted, type SessionRunner } from './pi.ts';
-import { parseOutput, validateEvidence } from './validation.ts';
+import { parseOutput, validateOutput } from './validation.ts';
 import { createModelSettings } from './settings.ts';
 import { expressionGuide } from './expression-guide.ts';
 import { collectionGuide } from './collection-guide.ts';
+import { mcpConfiguration } from './mcp.ts';
+import { createStreamText } from './stream-text.ts';
 
 export { runPiSession } from './pi.ts';
 
-const definitionSchema = Type.Object({
+export const definitionSchema = Type.Object({
   schemaVersion: Type.Literal(1),
+  sourceNode: Type.Optional(
+    Type.Object({
+      workId: Type.String({ minLength: 1 }),
+      definitionId: Type.String({ minLength: 1 }),
+      nodeId: Type.String({ minLength: 1 }),
+    }),
+  ),
   problem: Type.Optional(
     Type.Object({
       framing: Type.String(),
@@ -41,6 +58,18 @@ const definitionSchema = Type.Object({
       constraints: Type.String(),
       evidence: Type.String(),
     }),
+  ),
+  inputContracts: Type.Optional(
+    Type.Record(
+      Type.String(),
+      Type.Object({
+        item: Type.Optional(Type.Any()),
+        required: Type.Optional(Type.Boolean()),
+        onInvalid: Type.Optional(
+          Type.Union([Type.Literal('reject'), Type.Literal('interpret')]),
+        ),
+      }),
+    ),
   ),
   inputs: Type.Array(Type.String()),
   nodes: Type.Array(
@@ -53,10 +82,16 @@ const definitionSchema = Type.Object({
         Type.Literal('branch'),
         Type.Literal('wait'),
         Type.Literal('milestone'),
+        Type.Literal('create-items'),
         Type.Literal('file'),
         Type.Literal('dynamic'),
+        Type.Literal('call'),
       ]),
-      mode: Type.Union([Type.Literal('each'), Type.Literal('all')]),
+      call: Type.Optional(
+        Type.Unsafe<NonNullable<FlowNode['call']>>(
+          callConfigSchema as Record<string, unknown>,
+        ),
+      ),
       contract: Type.Optional(
         Type.Object({
           responsibility: Type.String(),
@@ -78,6 +113,27 @@ const definitionSchema = Type.Object({
         }),
       ),
       task: Type.Optional(Type.String()),
+      tools: Type.Optional(
+        Type.Object(
+          {
+            builtin: Type.Array(
+              Type.Union(
+                ['read', 'grep', 'find', 'ls', 'bash', 'edit', 'write'].map(
+                  (name) => Type.Literal(name),
+                ),
+              ),
+            ),
+            mcp: Type.Array(
+              Type.Union(
+                ['websearch', 'sourcegraph', 'cveawg'].map((name) =>
+                  Type.Literal(name),
+                ),
+              ),
+            ),
+          },
+          { additionalProperties: false },
+        ),
+      ),
       file: Type.Optional(Type.Object({ name: Type.String({ minLength: 1 }) })),
       operation: Type.Optional(
         Type.Union([
@@ -107,9 +163,15 @@ const definitionSchema = Type.Object({
           Type.Literal('collect'),
           Type.Literal('join'),
           Type.Literal('expression'),
+          Type.Literal('groupBy'),
         ]),
       ),
       inputNames: Type.Optional(Type.Array(Type.String())),
+      groupBy: Type.Optional(
+        Type.Unsafe<NonNullable<FlowNode['groupBy']>>(
+          groupByConfigSchema as Record<string, unknown>,
+        ),
+      ),
       join: Type.Optional(
         Type.Object({
           type: Type.Union([
@@ -176,6 +238,12 @@ const definitionSchema = Type.Object({
       to: Type.Array(Type.String(), { minItems: 2, maxItems: 2 }),
     }),
   ),
+  summaryOutput: Type.Optional(
+    Type.String({
+      description:
+        'outputs 中可选的摘要展示绑定；输出合同仍由节点 expectedOutput 明确',
+    }),
+  ),
   outputs: Type.Object(
     {},
     {
@@ -187,15 +255,18 @@ const definitionSchema = Type.Object({
   ),
 });
 
-const authorInstructions = `你是工作流作者。初次生成流程时请在 update_flow 的 title 字段给出简短中文工作标题（建议 4–12 字），概括本次真实目标，不写 UUID。根据本次目标与材料创建或修改实际可执行的工作流，使用中文回答。
+const authorInstructions = `业务方法应按后续处理需要输出原始结构化值，集合或列表可以直接作为最终输出，不必生成总结文字。expectedOutput 是节点输出的唯一运行校验合同。可选设置 summaryOutput 为 outputs 中普通 aggregate agent/function 节点的 output 名称，作为摘要展示绑定（不可 repeat/dynamic）；它不引入额外输出schema。需要标准摘要卡片时，可明确在 expectedOutput 声明 {title:非空字符串, summary:非空字符串, scope:非空字符串, metrics?:[{label:非空字符串,value:非空字符串或数字}], limitations?:非空字符串数组, nextAction?:非空字符串} 且不接受其它字段；其它合法输出按原值展示。scope 只描述本轮实际输入范围，不可凭运行成功宣称业务结项，限制和缺口如实说明。可确定的计数和摘要优先使用函数，不为格式化再次调用模型。
+你是工作流作者。初次生成流程时请在 update_flow 的 title 字段给出简短中文工作标题（建议 4–12 字），概括本次真实目标，不写 UUID。根据本次目标与材料创建或修改实际可执行的工作流，使用中文回答。
 修改类请求必须调用 update_flow 保存实际定义才算完成编辑，不得只说已修改；纯分析或问答可直接回复说明，不要为凑变更保存无关修改。工具失败要说明原因，不得声称已保存。不满足可运行条件的提案会被工具拒绝且不会写入草稿；收到校验错误应修正后再次保存，无法修正时说明未完成事项。
-工作流形状由工具 schema 定义，完整定义必须显式包含 schemaVersion:1。保持任务与输出结构简洁，只包含完成目标需要的字段，不为每个字段重复编写 description。面向用户的最终报告节点输出 Markdown 正文，expectedOutput 使用 {"type":"string"}，不为报告建立庞大的嵌套 JSON 结构。普通节点输入端口 input、输出 output；branch 输入 input、输出 matched/unmatched；旧 functionName=merge（无inputNames）节点输入 left/right；新集合函数的端口和schema见后述规则。file 来源节点（kind:file, file:{name}）引用工作 uploads 中的文件，无入边、输出 output，下游 agent 节点可在会话中用 Node 运行时（xlsx/mammoth/unpdf 已预装）读取该文件。不存在 $output 虚拟节点，不要向它连线；最终输出只能声明在 outputs 映射中，例如 outputs:{report:["实际节点id","output"]}。外部输入用 ['$input', '<inputs中的名字>']。edges 决定顺序；不允许回连。
-operation 明确计算组合：map 对每条输入调用一次，返回一个值（数组也保留为一个值）；flatMap 对每条输入调用一次并将返回数组展开一层；aggregate 一次处理集合。为兼容旧定义，map/flatMap 同时设 mode:each，aggregate 设 mode:all；concurrency 可设 1–8，默认1。inputSchema/expectedOutput 分别定义单次调用输入/输出，普通 aggregate 输入为数组；旧多端口 aggregate 的 schema 输入按端口顺序拼接为值数组；无inputNames的旧merge保留 left/right 端口来源。新集合函数使用后述具名数组对象输入与固定输出分发规则。函数允许 identity/select-fields/merge/collect/join/expression。节点 id 稳定保留，label 写用户能理解的业务名称。
+工作流形状由工具 schema 定义，完整定义必须显式包含 schemaVersion:1。保持任务与输出结构简洁，只包含完成目标需要的字段，不为每个字段重复编写 description。仅在用户需要文字报告时，报告节点输出 Markdown 正文，expectedOutput 使用 {"type":"string"}，不为报告建立庞大的嵌套 JSON 结构。普通节点输入端口 input、输出 output；branch 输入 input、输出 matched/unmatched；集合函数的端口和schema见后述规则；merge/collect均明确具名输入。file 来源节点（kind:file, file:{name}）引用工作 uploads 中的文件，无入边、输出 output，下游 agent 节点可在会话中用 Node 运行时（xlsx/mammoth/unpdf 已预装）读取该文件。不存在 $output 虚拟节点，不要向它连线；最终输出只能声明在 outputs 映射中，例如 outputs:{report:["实际节点id","output"]}。外部输入用 ['$input', '<inputs中的名字>']。edges 决定顺序；不允许回连。
+operation 明确计算组合：map 对每条输入调用一次，返回一个值（数组也保留为一个值）；flatMap 对每条输入调用一次并将返回数组展开一层；aggregate 一次处理集合。agent与普通function必须显式声明operation，不存在mode字段；concurrency 可设 1–8，默认1。inputSchema/expectedOutput 分别定义单次调用输入/输出，普通 aggregate 输入为数组；merge/collect必须明确inputNames，不隐含端口。新集合函数使用后述具名数组对象输入与固定输出分发规则。函数允许 identity/select-fields/merge/collect/join/expression/groupBy。groupBy按整批集合计算，groupBy:{keys:[[字段路径]]}，输入input，输出每组{key,items}。显式kind:call通过call:{workId,definitionId,inputNames,outputNames,eachPort?}调用保存版本；具名端口与目标方法完全相同，aggregate整体调用，map按eachPort逐项调用、其他端口广播。节点 id 稳定保留，label 写用户能理解的业务名称。
+子项阶段成果输入的每项是 {item:{id,key,title,goal,data},outputs:[{source:{workId,runId,resultId,port,index},value:原始产物}]}。每个子项可包含多轮所选产物；不要假设最新轮次覆盖全部范围，不要把摘要与其明细重复计数。按任务显式保持分组或展开value；需要整体列表时可用aggregate函数，无需再调用模型概括，也不自动建立业务子项。
 ${expressionGuide}
 ${collectionGuide}
 ${semanticGuide}
-持续业务流程可以添加 kind:milestone, mode:all, milestone:{stage,summary}，输入 input、输出 output，透传输入并记录明确的阶段事实，不能在未验证时声称业务完成。kind:wait, mode:all, wait:{event,reason,timeoutSeconds?} 持久等待指定外部事件或超时，输入 input、输出 output（原输入）/event（消息或到期信号）。等待适用于正式工作项运行；普通试运行跳过持久等待且不提交业务里程碑。业务完成由工作项完成条件显式确认，不能用最后节点成功代替。
-根据目标生成必要步骤，不照搬无关示例。逐条分析与总体产物用清楚分工的节点。明确引用要求应写入相关 task；结构化结果用 expectedOutput JSON Schema，支持 type/object/properties/required/enum/items/minItems；保留原始材料编号。依据可用 evidence:[{materialId,quote}]，quote 必须是原文逐字片段。
+明确拆分业务问题使用 kind:create-items，input → output；上游 Agent 输出候选数组或 {candidates:[...]}，每个候选为 {id,title,goal,inputs:[{label,value}],criteria?:string[],trackingKey?:string,data?:object}，id 在容器内唯一，inputs 保留原始 JSON 值。此节点正式完整工作项运行时在当前项下建立子项，输出每份候选容器的 {source,receipts}（每条 candidateId/status/childId?/error?）；预览只返回候选与拟建结果。普通数组输出不自动建立子项，动态规划不得生成此业务动作；不要让 Agent 自行调用应用 HTTP 或指定其它父项。
+持续业务流程可以添加 kind:milestone, milestone:{stage,summary}，输入 input、输出 output，透传输入并记录明确的阶段事实，不能在未验证时声称业务完成。kind:wait, wait:{event,reason,timeoutSeconds?} 持久等待指定外部事件或超时，输入 input、输出 output（原输入）/event（消息或到期信号）。等待适用于正式工作项运行；普通试运行跳过持久等待且不提交业务里程碑。业务完成由工作项完成条件显式确认，不能用最后节点成功代替。
+根据目标生成必要步骤，不照搬无关示例。逐条分析与总体产物用清楚分工的节点。明确引用要求应写入相关 task；结构化结果用 expectedOutput JSON Schema，支持 type/object/properties/required/enum/items/minItems；保留原始材料编号。证据结构和引用要求由本次expectedOutput/task明确声明；sourceId/references/evidence等普通字段不隐含本地材料编号或逐字引文语义。
 若有选定节点，本轮仅修改它的任务/参数/名称/输出结构；其它节点、连接、输入输出保持不变。整个流程修改需要用户从全流程上下文发起。
 用 inspect_result 查看实际结果，不能编造历史结果。没有历史结果时使用当前真实材料。用户发送后界面的选择变化不改变本轮固定上下文。不要把采用做法与修改草稿混为一谈。最终回复只用两到三句说明改动内容和下一步可做的操作，不展示内部 UUID、源码、JSON 或冗长技术排错过程。`;
 
@@ -223,6 +294,15 @@ export function createAssistant(
     runSession?: SessionRunner;
     settingsPath?: string;
     catalogPath?: string;
+    readItemContext?: (itemId: string) => Promise<{
+      workItem: import('../../shared/records.ts').WorkItemInput;
+      inputs: import('../../shared/records.ts').Inputs;
+    }>;
+    reportProgress?: (
+      id: string,
+      report: WorkItemProgressReport,
+      signal: AbortSignal,
+    ) => Promise<WorkItemView>;
   } = {},
 ) {
   const runSession = options.runSession ?? runPiSession;
@@ -289,7 +369,11 @@ export function createAssistant(
         throw new Error(
           `默认模型仍选择「${defaultSelection.alias}」，请先更改或清除默认选择。`,
         );
-      for (const work of await files.list()) {
+      for (const work of await files.list((w) => ({
+        id: w.id,
+        title: w.title,
+        modelSelections: w.modelSelections,
+      }))) {
         const selection = work.modelSelections?.assistant;
         if (selection && !aliases.has(selection.alias))
           throw new Error(
@@ -394,6 +478,24 @@ export function createAssistant(
       if (!request.text.trim()) throw new Error('请描述希望生成或修改的做法。');
       const frozen = structuredClone(request);
       const work = await files.read(workId);
+      if (frozen.sampleSource && !frozen.nodeId)
+        throw Error('请选择原始输入所属的步骤。');
+      const sampleContext = frozen.sampleSource
+        ? readRunSamples(work, frozen.sampleSource, frozen.nodeId!)
+        : undefined;
+      const sampleMaterialIds = new Set(
+        Object.values(sampleContext?.inputs ?? {})
+          .flat()
+          .flatMap((entry) => entry.materialIds),
+      );
+      const sampleMaterials = sampleContext
+        ? work.runs
+            .find((run) => run.id === frozen.sampleSource!.runId)!
+            .materials.filter((material) => sampleMaterialIds.has(material.id))
+        : undefined;
+      const itemContext = work.ownerItemId
+        ? await options.readItemContext?.(work.ownerItemId)
+        : undefined;
       const { config, effective } = modelSettings.getScopedConfig(
         'assistant',
         work,
@@ -442,8 +544,11 @@ export function createAssistant(
       const run = async () => {
         let expectedDraftId = frozen.expectedDraftId;
         let saved = false;
-        let text = '';
-        let lastTextSave = 0;
+        const streamText = createStreamText((text) =>
+          patchMessage(workId, requestId, (message) => {
+            message.text = text;
+          }),
+        );
         let proposal: Definition | undefined;
         let toolError: string | undefined;
         try {
@@ -644,8 +749,20 @@ export function createAssistant(
             config,
             systemPrompt: authorInstructions,
             prompt: JSON.stringify({
-              goal: work.goal,
-              materials: clipList(work.materials, 30),
+              goal:
+                sampleContext?.workItem?.goal ??
+                itemContext?.workItem.goal ??
+                work.goal,
+              workItem:
+                sampleContext?.workItem ?? itemContext?.workItem ?? null,
+              selectedInputs:
+                sampleContext?.inputs ?? itemContext?.inputs ?? null,
+              materials: clipList(
+                sampleMaterials ??
+                  itemContext?.workItem.materials ??
+                  work.materials,
+                30,
+              ),
               definition: initial ?? null,
               selectedNodeId: frozen.nodeId ?? null,
               selectedSampleIds: frozen.sampleIds ?? [],
@@ -653,6 +770,7 @@ export function createAssistant(
               ...(bootstrap
                 ? {
                     recentMessages: work.messages
+                      .filter((message) => !message.conversationId)
                       .slice(-12)
                       .map((message) => ({
                         role: message.role,
@@ -685,16 +803,11 @@ export function createAssistant(
               instruction: frozen.text,
             }),
             tools: [update, updateStep, inspect, inspectRun, freezeExpansion],
+            mcp: mcpConfiguration('author'),
             sessionDir,
             signal: controller.signal,
             onText: async (delta) => {
-              text += delta;
-              if (Date.now() - lastTextSave > 120) {
-                lastTextSave = Date.now();
-                await patchMessage(workId, requestId, (message) => {
-                  message.text = text;
-                });
-              }
+              streamText.push(delta);
             },
             onActivity: async (activity) => {
               await patchMessage(workId, requestId, (message) =>
@@ -704,21 +817,23 @@ export function createAssistant(
           });
           throwIfAborted(controller.signal);
           if (toolError) throw new Error(toolError);
+          await streamText.finish();
           // 无保存不等于失败：声称修改才需要兑现（见用户故事 B3）；
           // 纯分析/说明类回复如实标 unchanged 完成，不误报错误。
           await patchMessage(workId, requestId, (message) => {
             message.text =
               output ||
-              text ||
+              streamText.text ||
               (saved ? '做法已保存，可在画布检查。' : '本轮回复仅作说明。');
             message.status = 'completed';
             if (!saved) message.unchanged = true;
           });
         } catch (error) {
+          await streamText.finish().catch(() => {});
           await patchMessage(workId, requestId, (message) => {
             message.status = controller.signal.aborted ? 'cancelled' : 'failed';
             message.error = safeError(error, config);
-            message.text = text || message.text;
+            message.text = streamText.text || message.text;
             if (proposal && toolError) message.proposedDefinition = proposal;
             for (const activity of message.activities ?? [])
               if (activity.status === 'running') {
@@ -776,6 +891,69 @@ export function createAssistant(
         },
       });
       const planning = context.node.kind === 'dynamic';
+      const explicitTools = context.node.tools;
+      const canReport =
+        !planning &&
+        !explicitTools &&
+        context.node.kind === 'agent' &&
+        !!context.workItem &&
+        context.effectMode === 'commit' &&
+        (context.scope === 'full' ||
+          (typeof context.scope === 'object' &&
+            context.scope.nodeId === context.node.id)) &&
+        !!options.reportProgress;
+      const reportProgress = defineTool({
+        name: 'report_progress',
+        label: '记录工作项进展',
+        description:
+          '阶段成果、明确阻碍或下一步改变时保存工作项进展。仅记录报告，不代表事实已验证、满足完成条件或结项；不记录读取文件或 token 心跳。省略 nextAction/blocker 会清除上次报告值。',
+        parameters: Type.Object({
+          stage: Type.String({ minLength: 1 }),
+          summary: Type.String({ minLength: 1 }),
+          nextAction: Type.Optional(Type.String({ minLength: 1 })),
+          blocker: Type.Optional(Type.String({ minLength: 1 })),
+          materialIds: Type.Optional(Type.Array(Type.String())),
+        }),
+        executionMode: 'sequential',
+        async execute(toolCallId, params) {
+          throwIfAborted(context.signal);
+          if (!canReport) throw Error('本次执行不能报告工作项进展。');
+          const saved = await options.reportProgress!(
+            context.workItem!.id,
+            {
+              ...params,
+              id: JSON.stringify([
+                context.runId,
+                context.instanceId,
+                toolCallId,
+              ]),
+              source: {
+                workId: context.workId,
+                runId: context.runId,
+                definitionId: context.definitionId,
+                nodeId: context.node.id,
+                instanceId: context.instanceId,
+              },
+            },
+            context.signal,
+          );
+          throwIfAborted(context.signal);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify({
+                  saved: true,
+                  stage: saved.stage,
+                  summary: saved.summary,
+                  revision: saved.revision,
+                }),
+              },
+            ],
+            details: { saved: true },
+          };
+        },
+      });
       let plannedDefinition: Definition | undefined;
       const submitWorkflow = defineTool({
         name: 'submit_workflow',
@@ -813,18 +991,57 @@ export function createAssistant(
         typeof schema === 'object' &&
         !Array.isArray(schema) &&
         schema.type === 'string';
+      let submitted: { value: Json } | undefined;
+      const structured = !planning && !!schema && !expectsText;
+      const submitResult = defineTool({
+        name: 'submit_result',
+        label: '提交节点结果',
+        description:
+          '提交符合expectedOutput的完整结果；校验错误时按反馈修正后再次提交。',
+        parameters: Type.Object({
+          result: Type.Unsafe<Json>(
+            schema && typeof schema === 'object' && !Array.isArray(schema)
+              ? schema
+              : {},
+          ),
+        }),
+        async execute(_id, params) {
+          throwIfAborted(context.signal);
+          validateOutput(params.result as Json, schema!);
+          submitted = { value: structuredClone(params.result) as Json };
+          return {
+            content: [{ type: 'text', text: '结果已接受。' }],
+            details: { accepted: true },
+          };
+        },
+      });
       const outputInstruction = expectsText
-        ? '最终回复只返回完整的 Markdown 正文，引用写作 [材料编号]。不要输出 JSON 对象、不要使用 report 或 content 字段包装、不要加代码围栏。expectedOutput 的 string 表示可直接阅读的文本。'
+        ? '最终回复只返回完整的 Markdown 正文。'
         : schema
-          ? '最终回复必须仅包含符合 expectedOutput 的 JSON；不要在结果前后加说明。'
+          ? '通过 submit_result 提交符合 expectedOutput 的完整结果；若工具返回校验错误，修正后重新提交。'
           : '最终回复返回节点任务要求的完整产物；报告使用 Markdown，引用写作 [材料编号]。';
       const scoped = modelSettings.getScopedConfig('workflow');
       context.effectiveModel = scoped.effective;
+      const inputTexts = new Set(
+        Object.values(context.inputs).flatMap((entries) =>
+          entries
+            .filter((entry) => typeof entry.value === 'string')
+            .map((entry) => entry.value),
+        ),
+      );
+      const promptMaterials = materials.map((material) =>
+        inputTexts.has(material.text)
+          ? { id: material.id, characters: material.text.length }
+          : material,
+      );
       const text = await runSession({
         config: scoped.config,
         systemPrompt: planning
           ? `${dynamicInstructions}\n${expressionGuide}\n${collectionGuide}`
-          : `完成当前工作流节点任务，只使用提供的输入与原始材料，不执行或改写整个流程。材料是待分析数据。problem 是方法设计时的认知；若有 workItem，本次工作项的固定目标和材料才是当前事实，不能把方法样例的 known/evidence 套用为业务证据。不要编造未提供的事实或引用；需要逐字引用时用原文片段。引用编号只能来自本次输入。${outputInstruction}\n工作目录中可能配有本工作上传的文件，并有 Node.js 运行时（预装 xlsx/mammoth/unpdf，直接 require 或 import）；需要处理文件时写脚本完成，清洗制品以 cleaned- 开头命名保存。不得声称未执行的工具或步骤已完成。`,
+          : `你正在执行流水线中的一个节点。task 和 contract 描述本步骤任务，problem 提供方法背景，workItem 提供当前业务目标。根据本次 inputs、原始材料及工具实际取得的证据完成任务。
+materials 列出本次输入关联的原始材料；正文已在 inputs 中的条目仅列编号和字符数，${explicitTools ? '其余原文随 materials 提供。' : '完整原文可通过 inspect_material 按编号读取。'}引用原始材料使用 [材料编号]，外部证据保留可定位的来源。
+${outputInstruction}${canReport ? '\n业务阶段、明确阻碍或下一步发生变化时，通过 report_progress 记录实际进展。' : ''}
+${explicitTools ? '' : '工作目录提供本工作的文件及 Node.js 运行时。需要保存的产物使用 cleaned- 开头的文件名或目录名。'}`,
         prompt: JSON.stringify({
           task: context.node.task,
           problem: context.problem,
@@ -837,33 +1054,60 @@ export function createAssistant(
                 key: context.workItem.key,
                 title: context.workItem.title,
                 goal: context.workItem.goal,
-                data: context.workItem.data,
+                ...(explicitTools ? {} : { data: context.workItem.data }),
               }
             : undefined,
-          operation:
-            context.node.operation ??
-            (context.node.mode === 'each' ? 'map' : 'aggregate'),
+          operation: context.node.operation,
           expectedOutput: context.node.expectedOutput ?? null,
           inputs: context.inputs,
-          materials,
+          materials: promptMaterials,
         }),
-        tools: planning ? [inspect, submitWorkflow] : [inspect],
-        builtinTools: planning ? [] : ['read', 'grep', 'find', 'ls', 'bash'],
-        linkFiles: await uploadLinks(context.workId),
-        linkRuntime: true,
+        tools: [
+          ...(explicitTools
+            ? []
+            : planning
+              ? [inspect, submitWorkflow]
+              : canReport
+                ? [inspect, reportProgress]
+                : [inspect]),
+          ...(structured ? [submitResult] : []),
+        ],
+        builtinTools:
+          explicitTools?.builtin ??
+          (planning ? [] : ['read', 'grep', 'find', 'ls', 'bash']),
+        mcp: planning
+          ? undefined
+          : mcpConfiguration(
+              'node',
+              process.env,
+              undefined,
+              explicitTools?.mcp,
+            ),
+        linkFiles: explicitTools ? [] : await uploadLinks(context.workId),
+        linkRuntime: !explicitTools,
         collect: async (dir) => {
-          for (const name of await readdir(dir)) {
-            if (!name.startsWith('cleaned-')) continue;
-            await files.saveUpload(
-              context.workId,
-              name,
-              await readFile(join(dir, name)),
-            );
+          async function collectFiles(directory: string, prefix = '') {
+            for (const entry of await readdir(directory, {
+              withFileTypes: true,
+            })) {
+              if (!prefix && !entry.name.startsWith('cleaned-')) continue;
+              const name = prefix + entry.name;
+              const path = join(directory, entry.name);
+              if (entry.isDirectory()) await collectFiles(path, `${name}__`);
+              else if (entry.isFile())
+                await files.saveUpload(
+                  context.workId,
+                  name,
+                  await readFile(path),
+                );
+            }
           }
+          await collectFiles(dir);
         },
         signal: context.signal,
         onActivity: context.onActivity,
       });
+      context.rawOutput = text;
       throwIfAborted(context.signal);
       if (planning) {
         if (!plannedDefinition)
@@ -872,8 +1116,8 @@ export function createAssistant(
           );
         return plannedDefinition as unknown as Json;
       }
+      if (submitted) return submitted.value;
       const output = parseOutput(text, schema);
-      validateEvidence(output, materials);
       return output;
     },
   };

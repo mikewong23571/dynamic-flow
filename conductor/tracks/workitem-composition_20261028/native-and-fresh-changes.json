@@ -1,0 +1,125 @@
+{
+  "scope": "相对P交付的Q/R增量；配置/模型实际业务数据不入源码清单",
+  "changes": [
+    {
+      "path": "docs/design.md",
+      "change": "modified",
+      "before": "37ec031982ff7a69772662598c6f454c130bcb4762af1ea02182fff9ab4bf8dc",
+      "after": "9b2a37cd82bfc099acdfb0508407340ce1e1275122ac1718d8f7d139e4d8254f"
+    },
+    {
+      "path": "docs/implementation-map.md",
+      "change": "modified",
+      "before": "3abf686a96a021c08576f98186bd1dfccda8b564479c275183e97f7d80348434",
+      "after": "b086edc88d96fa01b8270a62b2e77e13a6225e2374f426e73405926341b14534"
+    },
+    {
+      "path": "docs/workitem-stories.md",
+      "change": "modified",
+      "before": "b29878fdf4e30e71cc5a90502d3b97f91f360050a63658c54f2510e45d932473",
+      "after": "d8a8eecfb78c146b1a302ef52c443fc862cd8ea68a224a68c340bdaf20ea67a7"
+    },
+    {
+      "path": "docs/workitem-ui-authoring.md",
+      "change": "modified",
+      "before": "15b4e6229b0411a9bc424c0874de9d5f1a2a0a4ae529e23e2f4b8585265cac2f",
+      "after": "e9a40df0ec333ab89ead24f63ef3a71c0981575faf7cc6d096a0d9ea90502105"
+    },
+    {
+      "path": "src/client/AGENTS.md",
+      "change": "modified",
+      "before": "432ff5f872c76ba69c641debe16b61b80eaf794d39a5bbfc09c271440097515d",
+      "after": "dcc4012dee623a72c7b436012de446dacfa5634be939db6eaa985a50ba63d6a3"
+    },
+    {
+      "path": "src/client/DESIGN-NOTES.md",
+      "change": "modified",
+      "before": "d9a938feb196afb51ff361c3f330c99054957ce9a3a281e2632960e47620d033",
+      "after": "694f36276c3765d49f080177e680e5b923ca3eb1b8814e8e9706feb5bc88329b"
+    },
+    {
+      "path": "src/client/components/ui/README.md",
+      "change": "modified",
+      "before": "e88e83b29e2d14750990dee5c0bd1eed9c33b823c391cad0f7b714ed21d7c531",
+      "after": "e91f778c9858dff8b6d81a4c77e37f85c83f4116f186876193dd722871183422"
+    },
+    {
+      "path": "src/client/core/definition.ts",
+      "change": "modified",
+      "before": "95ec23efa5e38704b4af35403d28d10838dea67ebc3b554fce6174d9551eeebb",
+      "after": "0fec779ec199ff724f541a9a0dfb78c92e773e5cf4c8fd9aae682df50b22388d"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowCanvas.tsx",
+      "change": "modified",
+      "before": "95175f615bb2b7458ebc12c3312944c493fcb026ed006fff70313560b44d0108",
+      "after": "73c559eceed4ddbcb7be1555a3f24f76859ccd956cf04446e35d9e047136440c"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowNode.tsx",
+      "change": "modified",
+      "before": "b76d353525252f9f39a5b90aac8ac3edf4790b20223f689e40486a9e679a6a99",
+      "after": "e5d4596256898a2aab1c2a39333ca39a8af290f7784944a921e7a1e734fe9b05"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionFlow.tsx",
+      "change": "modified",
+      "before": "246d168d8c8c2026e9543a1cef1db640bb67d48c515f6bce3fa2b49ec68ee29f",
+      "after": "52ac671d36ff9f62eb96bc711e3b192ef115c36bfdb1c1c2909212c70150a006"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionPlan.tsx",
+      "change": "modified",
+      "before": "a17aab4c5609735ccf813ec6f2acb1f9620e2dd68658d9dccb504ccea93c0910",
+      "after": "275c75ee9721ab1615701d95db541df8716a0a77e2b2927790ff854ccd60247d"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionWorkspace.css",
+      "change": "modified",
+      "before": "fdfb4d7d7122c635202d64ece5df3f3cfc3f3b2d677345ea3d98bec656219f97",
+      "after": "3b1feb7652c6f896443998f8408f2e05e3ad4080a98d3cda648198f3212cb8d5"
+    },
+    {
+      "path": "src/client/features/work-items/composition/PlannedWork.tsx",
+      "change": "modified",
+      "before": "55421a41a7297f584ff7223c0910c245527d095492eaf5c7b5a9bda663480106",
+      "after": "b1935238a58a7ee4c6869f21af95c04beb053f843823640c99ecc8b9898da62d"
+    },
+    {
+      "path": "src/client/features/work-items/composition/interface-progress.ts",
+      "change": "modified",
+      "before": "f568479441153819c8c324521dc0c14e7c1b57cae8b5e44e12ca9272e9dd3792",
+      "after": "e9b9d803354a71a4958ff2b73eaa34c6307f254dda6b709f2d0ec2d2ec3c47d7"
+    },
+    {
+      "path": "tests/browser/workitem-composition-call-node.spec.ts",
+      "change": "modified",
+      "before": "4877e6a03d56f8d69e3abf27825cef2b8dc1ded12f614e1bf87d738cedefc0ab",
+      "after": "82cde8b84464391da51bfce9a870c198a7304aa4bf156a4a094c9647168fd630"
+    },
+    {
+      "path": "tests/browser/workitem-composition-conversations.spec.ts",
+      "change": "modified",
+      "before": "4994ea8b90f3c453c7464c58721b095102f00fcbc83b2a0fa7a0d9490e84b4e9",
+      "after": "59884704157354ecf71bfea1238a549c7b8498bdbd6d7adada8efe2f6e6730dc"
+    },
+    {
+      "path": "tests/browser/workitem-composition-cve-interface.spec.ts",
+      "change": "modified",
+      "before": "49e168aaa2bb1d0d2d089d37ccee4e4add36c7abd88b73be1d95c2d0e7c511d1",
+      "after": "0385520e08921fa229da4241d05c8342d5207404c57041f52c34a3602f84685e"
+    },
+    {
+      "path": "tests/browser/workitem-composition-primitives.spec.ts",
+      "change": "modified",
+      "before": "db00dcae386ec3841d2e7a06d64a857253e2698caa2eafc8c7c4696a663a061d",
+      "after": "0772d3e7f9b4bc1197f69ea0ad4c868e1d9a4f89b1032f0bfea4345afa27752f"
+    },
+    {
+      "path": "tests/browser/workitem-composition.spec.ts",
+      "change": "modified",
+      "before": "98354968e3f72e63b9f6b3418c7967bef7e9f544767de9705140b26250ba06cd",
+      "after": "a7d01bf49eff33e433b9d10839c4ec171dae7f3e5ebec93cc29d8bd2b4dbe00a"
+    }
+  ]
+}

@@ -1,0 +1,1755 @@
+{
+  "scope": "向独立预览新增明确标注的假设演示；不覆盖原两项，不扫描仓库，不核验漏洞或修复",
+  "startedAt": "2026-10-29T03:53:53.182Z",
+  "turns": [
+    {
+      "durationMs": 129485,
+      "status": "completed",
+      "text": "已按演示要求完成规划并保存（仅规划，未运行、未发布、未确认任何条件）。\n\n**已核对材料与方法**\n- 读取 M01：8 条虚构告警（含同范围重复 scan-02、无判断材料的 scan-07）与 6 条范围判断（portal-A 不受影响/excluded，portal-B exception 且确认字段为空）。\n- 读取 M02 参考组合与三个已保存方法；核对合同后采用「演示·核对已给出的判断与交付依据」的固定版本，只做机械核对，不生成新结论。\n\n**输入（全部绑定 M01 原文来源）**\n- alerts：8 条逐条绑定（scan-01～scan-08）。\n- assessments：6 条逐条绑定（api-main-A/B、api-release-A、worker-C、portal-A、portal-B）。\n- 未把材料原文抄成无来源事实，也没有为补齐缺口编造判断。\n\n**已保存流程（检查通过，无 schema/表达式问题）**\n1. 按 relationId/repository/requestedRef/baseline/cve 归并原告警，保留每条原告警 id；\n2. 映射为调查对象；\n3. 以范围 id 左连接已给出的判断（未匹配保留空右值，重复键报错）；\n4. 逐范围调用已保存核对方法，产出 scopeMatched/conclusion/disposition/evidence/verification/accepted；\n5. 把 changes 展开到实施仓库维度（含 platform-images 这类跨仓库改动）；\n6. 按实施仓库+ref+改动 id 归并覆盖关系；\n7. 形成改动安排（含依赖与逐关系覆盖验证）；\n8. 回到原告警粒度逐条交付（重复、无判断、未确认例外原样暴露）；\n9. 汇总覆盖数与未决告警 id，仅列举、等待用户验收。\n\n**四种交付（根输出，沿参考中文名称）**\n仓库影响、改动安排、逐条告警交付、验收缺口。\n\n**已写入 Definition 的规划信息**\nproblem 的目标/已知/未决/边界/依据，以及每一步的职责、完成产物与拆分原因（含为何先归并、为何用左连接、为何按实施仓库展开再归并、为何逐条回到原告警、为何不代为确认）。\n\n**当前缺口（流程会如实呈现，不代为结论）**\nworker-D 无判断材料（证据不足/pending）；portal-B 例外未经用户确认；scan-02 重复告警仍单独列出；本批不含“一告警多范围”情形。\n\n下一步：需要正式运行时我再启动，并按实际运行输出发布三张表与一份验收缺口报告。",
+      "tools": [
+        {
+          "name": "inspect_work_item",
+          "status": "completed"
+        },
+        {
+          "name": "read_artifact",
+          "status": "completed"
+        },
+        {
+          "name": "read_artifact",
+          "status": "completed"
+        },
+        {
+          "name": "inspect_method",
+          "status": "completed"
+        },
+        {
+          "name": "inspect_method",
+          "status": "completed"
+        },
+        {
+          "name": "inspect_method",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "failed"
+        },
+        {
+          "name": "save_flow",
+          "status": "failed"
+        },
+        {
+          "name": "save_flow",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "failed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "add_input",
+          "status": "completed"
+        },
+        {
+          "name": "check_flow",
+          "status": "completed"
+        },
+        {
+          "name": "check_flow",
+          "status": "completed"
+        },
+        {
+          "name": "save_flow",
+          "status": "completed"
+        },
+        {
+          "name": "inspect_work_item",
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "methodId": "71346011-e14e-4a00-a9c0-e164a1c94e7f",
+  "methodVersion": "a1873ca3-414c-40af-aa8e-23800bba9ea5",
+  "itemId": "33800ab9-0d63-4484-92c3-936d8ff86d62",
+  "key": "WI-20261029-81bcaf",
+  "definition": {
+    "edges": [
+      {
+        "from": [
+          "$input",
+          "alerts"
+        ],
+        "to": [
+          "unique",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "unique",
+          "output"
+        ],
+        "to": [
+          "scope",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "scope",
+          "output"
+        ],
+        "to": [
+          "attach",
+          "left"
+        ]
+      },
+      {
+        "from": [
+          "$input",
+          "assessments"
+        ],
+        "to": [
+          "attach",
+          "right"
+        ]
+      },
+      {
+        "from": [
+          "attach",
+          "output"
+        ],
+        "to": [
+          "assess",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "assess",
+          "relations"
+        ],
+        "to": [
+          "expandChanges",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "expandChanges",
+          "output"
+        ],
+        "to": [
+          "groupChanges",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "groupChanges",
+          "output"
+        ],
+        "to": [
+          "changes",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "assess",
+          "relations"
+        ],
+        "to": [
+          "audit",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "audit",
+          "output"
+        ],
+        "to": [
+          "completion",
+          "input"
+        ]
+      }
+    ],
+    "inputContracts": {
+      "alerts": {
+        "item": {
+          "properties": {
+            "baseline": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "cve": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "relationId": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "repository": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "requestedRef": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "relationId",
+            "repository",
+            "requestedRef",
+            "baseline",
+            "cve"
+          ],
+          "type": "object"
+        },
+        "required": true
+      },
+      "assessments": {
+        "item": {
+          "properties": {
+            "baseline": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "changes": {
+              "items": {
+                "properties": {
+                  "dependsOn": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "description": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "repository": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "requestedRef": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "repository",
+                  "requestedRef",
+                  "description",
+                  "dependsOn"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "conclusion": {
+              "enum": [
+                "受影响",
+                "不受影响",
+                "证据不足"
+              ]
+            },
+            "confirmation": {
+              "type": "string"
+            },
+            "disposition": {
+              "enum": [
+                "fixed",
+                "excluded",
+                "exception",
+                "pending"
+              ]
+            },
+            "evidence": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "id": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "reason": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "repository": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "requestedRef": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "verification": {
+              "properties": {
+                "baseline": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "items": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "successor": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "baseline",
+                "successor",
+                "evidence"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "id",
+            "repository",
+            "requestedRef",
+            "baseline",
+            "conclusion",
+            "disposition",
+            "reason",
+            "evidence",
+            "confirmation",
+            "changes",
+            "verification"
+          ],
+          "type": "object"
+        },
+        "required": true
+      }
+    },
+    "inputs": [
+      "alerts",
+      "assessments"
+    ],
+    "nodes": [
+      {
+        "contract": {
+          "done": "每个调查范围一组，组内保留全部原告警id（含重复scan-02）",
+          "rationale": "范围是判断核对与交付的最小单位；先按明确键归并才能一对一关联判断，且不能用单个节点包住整批逻辑",
+          "responsibility": "按 relationId/repository/requestedRef/baseline/cve 归并原告警，保留原告警id",
+          "semanticRole": "范围归并"
+        },
+        "functionName": "groupBy",
+        "groupBy": {
+          "keys": [
+            [
+              "relationId"
+            ],
+            [
+              "repository"
+            ],
+            [
+              "requestedRef"
+            ],
+            [
+              "baseline"
+            ],
+            [
+              "cve"
+            ]
+          ]
+        },
+        "id": "unique",
+        "kind": "function",
+        "label": "按调查范围归组，保留原告警",
+        "mode": "all",
+        "operation": "aggregate"
+      },
+      {
+        "contract": {
+          "done": "每个范围输出一条{id,repository,requestedRef,baseline,cve,alertIds}",
+          "rationale": "范围字段需显式成对象，才能作为左连接键与核对输入；仅字段映射，不做判断",
+          "responsibility": "把分组结果机械映射为调查对象",
+          "semanticRole": "范围对象化"
+        },
+        "expectedOutput": {
+          "properties": {
+            "alertIds": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "baseline": {
+              "type": "string"
+            },
+            "cve": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "repository": {
+              "type": "string"
+            },
+            "requestedRef": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "repository",
+            "requestedRef",
+            "baseline",
+            "cve",
+            "alertIds"
+          ],
+          "type": "object"
+        },
+        "expression": {
+          "fields": {
+            "alertIds": {
+              "binding": {
+                "kind": "bind",
+                "name": "alert"
+              },
+              "body": {
+                "kind": "variable",
+                "name": "alert",
+                "path": [
+                  "id"
+                ]
+              },
+              "input": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "items"
+                ]
+              },
+              "kind": "map"
+            },
+            "baseline": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "key",
+                3
+              ]
+            },
+            "cve": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "key",
+                4
+              ]
+            },
+            "id": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "key",
+                0
+              ]
+            },
+            "repository": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "key",
+                1
+              ]
+            },
+            "requestedRef": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "key",
+                2
+              ]
+            }
+          },
+          "kind": "object"
+        },
+        "functionName": "expression",
+        "id": "scope",
+        "kind": "function",
+        "label": "形成调查对象",
+        "mode": "each",
+        "operation": "map"
+      },
+      {
+        "contract": {
+          "done": "每个范围一条{left,right}，无判断的范围right为null且不被丢弃",
+          "rationale": "判断可能缺失（worker-D），必须用左连接显式保留缺口；duplicates=error 防止一个范围匹配多条判断而静默取一条",
+          "responsibility": "以范围id左连接已给出的判断，未匹配保留空右值",
+          "semanticRole": "范围与判断关联"
+        },
+        "expectedOutput": {
+          "items": {
+            "properties": {
+              "left": {
+                "type": "object"
+              },
+              "right": {
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "left",
+              "right"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "functionName": "join",
+        "id": "attach",
+        "join": {
+          "duplicates": "error",
+          "leftKey": [
+            "id"
+          ],
+          "rightKey": [
+            "id"
+          ],
+          "type": "left"
+        },
+        "kind": "function",
+        "label": "关联判断，保留未匹配范围",
+        "mode": "all",
+        "operation": "aggregate"
+      },
+      {
+        "call": {
+          "definitionId": "a1873ca3-414c-40af-aa8e-23800bba9ea5",
+          "eachPort": "input",
+          "inputNames": [
+            "input"
+          ],
+          "outputNames": [
+            "relations"
+          ],
+          "workId": "71346011-e14e-4a00-a9c0-e164a1c94e7f"
+        },
+        "contract": {
+          "done": "每个范围一条relations，含scopeMatched/conclusion/disposition/reason/evidence/verification/changes/accepted",
+          "rationale": "核对规则（范围是否匹配、依据是否齐备、例外是否已确认）已固化为保存方法，固定版本调用可复用且不在本流程重写业务判断",
+          "responsibility": "逐范围调用已保存方法，核对已给出的判断与依据",
+          "semanticRole": "判断核对"
+        },
+        "id": "assess",
+        "kind": "call",
+        "label": "逐范围核对判断与依据",
+        "mode": "each",
+        "operation": "map"
+      },
+      {
+        "contract": {
+          "done": "每个范围×每条改动一条，携带relationId/cve/affectedRepository/baseline/verification",
+          "rationale": "改动可能落在其它仓库（platform-images），需按实施仓库展开后才能正确归并覆盖关系，而不是按受影响仓库汇总",
+          "responsibility": "把每个范围的changes展开为实施仓库维度记录",
+          "semanticRole": "改动展开"
+        },
+        "expectedOutput": {
+          "items": {
+            "properties": {
+              "affectedRepository": {
+                "type": "string"
+              },
+              "baseline": {
+                "type": "string"
+              },
+              "change": {
+                "type": "object"
+              },
+              "cve": {
+                "type": "string"
+              },
+              "relationId": {
+                "type": "string"
+              },
+              "verification": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "change",
+              "relationId",
+              "cve",
+              "affectedRepository",
+              "baseline",
+              "verification"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expression": {
+          "binding": {
+            "kind": "bind",
+            "name": "change"
+          },
+          "body": {
+            "fields": {
+              "affectedRepository": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "repository"
+                ]
+              },
+              "baseline": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "baseline"
+                ]
+              },
+              "change": {
+                "kind": "variable",
+                "name": "change"
+              },
+              "cve": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "cve"
+                ]
+              },
+              "relationId": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "id"
+                ]
+              },
+              "verification": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "verification"
+                ]
+              }
+            },
+            "kind": "object"
+          },
+          "input": {
+            "kind": "variable",
+            "name": "input",
+            "path": [
+              "changes"
+            ]
+          },
+          "kind": "map"
+        },
+        "functionName": "expression",
+        "id": "expandChanges",
+        "kind": "function",
+        "label": "展开实施仓库与覆盖关系",
+        "mode": "each",
+        "operation": "flatMap"
+      },
+      {
+        "contract": {
+          "done": "每个实施改动一组，items保留各范围覆盖与验证依据",
+          "rationale": "同一改动可能覆盖多个CVE/范围（api-main A/B 同一次依赖升级），先归并再形成安排，避免重复实施项",
+          "responsibility": "按实施仓库、ref与改动id归并覆盖关系",
+          "semanticRole": "改动归并"
+        },
+        "functionName": "groupBy",
+        "groupBy": {
+          "keys": [
+            [
+              "change",
+              "repository"
+            ],
+            [
+              "change",
+              "requestedRef"
+            ],
+            [
+              "change",
+              "id"
+            ]
+          ]
+        },
+        "id": "groupChanges",
+        "kind": "function",
+        "label": "按实施仓库、ref与方案归并",
+        "mode": "all",
+        "operation": "aggregate"
+      },
+      {
+        "contract": {
+          "done": "每个实施改动一条，含id/repository/requestedRef/changeId/description/dependsOn/coverage",
+          "rationale": "交付需要可执行的改动清单与逐关系覆盖证明；同组描述与依赖取首条，覆盖关系全部保留",
+          "responsibility": "形成改动安排（实施仓库、ref、改动、依赖、逐关系覆盖与验证）",
+          "semanticRole": "改动安排产出"
+        },
+        "expectedOutput": {
+          "items": {
+            "properties": {
+              "changeId": {
+                "type": "string"
+              },
+              "coverage": {
+                "type": "array"
+              },
+              "dependsOn": {
+                "type": "array"
+              },
+              "description": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "requestedRef": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "repository",
+              "requestedRef",
+              "changeId",
+              "description",
+              "dependsOn",
+              "coverage"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expression": {
+          "fields": {
+            "changeId": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "key",
+                2
+              ]
+            },
+            "coverage": {
+              "binding": {
+                "kind": "bind",
+                "name": "item"
+              },
+              "body": {
+                "fields": {
+                  "baseline": {
+                    "kind": "variable",
+                    "name": "item",
+                    "path": [
+                      "baseline"
+                    ]
+                  },
+                  "cve": {
+                    "kind": "variable",
+                    "name": "item",
+                    "path": [
+                      "cve"
+                    ]
+                  },
+                  "relationId": {
+                    "kind": "variable",
+                    "name": "item",
+                    "path": [
+                      "relationId"
+                    ]
+                  },
+                  "repository": {
+                    "kind": "variable",
+                    "name": "item",
+                    "path": [
+                      "affectedRepository"
+                    ]
+                  },
+                  "verification": {
+                    "kind": "variable",
+                    "name": "item",
+                    "path": [
+                      "verification"
+                    ]
+                  }
+                },
+                "kind": "object"
+              },
+              "input": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "items"
+                ]
+              },
+              "kind": "map"
+            },
+            "dependsOn": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "items",
+                0,
+                "change",
+                "dependsOn"
+              ]
+            },
+            "description": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "items",
+                0,
+                "change",
+                "description"
+              ]
+            },
+            "id": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "kind": "variable",
+                          "name": "input",
+                          "path": [
+                            "key",
+                            0
+                          ]
+                        },
+                        {
+                          "kind": "literal",
+                          "value": "@"
+                        }
+                      ],
+                      "function": "concat",
+                      "kind": "call"
+                    },
+                    {
+                      "kind": "variable",
+                      "name": "input",
+                      "path": [
+                        "key",
+                        1
+                      ]
+                    }
+                  ],
+                  "function": "concat",
+                  "kind": "call"
+                },
+                {
+                  "args": [
+                    {
+                      "kind": "literal",
+                      "value": ":"
+                    },
+                    {
+                      "kind": "variable",
+                      "name": "input",
+                      "path": [
+                        "key",
+                        2
+                      ]
+                    }
+                  ],
+                  "function": "concat",
+                  "kind": "call"
+                }
+              ],
+              "function": "concat",
+              "kind": "call"
+            },
+            "repository": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "key",
+                0
+              ]
+            },
+            "requestedRef": {
+              "kind": "variable",
+              "name": "input",
+              "path": [
+                "key",
+                1
+              ]
+            }
+          },
+          "kind": "object"
+        },
+        "functionName": "expression",
+        "id": "changes",
+        "kind": "function",
+        "label": "形成改动安排",
+        "mode": "each",
+        "operation": "map"
+      },
+      {
+        "contract": {
+          "done": "每条原告警一条记录，含conclusion/disposition/reason/evidence/confirmation/verification/accepted",
+          "rationale": "交付必须回到原告警粒度，重复（scan-02）与无判断（scan-07）、未确认例外（scan-08）都要原样暴露，不能按范围合并掩盖缺口",
+          "responsibility": "逐条返回原告警的处置与依据",
+          "semanticRole": "逐条交付产出"
+        },
+        "expectedOutput": {
+          "items": {
+            "properties": {
+              "accepted": {
+                "type": "boolean"
+              },
+              "baseline": {
+                "type": "string"
+              },
+              "conclusion": {
+                "type": "string"
+              },
+              "confirmation": {
+                "type": "string"
+              },
+              "cve": {
+                "type": "string"
+              },
+              "disposition": {
+                "type": "string"
+              },
+              "evidence": {
+                "type": "array"
+              },
+              "id": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              },
+              "relationId": {
+                "type": "string"
+              },
+              "repository": {
+                "type": "string"
+              },
+              "requestedRef": {
+                "type": "string"
+              },
+              "verification": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "relationId",
+              "repository",
+              "requestedRef",
+              "baseline",
+              "cve",
+              "conclusion",
+              "disposition",
+              "reason",
+              "evidence",
+              "confirmation",
+              "verification",
+              "accepted"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expression": {
+          "binding": {
+            "kind": "bind",
+            "name": "alertId"
+          },
+          "body": {
+            "fields": {
+              "accepted": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "accepted"
+                ]
+              },
+              "baseline": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "baseline"
+                ]
+              },
+              "conclusion": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "conclusion"
+                ]
+              },
+              "confirmation": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "confirmation"
+                ]
+              },
+              "cve": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "cve"
+                ]
+              },
+              "disposition": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "disposition"
+                ]
+              },
+              "evidence": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "evidence"
+                ]
+              },
+              "id": {
+                "kind": "variable",
+                "name": "alertId"
+              },
+              "reason": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "reason"
+                ]
+              },
+              "relationId": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "id"
+                ]
+              },
+              "repository": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "repository"
+                ]
+              },
+              "requestedRef": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "requestedRef"
+                ]
+              },
+              "verification": {
+                "kind": "variable",
+                "name": "input",
+                "path": [
+                  "verification"
+                ]
+              }
+            },
+            "kind": "object"
+          },
+          "input": {
+            "kind": "variable",
+            "name": "input",
+            "path": [
+              "alertIds"
+            ]
+          },
+          "kind": "map"
+        },
+        "functionName": "expression",
+        "id": "audit",
+        "kind": "function",
+        "label": "逐条返回原告警，包括重复与未决",
+        "mode": "each",
+        "operation": "flatMap"
+      },
+      {
+        "contract": {
+          "done": "输出originalAlertCount/acceptedCount/unresolvedAlertIds，只列举不确认",
+          "rationale": "验收缺口只做计数与列举，确认例外或结项属于用户动作，流程不代为确认",
+          "responsibility": "汇总覆盖数量与未决告警id，等待用户验收",
+          "semanticRole": "验收缺口产出"
+        },
+        "expectedOutput": {
+          "properties": {
+            "acceptedCount": {
+              "type": "number"
+            },
+            "originalAlertCount": {
+              "type": "number"
+            },
+            "unresolvedAlertIds": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "originalAlertCount",
+            "acceptedCount",
+            "unresolvedAlertIds"
+          ],
+          "type": "object"
+        },
+        "expression": {
+          "fields": {
+            "acceptedCount": {
+              "accumulator": "count",
+              "binding": {
+                "kind": "bind",
+                "name": "row"
+              },
+              "body": {
+                "args": [
+                  {
+                    "kind": "variable",
+                    "name": "count"
+                  },
+                  {
+                    "cases": [
+                      {
+                        "pattern": {
+                          "kind": "literal",
+                          "value": true
+                        },
+                        "then": {
+                          "kind": "literal",
+                          "value": 1
+                        }
+                      }
+                    ],
+                    "kind": "match",
+                    "otherwise": {
+                      "kind": "literal",
+                      "value": 0
+                    },
+                    "value": {
+                      "kind": "variable",
+                      "name": "row",
+                      "path": [
+                        "accepted"
+                      ]
+                    }
+                  }
+                ],
+                "function": "add",
+                "kind": "call"
+              },
+              "initial": {
+                "kind": "literal",
+                "value": 0
+              },
+              "input": {
+                "kind": "variable",
+                "name": "input"
+              },
+              "kind": "reduce"
+            },
+            "originalAlertCount": {
+              "args": [
+                {
+                  "kind": "variable",
+                  "name": "input"
+                }
+              ],
+              "function": "length",
+              "kind": "call"
+            },
+            "unresolvedAlertIds": {
+              "binding": {
+                "kind": "bind",
+                "name": "row"
+              },
+              "body": {
+                "kind": "variable",
+                "name": "row",
+                "path": [
+                  "id"
+                ]
+              },
+              "input": {
+                "binding": {
+                  "kind": "bind",
+                  "name": "row"
+                },
+                "input": {
+                  "kind": "variable",
+                  "name": "input"
+                },
+                "kind": "filter",
+                "predicate": {
+                  "args": [
+                    {
+                      "kind": "variable",
+                      "name": "row",
+                      "path": [
+                        "accepted"
+                      ]
+                    }
+                  ],
+                  "function": "not",
+                  "kind": "call"
+                }
+              },
+              "kind": "map"
+            }
+          },
+          "kind": "object"
+        },
+        "functionName": "expression",
+        "id": "completion",
+        "kind": "function",
+        "label": "列出覆盖和未决，等待用户验收",
+        "mode": "all",
+        "operation": "aggregate"
+      }
+    ],
+    "outputs": {
+      "仓库影响": [
+        "assess",
+        "relations"
+      ],
+      "改动安排": [
+        "changes",
+        "output"
+      ],
+      "逐条告警交付": [
+        "audit",
+        "output"
+      ],
+      "验收缺口": [
+        "completion",
+        "output"
+      ]
+    },
+    "problem": {
+      "constraints": "仅使用M01已提供的虚构告警与判断；不扫描仓库、不新增漏洞结论、不确认例外或结项；结构化alerts与assessments必须来自M01原文绑定。",
+      "evidence": "M01（假设演示输入，8条告警与6条范围判断，均为DEMO/fixture）；M02（普通集合组合参考结构与中文产物名称）；已保存方法a1873ca3（判断与依据核对合同）。",
+      "framing": "演示：把已给出的虚构告警按调查范围归并，与已给出的判断/证据机械核对，分别形成仓库影响、实际改动安排、逐条交付和验收缺口；整批逻辑由多个通用原语与固定方法调用组合，不包成单节点。",
+      "known": "M01提供8条虚构告警（含同一范围重复的scan-02-duplicate、无判断材料的scan-07-missing）与6条范围判断；其中portal-A为不受影响/excluded，portal-B为受影响/exception且confirmation为空。改动、证据、验证均为fixture虚构值。",
+      "unknown": "portal-B延期例外是否获用户确认；worker-D（DEMO-D）无判断材料，影响与处置未知；是否存在一告警对应多范围的情形（本批声明不涵盖）。"
+    },
+    "schemaVersion": 1
+  },
+  "definitionId": "8e6fa85e-e358-473c-ac94-6183ff345814",
+  "preparedInputs": {
+    "alerts": [
+      {
+        "kind": "received",
+        "inputId": "a3ee9d29-2e16-4bf2-8b52-4fb319376bc7"
+      },
+      {
+        "kind": "received",
+        "inputId": "d0ab1251-b2de-427f-92b9-34c1c6f12978"
+      },
+      {
+        "kind": "received",
+        "inputId": "bed9b1fd-4289-4c49-8dfc-e4919a006957"
+      },
+      {
+        "kind": "received",
+        "inputId": "7084d77a-0c23-4d39-ab25-c4282f9c6d05"
+      },
+      {
+        "kind": "received",
+        "inputId": "107653b6-2b74-43e5-99b7-a48ea3a252da"
+      },
+      {
+        "kind": "received",
+        "inputId": "5526418a-a0ba-4e0a-bf11-f909c8bd1ad7"
+      },
+      {
+        "kind": "received",
+        "inputId": "7c1eda4b-b098-43f7-91d4-82c125efdb67"
+      },
+      {
+        "kind": "received",
+        "inputId": "67821ea0-05d6-458b-9d08-cd569b67571d"
+      }
+    ],
+    "assessments": [
+      {
+        "kind": "received",
+        "inputId": "8dc3fc8d-2190-4ea4-9c6d-ab484ab9dcf1"
+      },
+      {
+        "kind": "received",
+        "inputId": "db04eaa9-1d3e-4a49-bdcc-b7492fc56f36"
+      },
+      {
+        "kind": "received",
+        "inputId": "adde4037-5aab-489d-af98-1df474784be2"
+      },
+      {
+        "kind": "received",
+        "inputId": "6e2cf2f9-10b2-4313-bb33-e23d0e2c63e2"
+      },
+      {
+        "kind": "received",
+        "inputId": "54beb5d1-f97b-447b-9d41-f4847c25dbc8"
+      },
+      {
+        "kind": "received",
+        "inputId": "44dc26bd-0c2f-46a9-a5ff-20949cac3047"
+      }
+    ]
+  },
+  "receivedInputs": [
+    {
+      "id": "a3ee9d29-2e16-4bf2-8b52-4fb319376bc7",
+      "label": "scan-01",
+      "value": {
+        "baseline": "api-old-main",
+        "cve": "DEMO-A",
+        "id": "scan-01",
+        "relationId": "api-main-A",
+        "repository": "api",
+        "requestedRef": "main"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "d0ab1251-b2de-427f-92b9-34c1c6f12978",
+      "label": "scan-02-duplicate",
+      "value": {
+        "baseline": "api-old-main",
+        "cve": "DEMO-A",
+        "id": "scan-02-duplicate",
+        "relationId": "api-main-A",
+        "repository": "api",
+        "requestedRef": "main"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "bed9b1fd-4289-4c49-8dfc-e4919a006957",
+      "label": "scan-03",
+      "value": {
+        "baseline": "api-old-main",
+        "cve": "DEMO-B",
+        "id": "scan-03",
+        "relationId": "api-main-B",
+        "repository": "api",
+        "requestedRef": "main"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "7084d77a-0c23-4d39-ab25-c4282f9c6d05",
+      "label": "scan-04",
+      "value": {
+        "baseline": "api-old-release",
+        "cve": "DEMO-A",
+        "id": "scan-04",
+        "relationId": "api-release-A",
+        "repository": "api",
+        "requestedRef": "release"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "107653b6-2b74-43e5-99b7-a48ea3a252da",
+      "label": "scan-05",
+      "value": {
+        "baseline": "worker-old",
+        "cve": "DEMO-C",
+        "id": "scan-05",
+        "relationId": "worker-C",
+        "repository": "worker",
+        "requestedRef": "main"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "5526418a-a0ba-4e0a-bf11-f909c8bd1ad7",
+      "label": "scan-06",
+      "value": {
+        "baseline": "portal-original",
+        "cve": "DEMO-A",
+        "id": "scan-06",
+        "relationId": "portal-A",
+        "repository": "portal",
+        "requestedRef": "main"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "7c1eda4b-b098-43f7-91d4-82c125efdb67",
+      "label": "scan-07-missing",
+      "value": {
+        "baseline": "worker-old",
+        "cve": "DEMO-D",
+        "id": "scan-07-missing",
+        "relationId": "worker-D",
+        "repository": "worker",
+        "requestedRef": "main"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "67821ea0-05d6-458b-9d08-cd569b67571d",
+      "label": "scan-08-exception",
+      "value": {
+        "baseline": "portal-original",
+        "cve": "DEMO-B",
+        "id": "scan-08-exception",
+        "relationId": "portal-B",
+        "repository": "portal",
+        "requestedRef": "main"
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "8dc3fc8d-2190-4ea4-9c6d-ab484ab9dcf1",
+      "label": "api-main-A",
+      "value": {
+        "baseline": "api-old-main",
+        "changes": [
+          {
+            "dependsOn": [],
+            "description": "假设同一次依赖升级覆盖 A/B",
+            "id": "dependency-upgrade",
+            "repository": "api",
+            "requestedRef": "main"
+          }
+        ],
+        "conclusion": "受影响",
+        "confirmation": "",
+        "disposition": "fixed",
+        "evidence": [
+          "fixture:impact:api-main-A"
+        ],
+        "id": "api-main-A",
+        "reason": "明确假设：本范围受影响，提供的变更与后继产物已逐问题验证",
+        "repository": "api",
+        "requestedRef": "main",
+        "verification": {
+          "baseline": "api-old-main",
+          "evidence": [
+            "fixture:verification:api-main-A"
+          ],
+          "successor": "api-new-main"
+        }
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "db04eaa9-1d3e-4a49-bdcc-b7492fc56f36",
+      "label": "api-main-B",
+      "value": {
+        "baseline": "api-old-main",
+        "changes": [
+          {
+            "dependsOn": [],
+            "description": "假设同一次依赖升级覆盖 A/B",
+            "id": "dependency-upgrade",
+            "repository": "api",
+            "requestedRef": "main"
+          }
+        ],
+        "conclusion": "受影响",
+        "confirmation": "",
+        "disposition": "fixed",
+        "evidence": [
+          "fixture:impact:api-main-B"
+        ],
+        "id": "api-main-B",
+        "reason": "明确假设：本范围受影响，提供的变更与后继产物已逐问题验证",
+        "repository": "api",
+        "requestedRef": "main",
+        "verification": {
+          "baseline": "api-old-main",
+          "evidence": [
+            "fixture:verification:api-main-B"
+          ],
+          "successor": "api-new-main"
+        }
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "adde4037-5aab-489d-af98-1df474784be2",
+      "label": "api-release-A",
+      "value": {
+        "baseline": "api-old-release",
+        "changes": [
+          {
+            "dependsOn": [],
+            "description": "维护分支独立升级",
+            "id": "dependency-upgrade",
+            "repository": "api",
+            "requestedRef": "release"
+          }
+        ],
+        "conclusion": "受影响",
+        "confirmation": "",
+        "disposition": "fixed",
+        "evidence": [
+          "fixture:impact:api-release-A"
+        ],
+        "id": "api-release-A",
+        "reason": "明确假设：本范围受影响，提供的变更与后继产物已逐问题验证",
+        "repository": "api",
+        "requestedRef": "release",
+        "verification": {
+          "baseline": "api-old-release",
+          "evidence": [
+            "fixture:verification:api-release-A"
+          ],
+          "successor": "api-new-release"
+        }
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "6e2cf2f9-10b2-4313-bb33-e23d0e2c63e2",
+      "label": "worker-C",
+      "value": {
+        "baseline": "worker-old",
+        "changes": [
+          {
+            "dependsOn": [],
+            "description": "修复共享基础镜像并发布",
+            "id": "base-image",
+            "repository": "platform-images",
+            "requestedRef": "stable"
+          },
+          {
+            "dependsOn": [
+              "platform-images@stable:base-image"
+            ],
+            "description": "采用已验证的新镜像并重建",
+            "id": "adopt-image",
+            "repository": "worker",
+            "requestedRef": "main"
+          }
+        ],
+        "conclusion": "受影响",
+        "confirmation": "",
+        "disposition": "fixed",
+        "evidence": [
+          "fixture:impact:worker-C"
+        ],
+        "id": "worker-C",
+        "reason": "明确假设：本范围受影响，提供的变更与后继产物已逐问题验证",
+        "repository": "worker",
+        "requestedRef": "main",
+        "verification": {
+          "baseline": "worker-old",
+          "evidence": [
+            "fixture:verification:worker-C"
+          ],
+          "successor": "worker-new"
+        }
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "54beb5d1-f97b-447b-9d41-f4847c25dbc8",
+      "label": "portal-A",
+      "value": {
+        "baseline": "portal-original",
+        "changes": [],
+        "conclusion": "不受影响",
+        "confirmation": "",
+        "disposition": "excluded",
+        "evidence": [
+          "fixture:impact:portal-A"
+        ],
+        "id": "portal-A",
+        "reason": "明确假设：适用此基线的组件材料排除影响",
+        "repository": "portal",
+        "requestedRef": "main",
+        "verification": {
+          "baseline": "",
+          "evidence": [],
+          "successor": ""
+        }
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    },
+    {
+      "id": "44dc26bd-0c2f-46a9-a5ff-20949cac3047",
+      "label": "portal-B（例外未确认）",
+      "value": {
+        "baseline": "portal-original",
+        "changes": [],
+        "conclusion": "受影响",
+        "confirmation": "",
+        "disposition": "exception",
+        "evidence": [
+          "fixture:impact:portal-B"
+        ],
+        "id": "portal-B",
+        "reason": "提出延期例外，用户尚未确认",
+        "repository": "portal",
+        "requestedRef": "main",
+        "verification": {
+          "baseline": "",
+          "evidence": [],
+          "successor": ""
+        }
+      },
+      "materials": [
+        {
+          "id": "M01",
+          "text": "假设演示输入；DEMO标识、判断、证据和改动均虚构。此批一条原告警对应一个范围，不涵盖一告警多范围。\n{\"alerts\":[{\"id\":\"scan-01\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-02-duplicate\",\"relationId\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-03\",\"relationId\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"cve\":\"DEMO-B\"},{\"id\":\"scan-04\",\"relationId\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-05\",\"relationId\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-C\"},{\"id\":\"scan-06\",\"relationId\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-A\"},{\"id\":\"scan-07-missing\",\"relationId\":\"worker-D\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"cve\":\"DEMO-D\"},{\"id\":\"scan-08-exception\",\"relationId\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"cve\":\"DEMO-B\"}],\"assessments\":[{\"id\":\"api-main-A\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-A\"]}},{\"id\":\"api-main-B\",\"repository\":\"api\",\"requestedRef\":\"main\",\"baseline\":\"api-old-main\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-main-B\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"main\",\"description\":\"假设同一次依赖升级覆盖 A/B\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-main\",\"successor\":\"api-new-main\",\"evidence\":[\"fixture:verification:api-main-B\"]}},{\"id\":\"api-release-A\",\"repository\":\"api\",\"requestedRef\":\"release\",\"baseline\":\"api-old-release\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:api-release-A\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"dependency-upgrade\",\"repository\":\"api\",\"requestedRef\":\"release\",\"description\":\"维护分支独立升级\",\"dependsOn\":[]}],\"verification\":{\"baseline\":\"api-old-release\",\"successor\":\"api-new-release\",\"evidence\":[\"fixture:verification:api-release-A\"]}},{\"id\":\"worker-C\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"baseline\":\"worker-old\",\"conclusion\":\"受影响\",\"disposition\":\"fixed\",\"reason\":\"明确假设：本范围受影响，提供的变更与后继产物已逐问题验证\",\"evidence\":[\"fixture:impact:worker-C\"],\"confirmation\":\"\",\"changes\":[{\"id\":\"base-image\",\"repository\":\"platform-images\",\"requestedRef\":\"stable\",\"description\":\"修复共享基础镜像并发布\",\"dependsOn\":[]},{\"id\":\"adopt-image\",\"repository\":\"worker\",\"requestedRef\":\"main\",\"description\":\"采用已验证的新镜像并重建\",\"dependsOn\":[\"platform-images@stable:base-image\"]}],\"verification\":{\"baseline\":\"worker-old\",\"successor\":\"worker-new\",\"evidence\":[\"fixture:verification:worker-C\"]}},{\"id\":\"portal-A\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"不受影响\",\"disposition\":\"excluded\",\"reason\":\"明确假设：适用此基线的组件材料排除影响\",\"evidence\":[\"fixture:impact:portal-A\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}},{\"id\":\"portal-B\",\"repository\":\"portal\",\"requestedRef\":\"main\",\"baseline\":\"portal-original\",\"conclusion\":\"受影响\",\"disposition\":\"exception\",\"reason\":\"提出延期例外，用户尚未确认\",\"evidence\":[\"fixture:impact:portal-B\"],\"confirmation\":\"\",\"changes\":[],\"verification\":{\"baseline\":\"\",\"successor\":\"\",\"evidence\":[]}}]}"
+        }
+      ]
+    }
+  ],
+  "url": "http://10.134.94.200:4330/items/33800ab9-0d63-4484-92c3-936d8ff86d62?tab=flow",
+  "completedAt": "2026-10-29T03:56:02.830Z"
+}

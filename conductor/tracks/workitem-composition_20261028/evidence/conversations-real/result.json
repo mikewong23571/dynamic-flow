@@ -1,0 +1,42 @@
+{
+  "startedAt": "2026-10-29T10:14:16.495Z",
+  "itemId": "33800ab9-0d63-4484-92c3-936d8ff86d62",
+  "scope": "实际默认模型验证旧主会话继续、新会话隔离及共享当前业务状态；明确虚构演示，不运行或改动业务",
+  "turns": [
+    {
+      "conversationId": "main",
+      "durationMs": 6634,
+      "status": "completed",
+      "text": "已在本会话记住",
+      "tools": []
+    },
+    {
+      "conversationId": "bf95e4a2-8c3c-4e5c-b370-fb557454eef5",
+      "durationMs": 27679,
+      "status": "completed",
+      "text": "只读核对完成，未做任何修改、运行或结项操作。\n\n**业务视图**：4 个 —— 仓库影响、改动安排、逐条告警交付、验收缺口。\n\n**根运行**：3 次，均已结束（最近一次为完成状态），并各有对应的真实交付。\n\n**是否已结项**：没有。工作项当前仍为开放状态，处于待验收环节；两条完成要求（原告警依据齐备与例外确认、改动范围与交付核对）都尚未满足，因此不能视为已结项。\n\n**短词记忆**：本会话没有该记录 —— 本会话上下文中没有你此前要求我记住的短词。",
+      "tools": [
+        {
+          "name": "inspect_work_item",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "conversationId": "main",
+      "durationMs": 5871,
+      "status": "completed",
+      "text": "CLOCKWREN-7193",
+      "tools": []
+    }
+  ],
+  "newConversationId": "bf95e4a2-8c3c-4e5c-b370-fb557454eef5",
+  "after": {
+    "conversations": 2,
+    "views": 4,
+    "rootRuns": 3,
+    "status": "open"
+  },
+  "completedAt": "2026-10-29T10:14:57.640Z",
+  "url": "http://10.134.94.200:4330/items/33800ab9-0d63-4484-92c3-936d8ff86d62?tab=results"
+}

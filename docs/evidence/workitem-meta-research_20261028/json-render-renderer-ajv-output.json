@@ -1,0 +1,19 @@
+{
+  "node": "v25.4.0",
+  "sourceCommit": "c6f73d7d5f69acb80fc89faefd12c0865c8603d1",
+  "canonicalSchema": {
+    "type": "object",
+    "properties": {
+      "content": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "content"
+    ],
+    "additionalProperties": false
+  },
+  "rendered": "<span>real saved result</span>",
+  "invalidResolvedPropsRejected": true,
+  "errors": "Error: [{\"instancePath\":\"/content\",\"schemaPath\":\"#/properties/content/type\",\"keyword\":\"type\",\"params\":{\"type\":\"string\"},\"message\":\"must be string\"}]"
+}

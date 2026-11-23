@@ -1,0 +1,10 @@
+binding:
+  owner: mike
+  session_id: null
+  agent: null
+  host: null
+  pid: null
+  started_at: null
+  released: true
+  released_at: '2026-11-02T09:11:41.758694+00:00'
+# 完成后清空原生会话导航字段；历史身份仅留在审计证据，不作为活跃绑定。

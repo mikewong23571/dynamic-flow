@@ -1,0 +1,36 @@
+
+Running 25 tests using 1 worker
+
+(node:1722791) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/openui-capabilities.spec.ts:49:3 › 组合和逐项动作使用原生状态及真实命令 1440 (2.2s)
+  ✓   2 tests/browser/openui-capabilities.spec.ts:49:3 › 组合和逐项动作使用原生状态及真实命令 1024 (2.0s)
+  ✓   3 tests/browser/openui-sections.spec.ts:49:3 › explicit business sections keep mixed content, nested headings and real actions 1440 (3.5s)
+  ✓   4 tests/browser/openui-sections.spec.ts:49:3 › explicit business sections keep mixed content, nested headings and real actions 1024 (3.5s)
+  ✓   5 tests/browser/openui-workitem.spec.ts:118:3 › official OpenUI records, native mutation, source edits and fixed process 1440 (5.9s)
+  ✓   6 tests/browser/openui-workitem.spec.ts:118:3 › official OpenUI records, native mutation, source edits and fixed process 1024 (6.1s)
+  ✓   7 tests/browser/openui-workitem.spec.ts:286:1 › 首页读取暂时失败后恢复，不保留读取错误 (5.0s)
+  ✓   8 tests/browser/openui-workitem.spec.ts:306:1 › 历史OpenUI预览重挂载只读，Query误用写工具不产生业务请求 (1.3s)
+  ✓   9 tests/browser/openui-workitem.spec.ts:367:3 › OpenUI保存回执保留发送之后的编辑并推进新保存基线 1440 (1.8s)
+  ✓  10 tests/browser/openui-workitem.spec.ts:367:3 › OpenUI保存回执保留发送之后的编辑并推进新保存基线 1024 (1.8s)
+  ✓  11 tests/browser/style-governance.spec.ts:127:3 › style contracts and controlled task focus 1440 (2.2s)
+  ✓  12 tests/browser/style-governance.spec.ts:127:3 › style contracts and controlled task focus 1024 (2.2s)
+  ✓  13 tests/browser/style-governance.spec.ts:204:1 › resizing preserves action reachability and user panel preference (1.3s)
+  ✓  14 tests/browser/style-governance.spec.ts:231:1 › collapsed composer dock fits its content and preserves expanded panel intent (1.8s)
+  ✓  15 tests/browser/style-governance.spec.ts:296:3 › task success and missing trigger return focus 1440 (2.4s)
+  ✓  16 tests/browser/style-governance.spec.ts:296:3 › task success and missing trigger return focus 1024 (2.7s)
+  ✓  17 tests/browser/style-governance.spec.ts:338:1 › saved panel width and manual method panel remain reachable on resize (2.7s)
+(node:1723388) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1723399) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  18 tests/browser/style-governance.spec.ts:379:1 › public control state matrix and explicit compact sizing (1.6s)
+  ✓  19 tests/browser/style-governance.spec.ts:445:1 › home long request remains readable and retains local input (890ms)
+  ✓  20 tests/browser/style-governance.spec.ts:465:3 › dedicated material reader keeps width and returns to source 1440 (1.2s)
+  ✓  21 tests/browser/style-governance.spec.ts:465:3 › dedicated material reader keeps width and returns to source 1024 (1.1s)
+  ✓  22 tests/browser/style-governance.spec.ts:485:1 › retained material task portals follow tab and page visibility (2.8s)
+  ✓  23 tests/browser/style-governance.spec.ts:537:3 › settings provider fields and cancellation remain usable 1440 (1.5s)
+  ✓  24 tests/browser/style-governance.spec.ts:537:3 › settings provider fields and cancellation remain usable 1024 (1.6s)
+  ✓  25 tests/browser/style-governance.spec.ts:581:1 › closing a busy task uses the task anchor instead of a disabled trigger (1.3s)
+
+  25 passed (1.1m)

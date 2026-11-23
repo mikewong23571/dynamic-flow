@@ -1,0 +1,24 @@
+{
+  "backup": "/home/mike/.local/state/flowcraft/backups/source-continuation-20261030T045049Z",
+  "completedRunsUnchanged": 543,
+  "inFlightProtected": 2,
+  "resumedRunIds": [
+    "5ee98952-5ebd-47e0-b53f-ae9357d57ebe",
+    "10cf743c-fc7a-46c7-915f-aae563d49c3b"
+  ],
+  "resumedBatches": [
+    "a167ff61-05a1-4da8-b5eb-b9d2785821f6"
+  ],
+  "scopeToolReady": true,
+  "sourceFiles": [
+    "src/server/work-items/source-scope.ts",
+    "src/server/work-items/stage-inputs.ts",
+    "src/server/work-items/run-inputs.ts",
+    "src/server/work-items/composition.ts",
+    "src/server/work-items/index.ts",
+    "src/server/assistant/workitem.ts",
+    "src/server/index.ts",
+    "src/shared/records.ts"
+  ],
+  "deployedAt": "2026-10-30T04:51:19.420741+00:00"
+}

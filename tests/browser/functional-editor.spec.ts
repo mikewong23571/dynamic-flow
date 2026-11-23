@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { selectCanvasNode } from './canvas-actions';
+import { test, expect } from './fixtures';
 import type { Definition, Snapshot } from '../../src/shared/records';
 for (const [width, height] of [
   [1440, 900],
@@ -25,7 +26,7 @@ for (const [width, height] of [
           id: 'transform',
           label: '材料计数',
           kind: 'function',
-          mode: 'each',
+          operation: 'map',
           functionName: 'identity',
         },
       ],
@@ -41,22 +42,15 @@ for (const [width, height] of [
         ).ok(),
       ).toBeTruthy();
       // 侧栏只列显式打开的流水线（opened-pipelines 语义）；预置本浏览器的打开入口。
-      await page.addInitScript((workId) => {
-        localStorage.setItem(
-          'dynamic-flow.opened-works',
-          JSON.stringify([{ id: workId, goal: '', updatedAt: '' }]),
-        );
-        localStorage.setItem('dynamic-flow.work', workId);
-      }, id);
-      await page.goto('/');
+      await page.goto(`/methods/${id}`);
       await page
         .locator('.work-list')
-        .getByRole('button', {
+        .getByRole('link', {
           name: initial.work.title || initial.work.goal,
           exact: true,
         })
         .click();
-      await page.locator('.react-flow__node[data-id="transform"]').click();
+      await selectCanvasNode(page, 'transform');
       await page
         .getByRole('combobox', { name: '处理函数', exact: true })
         .selectOption('expression');
@@ -116,7 +110,8 @@ for (const [width, height] of [
         completed.work.runs.at(-1)?.results[0].outputs.output[0].value,
       ).toBe(13);
       await page.reload();
-      await page.locator('.react-flow__node[data-id="transform"]').click();
+      await page.getByRole('tab', { name: '流程', exact: true }).click();
+      await selectCanvasNode(page, 'transform');
       await expect(
         page.getByRole('combobox', { name: '处理函数', exact: true }),
       ).toHaveValue('expression');

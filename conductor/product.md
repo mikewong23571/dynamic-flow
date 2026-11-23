@@ -1,5 +1,7 @@
 # Dynamic Workflow Workbench
 
+> 2026-10-22：[用户故事重梳](../docs/work-journey-stories.md)重新连接本产品的“做法改进”与“持续业务”闭环。下文保留现行产品与实现背景，新建议不视为当前接口已支持。
+
 当前基线：2026-09-20，持续工作项 + 画布 + JS 语义子集 IR。完整设计以 [docs/design.md](../docs/design.md) 为准；[原稿 v2](<../docs/archive/Dynamic Workflow Workbench — 产品与技术设计 v2.md>) 只作历史参考。
 
 ## 产品定义

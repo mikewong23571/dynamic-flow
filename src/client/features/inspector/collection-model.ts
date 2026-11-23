@@ -9,6 +9,8 @@ export const joinNames = {
 };
 
 export function collectionSummary(node: FlowNode) {
+  if (node.functionName === 'groupBy')
+    return `按字段分组 · ${node.groupBy?.keys.map((path) => path.join('.')).join(' / ') || '未选择字段'}`;
   if (node.functionName === 'join')
     return `按键关联 · ${joinNames[node.join?.type || 'inner']}`;
   if (node.functionName === 'collect')
@@ -24,10 +26,16 @@ export function changeFunction(
   functionName: FlowNode['functionName'],
 ): Definition {
   const old = definition.nodes.find((n) => n.id === nodeId)!;
-  const collection = ['merge', 'collect', 'join'].includes(functionName || '');
+  const collection = ['merge', 'collect', 'join', 'groupBy'].includes(
+    functionName || '',
+  );
   const node: FlowNode = {
     ...old,
     functionName,
+    groupBy:
+      functionName === 'groupBy'
+        ? old.groupBy || { keys: [['id']] }
+        : undefined,
     inputNames:
       functionName === 'merge' || functionName === 'collect'
         ? old.inputNames || ['left', 'right']
@@ -41,12 +49,11 @@ export function changeFunction(
             duplicates: 'all',
           }
         : undefined,
-    ...(collection ? { mode: 'all', operation: 'aggregate' } : {}),
+    ...(collection ? { operation: 'aggregate' } : {}),
     ...(functionName === 'expression'
       ? {
           expression: old.expression || { kind: 'variable', name: 'input' },
-          operation:
-            old.operation || (old.mode === 'all' ? 'aggregate' : 'map'),
+          operation: old.operation || 'map',
         }
       : {}),
   };
@@ -73,7 +80,7 @@ export function changeInputNames(
         ? {
             ...n,
             inputNames: names,
-            mode: 'all',
+
             operation: 'aggregate',
             inputSchema: changePortSchema(
               n.inputSchema,

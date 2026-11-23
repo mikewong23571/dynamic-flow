@@ -1,0 +1,5 @@
+
+> dynamic-flow-workbench@ check:styles /home/mike/projs/fork/dynamic-flow-style-governance
+> node scripts/check-client-styles.mjs
+
+Client style contracts passed: layers, tokens, public control APIs and explicit field groups.

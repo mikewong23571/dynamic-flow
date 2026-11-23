@@ -1,4 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import type { Definition, Snapshot } from '../../shared/records';
 import { changeSummary } from '../core/definition';
 
@@ -24,24 +32,34 @@ export function useDraft(
   const [localDefinition, setLocalDefinition] = useState<Definition | null>(
     null,
   );
-  const [dirty, setDirty] = useState(false);
+  const [dirty, setDirtyState] = useState(false);
+  const dirtyRef = useRef(false);
+  const setDirty: Dispatch<SetStateAction<boolean>> = useCallback((next) => {
+    const value = typeof next === 'function' ? next(dirtyRef.current) : next;
+    dirtyRef.current = value;
+    setDirtyState(value);
+  }, []);
   const baseId = useRef<string | undefined>(undefined);
   const work = snapshot?.work;
   const definition =
     localDefinition ||
     snapshot?.definitions[work?.draftId || work?.adoptedId || ''] ||
     emptyDefinition;
+  const definitionRef = useRef(definition);
+  definitionRef.current = definition;
   useEffect(() => {
-    if (!work || dirty) return;
+    if (!work || dirtyRef.current) return;
     baseId.current = work.draftId;
     setLocalDefinition(
       snapshot?.definitions[work.draftId || work.adoptedId || ''] || null,
     );
   }, [snapshot, dirty]);
   function editDefinition(next: Definition) {
-    if (!dirty) baseId.current = work?.draftId;
-    setLocalDefinition(next);
+    definitionRef.current = next;
+    if (!dirtyRef.current) baseId.current = work?.draftId;
+    // A snapshot effect queued before this edit must not replace the new local graph.
     setDirty(true);
+    setLocalDefinition(next);
   }
   function discardLocalChanges() {
     const latest = snapshotRef.current;
@@ -76,6 +94,7 @@ export function useDraft(
   );
   return {
     localDefinition,
+    definitionRef,
     setLocalDefinition,
     dirty,
     setDirty,

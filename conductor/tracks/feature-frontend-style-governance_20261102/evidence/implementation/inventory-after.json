@@ -1,0 +1,1220 @@
+{
+  "sourceFiles": [
+    {
+      "path": "src/client/app/App.css",
+      "sha256": "50bbbfae4c33f69d0a820f8dda3f715082a2763048579169cc1f909b85a5ffc7"
+    },
+    {
+      "path": "src/client/app/App.tsx",
+      "sha256": "a4e0fe7beede1136af7d0e63555d016e0a4fb3f781743c9155240656bae2ea05"
+    },
+    {
+      "path": "src/client/app/CandidateBar.tsx",
+      "sha256": "33d7071eaeeaf3bb0563e62956fd2a54d9915c4778c082520c7f1a0d1b4b8155"
+    },
+    {
+      "path": "src/client/app/CanvasPane.tsx",
+      "sha256": "15e7d675ad1c227ff8f59f95de205043cb6e768a5999e86d9041ee91f543339c"
+    },
+    {
+      "path": "src/client/app/ContextPanel.tsx",
+      "sha256": "603c420314c733a6b19f2a51aeaea7c9e18453cc98e4cef5fc02acc59a8574a6"
+    },
+    {
+      "path": "src/client/app/Welcome.tsx",
+      "sha256": "ff9b33206df0bfba3b71c0cb28050115a612969aac86c16210ca775d0e251c46"
+    },
+    {
+      "path": "src/client/app/WorkspaceHeader.tsx",
+      "sha256": "853ec282ed2490dcbfaccf5dbf08b3e9c0d61bab605f88d2acb6d85bea078628"
+    },
+    {
+      "path": "src/client/app/WorkspaceNotices.tsx",
+      "sha256": "6f478b1aa2a357abc73519a92d3e3bf524f37757703fedf8fd4b2c2334ccaf8c"
+    },
+    {
+      "path": "src/client/app/WorkspaceTabs.tsx",
+      "sha256": "096d9ffa7173dc11b28f2ee34c8cf1b8ddf60d6f51acda2fdcc9923d5b2eee76"
+    },
+    {
+      "path": "src/client/app/controller.ts",
+      "sha256": "9ebdbfda2984ec708a6e63f04165b68016fc889403c1d99631c854c95e25484b"
+    },
+    {
+      "path": "src/client/app/navigation.ts",
+      "sha256": "56c0f97b96e445803adaf080a24671567a7d02a05076f1d85f5ab663102510c4"
+    },
+    {
+      "path": "src/client/components/ContentVisibility.tsx",
+      "sha256": "c50cca5010b62240a9cf4463d744eccd675065451efe003f0cf9c95e1f2ac8a7"
+    },
+    {
+      "path": "src/client/components/DeferredContent.tsx",
+      "sha256": "401e2de1f7380f2e90b10be75a4c4cf022838d745b11b26c317eb0fa12500642"
+    },
+    {
+      "path": "src/client/components/Management.css",
+      "sha256": "9146c9e71cf9f077ab119a2903e6eaaa85927b3f054637682ce12f74d5578123"
+    },
+    {
+      "path": "src/client/components/Management.tsx",
+      "sha256": "373d44090b390485f609c7d7203a2b456156a464af0175c4f2809ef688099bc6"
+    },
+    {
+      "path": "src/client/components/MarkdownTable.tsx",
+      "sha256": "ee17e492db38ed85713f079180d28f021761f48cfc30645c4c4ab7327e523b5c"
+    },
+    {
+      "path": "src/client/components/MaterialCard.css",
+      "sha256": "c377292a2071af51ec77448c1c8462c05ef0dbfed7687ab6968703d73228a6ea"
+    },
+    {
+      "path": "src/client/components/MaterialCard.tsx",
+      "sha256": "a02694cdefbf4ea57a959f7ffda03e0281bc352e1721793f8f53de1cc3e8167f"
+    },
+    {
+      "path": "src/client/components/MaterialDialog.css",
+      "sha256": "743c77bfa40889682a5637fa9b5074c9013d3e363acb9aaa8925a579fbe82484"
+    },
+    {
+      "path": "src/client/components/MaterialDialog.tsx",
+      "sha256": "c473dc7316b2c731930e4b929246e6a2ca6e6940ca425983fca5ae9f26d2a990"
+    },
+    {
+      "path": "src/client/components/ObjectLink.tsx",
+      "sha256": "0c35a38d0eba705e1830fe511289e67ee0a7b5a1c11007686ea4146d195a8f4e"
+    },
+    {
+      "path": "src/client/components/Prose.css",
+      "sha256": "64acbe86288e90d0252b6b223129151287e28b937b854f35dbde00750f88b8d8"
+    },
+    {
+      "path": "src/client/components/WorkspaceFrame.css",
+      "sha256": "d05b29e7b5e949083c42d7f0017dcf97c3deef04dca59d9285f6878276541fc3"
+    },
+    {
+      "path": "src/client/components/WorkspaceFrame.tsx",
+      "sha256": "816c7ea0d603b1b759b2221ec7ede2121dd92e3d80a15d4fa1faf7012571bd42"
+    },
+    {
+      "path": "src/client/components/assistant-ui/model-selector.tsx",
+      "sha256": "0f3231c0683a76a8329694754fd6df4e525880bbf70c40d08711d8c6c4778480"
+    },
+    {
+      "path": "src/client/components/ui/badge.tsx",
+      "sha256": "184aa9392453625d38f8fc7be1614371ba97928716aeed026fd0335576cf4556"
+    },
+    {
+      "path": "src/client/components/ui/button.tsx",
+      "sha256": "fa5d14d8e68ff036611d0061ac92322de049b0c088d8a0cfe4cdfb1312472f70"
+    },
+    {
+      "path": "src/client/components/ui/command.tsx",
+      "sha256": "ccd2d411941951dc0534452fb086d725515810b6b05b9b70826affc0e8d32953"
+    },
+    {
+      "path": "src/client/components/ui/dialog.tsx",
+      "sha256": "21b113d13ca160da36178376a441d54ceb39b0753f734f25cc3662086eae7a24"
+    },
+    {
+      "path": "src/client/components/ui/dropdown-menu.tsx",
+      "sha256": "e8c0676157bf60422feb157d6b911400a0ae0695abe200711a2d003e08148b0d"
+    },
+    {
+      "path": "src/client/components/ui/field.tsx",
+      "sha256": "7e7836a783201129dc507eaaea8cf664473a2042e0a214a80d88e5d9aa038bb3"
+    },
+    {
+      "path": "src/client/components/ui/input.tsx",
+      "sha256": "d0a58f75b378bf69c2e63b6faf72e28ecd4af2c0c3aa84ac815f5b3cc759ca2c"
+    },
+    {
+      "path": "src/client/components/ui/native-select.tsx",
+      "sha256": "d1173b133a8ed4d5d9de6891e2c56af77d81e46c5bc57979bc23bb9eb84cfa1b"
+    },
+    {
+      "path": "src/client/components/ui/pagination.tsx",
+      "sha256": "0171e5c8a988f9ec32c8b6ee52bb3e1b0dfe3c66a3c755ca5b2c3939baa2c350"
+    },
+    {
+      "path": "src/client/components/ui/popover.tsx",
+      "sha256": "26fec9a70fd6be64b453b203750b33d6d0be5a05f9f50b385d2a089f09f6d954"
+    },
+    {
+      "path": "src/client/components/ui/skeleton.tsx",
+      "sha256": "e57afbb8effbe0c2da52856a1f1d134688e19919341682cd80253d54cc997bfd"
+    },
+    {
+      "path": "src/client/components/ui/table.tsx",
+      "sha256": "e33dc9ae6e86a1eca2ad1e29af876202ee3a4d7b71800ff0c07cc75ffbb9e781"
+    },
+    {
+      "path": "src/client/components/ui/tabs.tsx",
+      "sha256": "36d74788ae7bc32fc1bed202e77b85dbbb9d40ce24702264412941d497c2e29e"
+    },
+    {
+      "path": "src/client/components/ui/textarea.tsx",
+      "sha256": "fa25a7635be9dad1636dc81714748cf08c72d3ad4e67708813639cae8df8a7e5"
+    },
+    {
+      "path": "src/client/components/ui.tsx",
+      "sha256": "94902139d2fdd70000ee055ce326196cf87ccaead32c9ced8a02f2fe60fbd624"
+    },
+    {
+      "path": "src/client/components/useTaskDialogFocus.ts",
+      "sha256": "32ac1005136a271d71186c083bc191477c496022a2f427967755279bdf940279"
+    },
+    {
+      "path": "src/client/core/action.ts",
+      "sha256": "4b17f0d2f03f8e962f6095cd1a34148955d78bd41648e4e10b786ee8059edcaf"
+    },
+    {
+      "path": "src/client/core/api.ts",
+      "sha256": "e23d5a520d8037b20c329ab8891a1fa6c50be28644146ddda940e455ecc2dd4c"
+    },
+    {
+      "path": "src/client/core/compare.ts",
+      "sha256": "ccc7800370ce6a4c6fd84ba4c6035876730fb575e9af8d711754ebf970d5a58c"
+    },
+    {
+      "path": "src/client/core/definition.ts",
+      "sha256": "57be8d543e65e67a5fa0c133c595b787f3795981d7a61b9de4ae37280e91dd40"
+    },
+    {
+      "path": "src/client/core/format.ts",
+      "sha256": "91f4488ce358a21eb7e5a8835d971b94cacf15ea3a3ca97216bff840ab14bdcc"
+    },
+    {
+      "path": "src/client/core/index.ts",
+      "sha256": "18db0e0eb93f23e595a5055c7799a3fb02c0db2a44b8d84e7d9850f43fbf2eb1"
+    },
+    {
+      "path": "src/client/core/inputs.ts",
+      "sha256": "efd7b5c6cf64a48cadec85d1a7dffd726fb6333c521e4da3c41a3f5c33a9b751"
+    },
+    {
+      "path": "src/client/core/invoke-form.ts",
+      "sha256": "7f880d78715bc5296fb1081577354319a7177cdb21a62e7be81599722440ef54"
+    },
+    {
+      "path": "src/client/core/material.ts",
+      "sha256": "a66340a4cb96935802d14d3327cc1f7b3361a78b00d2c20f4ba84cc6b49b569b"
+    },
+    {
+      "path": "src/client/core/results.ts",
+      "sha256": "85fd3226e9f7739a619647f0087d581e9351799dce28f90694a6ed155caaec84"
+    },
+    {
+      "path": "src/client/features/assistant/Assistant.css",
+      "sha256": "6de19cfacbeddee0f21a772db6c77d01eed8e98c8fb160bfa63a28479faef436"
+    },
+    {
+      "path": "src/client/features/assistant/Assistant.tsx",
+      "sha256": "344ce6a77334dcdba0fcc6bd35cdc4b06cded0cf7fb703a41133512fb7cfe300"
+    },
+    {
+      "path": "src/client/features/assistant/AssistantMessage.tsx",
+      "sha256": "b9cadaab7f50b2dd19e22f50a220ee38c1361e05202f3334ae33ccab90eb44ef"
+    },
+    {
+      "path": "src/client/features/assistant/MethodReferences.tsx",
+      "sha256": "eebcc7d5538c0a3601624d3fd11c8b852bfaca804dcf029228cc59fb3d4583af"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowCanvas.css",
+      "sha256": "1301dfb538c3f6eb7dbb2fb1cc8e7e363cbc6a7bdcda2273206189aa844dc5d3"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowCanvas.tsx",
+      "sha256": "5e8bc0f832f95cf5f797320e6d3ada6db7645ca02d3377d14a020b25abfd3ed6"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowEdge.tsx",
+      "sha256": "11e30947389a41c176fbca36167bb344a47d37a8832f9bdc76595fa977f00278"
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowNode.tsx",
+      "sha256": "ac5075701aaeee7aca6ad114614ffac59600ce041c5d57bde16587e1ca061d1d"
+    },
+    {
+      "path": "src/client/features/canvas/canvas-layout.ts",
+      "sha256": "66a7858a00fd8fb7f5583e0a9757ad0d129b5e70769e9c14d69158fc3c6517a5"
+    },
+    {
+      "path": "src/client/features/canvas/canvas-view.ts",
+      "sha256": "ba320627acfba64a2cb9f0fa8b71c0be3bc20bdc80762fd1206d18022e64ddea"
+    },
+    {
+      "path": "src/client/features/canvas/useCanvasLayout.ts",
+      "sha256": "54dffd4c0fe3f95a6720ea40df06a3b4662037b0351abdbafaa6d1c7990d6cf1"
+    },
+    {
+      "path": "src/client/features/inspector/CollectionEditor.css",
+      "sha256": "aab9050c4ff72524a96c378d43607faa8e0a8dc0a6906c1ddb3ce0585ee149b9"
+    },
+    {
+      "path": "src/client/features/inspector/CollectionEditor.tsx",
+      "sha256": "2281f7dddea275d8434240870466faca16c1f4f05c8cb9b13f4b3dd3294f7afd"
+    },
+    {
+      "path": "src/client/features/inspector/ExpressionEditor.css",
+      "sha256": "e04aea20f0a335c73bbcd08074e4ac72442ac659b01eb27d8844ac3a3bfb3351"
+    },
+    {
+      "path": "src/client/features/inspector/ExpressionEditor.tsx",
+      "sha256": "eea5d749e0a542d9dc21f240ea2d34bd98e32afc2706315253d816b7a5274986"
+    },
+    {
+      "path": "src/client/features/inspector/ExpressionFields.tsx",
+      "sha256": "eb2088c244fc6a8d3a6dd4d00aab20bf63cc2fbf0a043ff5472e08194e336553"
+    },
+    {
+      "path": "src/client/features/inspector/NodeInspector.css",
+      "sha256": "96086a96b13fbfef2e7bfc9887c9562c1eb204ef309253fd42548f156f337423"
+    },
+    {
+      "path": "src/client/features/inspector/NodeInspector.tsx",
+      "sha256": "f083ada5177492f6b0f8597949ae259380bdf3fbc2292f847d374e168d9990b5"
+    },
+    {
+      "path": "src/client/features/inspector/PatternEditor.tsx",
+      "sha256": "76b0c518ffce77e68d36086fd5e603eeb2ec9a23f674d8b089edd0151e6ed1de"
+    },
+    {
+      "path": "src/client/features/inspector/SemanticFields.tsx",
+      "sha256": "c8e6c1a064a7854a5b531d0d4d1311ba5ed0dc144e47feb4b6a1ee6378a0ef4b"
+    },
+    {
+      "path": "src/client/features/inspector/collection-model.ts",
+      "sha256": "6afbb00c4c850ec80880f89754d59ecf326aa412b9f543546b59873a6bd1dcf8"
+    },
+    {
+      "path": "src/client/features/inspector/expression-model.ts",
+      "sha256": "3d13e74f55e9ddfb746e32a3f8eeeaa5853364879278bb80d757f530360230cd"
+    },
+    {
+      "path": "src/client/features/library/WorkLibrary.css",
+      "sha256": "a7ecfc44ecfe0a13b9a305a1a47a5e6700d6212c06dc0e6ac045e23c8b810348"
+    },
+    {
+      "path": "src/client/features/library/WorkLibrary.tsx",
+      "sha256": "ce0afcb0b243b67b02fa4ef049b18f28fa9c6046a863ed39c97f201bb346b839"
+    },
+    {
+      "path": "src/client/features/library/usePinnedWorks.ts",
+      "sha256": "ffcb34b2c9a8afe10351212a5e3b18164b96dcf98bb4e6bce2984b9c942b283b"
+    },
+    {
+      "path": "src/client/features/materials/MaterialsDialog.tsx",
+      "sha256": "982c454a45ef716cc141d65fdcd27b4cc0146c61f83c03bfe7434a8d03f2b51b"
+    },
+    {
+      "path": "src/client/features/openui/OpenUIPreviewContext.ts",
+      "sha256": "f406806d5feff0665b017284e1fdca078eb564e8c07eb226833ea2a54a37fbf8"
+    },
+    {
+      "path": "src/client/features/openui/OpenUIWorkspace.css",
+      "sha256": "25548acf9eca4205b6c0066f21d5c9a3fc8083a650ee92acd57c4d2b6fd10236"
+    },
+    {
+      "path": "src/client/features/openui/OpenUIWorkspace.tsx",
+      "sha256": "3719c2f5dfd8712558e2b2311b26e5cae6bd5a022de53af694986917c5a10c7c"
+    },
+    {
+      "path": "src/client/features/results/ArtifactPresentation.tsx",
+      "sha256": "a12becf6a0afec6bc8a7cea635818d7edbe9e05747b08330b4d24a14293ca4ea"
+    },
+    {
+      "path": "src/client/features/results/ArtifactPreview.tsx",
+      "sha256": "b193adce3a5fab42e2e2b9073e07656a06dd221b8852b1571bc24c3ad7e36484"
+    },
+    {
+      "path": "src/client/features/results/ArtifactValue.css",
+      "sha256": "189d6db7c5acbee6f3c4d8ec4bb447dd7302c7d46f49cc169b514d392e3db63a"
+    },
+    {
+      "path": "src/client/features/results/ArtifactValue.tsx",
+      "sha256": "3605b178a4bba103d41b15638ab8f23104fc3d86fc4a3d5186bc68f7a8851b8a"
+    },
+    {
+      "path": "src/client/features/results/Comparison.tsx",
+      "sha256": "882a92292c77068755702e9004fc553b07d1601abdb69ce978a51efa315af6fe"
+    },
+    {
+      "path": "src/client/features/results/RemoteContent.tsx",
+      "sha256": "095637b54caa296e3139e49172ff072776776c64b2f5af689ff8b0e8132525ce"
+    },
+    {
+      "path": "src/client/features/results/Results.css",
+      "sha256": "bc5ec6acdd17c79e8171c0d55d71a4fb44c901102056040c51af054b5ed7d82d"
+    },
+    {
+      "path": "src/client/features/results/Results.tsx",
+      "sha256": "9b03b0b9355485468887155e338c98ec5058d633adc65dbb77293e7106718314"
+    },
+    {
+      "path": "src/client/features/results/ResultsOverview.css",
+      "sha256": "66424dbb0b827b49cbf517c199171017598a7596fba241b18b5870e54b87b28a"
+    },
+    {
+      "path": "src/client/features/results/ResultsOverview.tsx",
+      "sha256": "0eefa641ad211c92a7e1593b9d504e77d98cca932f4dcc02f36009d2bd875840"
+    },
+    {
+      "path": "src/client/features/results/RunArtifact.tsx",
+      "sha256": "9ff7cc41df0c56bc160590125c29bdf238f577568def0fa23df421f3954dbbbb"
+    },
+    {
+      "path": "src/client/features/results/RunArtifactsPage.css",
+      "sha256": "9720ae7143ac91655ae713611efae107269aa9f033ee675bf0aa3450f0580735"
+    },
+    {
+      "path": "src/client/features/results/RunArtifactsPage.tsx",
+      "sha256": "5b39d62fb9cc1a13790f4a63d40a2d5f5460e0517e7cbec4deef2d6cffe9bd65"
+    },
+    {
+      "path": "src/client/features/results/RunInspector.css",
+      "sha256": "65f620449202daf24f478632f20cd5f9d18df968adf7f1c6c6a97712102a60c7"
+    },
+    {
+      "path": "src/client/features/results/RunInspector.tsx",
+      "sha256": "6da254d090e3bd0ad68ee378f965a620c7c636cdb71fa8b1c942de570a273486"
+    },
+    {
+      "path": "src/client/features/results/RunProcess.tsx",
+      "sha256": "942bfe15ad74c866aa7bdadb5f6305c541b61b6fc8259d36fcff765cc412ed4c"
+    },
+    {
+      "path": "src/client/features/results/RunSelection.tsx",
+      "sha256": "7ba46282f2ba9189a23d1e7efae15514dc7abec275002635a9fe9f82f32f4d26"
+    },
+    {
+      "path": "src/client/features/results/RunSources.tsx",
+      "sha256": "6fd42f8cf019e5a9ff94767a46be4a9dd6b7cadfacbbeb53a2b3869fe127ffe9"
+    },
+    {
+      "path": "src/client/features/results/RunSummary.css",
+      "sha256": "71b97da242d375eaa3b365d5abbdeb9d0c3e6c05fdda5552cb7af7a3175c1789"
+    },
+    {
+      "path": "src/client/features/results/RunSummary.tsx",
+      "sha256": "eb1426fde1b6d8eaaad4a4fba2d4fcd084005be456427f1f175f3cbdbb7dcd2c"
+    },
+    {
+      "path": "src/client/features/results/Value.tsx",
+      "sha256": "0db1d6804d7869e33b591d143fa14a36a90ca7262cc45f9124f1f829edc3b131"
+    },
+    {
+      "path": "src/client/features/results/result-overview-model.ts",
+      "sha256": "75c311b0b7667c4bcd9132a3b94cda383b3b809bf967e5492c768c98e3cd7a6e"
+    },
+    {
+      "path": "src/client/features/results/run-inspector-model.ts",
+      "sha256": "a1046541ed1177c8b961acf5d622030113a6bb956c0e184c8b4becc4c8f3e942"
+    },
+    {
+      "path": "src/client/features/settings/CatalogManager.tsx",
+      "sha256": "2fe718744b765e8e46bb52dad4635a28e22883ddda190f2fd10d9f2067a942ff"
+    },
+    {
+      "path": "src/client/features/settings/ModelSettings.css",
+      "sha256": "5a04f6f42dabcc1c5aff4c3ff25431c04acb8a26a65e5ad32085f1aabc02ec3d"
+    },
+    {
+      "path": "src/client/features/settings/ModelSettingsDialog.tsx",
+      "sha256": "f3ecedfd58f95b6342f9b4229c727c5989aaf40d889c7e4527d93944d088d7a8"
+    },
+    {
+      "path": "src/client/features/settings/catalog-model.ts",
+      "sha256": "59a3af7a37b948b02ddbff981bff9d13ef53a20f0162b3cb86cd5e40a2be03b1"
+    },
+    {
+      "path": "src/client/features/work-items/BatchItemRun.tsx",
+      "sha256": "c9ffcd2a3620fa27260d2dd7e2cdf9a5c9de816c9b560cff421cb70d60d3d08e"
+    },
+    {
+      "path": "src/client/features/work-items/CandidateItems.tsx",
+      "sha256": "8fae5c8b2935b21c948588be86d3bb97ff35efeea51143ad2045f4d6bb5657b4"
+    },
+    {
+      "path": "src/client/features/work-items/ChildStageChoices.css",
+      "sha256": "c87062bf27616ba553cd28e5e19d27c16e8f475fc30355f009fb747bbd9849d7"
+    },
+    {
+      "path": "src/client/features/work-items/ChildStageChoices.tsx",
+      "sha256": "78c8ad31203d4d256a4d9f50ed3feab59539c291756b1960ea13a623cc6d9efa"
+    },
+    {
+      "path": "src/client/features/work-items/CompletionInputChoices.tsx",
+      "sha256": "6cfd965d70b42273aa5565043ee2e1d54beb8f9df23b7224fc5635c75dbf6bd0"
+    },
+    {
+      "path": "src/client/features/work-items/ItemBatchProgress.tsx",
+      "sha256": "1cd9a9ae6afa33bfc171c038339e94c7f7cb8c7d73a9920c2d94a70d9861547f"
+    },
+    {
+      "path": "src/client/features/work-items/ItemRelations.tsx",
+      "sha256": "f4bc658436748a2f3229e279b525317ad5677eb5b62c66912c3b45003cead9ba"
+    },
+    {
+      "path": "src/client/features/work-items/PrepareItemRun.tsx",
+      "sha256": "db3c69a2e8af14e567eb78ecb00e24fac57eb11708094b4bb570895b24b77758"
+    },
+    {
+      "path": "src/client/features/work-items/WorkHome.css",
+      "sha256": "af02267922ffdb84fea24ea5adf1b30f3cebd24319f7853ce559a29c5f503116"
+    },
+    {
+      "path": "src/client/features/work-items/WorkItemDetail.tsx",
+      "sha256": "9191b90d3bab16b21a08544a4bf3a6a260e90b398c71740c5513d59d413932d4"
+    },
+    {
+      "path": "src/client/features/work-items/WorkItemDialogs.tsx",
+      "sha256": "22868627a0180730b364238aebeaa7d8af45d470e863ad3b5d168ea2903ead3d"
+    },
+    {
+      "path": "src/client/features/work-items/WorkItemStart.tsx",
+      "sha256": "a8211d4c7625f6742e7ffbe5fe053289e3e91aa2ee29646aaf802a958c86c221"
+    },
+    {
+      "path": "src/client/features/work-items/WorkItems.css",
+      "sha256": "2bfc7d44691a5698ecbaaa197dba0711614a676942e207dd1bc375d7aae89175"
+    },
+    {
+      "path": "src/client/features/work-items/WorkItems.tsx",
+      "sha256": "ed368ae8a4552174770dd3d07d9727026a5addf7824b627483636257214c9afa"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionAcceptance.tsx",
+      "sha256": "37725d3d40a4a8f4eb6189eaa2e9ba518bc71d8ccf7011f1070fc61f9d536833"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionAcceptanceTask.tsx",
+      "sha256": "927b4abeb619ca8663be8ff1fd0dd3cbaf135c86f7ed59db7f6c52f4360bea6d"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionActionTasks.tsx",
+      "sha256": "9f36858715e60b7e8b187bf27b5a4028ff5a2bcfcfec3ae7b7cac3497b35a5c7"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionAssistant.tsx",
+      "sha256": "460c4c9d16e7f3a34b9597a5a21c27d40c316b6f4bec10e4af4b746c1e1f5360"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionChildrenTask.tsx",
+      "sha256": "a2e336708295f49d8c8bbc8d49e2d33fba67b4d491471e309761c2cf87ff296e"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionFlow.tsx",
+      "sha256": "ba4a14f4339ab65c1a643e9b232808e4e41d53666a6833229eaf7285d2eae64f"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionFlowTask.tsx",
+      "sha256": "9815f8f83d6c5ff5d10dedc26dbd66b37418531b38b95d506704461e0d9274a4"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionHistory.tsx",
+      "sha256": "be537bde62f6cacbd9641065ebd7a87ec12dd646d09c3288882f307e798afef5"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionInputs.tsx",
+      "sha256": "09e497a1ce6a68030bfa428dfd7cc5e81ae4bde1efe107a7231f88c8ef21dd30"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionPlan.tsx",
+      "sha256": "e04fc3a736100711fb5717c6d67dbe7e6c148e3ad19ec4afaf61f832f7f79592"
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionWorkspace.css",
+      "sha256": "f5f00f77fb0ad416e273bc6b84df6f14eb10b539146d0b78fc99e88262b1c3dd"
+    },
+    {
+      "path": "src/client/features/work-items/composition/ConversationMenu.tsx",
+      "sha256": "2ad0540e2b00dc02c21568e4acf890f79168fc6d9eedadac5aaea2a31fcb737a"
+    },
+    {
+      "path": "src/client/features/work-items/composition/DeclaredInputForm.tsx",
+      "sha256": "f9c25ffa976ed383d3bc7d455d5bf691a67720d7bbe077cb1b7fe39e7e06ba5a"
+    },
+    {
+      "path": "src/client/features/work-items/composition/DeliverySources.tsx",
+      "sha256": "19b926dd27134adb3f762b69612584d5e80c169e950b822a04ff7fb21cb77a38"
+    },
+    {
+      "path": "src/client/features/work-items/composition/MethodPreview.tsx",
+      "sha256": "fb9e6077f1addd7a846f9513331c7602f1a370c9d30fb74643a41c0e695611b0"
+    },
+    {
+      "path": "src/client/features/work-items/composition/MethodReferenceCommand.tsx",
+      "sha256": "f2f09c17de9024f0bbb5b948ce32bfbba4c57429a7e8b746064e572b033a2386"
+    },
+    {
+      "path": "src/client/features/work-items/composition/RecordTable.tsx",
+      "sha256": "e87cdfa8e8b74ff167d11dbd0dea59a355f82d5aa143fcc593760a51265956e7"
+    },
+    {
+      "path": "src/client/features/work-items/composition/RecordTools.tsx",
+      "sha256": "e7a47e9ea434f6920195002e3d1a430d5e80c2bba21f39ca78ba2a2393933fd4"
+    },
+    {
+      "path": "src/client/features/work-items/composition/UiArrangement.tsx",
+      "sha256": "c7ecfb4ba5d499f042899f4d8b06aaa7faa339774a1480650609faa551a7af93"
+    },
+    {
+      "path": "src/client/features/work-items/composition/delivery-browser-state.ts",
+      "sha256": "219acf6377abb4b5857fb3102e208a05f5a09aba8a36a6eeb7118860bd0f0e9d"
+    },
+    {
+      "path": "src/client/features/work-items/composition/useCompositionWorkspace.ts",
+      "sha256": "8ff6c9e00a5ac82426ea69838c500cef370df45296896e8a2615fa4b34db5210"
+    },
+    {
+      "path": "src/client/features/work-items/composition/useItemConversations.ts",
+      "sha256": "db4e08d7e15d0dc01a16695dac4fb0d0f49fd83fb10ed94db88739221299a27f"
+    },
+    {
+      "path": "src/client/features/work-items/create-item.ts",
+      "sha256": "2f43374c8c4a45b866f7c43eac1a0351fac861a2827d61a65a3fa04ed4f5abe2"
+    },
+    {
+      "path": "src/client/features/work-items/current-received.ts",
+      "sha256": "d6819bd95ed346222d9ba9319cd4c392e1af8ca35eb2635933a3ea8c2ab3cdbe"
+    },
+    {
+      "path": "src/client/features/work-items/item-status.ts",
+      "sha256": "7f6c83602ecd69cbb9e0b3a5f15dad64ec1f26d7cf99f368e1ec08c72336dd5d"
+    },
+    {
+      "path": "src/client/features/workspace/AddMaterialsDialog.tsx",
+      "sha256": "2ee02d32a5ae9d6345a49f604d0839f5fb3e67e5d79766aa708c4530e3d11b5d"
+    },
+    {
+      "path": "src/client/features/workspace/CreateWorkDialog.tsx",
+      "sha256": "708ce4e78f54bce2c57cff65506c87f0c3d183338823a609ad2bae9554f953b4"
+    },
+    {
+      "path": "src/client/features/workspace/DefinitionJsDialog.tsx",
+      "sha256": "c8235ac9439b12f6a7d634d8bbbbcdded92a785b9d2a2cb644198e08372fbde2"
+    },
+    {
+      "path": "src/client/features/workspace/InvokeDialog.tsx",
+      "sha256": "1b631cea423b134e75e89305cbb50d4dd61b931a371a2510ca59012d3f4b0a76"
+    },
+    {
+      "path": "src/client/features/workspace/ResumeDialog.tsx",
+      "sha256": "fc72670864036850fc482f8547339e31e138b920631abe46517524f54c3c4766"
+    },
+    {
+      "path": "src/client/features/workspace/SelectStartDialog.tsx",
+      "sha256": "b1e7e579543d5bb472ced7799a3390a6c447133870ce9296488f05bc0456d78c"
+    },
+    {
+      "path": "src/client/features/workspace/Sidebar.tsx",
+      "sha256": "a5078e5b400c72434b58a330ac2348d9ec8e31168746cfa647d25141c3a13a62"
+    },
+    {
+      "path": "src/client/features/workspace/TrialDialog.tsx",
+      "sha256": "622d61b43907d4af928c177419eae3ffcd40fee1bf23ea1dfd9c2d72b97eb22d"
+    },
+    {
+      "path": "src/client/features/workspace/WorkspaceDialogs.css",
+      "sha256": "0214fb0cc49d3a719d3a1b319fd139df190dba4f9402fd2e46b65ae3cb18ae97"
+    },
+    {
+      "path": "src/client/features/workspace/WorkspaceDialogs.tsx",
+      "sha256": "c0a2fb1480190d6f398373a8d98b6874f205098b5d35dbee8d9eb6761f1fc3f9"
+    },
+    {
+      "path": "src/client/lib/utils.ts",
+      "sha256": "c407b940a1b71992691321d7162086f17af79fa371d0e4693926714048699b63"
+    },
+    {
+      "path": "src/client/main.tsx",
+      "sha256": "05e517b4a2986a8c0791546b8dbcbfcce17824e256b23624915ceeedef3c2a7a"
+    },
+    {
+      "path": "src/client/state/business-storage.ts",
+      "sha256": "2dc321ee1269b7118cfe94c312dd149e0fb89fcdffcaf459221be9aaee828136"
+    },
+    {
+      "path": "src/client/state/useActions.ts",
+      "sha256": "34c6132aa93f9b110a63da90b7195b6bc6ffc3c4d91fc2d9747d7a06aa90f5a7"
+    },
+    {
+      "path": "src/client/state/useConnection.ts",
+      "sha256": "b3d7564acc84741a1b321b651147be8f2516b6b88cd35c819809e122f60da05e"
+    },
+    {
+      "path": "src/client/state/useDraft.ts",
+      "sha256": "49bade04b59f8c47ede56deec357610513c011cf6f78e78617f13d5ad03c0291"
+    },
+    {
+      "path": "src/client/state/usePanels.ts",
+      "sha256": "6a7700d1ca618adf2847211fb04c381c5f28cb1db5a1a812201bdfaaaea83c82"
+    },
+    {
+      "path": "src/client/state/useSelection.ts",
+      "sha256": "9775ac7e3f2738f40a3d2ed42fead706c0ba6ee9a4ac10c5ac4b0f9636339689"
+    },
+    {
+      "path": "src/client/styles.css",
+      "sha256": "997e4b077f42ea16579651f099e236bc3a5c5e9c516bf75fadfa9946dd5fe33a"
+    }
+  ],
+  "summary": {
+    "tsxFiles": 103,
+    "cssFiles": 26,
+    "cssLines": 5650,
+    "unlayeredFiles": [],
+    "nativeByTag": {
+      "input": 27,
+      "button": 18
+    },
+    "nativeInputsByType": {
+      "checkbox": 23,
+      "file": 4
+    },
+    "buttonsByAPI": {
+      "primitive": 260
+    },
+    "cssValues": {
+      "font-size": {
+        "0": 1,
+        "var(--text-small)": 89,
+        "var(--text-meta)": 68,
+        "var(--text-control)": 25,
+        "10px": 24,
+        "16px": 6,
+        "9px": 6,
+        "var(--text-body)": 6,
+        "var(--text-section)": 6,
+        "var(--text-heading)": 5,
+        "22px": 3,
+        "inherit": 3,
+        "20px": 3,
+        "19px": 2,
+        "43px": 1,
+        "var(--prose-table-font-size, 12px)": 1,
+        "8px": 1,
+        "25px": 1,
+        "17px": 1,
+        "14px": 1
+      },
+      "border-radius": {
+        "0": 3,
+        "var(--radius-card)": 19,
+        "var(--radius-control)": 16,
+        "var(--radius-small)": 10,
+        "var(--radius-dialog)": 7,
+        "50%": 5,
+        "18px": 1,
+        "12px": 1,
+        "2px": 1,
+        "100%": 1
+      },
+      "gap": {
+        "0": 5,
+        "var(--space-inline)": 50,
+        "var(--space-group)": 43,
+        "10px": 30,
+        "var(--space-field)": 14,
+        "var(--space-control)": 13,
+        "4px": 12,
+        "5px": 10,
+        "7px": 10,
+        "14px": 6,
+        "20px": 6,
+        "var(--space-section)": 4,
+        "2px": 3,
+        "18px": 3,
+        "3px": 2,
+        "9px": 2,
+        "12px 24px": 2,
+        "17px": 2,
+        "22px": 1,
+        "6px 8px": 1,
+        "1px": 1,
+        "8px 14px": 1,
+        "20px 40px": 1,
+        "7px 14px": 1,
+        "8px 16px": 1,
+        "6px 14px": 1,
+        "15px": 1
+      },
+      "height": {
+        "100%": 9,
+        "36px": 3,
+        "auto": 3,
+        "5px": 2,
+        "100dvh": 1,
+        "62px": 1,
+        "40px": 1,
+        "74px": 1,
+        "46px": 1,
+        "48px": 1,
+        "min(34dvh, 300px)": 1,
+        "32px": 1,
+        "22px": 1,
+        "8px": 1,
+        "clamp(240px, 34dvh, 330px)": 1,
+        "min(900px, calc(100dvh - 48px))": 1,
+        "440px": 1,
+        "58px": 1,
+        "min(56vh, 500px)": 1,
+        "26px": 1,
+        "420px": 1,
+        "15px": 1,
+        "6px": 1
+      }
+    }
+  },
+  "nativeControls": [
+    {
+      "path": "src/client/app/CanvasPane.tsx",
+      "line": 172,
+      "tag": "button",
+      "attrs": {
+        "key": "i"
+      }
+    },
+    {
+      "path": "src/client/app/ContextPanel.tsx",
+      "line": 87,
+      "tag": "button",
+      "attrs": {
+        "className": "panel === 'inspector' ? 'selected' : ''"
+      }
+    },
+    {
+      "path": "src/client/app/ContextPanel.tsx",
+      "line": 94,
+      "tag": "button",
+      "attrs": {
+        "className": "panel === 'assistant' ? 'selected' : ''"
+      }
+    },
+    {
+      "path": "src/client/components/MaterialCard.tsx",
+      "line": 30,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "aria-label": "`选择材料 ${title",
+        "checked": "selection.checked",
+        "disabled": "selection.disabled",
+        "onChange": "selection.onChange"
+      }
+    },
+    {
+      "path": "src/client/features/assistant/Assistant.tsx",
+      "line": 379,
+      "tag": "button",
+      "attrs": {
+        "key": "text"
+      }
+    },
+    {
+      "path": "src/client/features/inspector/NodeInspector.tsx",
+      "line": 571,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "isFinalOutput(definition, node.id)"
+      }
+    },
+    {
+      "path": "src/client/features/inspector/NodeInspector.tsx",
+      "line": 603,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "\n                !!definition.summaryOutput &&\n                definition.outputs[definition.summaryOutput]?.[0] === node.id\n              "
+      }
+    },
+    {
+      "path": "src/client/features/inspector/SemanticFields.tsx",
+      "line": 137,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "!!node.repeat"
+      }
+    },
+    {
+      "path": "src/client/features/library/WorkLibrary.tsx",
+      "line": 180,
+      "tag": "button",
+      "attrs": {
+        "className": "management-title-button",
+        "aria-label": "name"
+      }
+    },
+    {
+      "path": "src/client/features/results/ArtifactValue.tsx",
+      "line": 212,
+      "tag": "button",
+      "attrs": {}
+    },
+    {
+      "path": "src/client/features/results/ArtifactValue.tsx",
+      "line": 251,
+      "tag": "button",
+      "attrs": {
+        "className": "artifact-cell"
+      }
+    },
+    {
+      "path": "src/client/features/results/ArtifactValue.tsx",
+      "line": 342,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "onlyChanges"
+      }
+    },
+    {
+      "path": "src/client/features/results/RunProcess.tsx",
+      "line": 344,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "aria-label": "选择此结果",
+        "checked": "selected",
+        "onChange": "onSelect"
+      }
+    },
+    {
+      "path": "src/client/features/results/RunProcess.tsx",
+      "line": 383,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "aria-label": "选择此结果",
+        "checked": "selected",
+        "disabled": "result.status !== 'completed' || !!result.purpose",
+        "onChange": "onSelect"
+      }
+    },
+    {
+      "path": "src/client/features/results/RunSelection.tsx",
+      "line": 39,
+      "tag": "button",
+      "attrs": {
+        "key": "item.id",
+        "aria-current": "selectedId === item.id ? 'step' : undefined"
+      }
+    },
+    {
+      "path": "src/client/features/settings/CatalogManager.tsx",
+      "line": 474,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "aria-label": "`${effort",
+        "checked": "model.supportedEfforts.includes(effort)"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/CandidateItems.tsx",
+      "line": 219,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "aria-label": "`选择候选 ${candidate.title || candidate.id",
+        "checked": "selected.includes(candidate.id)",
+        "disabled": "busy || !!receipt?.childId"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/ChildStageChoices.tsx",
+      "line": 136,
+      "tag": "button",
+      "attrs": {
+        "key": "c.id",
+        "type": "button",
+        "aria-pressed": "active === c.id"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/ChildStageChoices.tsx",
+      "line": 162,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "showIntermediate"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/ChildStageChoices.tsx",
+      "line": 253,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "disabled": "busy",
+        "checked": "keys.has(sourceKey(o.source))"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/CompletionInputChoices.tsx",
+      "line": 62,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "aria-label": "`使用 ${title",
+        "checked": "keys.has(inputChoiceKey(choice))"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/ItemRelations.tsx",
+      "line": 283,
+      "tag": "input",
+      "attrs": {
+        "aria-label": "选择本页子项",
+        "type": "checkbox"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/ItemRelations.tsx",
+      "line": 304,
+      "tag": "input",
+      "attrs": {
+        "aria-label": "`选择 ${row.title",
+        "type": "checkbox",
+        "checked": "selected.includes(row.id)"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/ItemRelations.tsx",
+      "line": 319,
+      "tag": "button",
+      "attrs": {
+        "className": "management-title-button"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/WorkItemDialogs.tsx",
+      "line": 197,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "materialIds.includes(m.id)"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/WorkItemDialogs.tsx",
+      "line": 213,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "receivedIds.includes(input.id)"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/WorkItemStart.tsx",
+      "line": 110,
+      "tag": "input",
+      "attrs": {
+        "type": "file",
+        "ref": "fileInput"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionAcceptance.tsx",
+      "line": 46,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "aria-label": "`确认条件 ${index + 1",
+        "title": "saved ? undefined : '先保存条件定义'",
+        "checked": "entry.met",
+        "disabled": "completed || !saved || busy"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionAssistant.tsx",
+      "line": 135,
+      "tag": "button",
+      "attrs": {
+        "className": "inspecting ? 'selected' : ''"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionAssistant.tsx",
+      "line": 144,
+      "tag": "button",
+      "attrs": {
+        "className": "!inspecting ? 'selected' : ''"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionFlow.tsx",
+      "line": 200,
+      "tag": "button",
+      "attrs": {
+        "key": "index"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionInputs.tsx",
+      "line": 100,
+      "tag": "button",
+      "attrs": {}
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionInputs.tsx",
+      "line": 185,
+      "tag": "input",
+      "attrs": {
+        "ref": "fileRef",
+        "type": "file"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionInputs.tsx",
+      "line": 244,
+      "tag": "button",
+      "attrs": {
+        "title": "presentation.title"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/CompositionInputs.tsx",
+      "line": 400,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "selecting?.includes(m.id) || false"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/RecordTable.tsx",
+      "line": 174,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "aria-label": "选择本页记录"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/RecordTable.tsx",
+      "line": 189,
+      "tag": "button",
+      "attrs": {
+        "className": "composition-column-sort"
+      }
+    },
+    {
+      "path": "src/client/features/work-items/composition/RecordTable.tsx",
+      "line": 234,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "aria-label": "`选择记录 ${id",
+        "checked": "selectedSet.has(id)"
+      }
+    },
+    {
+      "path": "src/client/features/workspace/AddMaterialsDialog.tsx",
+      "line": 85,
+      "tag": "input",
+      "attrs": {
+        "type": "file",
+        "accept": ".txt,.md,.csv,.json,.log,.xlsx,.xls,.docx,.pdf,text/*"
+      }
+    },
+    {
+      "path": "src/client/features/workspace/CreateWorkDialog.tsx",
+      "line": 64,
+      "tag": "input",
+      "attrs": {
+        "type": "file",
+        "accept": ".txt,.md,.csv,.json,.log,.xlsx,.xls,.docx,.pdf,text/*"
+      }
+    },
+    {
+      "path": "src/client/features/workspace/SelectStartDialog.tsx",
+      "line": 72,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "replaceDraft"
+      }
+    },
+    {
+      "path": "src/client/features/workspace/Sidebar.tsx",
+      "line": 116,
+      "tag": "button",
+      "attrs": {
+        "className": "resource-button"
+      }
+    },
+    {
+      "path": "src/client/features/workspace/Sidebar.tsx",
+      "line": 133,
+      "tag": "button",
+      "attrs": {
+        "className": "model-settings-button"
+      }
+    },
+    {
+      "path": "src/client/features/workspace/TrialDialog.tsx",
+      "line": 111,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox"
+      }
+    },
+    {
+      "path": "src/client/features/workspace/TrialDialog.tsx",
+      "line": 155,
+      "tag": "input",
+      "attrs": {
+        "type": "checkbox",
+        "checked": "selectedNodeSamples.includes(m.id)"
+      }
+    }
+  ],
+  "inlineStyles": [
+    {
+      "path": "src/client/components/WorkspaceFrame.tsx",
+      "line": 193,
+      "tag": "aside",
+      "attrs": {
+        "ref": "panel",
+        "className": "context-panel",
+        "data-mode": "effectiveMode",
+        "data-preferred-mode": "mode",
+        "aria-label": "label",
+        "style": "effectiveMode === 'side' && width ? { width "
+      }
+    },
+    {
+      "path": "src/client/features/canvas/WorkflowEdge.tsx",
+      "line": 32,
+      "tag": "BaseEdge",
+      "attrs": {
+        "id": "props.id",
+        "path": "path",
+        "markerEnd": "props.markerEnd",
+        "markerStart": "props.markerStart",
+        "style": "props.style",
+        "interactionWidth": "20",
+        "label": "props.label",
+        "labelX": "labelX",
+        "labelY": "labelY",
+        "labelStyle": "props.labelStyle",
+        "labelBgStyle": "props.labelBgStyle"
+      }
+    },
+    {
+      "path": "src/client/features/results/ResultsOverview.tsx",
+      "line": 175,
+      "tag": "col",
+      "attrs": {
+        "key": "index",
+        "style": "{ width: `${width"
+      }
+    }
+  ],
+  "unreferencedCss": []
+}

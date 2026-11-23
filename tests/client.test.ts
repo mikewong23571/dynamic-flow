@@ -105,14 +105,14 @@ test('删节点同时清理连接和流程输出，不留下不可见引用', ()
         id: 'a',
         label: 'A',
         kind: 'function',
-        mode: 'each',
+        operation: 'map',
         functionName: 'identity',
       },
       {
         id: 'b',
         label: 'B',
         kind: 'function',
-        mode: 'all',
+        operation: 'map',
         functionName: 'identity',
       },
     ],
@@ -137,7 +137,7 @@ test('合并试验显式提供两端口并保留空分支，端口显示不改�
     id: 'merge',
     label: '合并',
     kind: 'function' as const,
-    mode: 'all' as const,
+    inputNames: ['left', 'right'],
     functionName: 'merge' as const,
   };
   assert.deepEqual(localInputs(node, inputs, 'right'), {
@@ -155,7 +155,7 @@ test('等待端口同时保留输入透传和事件，删除时不留下事件�
     id: 'waiting',
     label: '等待公告',
     kind: 'wait' as const,
-    mode: 'all' as const,
+
     wait: { event: 'announcement', reason: '等待公告' },
   };
   assert.deepEqual(outputPorts(wait), ['output', 'event']);
@@ -289,4 +289,36 @@ test('catalog editor merge assigns edited models to the provider being saved', a
     remerged.models.map((m) => m.alias),
     ['other/m', 'evidence/glm-a'],
   );
+});
+
+test('固定方法的具名输出可继续连接下一个方法，画布不退回output端口', async () => {
+  const { inputPorts, outputPorts } =
+    await import('../src/client/core/index.ts');
+  const read = {
+    id: 'read',
+    label: '读取材料',
+    kind: 'call' as const,
+    operation: 'aggregate' as const,
+    call: {
+      workId: 'reader',
+      definitionId: 'reader-v1',
+      inputNames: ['materials'],
+      outputNames: ['records', 'unmatched'],
+    },
+  };
+  const group = {
+    id: 'group',
+    label: '按范围整理',
+    kind: 'call' as const,
+    operation: 'aggregate' as const,
+    call: {
+      workId: 'grouping',
+      definitionId: 'grouping-v1',
+      inputNames: ['records'],
+      outputNames: ['groups'],
+    },
+  };
+  assert.deepEqual(outputPorts(read), ['records', 'unmatched']);
+  assert.ok(outputPorts(read).includes(inputPorts(group)[0]));
+  assert.deepEqual(outputPorts(group), ['groups']);
 });

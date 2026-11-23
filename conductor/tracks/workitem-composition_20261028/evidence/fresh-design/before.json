@@ -1,0 +1,12 @@
+{
+  "itemId": "852367c9-7ff7-4aba-8da8-ae0550d7d823",
+  "privateWorkId": "8477d514-d9f3-4fb8-b10f-91b89885e038",
+  "model": "deepseek-v4-flash",
+  "effort": "high",
+  "methodCount": 4,
+  "methodUiTemplates": 0,
+  "initialUiPlan": false,
+  "initialDefinition": false,
+  "materials": 1,
+  "existingChats": 0
+}

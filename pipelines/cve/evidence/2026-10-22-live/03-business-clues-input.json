@@ -1,0 +1,31 @@
+{
+  "scope": [
+    "SCC/chatops-api",
+    "SCC/adr-api"
+  ],
+  "source_records": [
+    {
+      "source_file": "/home/mike/projs/main/cve-fix/artifacts/vulnerabilities.clean.jsonl",
+      "source_line": 1682,
+      "vulnId": "CVE-2025-27516",
+      "library": "Jinja2-2.10.1-py2.py3-none-any.whl",
+      "project": "update-request6.txt",
+      "selected_traceSource": "  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/Subscription/chatops/chatops-api/chatops-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/test-requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl\n  - [all-scan-scc-6] 直接依赖: artifactId=Jinja2-2.10.1-py2.py3-none-any.whl, dependencyFile=/home/jenkins/3/mq_gitlab/scan_code/CMP/SCC/ThirdParty/aDR/adr-api/adr-api/requirements.txt, systemPath=/tmp/ws-ua_20251204091525_XQTYYK/python_BURNIS/20251204091526/Jinja2-2.10.1-py2.py3-none-any.whl"
+    }
+  ],
+  "repositories": {
+    "chatops-api": "https://mq.code.sangfor.org/CMP/SCC/Subscription/chatops/chatops-api.git",
+    "adr-api": "https://mq.code.sangfor.org/CMP/SCC/ThirdParty/aDR/adr-api.git"
+  },
+  "instructions": "范围仅为上述两个系统；扫描记录是历史依赖线索，不代表当前部署版本或可利用性。优先直接读取给定仓库的实际源码与版本；无法访问就保留待定。不要读取旧影响 manifest、notes 或 verification.md 当作新判定；不要修改业务源码或环境。 预检已确认现有访问方式不可用，没有新的明确入口时不要反复重试；也不要自行编写 MCP 客户端。",
+  "repository_preflight": {
+    "date": "2026-10-22",
+    "chatops-api": "git ls-remote 失败：TLS 连接异常终止，未取得源码或版本。",
+    "adr-api": "git ls-remote 失败：TLS 连接异常终止，未取得源码或版本。"
+  },
+  "source_retrieval_preflight": {
+    "date": "2026-10-22",
+    "status": "现有源码检索服务连接被拒绝；尚未取得 chatops-api、adr-api 的当前源码。",
+    "instructions": "MCP 接入由应用管理，不让节点读取凭据或自行连接检索服务。仅使用会话已注册工具；给定仓库可直接只读获取，若仍不可达保留证据缺口。"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "checked": {
+    "itemRevision": 55,
+    "definitionId": "0c1ad3bc-406d-4254-971e-88c6c26c71be",
+    "planId": "010e28e1-e352-4afb-8160-0c0735bf3770",
+    "runId": "c00f5bcf-134b-4aa9-922a-4ef569b01823"
+  },
+  "canExecute": true,
+  "canPublish": true,
+  "issues": [],
+  "unchecked": [
+    {
+      "area": "state",
+      "code": "BUSINESS_ACCEPTANCE_UNVERIFIED",
+      "path": "item.criteria",
+      "message": "本工具不确认业务事实、完成依据或结项；仍需证据与用户复核。"
+    }
+  ],
+  "inputs": [
+    {
+      "port": "handoff",
+      "count": 1,
+      "types": [
+        "object"
+      ]
+    },
+    {
+      "port": "roundInput",
+      "count": 1,
+      "types": [
+        "object"
+      ]
+    },
+    {
+      "port": "stageResults",
+      "count": 27,
+      "types": [
+        "object"
+      ]
+    },
+    {
+      "port": "scopeLedger",
+      "count": 1,
+      "types": [
+        "object"
+      ]
+    }
+  ],
+  "publication": {
+    "current": true,
+    "missingOutputs": []
+  }
+}

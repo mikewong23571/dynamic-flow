@@ -1,0 +1,137 @@
+{
+  "dataRoot": "/tmp/flowcraft-sourcegraph-tTYDEv",
+  "modelStub": false,
+  "sourcegraphEndpoint": "http://10.132.7.7/.api/mcp",
+  "startedAt": "2026-10-22T14:14:51.084Z",
+  "workId": "02637574-e9b0-4b3c-900e-6773f383b117",
+  "author": {
+    "id": "27ce91be-fe7b-425d-85ca-ca41b89d19ff",
+    "role": "assistant",
+    "text": "验证完成，调用成功且仅匹配到一条结果：\n\n- 仓库：`mq.code.sangfor.org/CMP/SRE/DEV/categraf`\n- 文件路径：`inputs/nvidia_smi/README.md`\n- 行号：31（内容为 `## TODO`）\n\nMCP 工具连通性与返回格式正常，可直接用于后续验收。如需继续，可再指定其他精确查询做对照验证，或告诉我是否要为验收结果建立正式记录流程。",
+    "requestId": "54dfd1b7-da09-44e1-aa29-91b4b5c791d3",
+    "sampleIds": [],
+    "status": "completed",
+    "activities": [
+      {
+        "id": "aa2ba763-56ad-4cc3-8c04-8a53d1e37846",
+        "toolCallId": "call_c5b005a85d91498b914dfafc",
+        "toolName": "sourcegraph_keyword_search",
+        "status": "completed",
+        "args": {
+          "query": "context:global TODO count:1"
+        },
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "# mq.code.sangfor.org/CMP/SRE/DEV/categraf – inputs/nvidia_smi/README.md\n31: ## TODO\n32: \n"
+            }
+          ],
+          "details": {
+            "server": "sourcegraph",
+            "tool": "keyword_search"
+          }
+        }
+      }
+    ],
+    "effectiveModel": {
+      "source": "default",
+      "alias": "sangfor/glm-5.3-flash",
+      "model": "glm-5.3-flash",
+      "effort": "max"
+    },
+    "unchanged": true
+  },
+  "run": {
+    "id": "7bfbfb1e-86f5-401c-b2e6-546408c39984",
+    "definitionId": "d11aafd6-bf98-4606-9839-8cbc61ec13fc",
+    "scope": "full",
+    "inputs": {
+      "query": [
+        {
+          "sampleId": "query-1",
+          "value": "context:global TODO count:1",
+          "materialIds": [],
+          "sourceResultIds": []
+        }
+      ]
+    },
+    "effectMode": "preview",
+    "status": "completed",
+    "stopRequested": false,
+    "nodeStates": {
+      "search": "completed"
+    },
+    "nodeTotals": {
+      "search": 1
+    },
+    "results": [
+      {
+        "id": "f3b0b192-8e87-4a25-b75c-79aaf4ef3071",
+        "runId": "7bfbfb1e-86f5-401c-b2e6-546408c39984",
+        "definitionId": "d11aafd6-bf98-4606-9839-8cbc61ec13fc",
+        "nodeId": "search",
+        "instanceId": "search:query-1:0",
+        "input": {
+          "input": [
+            {
+              "sampleId": "query-1",
+              "value": "context:global TODO count:1",
+              "materialIds": [],
+              "sourceResultIds": []
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "value": "- 仓库：mq.code.sangfor.org/VT/aCMP/venus\n- 路径：src/app-acmp/mod-common/url/workflow.js\n- 行号：9",
+              "sampleId": "query-1",
+              "materialIds": [],
+              "sourceResultIds": [
+                "f3b0b192-8e87-4a25-b75c-79aaf4ef3071"
+              ]
+            }
+          ]
+        },
+        "status": "completed",
+        "activities": [
+          {
+            "id": "7bfbfb1e-86f5-401c-b2e6-546408c39984:search:query-1:0:call_78276cfc55c543c8af30617b",
+            "toolCallId": "call_78276cfc55c543c8af30617b",
+            "toolName": "sourcegraph_keyword_search",
+            "status": "completed",
+            "args": {
+              "query": "context:global TODO count:1"
+            },
+            "result": {
+              "content": [
+                {
+                  "type": "text",
+                  "text": "# mq.code.sangfor.org/VT/aCMP/venus – src/app-acmp/mod-common/url/workflow.js\n9: const todoWorkflow = function () {\n10: \n"
+                }
+              ],
+              "details": {
+                "server": "sourcegraph",
+                "tool": "keyword_search"
+              }
+            }
+          }
+        ],
+        "startedAt": "2026-10-22T14:14:51.918Z",
+        "effectiveModel": {
+          "source": "default",
+          "alias": "sangfor/glm-5.3-flash",
+          "model": "glm-5.3-flash",
+          "effort": "max"
+        },
+        "finishedAt": "2026-10-22T14:15:16.534Z"
+      }
+    ],
+    "waits": [],
+    "signals": [],
+    "startedAt": "2026-10-22T14:14:51.908Z",
+    "finishedAt": "2026-10-22T14:15:16.537Z"
+  },
+  "finishedAt": "2026-10-22T14:15:16.937Z"
+}

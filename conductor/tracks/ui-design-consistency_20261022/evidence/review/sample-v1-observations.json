@@ -1,0 +1,79 @@
+{
+  "errors": [],
+  "observations": [
+    {
+      "width": 1440,
+      "header": {
+        "x": 216,
+        "y": 0,
+        "width": 1224,
+        "height": 108,
+        "fontSize": "14px",
+        "lineHeight": "normal",
+        "background": "rgb(10, 10, 10)",
+        "border": "rgb(237, 237, 237) rgb(237, 237, 237) rgba(255, 255, 255, 0.08)"
+      },
+      "overview": {
+        "x": 216,
+        "y": 108,
+        "width": 1224,
+        "height": 125.390625,
+        "fontSize": "14px",
+        "lineHeight": "normal",
+        "background": "rgb(10, 10, 10)",
+        "border": "rgb(237, 237, 237)"
+      },
+      "execution": {
+        "x": 248,
+        "y": 360.78125,
+        "width": 1160,
+        "height": 931.5,
+        "fontSize": "14px",
+        "lineHeight": "normal",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(237, 237, 237)"
+      },
+      "artifact": null,
+      "markdown": null,
+      "overflow": false,
+      "bodyOverflow": false
+    },
+    {
+      "width": 1024,
+      "header": {
+        "x": 192,
+        "y": 0,
+        "width": 832,
+        "height": 108,
+        "fontSize": "14px",
+        "lineHeight": "normal",
+        "background": "rgb(10, 10, 10)",
+        "border": "rgb(237, 237, 237) rgb(237, 237, 237) rgba(255, 255, 255, 0.08)"
+      },
+      "overview": {
+        "x": 192,
+        "y": 108,
+        "width": 832,
+        "height": 123.390625,
+        "fontSize": "14px",
+        "lineHeight": "normal",
+        "background": "rgb(10, 10, 10)",
+        "border": "rgb(237, 237, 237)"
+      },
+      "execution": {
+        "x": 216,
+        "y": 358.78125,
+        "width": 784,
+        "height": 846.9375,
+        "fontSize": "14px",
+        "lineHeight": "normal",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(237, 237, 237)"
+      },
+      "artifact": null,
+      "markdown": null,
+      "overflow": false,
+      "bodyOverflow": false
+    }
+  ]
+}

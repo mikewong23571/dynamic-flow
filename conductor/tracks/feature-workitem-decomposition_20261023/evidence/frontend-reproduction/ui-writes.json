@@ -1,0 +1,67 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/items",
+    "body": "{\"key\":\"DEMO-UI-SPLIT\",\"title\":\"示例 · 从原始反馈开始拆分\",\"goal\":\"分别调查客户反馈的导出失败和搜索无结果问题，形成各自可核验的调查记录。\",\"criteria\":[],\"materials\":[\"客户甲反馈：导出月报时页面提示失败，无法取得报表。客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。\"],\"confirmReopen\":false}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/items/244b5bfd-65da-4da0-a325-9b4b85c4a00c/actions",
+    "body": "{\"action\":\"createMethod\",\"materialIds\":[\"M01\"]}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/items/244b5bfd-65da-4da0-a325-9b4b85c4a00c/actions",
+    "body": "{\"action\":\"prepareAuthor\",\"workflowId\":\"3b1e2976-8028-495d-8215-23e80d97769f\",\"inputSelections\":{\"input\":[{\"kind\":\"material\",\"materialId\":\"M01\"}]}}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/works/3b1e2976-8028-495d-8215-23e80d97769f/actions",
+    "body": "{\"action\":\"edit\",\"text\":\"将所选客户反馈拆成可独立调查的问题；每项保留对应原文，给出目标和完成条件。只整理问题，不调查原因。方法应适用于后续新反馈。\\n生成供用户检查的工作项候选清单，最终输出每项包含id、title、goal、criteria、inputs（每份含label和value），可提供trackingKey用于同父项关联。每项是可独立推进的问题；已有结果作为inputs保留，goal说明剩余工作。不自动建立工作项。\",\"sampleIds\":[]}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/works/3b1e2976-8028-495d-8215-23e80d97769f/actions",
+    "body": "{\"action\":\"rename\",\"title\":\"示例 · 原始反馈拆分\"}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/works/3b1e2976-8028-495d-8215-23e80d97769f/actions",
+    "body": "{\"action\":\"saveLayout\",\"view\":{\"positions\":{\"$input\":{\"x\":32,\"y\":62},\"split-issues\":{\"x\":392,\"y\":32}},\"viewport\":{\"x\":25,\"y\":30,\"zoom\":1},\"showPorts\":false,\"routing\":{\"signature\":\"{\\\"edges\\\":[{\\\"from\\\":[\\\"$input\\\",\\\"input\\\"],\\\"to\\\":[\\\"split-issues\\\",\\\"input\\\"]}],\\\"nodes\\\":[{\\\"id\\\":\\\"$input\\\",\\\"width\\\":240,\\\"height\\\":149,\\\"position\\\":{\\\"x\\\":32,\\\"y\\\":62},\\\"inputs\\\":[],\\\"outputs\\\":[[\\\"input\\\",240,127,8,8]]},{\\\"id\\\":\\\"split-issues\\\",\\\"width\\\":240,\\\"height\\\":179,\\\"position\\\":{\\\"x\\\":392,\\\"y\\\":32},\\\"inputs\\\":[[\\\"input\\\",-8,157,8,8]],\\\"outputs\\\":[[\\\"output\\\",240,157,8,8]]}]}\",\"routes\":{\"edge-0\":[{\"x\":280,\"y\":193},{\"x\":384,\"y\":193}]}}}}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/works/3b1e2976-8028-495d-8215-23e80d97769f/actions",
+    "body": "{\"action\":\"saveLayout\",\"view\":{\"positions\":{\"$input\":{\"x\":32,\"y\":62},\"split-issues\":{\"x\":392,\"y\":32}},\"viewport\":{\"x\":109,\"y\":237.5,\"zoom\":1},\"showPorts\":false,\"routing\":{\"signature\":\"{\\\"edges\\\":[{\\\"from\\\":[\\\"$input\\\",\\\"input\\\"],\\\"to\\\":[\\\"split-issues\\\",\\\"input\\\"]}],\\\"nodes\\\":[{\\\"id\\\":\\\"$input\\\",\\\"width\\\":240,\\\"height\\\":149,\\\"position\\\":{\\\"x\\\":32,\\\"y\\\":62},\\\"inputs\\\":[],\\\"outputs\\\":[[\\\"input\\\",240,127,8,8]]},{\\\"id\\\":\\\"split-issues\\\",\\\"width\\\":240,\\\"height\\\":179,\\\"position\\\":{\\\"x\\\":392,\\\"y\\\":32},\\\"inputs\\\":[[\\\"input\\\",-8,157,8,8]],\\\"outputs\\\":[[\\\"output\\\",240,157,8,8]]}]}\",\"routes\":{\"edge-0\":[{\"x\":280,\"y\":193},{\"x\":384,\"y\":193}]}}}}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/works/3b1e2976-8028-495d-8215-23e80d97769f/actions",
+    "body": "{\"action\":\"adopt\",\"definitionId\":\"93ed23c8-87bc-48bb-b4c5-72160654f930\"}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/items/244b5bfd-65da-4da0-a325-9b4b85c4a00c/prepare",
+    "body": "{\"workflowId\":\"3b1e2976-8028-495d-8215-23e80d97769f\",\"definitionId\":\"93ed23c8-87bc-48bb-b4c5-72160654f930\"}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/items/244b5bfd-65da-4da0-a325-9b4b85c4a00c/actions",
+    "body": "{\"action\":\"run\",\"workflowId\":\"3b1e2976-8028-495d-8215-23e80d97769f\",\"definitionId\":\"93ed23c8-87bc-48bb-b4c5-72160654f930\",\"scope\":\"full\",\"inputSelections\":{\"input\":[{\"kind\":\"material\",\"materialId\":\"M01\"}]}}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/items/244b5bfd-65da-4da0-a325-9b4b85c4a00c/actions",
+    "body": "{\"action\":\"candidates\",\"source\":{\"workId\":\"3b1e2976-8028-495d-8215-23e80d97769f\",\"runId\":\"848a3600-796a-4760-9604-50dc3127dd50\",\"definitionId\":\"93ed23c8-87bc-48bb-b4c5-72160654f930\",\"nodeId\":\"split-issues\",\"resultId\":\"daee33fb-5c6d-4164-9e06-15ca4ef85bf4\",\"instanceId\":\"split-issues:M01:0\",\"port\":\"output\",\"index\":0,\"kind\":\"output\"},\"page\":1,\"pageSize\":25}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/items/244b5bfd-65da-4da0-a325-9b4b85c4a00c/actions",
+    "body": "{\"action\":\"candidates\",\"source\":{\"workId\":\"3b1e2976-8028-495d-8215-23e80d97769f\",\"runId\":\"848a3600-796a-4760-9604-50dc3127dd50\",\"definitionId\":\"93ed23c8-87bc-48bb-b4c5-72160654f930\",\"nodeId\":\"split-issues\",\"resultId\":\"daee33fb-5c6d-4164-9e06-15ca4ef85bf4\",\"instanceId\":\"split-issues:M01:0\",\"port\":\"output\",\"index\":0,\"kind\":\"output\"},\"page\":1,\"pageSize\":25}"
+  },
+  {
+    "method": "POST",
+    "path": "/api/items/244b5bfd-65da-4da0-a325-9b4b85c4a00c/actions",
+    "body": "{\"action\":\"createChildren\",\"confirmReopen\":false,\"appendInputs\":false,\"source\":{\"workId\":\"3b1e2976-8028-495d-8215-23e80d97769f\",\"runId\":\"848a3600-796a-4760-9604-50dc3127dd50\",\"definitionId\":\"93ed23c8-87bc-48bb-b4c5-72160654f930\",\"nodeId\":\"split-issues\",\"resultId\":\"daee33fb-5c6d-4164-9e06-15ca4ef85bf4\",\"instanceId\":\"split-issues:M01:0\",\"port\":\"output\",\"index\":0,\"kind\":\"output\"},\"candidateIds\":[\"issue-1\",\"issue-2\"],\"edits\":[{\"criteria\":[\"调查记录中包含问题对应的原文出处：材料 M01 中『客户甲反馈：导出月报时页面提示失败，无法取得报表。』，且逐字一致\",\"调查记录中含可复现的现象或失败步骤：明确描述客户甲执行导出月报操作时页面提示失败、无法取得报表的具体操作路径与失败表现\",\"调查记录中含影响范围：明确问题仅涉及该客户或可推广到的范围（如导出功能、报表类型、受影响客户数量）\",\"调查记录中含证据来源且可追溯：注明证据出处（如客户反馈记录、截图、系统日志、操作时间），可据此回查核验\",\"调查记录不含原因判断，不含解决方案或修复建议\"],\"goal\":\"调查客户甲导出月报失败问题的现象，形成可核验的调查记录：记录应包含现象描述、复现方式或影响范围、证据来源；本阶段仅调查现象本身，不预判原因、不提出解决方案。\",\"id\":\"issue-1\",\"inputs\":[{\"label\":\"原文摘录\",\"value\":\"客户甲反馈：导出月报时页面提示失败，无法取得报表。\"}],\"title\":\"示例 · 客户甲导出月报时页面提示失败，无法取得报表\",\"trackingKey\":\"导出月报失败\"},{\"criteria\":[\"调查记录中包含问题对应的原文出处：材料 M01 中『客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。』，且逐字一致\",\"调查记录中含可复现的现象或失败步骤：明确描述客户乙使用的搜索入口、输入的订单编号及『搜索无结果而订单列表可见同一订单』的对比表现\",\"调查记录中含影响范围：明确问题仅涉及该客户或可推广到的范围（如搜索功能、订单编号格式、受影响客户数量）\",\"调查记录中含证据来源且可追溯：注明证据出处（如客户反馈记录、截图、搜索请求日志、订单数据），可据此回查核验\",\"调查记录不含原因判断，不含解决方案或修复建议\"],\"goal\":\"调查客户乙按订单编号搜索无结果问题的现象，形成可核验的调查记录：记录应包含现象描述、复现方式或影响范围、证据来源；本阶段仅调查现象本身，不预判原因、不提出解决方案。\",\"id\":\"issue-2\",\"inputs\":[{\"label\":\"原文摘录\",\"value\":\"客户乙反馈：按已知订单编号搜索没有结果，但订单列表能找到该订单。\"}],\"title\":\"示例 · 客户乙按已知订单编号搜索没有结果，但订单列表能找到该订单\",\"trackingKey\":\"订单搜索无结果\"}]}"
+  }
+]

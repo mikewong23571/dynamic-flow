@@ -24,6 +24,7 @@ function keyOf(
   path: (string | number)[],
   port: string,
   index: number,
+  operation = 'join',
 ): string {
   let value: Json = item.value;
   for (const segment of path) {
@@ -33,7 +34,7 @@ function keyOf(
       !Object.hasOwn(value, segment)
     )
       throw Error(
-        `join ${port}[${index}] 键路径 ${JSON.stringify(path)} 缺失。`,
+        `${operation} ${port}[${index}] 键路径 ${JSON.stringify(path)} 缺失。`,
       );
     value = (value as Record<string | number, Json>)[segment];
   }
@@ -42,7 +43,7 @@ function keyOf(
     (typeof value === 'number' && !Number.isFinite(value))
   )
     throw Error(
-      `join ${port}[${index}] 键必须是字符串、有限数字或布尔值，不能是 null、对象或数组。`,
+      `${operation} ${port}[${index}] 键必须是字符串、有限数字或布尔值，不能是 null、对象或数组。`,
     );
   return JSON.stringify([typeof value, value]);
 }
@@ -66,6 +67,24 @@ export function executeCollection(
         sources: ports.flatMap((port) => input[port]),
       },
     ];
+  if (node.functionName === 'groupBy') {
+    const groups = new Map<string, CollectionValue>();
+    for (const [index, item] of input.input.entries()) {
+      const key = node.groupBy!.keys.map(
+        (path) =>
+          JSON.parse(keyOf(item, path, 'input', index, 'groupBy'))[1] as Json,
+      );
+      const encoded = JSON.stringify(key.map((value) => [typeof value, value]));
+      let group = groups.get(encoded);
+      if (!group) {
+        group = { value: { key, items: [] }, sources: [] };
+        groups.set(encoded, group);
+      }
+      (group.value as { key: Json[]; items: Json[] }).items.push(item.value);
+      group.sources.push(item);
+    }
+    return [...groups.values()];
+  }
   const config = node.join!,
     left = input.left,
     right = input.right;

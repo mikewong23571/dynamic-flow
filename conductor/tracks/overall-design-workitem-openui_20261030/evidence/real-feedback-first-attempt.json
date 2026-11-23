@@ -1,0 +1,476 @@
+{
+  "scenario": "customer-feedback-first-untemplated-generation",
+  "itemId": "17a7498e-47a2-4ca2-aeff-1dcef5b47924",
+  "status": "not-accepted",
+  "reason": "Assistant did not know root input edge syntax and used a nonexistent file node; native program was saved but business plan is not valid for the selected received inputs. No Run was launched.",
+  "model": {
+    "source": "default",
+    "alias": "sangfor/deepseek-v4-flash",
+    "model": "deepseek-v4-flash",
+    "effort": "high"
+  },
+  "toolFailures": [
+    {
+      "tool": "add_input",
+      "error": null,
+      "status": "failed"
+    },
+    {
+      "tool": "add_input",
+      "error": null,
+      "status": "failed"
+    },
+    {
+      "tool": "add_input",
+      "error": null,
+      "status": "failed"
+    }
+  ],
+  "declaredFiles": [
+    {
+      "name": "requests"
+    }
+  ],
+  "actualUploads": [],
+  "runCount": 0,
+  "definition": {
+    "edges": [
+      {
+        "from": [
+          "requests_in",
+          "output"
+        ],
+        "to": [
+          "triage",
+          "input"
+        ]
+      },
+      {
+        "from": [
+          "triage",
+          "output"
+        ],
+        "to": [
+          "recordize",
+          "input"
+        ]
+      }
+    ],
+    "inputContracts": {
+      "requestNotes": {
+        "item": {
+          "additionalProperties": true,
+          "properties": {
+            "note": {
+              "type": "string"
+            },
+            "requestId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "requestId",
+            "note"
+          ],
+          "type": "object"
+        },
+        "onInvalid": "reject",
+        "required": false
+      },
+      "requests": {
+        "item": {
+          "additionalProperties": true,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "text"
+          ],
+          "type": "object"
+        },
+        "onInvalid": "reject",
+        "required": true
+      }
+    },
+    "inputs": [
+      "requests",
+      "requestNotes"
+    ],
+    "nodes": [
+      {
+        "file": {
+          "name": "requests"
+        },
+        "id": "requests_in",
+        "kind": "file",
+        "label": "本周客户来件（R1/R2/R3）"
+      },
+      {
+        "contract": {
+          "done": "三条来件各得一条判断，编号与原文完整保留，缺失信息如实写明且未编造客户未提供的事实。",
+          "rationale": "性质与后续动作需语义判断，用 Agent 整批处理；编号与原文由输入带入，不做改写。",
+          "responsibility": "逐条把客户来件定性为表扬/缺陷/需求，并给出后续动作、建议处理方、推进所缺信息与紧急度。",
+          "semanticRole": "分流判断"
+        },
+        "expectedOutput": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "type": "string"
+              },
+              "followUpAction": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "missingInfo": {
+                "type": "string"
+              },
+              "originalText": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "urgency": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "originalText",
+              "category",
+              "followUpAction",
+              "owner",
+              "missingInfo",
+              "urgency"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "id": "triage",
+        "inputSchema": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "text"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "kind": "agent",
+        "label": "逐条判断来件性质与后续动作",
+        "operation": "aggregate",
+        "task": "输入是本周客户来件数组，每条包含 id（如 R1）、text（客户原文）。逐条判断并返回与输入等长、顺序一致的数组，每条包含：id、originalText（客户原文，一字不改）、category（表扬/缺陷/需求）、followUpAction（明确的后续动作）、owner（建议处理方）、missingInfo（推进所缺信息，确无缺失填\"无\"）、urgency（高/中/低）。只依据来件原文，不得编造客户未提供的事实；客户未说明的内容一律写入 missingInfo。",
+        "tools": {
+          "builtin": [],
+          "mcp": []
+        }
+      },
+      {
+        "contract": {
+          "done": "每条判断变成一条结构一致的记录，状态由 missingInfo 确定性推导，id 可直接作为记录唯一键。",
+          "rationale": "状态与布尔标记是纯数据映射，用表达式节点保证同一输入得到同一结果，不交给模型再判一次。",
+          "responsibility": "把整批判断展开并整形成逐条记录：保留编号与原文，按缺失信息推导状态与 needsInfo 标记。",
+          "semanticRole": "输入整理"
+        },
+        "expectedOutput": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "category": {
+                "type": "string"
+              },
+              "followUpAction": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "missingInfo": {
+                "type": "string"
+              },
+              "needsInfo": {
+                "type": "boolean"
+              },
+              "originalText": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "urgency": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "originalText",
+              "category",
+              "followUpAction",
+              "owner",
+              "missingInfo",
+              "urgency",
+              "status",
+              "needsInfo"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expression": {
+          "binding": {
+            "kind": "bind",
+            "name": "item"
+          },
+          "body": {
+            "fields": {
+              "category": {
+                "kind": "variable",
+                "name": "item",
+                "path": [
+                  "category"
+                ]
+              },
+              "followUpAction": {
+                "kind": "variable",
+                "name": "item",
+                "path": [
+                  "followUpAction"
+                ]
+              },
+              "id": {
+                "kind": "variable",
+                "name": "item",
+                "path": [
+                  "id"
+                ]
+              },
+              "missingInfo": {
+                "kind": "variable",
+                "name": "item",
+                "path": [
+                  "missingInfo"
+                ]
+              },
+              "needsInfo": {
+                "args": [
+                  {
+                    "cases": [
+                      {
+                        "pattern": {
+                          "kind": "literal",
+                          "value": "无"
+                        },
+                        "then": {
+                          "kind": "literal",
+                          "value": true
+                        }
+                      },
+                      {
+                        "pattern": {
+                          "kind": "type",
+                          "valueType": "null"
+                        },
+                        "then": {
+                          "kind": "literal",
+                          "value": true
+                        }
+                      }
+                    ],
+                    "kind": "match",
+                    "otherwise": {
+                      "kind": "literal",
+                      "value": false
+                    },
+                    "value": {
+                      "kind": "variable",
+                      "name": "item",
+                      "path": [
+                        "missingInfo"
+                      ]
+                    }
+                  }
+                ],
+                "function": "not",
+                "kind": "call"
+              },
+              "originalText": {
+                "kind": "variable",
+                "name": "item",
+                "path": [
+                  "originalText"
+                ]
+              },
+              "owner": {
+                "kind": "variable",
+                "name": "item",
+                "path": [
+                  "owner"
+                ]
+              },
+              "status": {
+                "cases": [
+                  {
+                    "pattern": {
+                      "kind": "literal",
+                      "value": "无"
+                    },
+                    "then": {
+                      "kind": "literal",
+                      "value": "可推进"
+                    }
+                  },
+                  {
+                    "pattern": {
+                      "kind": "type",
+                      "valueType": "null"
+                    },
+                    "then": {
+                      "kind": "literal",
+                      "value": "可推进"
+                    }
+                  }
+                ],
+                "kind": "match",
+                "otherwise": {
+                  "kind": "literal",
+                  "value": "待补充信息"
+                },
+                "value": {
+                  "kind": "variable",
+                  "name": "item",
+                  "path": [
+                    "missingInfo"
+                  ]
+                }
+              },
+              "urgency": {
+                "kind": "variable",
+                "name": "item",
+                "path": [
+                  "urgency"
+                ]
+              }
+            },
+            "kind": "object"
+          },
+          "input": {
+            "kind": "variable",
+            "name": "input"
+          },
+          "kind": "map"
+        },
+        "functionName": "expression",
+        "id": "recordize",
+        "inputSchema": {
+          "items": {
+            "additionalProperties": true,
+            "properties": {
+              "category": {
+                "type": "string"
+              },
+              "followUpAction": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "missingInfo": {
+                "type": "string"
+              },
+              "originalText": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "urgency": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "originalText",
+              "category",
+              "followUpAction",
+              "owner",
+              "missingInfo",
+              "urgency"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "kind": "function",
+        "label": "整理为可追踪记录",
+        "operation": "flatMap"
+      }
+    ],
+    "outputs": {
+      "records": [
+        "recordize",
+        "output"
+      ]
+    },
+    "problem": {
+      "constraints": "必须保留 R1/R2/R3 编号与原文；不得编造客户未提供的信息，缺失项只能作为缺口呈现；本轮不执行、不发布交付、不确认完成条件。",
+      "evidence": "工作项目标文本（含三条来件原文）；本项暂无上传材料、无历史运行；find_methods 返回 0 条可复用方法。",
+      "framing": "本周三条客户来件需要逐条定性、判断后续动作与缺失信息，形成可查看记录、详情与可补充信息的处理方案；本轮只保存方案与界面，不正式运行。",
+      "known": "R1「界面清晰，团队很满意。」；R2「导出连续报错，需要技术排查。」；R3「希望支持批量导出，但尚未说明使用频率。」三条编号与原文由工作项目标给出。",
+      "unknown": "R2 的报错现象、复现步骤、影响范围与优先级未知；R3 的使用频率、批量规模与期望时间未知；R1 是否需要对外回复未知；各条责任人与期望响应时限未确认。"
+    },
+    "schemaVersion": 1
+  },
+  "uiProgram": {
+    "id": "6d26d861-0f8f-4af3-8a8d-ba081a86c562",
+    "definitionId": "297c0558-2205-439d-a7b1-83c6fce79014",
+    "source": "root = Workspace(\"本周客户来件处理\", [views])\n$selected = []\n$draft = {}\nviews = ViewNavigation(\"tabs\", [recordsView, noteView, gapsView])\nrecordsView = View(\"处理记录\", [records, hint])\nhint = TextContent(\"记录来自已发布交付；本轮尚未正式运行，因此暂无交付记录。先在应用中确认方案与输入，再决定是否执行。\")\nrecords = Records(\"records\", \"来件处理记录（编号 / 性质 / 状态 / 后续动作）\", \"id\", [Field(\"id\", \"编号\"), Field(\"category\", \"性质\"), Field(\"status\", \"状态\"), Field(\"urgency\", \"紧急度\")], $selected, [continueBtn], [Field(\"originalText\", \"客户原文\"), Field(\"followUpAction\", \"后续动作\"), Field(\"owner\", \"建议处理方\"), Field(\"missingInfo\", \"缺失信息\")], \"status\")\ncontinueBtn = ActionButton(\"以所选记录准备下一轮\", @Run(continueStep))\ncontinueStep = Mutation(\"continue_records\", {output: \"records\", recordIds: $selected, inputPort: \"requestNotes\"})\nnoteView = View(\"补充信息\", [noteForm, noteHint])\nnoteHint = TextContent(\"仅补充客户尚未提供的事实（如 R2 的报错现象、R3 的使用频率）；未填写的项保持为缺口。\")\nnoteForm = InputForm(\"requestNotes\", \"补充来件缺失信息\", $draft, saveBtn, null, null, [\"requestId\", \"note\"])\nsaveBtn = ActionButton(\"保存补充信息\", @Run(saveNote))\nsaveNote = Mutation(\"submit_input\", {inputPort: \"requestNotes\", value: $draft})\ngapsView = View(\"缺口与下一步\", [gapText])\ngapText = TextContent(\"已知缺口：R2 缺报错现象、复现步骤与影响范围；R3 缺使用频率与批量规模；R1 是否需要对外回复未确认。完成要求待人工确认，本轮不执行、不发布交付。\")"
+  },
+  "criterionStates": [
+    {
+      "title": null,
+      "met": false
+    },
+    {
+      "title": null,
+      "met": false
+    },
+    {
+      "title": null,
+      "met": false
+    },
+    {
+      "title": null,
+      "met": false
+    }
+  ]
+}

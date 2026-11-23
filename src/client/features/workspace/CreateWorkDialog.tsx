@@ -1,7 +1,11 @@
+import { Textarea } from '../../components/ui/textarea';
+import { FormActions } from '../../components/ui/field';
+import { Field } from '../../components/ui/field';
 import { useMemo, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { splitMaterials } from '../../core/format';
-import { Button, Modal } from '../../components/ui';
+import { Modal } from '../../components/ui';
+import { Button } from '../../components/ui/button';
 
 /** 创建工作：填写目标与材料，或跟随文件导入；显示材料拆分结果。 */
 export function CreateWorkDialog({
@@ -37,25 +41,25 @@ export function CreateWorkDialog({
       title="开始一项工作"
       description="填写目标，再确认材料的拆分结果。"
     >
-      <label className="field">
+      <Field>
         工作目标
-        <textarea
+        <Textarea
           rows={3}
           value={goal}
           onChange={(e) => setGoal(e.target.value)}
           placeholder="例如：整理客户反馈，区分问题、需求与称赞，给出有依据的建议。报告必须引用反馈编号。"
         />
-      </label>
-      <label className="field">
+      </Field>
+      <Field>
         材料 · 每行一条
-        <textarea
+        <Textarea
           rows={6}
           value={materialText}
           onChange={(e) => setMaterialText(e.target.value)}
           placeholder="粘贴需要处理的原始材料…"
         />
-      </label>
-      <label className="field">
+      </Field>
+      <Field>
         或上传文件，由助手剖析并登记洞见
         <input
           type="file"
@@ -63,7 +67,7 @@ export function CreateWorkDialog({
           disabled={createMaterials.length > 0}
           onChange={(e) => setCreateFile(e.target.files?.[0])}
         />
-      </label>
+      </Field>
       {createMaterials.length > 0 && (
         <div className="material-preview">
           <strong>已拆分 {createMaterials.length} 条材料</strong>
@@ -76,17 +80,20 @@ export function CreateWorkDialog({
         </div>
       )}
       {error && <p className="inline-error">{error}</p>}
-      <div className="modal-actions">
+      <FormActions>
         {createMaterials.length === 0 && (
-          <span className="muted">
+          <span className="meta-text">
             {createFile
               ? `跟随文件导入：${createFile.name}`
               : '已拆分 0 条材料'}
           </span>
         )}
-        <Button onClick={() => onOpenChange(false)}>取消</Button>
+        <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+          取消
+        </Button>
         <Button
-          variant="primary"
+          size="sm"
+          variant="default"
           disabled={busy}
           onClick={async () => {
             if (await create(createFile)) setCreateFile(undefined);
@@ -95,7 +102,7 @@ export function CreateWorkDialog({
           创建工作
           <ArrowRight size={15} />
         </Button>
-      </div>
+      </FormActions>
     </Modal>
   );
 }

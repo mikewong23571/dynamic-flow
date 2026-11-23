@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-23T04:15:53.281770+00:00",
+  "files": [
+    {
+      "path": "data/820d14d6-d06f-4bf7-86e4-453ec1c920f6/work.json",
+      "sameAsStart": true,
+      "initialHash": "6dd03d2287b569f9c2317b61efb2248fba34b51bcdd91b2a8f39e2f33f0f0bf7",
+      "currentHash": "6dd03d2287b569f9c2317b61efb2248fba34b51bcdd91b2a8f39e2f33f0f0bf7",
+      "revision": 90,
+      "updatedAt": "2026-10-23T03:24:23.030Z"
+    },
+    {
+      "path": "data/5b38cade-4714-48d8-aaca-79aeff91a0f7/work.json",
+      "sameAsStart": false,
+      "initialHash": "abdf78844f78078e631bae45f50608b83d569d4923737042261705d0110c128b",
+      "currentHash": "bc943da10c11d5dace6bb5e5665b2ba7c10c018ebc666b8341aaf744ddaf73ab",
+      "revision": 463,
+      "updatedAt": "2026-10-23T03:43:05.470Z"
+    },
+    {
+      "path": "data/060944d9-3509-404f-aecd-32ae4c89247a/work.json",
+      "sameAsStart": false,
+      "initialHash": "df75495d1acc5e1288bbce15f452d425e24196adb0873b1a532e830cafbd96f1",
+      "currentHash": "4b122bb494c69b7166b52fecd72384013116727b2759c7387f6720b03baaaa1d",
+      "revision": 177,
+      "updatedAt": "2026-10-23T03:28:32.611Z"
+    },
+    {
+      "path": "data/work-items/3a1412fb-937b-4add-a7cd-7f23f94bf05a.json",
+      "sameAsStart": true,
+      "initialHash": "3435326a61a3e64aec0c1353518fe80e0199c78e025ee99e2a02798ead696fdb",
+      "currentHash": "3435326a61a3e64aec0c1353518fe80e0199c78e025ee99e2a02798ead696fdb",
+      "revision": 41,
+      "updatedAt": "2026-10-22T17:05:45.256Z"
+    }
+  ],
+  "activeRecords": [],
+  "workFiles": 3,
+  "workItems": 1,
+  "note": "两份既有Work文件在实施期间哈希变化；更新时间早于本轮API重启。测试作者均核对所有写请求使用私有临时dataRoot/端口；正式数据没有新增测试项。仅初始哈希不能确定变化字段或写入来源，不声称全量未变，不恢复覆盖用户现场。"
+}

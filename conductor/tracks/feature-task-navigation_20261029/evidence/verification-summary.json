@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-29",
+  "typecheck": "passed",
+  "build": "passed",
+  "modules": {
+    "command": "pnpm exec tsx --test tests/navigation-actions.test.ts tests/client.test.ts",
+    "passed": 13
+  },
+  "browser_distinct_cases": 25,
+  "browser_suites": {
+    "task-navigation": 13,
+    "navigation": 4,
+    "call-node": 2,
+    "sources": 2,
+    "primitives": 2,
+    "business-mainline": 2
+  },
+  "browser_note": "分轮实跑；重复回归不累计，详细路线见evidence.md。",
+  "visual": "1440x900与1024x768实际8图及A来处/B归属2图已逐屏审阅",
+  "model": "本轮未运行真实模型；未改协议或模型配置",
+  "managed_service": "未操作4320/4321或flowcraft.service"
+}

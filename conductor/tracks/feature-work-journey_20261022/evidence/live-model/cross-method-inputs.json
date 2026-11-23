@@ -1,0 +1,60 @@
+{
+  "ref": {
+    "workId": "1d48aa9b-abf4-4bdb-b983-667b54bdd3ab",
+    "runId": "24b60bc4-21e5-40a1-b55f-7766a43c41e6",
+    "definitionId": "d1d2efa1-9990-448f-bb4e-2302d6ad1dbf"
+  },
+  "scope": "full",
+  "effectMode": "commit",
+  "inputs": {
+    "records": [
+      {
+        "value": {
+          "original": "搜索比以前快很多，团队很满意。",
+          "category": "称赞",
+          "reason": "反馈明确表达对搜索速度提升的正面评价与满意情绪（\"快很多\"\"很满意\"），未提出问题或新需求，属于称赞。"
+        },
+        "sampleId": "M03",
+        "materialIds": [
+          "M03"
+        ],
+        "sourceResultIds": [
+          "8fa0861f-17f5-44f7-8cb6-7e866de5137c"
+        ]
+      },
+      {
+        "value": {
+          "original": "界面很顺手，但导出报告经常失败，影响交付。",
+          "category": "问题",
+          "reason": "正面依据：界面很顺手；问题或需求依据：导出报告经常失败，影响交付。"
+        },
+        "sampleId": "M01",
+        "materialIds": [
+          "M01"
+        ],
+        "sourceResultIds": [
+          "a85b02dc-612a-486d-8ac6-0af6ddb7fa4a"
+        ]
+      }
+    ]
+  },
+  "inputSources": [
+    {
+      "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+      "runId": "2e6ef635-78df-4188-8326-3d48b899a6f3",
+      "resultId": "8fa0861f-17f5-44f7-8cb6-7e866de5137c",
+      "port": "output",
+      "index": 0
+    },
+    {
+      "workId": "c639d11d-6e43-4b53-a886-bb1f0be37251",
+      "runId": "8ff28984-5ffa-4480-a0a1-e23fb9e01615",
+      "resultId": "a85b02dc-612a-486d-8ac6-0af6ddb7fa4a",
+      "port": "output",
+      "index": 0
+    }
+  ],
+  "modelStub": false,
+  "webSearchEnabled": false,
+  "scriptNote": "Initial post-submit assertion expected undefined scope; inspected actual full value, corrected script without resubmitting."
+}

@@ -5,6 +5,7 @@ import type {
   NodeResult,
   Snapshot,
   Work,
+  RunSampleSource,
 } from '../../shared/records';
 import { api } from '../core/api';
 import { runAction } from '../core/action';
@@ -21,6 +22,7 @@ interface ActionDeps {
   work: Work | undefined;
   snapshot: Snapshot | null;
   definition: Definition;
+  definitionRef: React.RefObject<Definition>;
   baseId: React.RefObject<string | undefined>;
   setDirty: (dirty: boolean) => void;
   setLocalDefinition: (definition: Definition | null) => void;
@@ -30,6 +32,10 @@ interface ActionDeps {
   inputs: Inputs;
   selectedMaterials: string[];
   selectedResults: string[];
+  inputMode: 'materials' | 'results' | 'run';
+  setInputMode: (mode: 'materials' | 'results' | 'run') => void;
+  sampleSource?: RunSampleSource;
+  setSampleSource: (source: RunSampleSource | undefined) => void;
   setSelectedNode: (node: string | undefined) => void;
   setSelectedRun: (run: string | undefined) => void;
   setPreviewInputs: (inputs: Inputs | null) => void;
@@ -54,6 +60,7 @@ export function useActions(deps: ActionDeps) {
     work,
     snapshot,
     definition,
+    definitionRef,
     baseId,
     setDirty,
     setLocalDefinition,
@@ -63,6 +70,10 @@ export function useActions(deps: ActionDeps) {
     inputs,
     selectedMaterials,
     selectedResults,
+    inputMode,
+    setInputMode,
+    sampleSource,
+    setSampleSource,
     setSelectedNode,
     setSelectedRun,
     setPreviewInputs,
@@ -81,23 +92,38 @@ export function useActions(deps: ActionDeps) {
     if (!workId) throw new Error('请先创建工作');
     const next = await api<Snapshot>(`/api/works/${workId}/actions`, {
       action: actionName,
+      ...(actionName === 'edit' && inputMode === 'run' ? { sampleSource } : {}),
       ...fields,
     });
     if (activeWorkId.current === workId) receive(next);
     return next;
   }
-  function perform(actionName: string, fields: Record<string, unknown> = {}) {
-    return runAction(() => action(actionName, fields), { setBusy, setError });
+  async function perform(
+    actionName: string,
+    fields: Record<string, unknown> = {},
+  ) {
+    const result = await runAction(() => action(actionName, fields), {
+      setBusy: (value) => {
+        if (activeWorkId.current === workId) setBusy(value);
+      },
+      setError: (value) => {
+        if (activeWorkId.current === workId) setError(value);
+      },
+    });
+    return activeWorkId.current === workId ? result : undefined;
   }
   async function saveDefinition() {
     const next = await perform('saveDraft', {
       expectedDraftId: baseId.current,
       definition,
     });
-    if (next) {
+    if (next && activeWorkId.current === workId) {
       baseId.current = next.work.draftId;
-      setDirty(false);
-      setLocalDefinition(next.definitions[next.work.draftId!]);
+      // Saving an earlier edit cannot discard a newer local edit.
+      if (definitionRef.current === definition) {
+        setDirty(false);
+        setLocalDefinition(next.definitions[next.work.draftId!]);
+      }
     }
     return next;
   }
@@ -106,7 +132,7 @@ export function useActions(deps: ActionDeps) {
       text: `请根据本次工作目标和材料生成可运行的流程：${work?.goal}。节点名称、任务和最终产物要对应目标；输出引用材料编号。`,
       expectedDraftId: work?.draftId,
     });
-    setPanel('assistant');
+    if (activeWorkId.current === workId) setPanel('assistant');
   }
   async function runFull() {
     if (!work || !selectedDefinitionId) return;
@@ -117,7 +143,7 @@ export function useActions(deps: ActionDeps) {
       scope: 'full',
       inputs: materialInputs(work, selectedMaterials, def.inputs[0]),
     });
-    if (next) {
+    if (next && activeWorkId.current === workId) {
       setSelectedRun(next.work.runs[next.work.runs.length - 1]?.id);
       setTab('results');
     }
@@ -153,10 +179,14 @@ export function useActions(deps: ActionDeps) {
           `/api/works/${workId}/preview-results`,
           { resultIds: selectedResults },
         );
-        setPreviewInputs(data.inputs);
+        if (activeWorkId.current === workId) setPreviewInputs(data.inputs);
         return data.inputs;
       },
-      { setError },
+      {
+        setError: (value) => {
+          if (activeWorkId.current === workId) setError(value);
+        },
+      },
     );
   }
   async function trial(compare = false) {
@@ -169,20 +199,29 @@ export function useActions(deps: ActionDeps) {
             candidateId: work.draftId,
             nodeId: selectedNode,
             inputs,
+            sampleSource: inputMode === 'run' ? sampleSource : undefined,
           }
         : {
             definitionId: work.draftId,
             scope: { nodeId: selectedNode },
             inputs,
+            sampleSource: inputMode === 'run' ? sampleSource : undefined,
           },
     );
-    if (result) {
+    if (result && activeWorkId.current === workId) {
       setTrialOpen(false);
       setSelectedRun(result.work.runs[result.work.runs.length - 1]?.id);
       setTab(compare ? 'compare' : 'results');
     }
   }
-  function beginFrom(result: NodeResult) {
+  async function beginFrom(result: NodeResult) {
+    const original = work?.runs
+      .find((run) => run.id === result.runId)
+      ?.results.find((entry) => entry.id === result.id);
+    if (original?.nodeId === result.nodeId) {
+      setSampleSource({ runId: result.runId, resultIds: [result.id] });
+      setInputMode('run');
+    }
     setCandidateSource(result.definitionId);
     setSourceChoice(result.definitionId);
     setReplaceDraft(false);
@@ -193,45 +232,49 @@ export function useActions(deps: ActionDeps) {
       id: newId(),
       kind: addKind,
       label:
-        addKind === 'dynamic'
-          ? '局部动态展开'
+        addKind === 'create-items'
+          ? '建立子项'
+          : addKind === 'dynamic'
+            ? '局部动态展开'
+            : addKind === 'file'
+              ? '文件'
+              : addKind === 'agent'
+                ? '新的 Agent 步骤'
+                : addKind === 'branch'
+                  ? '条件分流'
+                  : addKind === 'wait'
+                    ? '等待外部事件'
+                    : addKind === 'milestone'
+                      ? '记录业务进展'
+                      : '整理数据',
+
+      operation: 'map',
+      ...(addKind === 'create-items'
+        ? { operation: 'aggregate' as const }
+        : addKind === 'dynamic'
+          ? {
+              operation: 'aggregate' as const,
+              task: '',
+              contract: { responsibility: '', done: '', rationale: '' },
+              dynamic: { boundary: '', maxNodes: 5 },
+            }
           : addKind === 'file'
-            ? '文件'
+            ? { file: { name: '' } }
             : addKind === 'agent'
-              ? '新的 Agent 步骤'
-              : addKind === 'branch'
-                ? '条件分流'
+              ? { task: '' }
+              : addKind === 'function'
+                ? { functionName: 'identity' as const }
                 : addKind === 'wait'
-                  ? '等待外部事件'
-                  : addKind === 'milestone'
-                    ? '记录业务进展'
-                    : '整理数据',
-      mode: 'each',
-      ...(addKind === 'dynamic'
-        ? {
-            mode: 'all' as const,
-            operation: 'aggregate' as const,
-            task: '',
-            contract: { responsibility: '', done: '', rationale: '' },
-            dynamic: { boundary: '', maxNodes: 5 },
-          }
-        : addKind === 'file'
-          ? { file: { name: '' } }
-          : addKind === 'agent'
-            ? { task: '' }
-            : addKind === 'function'
-              ? { functionName: 'identity' as const }
-              : addKind === 'wait'
-                ? {
-                    mode: 'all' as const,
-                    wait: { event: 'update', reason: '等待补充信息' },
-                  }
-                : addKind === 'milestone'
                   ? {
-                      mode: 'all' as const,
-                      milestone: { stage: '', summary: '' },
+                      wait: { event: 'update', reason: '等待补充信息' },
                     }
-                  : { condition: { field: '', operator: 'equals' as const } }),
+                  : addKind === 'milestone'
+                    ? {
+                        milestone: { stage: '', summary: '' },
+                      }
+                    : {
+                        condition: { field: '', operator: 'equals' as const },
+                      }),
     };
     editDefinition({ ...definition, nodes: [...definition.nodes, node] });
     setSelectedNode(node.id);
