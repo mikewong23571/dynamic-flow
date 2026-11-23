@@ -250,10 +250,10 @@ export function ItemRelations({
                   onChange={(e) => update({ todo: e.target.value, page: 1 })}
                 >
                   <option value="">全部待办</option>
-                  <option value="blocked">需补材料</option>
+                  <option value="blocked">需处理</option>
                   <option value="review">待复核</option>
                   <option value="confirm">待整体确认</option>
-                  <option value="process">待处理</option>
+                  <option value="process">待推进</option>
                   <option value="running">推进中</option>
                   <option value="waiting">等待中</option>
                 </NativeSelect>

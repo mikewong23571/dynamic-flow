@@ -65,6 +65,15 @@ export const toolNames: Record<string, string> = {
   grep: '搜索内容',
   find: '查找文件',
   ls: '列出目录',
+  describe_capabilities: '读取能力合同',
+  inspect_workspace: '查看工作项',
+  methods: '查阅流水线',
+  check_workspace: '联合校验方案',
+  apply_workspace_plan: '保存方案与界面',
+  manage_inputs: '管理工作项输入',
+  run_control: '控制流程执行',
+  publish_delivery: '发布业务交付',
+  set_completion_requirements: '设置完成要求',
 };
 function useOriginalMessage() {
   const id = useAuiState((s) => s.message.id);

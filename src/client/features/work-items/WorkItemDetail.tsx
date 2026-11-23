@@ -410,6 +410,17 @@ export function WorkItemDetail({
       ),
     );
   }
+  const canPublishCurrent = Boolean(
+    workspace?.uiProgram && publicationRun && Object.keys(outputTitles).length,
+  );
+  const currentRunPublished = Boolean(
+    publicationRun &&
+    deliveries.some(
+      (d) =>
+        d.runId === publicationRun.id &&
+        d.uiProgramId === workspace?.uiProgram?.id,
+    ),
+  );
   return (
     <section className="composition-workspace" aria-label="工作项详情">
       <WorkspaceHeading
@@ -422,6 +433,17 @@ export function WorkItemDetail({
         actions={
           <>
             {' '}
+            {item.effectiveStatus === 'review' &&
+              canPublishCurrent &&
+              !currentRunPublished && (
+                <Button
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => void publishCurrent()}
+                >
+                  保留本轮成果
+                </Button>
+              )}
             <Button variant="ghost" onClick={() => setDetails(true)}>
               <Info size={15} />
               目标
@@ -516,7 +538,13 @@ export function WorkItemDetail({
         <WorkspaceNavigation
           actions={
             <>
-              <Button variant="ghost" size="sm" onClick={openAcceptance}>
+              <Button
+                variant={
+                  item.effectiveStatus === 'review' ? 'outline' : 'ghost'
+                }
+                size="sm"
+                onClick={openAcceptance}
+              >
                 完成条件{' '}
                 <span className="meta-text">
                   {item.criteria.filter((c) => c.met).length}/

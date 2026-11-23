@@ -33,6 +33,7 @@ import type {
 import { Button } from '../../components/ui/button';
 import { Modal } from '../../components/ui';
 import { DeferredDetails } from '../../components/DeferredContent';
+import { itemStatusLabel, itemStatusNames } from '../work-items/item-status';
 import './OpenUIWorkspace.css';
 import {
   Tabs,
@@ -107,6 +108,18 @@ function ActionRenderer({ props }: ComponentRenderProps) {
     </Button>
   );
 }
+function formatFieldValue(
+  field: string,
+  raw: Json | undefined,
+): Json | undefined {
+  if (
+    field === 'effectiveStatus' &&
+    typeof raw === 'string' &&
+    raw in itemStatusNames
+  )
+    return itemStatusNames[raw as keyof typeof itemStatusNames];
+  return raw;
+}
 function FieldValues({
   value,
   declared,
@@ -116,20 +129,24 @@ function FieldValues({
 }) {
   return (
     <dl className="declared-record-detail">
-      {declared.map((field) => (
-        <div key={field.field}>
-          <dt>{field.label}</dt>
-          <dd>
-            {value == null ||
-            atPath(value, field.field) == null ||
-            atPath(value, field.field) === '' ? (
-              '—'
-            ) : (
-              <Value value={atPath(value, field.field)!} />
-            )}
-          </dd>
-        </div>
-      ))}
+      {declared.map((field) => {
+        const display =
+          value == null
+            ? undefined
+            : formatFieldValue(field.field, atPath(value, field.field));
+        return (
+          <div key={field.field}>
+            <dt>{field.label}</dt>
+            <dd>
+              {display == null || display === '' ? (
+                '—'
+              ) : (
+                <Value value={display} />
+              )}
+            </dd>
+          </div>
+        );
+      })}
     </dl>
   );
 }
@@ -680,7 +697,13 @@ export function OpenUIWorkspace({
   };
   const provider = useMemo(() => {
     const reads = {
-      read_workspace: async () => current.current,
+      read_workspace: async () => ({
+        ...current.current,
+        item: {
+          ...current.current.item,
+          statusLabel: itemStatusLabel(current.current.item),
+        },
+      }),
       read_inputs: async (args: Record<string, unknown>) => {
         const query = new URLSearchParams();
         for (const key of ['offset', 'limit'])

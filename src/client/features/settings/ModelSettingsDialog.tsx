@@ -118,7 +118,7 @@ export function ModelSettingsDialog({
               {current.error}
             </p>
           )}
-        <div className="settings-grid">
+        <div className="settings-grid settings-grid-model">
           <Field>
             默认模型
             <NativeSelect
